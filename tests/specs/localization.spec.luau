@@ -1,6 +1,7 @@
 --!strict
 -- GameStrings.csv must be well-formed and cover every key the game uses.
 local fs = require("@lune/fs")
+local csv = require("../../tools/csv")
 local Roblox = require("../roblox")
 local expect = require("../expect")
 
@@ -8,48 +9,7 @@ local Config = Roblox.require(Roblox.game.ReplicatedStorage.Shared.Config)
 
 local CSV_PATH = "src/localization/GameStrings.csv"
 
--- Minimal RFC 4180 parser (quoted fields, doubled quotes, commas inside quotes).
-local function parseCsv(text: string): { { string } }
-	local rows: { { string } } = {}
-	local row: { string } = {}
-	local field = ""
-	local inQuotes = false
-	local i = 1
-	while i <= #text do
-		local char = string.sub(text, i, i)
-		if inQuotes then
-			if char == '"' then
-				if string.sub(text, i + 1, i + 1) == '"' then
-					field ..= '"'
-					i += 1
-				else
-					inQuotes = false
-				end
-			else
-				field ..= char
-			end
-		elseif char == '"' then
-			inQuotes = true
-		elseif char == "," then
-			table.insert(row, field)
-			field = ""
-		elseif char == "\n" then
-			table.insert(row, field)
-			table.insert(rows, row)
-			row, field = {}, ""
-		elseif char ~= "\r" then
-			field ..= char
-		end
-		i += 1
-	end
-	if field ~= "" or #row > 0 then
-		table.insert(row, field)
-		table.insert(rows, row)
-	end
-	return rows
-end
-
-local rows = parseCsv(fs.readFile(CSV_PATH))
+local rows = csv.parse(fs.readFile(CSV_PATH))
 local keys: { [string]: string } = {}
 for index = 2, #rows do
 	keys[rows[index][1]] = rows[index][2]

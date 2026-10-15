@@ -1,0 +1,28 @@
+--!strict
+-- Faded 80s/90s junkyard palette (bible §3.2): rust orange, teal, dusty pink, off-white, neon accents.
+return {
+	RustOrange = "#C8642D",
+	RustDark = "#8C4A2A",
+	Teal = "#2F8C8C",
+	TealDark = "#1F5F63",
+	DustyPink = "#D98C9A",
+	PinkDark = "#A8616E",
+	OffWhite = "#EDE6D6",
+	Asphalt = "#4A4A4F",
+	AsphaltDark = "#38383C",
+	Concrete = "#9C968C",
+	ConcreteDark = "#6E6A64",
+	LaneYellow = "#E8C547",
+	LaneWhite = "#E6E2D6",
+	Metal = "#8A8F94",
+	MetalDark = "#55595E",
+	Wood = "#9C6B3E",
+	Cork = "#B5834A",
+	SignGreen = "#2E6B4A",
+	Black = "#1E1E22",
+	NeonPink = "#FF4FA3",
+	NeonTeal = "#3FF2E0",
+	NeonOrange = "#FF8A3D",
+	ToxicGreen = "#39FF88",
+	Glass = "#9FD6E0",
+}

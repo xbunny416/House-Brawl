@@ -5,4 +5,6 @@ return {
 	AllowedUserIds = {} :: { number },
 	-- Anyone can use the panel inside Roblox Studio playtests (never in live servers).
 	AllowInStudio = true,
+	-- Studio playtests only: load this arena at startup and add a teleport pad in the lobby. nil to disable.
+	StudioArenaPreview = "BrokenHighway" :: string?,
 }

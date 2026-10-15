@@ -12,6 +12,14 @@
 				"$path": "src/server"
 			}
 		},
+		"ServerStorage": {
+			"Arenas": {
+				"$className": "Folder",
+				"BrokenHighway": {
+					"$path": "maps/generated/BrokenHighway.rbxmx"
+				}
+			}
+		},
 		"StarterPlayer": {
 			"StarterPlayerScripts": {
 				"Client": {
@@ -29,6 +37,9 @@
 				"StreamingEnabled": true,
 				"StreamingMinRadius": 128,
 				"StreamingTargetRadius": 256
+			},
+			"Lobby": {
+				"$path": "maps/generated/RustDiner.rbxmx"
 			}
 		}
 	}

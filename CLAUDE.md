@@ -6,7 +6,8 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 
 - **Build order approved** by the owner on 2026-10-15, with maps built from code (blockouts from layout data, art
   pass later) and data saving via ProfileStore.
-- **Current phase:** Phase 1. **Next step:** 1.4 Maps framework + blockouts (then the first owner playtest).
+- **Current phase:** Phase 1. **Waiting on:** the owner's first Studio playtest of 1.1–1.4 (lobby + Broken Highway
+  blockouts, data saving). **Next step after that:** 1.5 Input + camera.
 
 ## How this repo works
 
@@ -34,6 +35,9 @@ Roblox Studio MCP server).
 | `src/client/` | `StarterPlayer.StarterPlayerScripts.Client` | `Main.client.luau` + `Controllers/` (input, HUD, camera, VFX) |
 | `src/localization/GameStrings.csv` | `LocalizationService.GameStrings` | Every player-facing string (Key, Source, Context, Example) |
 | `src/server/Vendor/` | `ServerScriptService.Server.Vendor` | Third-party modules kept as published (see `licenses/`) |
+| `maps/layouts/` | — | Map layouts as code (platform sizes, spots, decor) — the source of truth for blockouts |
+| `maps/generated/` | `Workspace.Lobby`, `ServerStorage.Arenas.*` | `.rbxmx` models generated from the layouts (committed) |
+| `tools/` | — | Lune helpers shared by tests and the map generator |
 | `tests/` | — (not synced) | Lune runner `tests/run.luau`, specs in `tests/specs/*.spec.luau` |
 | `docs/` | — | Design bible and other docs |
 
@@ -47,6 +51,7 @@ stylua src tests            # format (CI runs stylua --check)
 selene src                  # lint
 scripts/typecheck.sh        # strict type-check with luau-lsp + Roblox API types
 lune run tests/run          # syntax-compile every src/*.luau + run specs
+lune run maps/build         # regenerate maps/generated/*.rbxmx after editing maps/layouts (a spec checks this)
 rojo build default.project.json -o build/JunkyardBrawl.rbxlx
 ```
 
@@ -69,6 +74,13 @@ rojo build default.project.json -o build/JunkyardBrawl.rbxlx
   `incrementStat`, `update`, `processReceipt`) so the owning client is synced and analytics are logged. New template
   fields are filled in automatically; renames/removals need a migration (`src/server/Data/Migrations.luau`, bump
   `VERSION` in `src/shared/Data/Template.luau`). Clients read their copy via `Controllers/DataController`.
+- **Maps:** blockouts are generated from `maps/layouts/*.luau` by `lune run maps/build`; never hand-edit
+  `maps/generated/`. Gameplay markers are tagged parts (`SpawnPoint`, `PropSpot`, `ExplosiveSpot`,
+  `StructureSpot` with a `StructureType` attribute, `LobbySpawn`, `Training*`), visible in Edit mode and hidden by
+  `Services/MapService` at runtime. Each arena platform is a `Platform`-tagged Model (Persistent streaming,
+  `CanFall` attribute). Sign text comes from GameStrings keys (`LocKey` attribute on the label). For a final art
+  pass a map can switch to a hand-built model: export it from Studio to `maps/<Name>.rbxmx`, point
+  `default.project.json` at it, and remove it from `maps/build.luau`.
 - **Vendored code** (`src/server/Vendor/`) is never edited and is excluded from StyLua/Selene/luau-lsp.
 - **Analytics:** log through `Services/Analytics` helpers (`scrapEarned`, `scrapSpent`, `onboardingStep`,
   `mapVoted`, `roundModePicked`, `styleUsed`, `roundFinished`, `custom`).
@@ -103,7 +115,7 @@ any errors are fixed before the next item.
       LocalizationTable (`GameStrings`) wiring, Analytics wrapper (so every later feature logs events as it is built).
 - [x] **1.3 Data saving** — session-locked profiles, auto-save, BindToClose flush, retry/backoff, schema versions,
       purchase-receipt history (prevents duplicate grants). In-memory fallback when Studio has no API access.
-- [ ] **1.4 Maps framework + blockouts** — map layout data → builder that creates the Lobby (Rust Diner roof + Training
+- [x] **1.4 Maps framework + blockouts** — map layout data → builder that creates the Lobby (Rust Diner roof + Training
       Yard) and Broken Highway blockouts (exact sizes, gaps, spawn points, KillY, prop/structure spots); arenas live
       in ServerStorage, one active at a time; dusk lighting preset.
 - [ ] **1.5 Input + camera** — one action map for keyboard/mouse, gamepad and touch (mobile button arc ≥ 64 px), camera
@@ -156,7 +168,8 @@ any errors are fixed before the next item.
 | 2026-10-15 | Repo setup: Rojo project, toolchain, CI + auto-merge, Lune test runner, Loader, this file, project bible | #1 |
 | 2026-10-15 | 1.1 Config tree (all bible tunables) + pure Formulas with specs; luau-lsp strict type-check in CI; `.rbxlx` artifact | #2 |
 | 2026-10-15 | 1.2 Net layer (validated + rate-limited remotes), GameStrings localization, Analytics wrapper | #3 |
-| 2026-10-15 | 1.3 DataService on vendored ProfileStore (session lock, autosave, receipts, migrations), client DataController | 1.3 |
+| 2026-10-15 | 1.3 DataService on vendored ProfileStore (session lock, autosave, receipts, migrations), client DataController | #4 |
+| 2026-10-15 | 1.4 Lobby (Rust Diner) + Broken Highway blockouts generated from layout code, MapService (arena load/unload, lighting presets, falls, Studio preview pad) | 1.4 |
 
 ## Decisions and interpretations
 
@@ -184,4 +197,9 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Data in Studio:** with "Studio Access to API Services" off, ProfileStore uses an in-memory store and prints
   "Roblox API services unavailable - data will not be saved". Turn it on to test real saving
   (`Config.Data.UseMockInStudio = true` forces the in-memory store even with access on).
+- **Arena gaps** of 9–12 studs need the dash (step 1.7); until then only the 8–9 stud gaps are jumpable.
+- **Falling off the arena** currently returns you to the lobby (MapService default); the round system (1.8) will
+  take over with lives/respawns.
+- **Studio arena preview:** `Config.Dev.StudioArenaPreview` loads Broken Highway in Studio playtests and adds a
+  teal teleport pad in front of the lobby spawns. Set it to nil to turn it off. Never active in live servers.
 - **Owner's Roblox UserId** is needed for `Config.Dev.AllowedUserIds` before live testing of the developer panel.
