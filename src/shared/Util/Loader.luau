@@ -31,7 +31,7 @@ local function collect(folder: Instance): { Entry }
 		if not child:IsA("ModuleScript") then
 			continue
 		end
-		local ok, result = pcall((require :: any), child)
+		local ok, result = pcall(require :: any, child)
 		if not ok then
 			report(child.Name, "require", result)
 			continue
