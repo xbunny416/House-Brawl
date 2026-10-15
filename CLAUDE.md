@@ -6,7 +6,7 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 
 - **Build order approved** by the owner on 2026-10-15, with maps built from code (blockouts from layout data, art
   pass later) and data saving via ProfileStore.
-- **Current phase:** Phase 1. **Next step:** 1.3 Data saving.
+- **Current phase:** Phase 1. **Next step:** 1.4 Maps framework + blockouts (then the first owner playtest).
 
 ## How this repo works
 
@@ -33,6 +33,7 @@ Roblox Studio MCP server).
 | `src/server/` | `ServerScriptService.Server` | `Main.server.luau` + `Services/` (one module per system) |
 | `src/client/` | `StarterPlayer.StarterPlayerScripts.Client` | `Main.client.luau` + `Controllers/` (input, HUD, camera, VFX) |
 | `src/localization/GameStrings.csv` | `LocalizationService.GameStrings` | Every player-facing string (Key, Source, Context, Example) |
+| `src/server/Vendor/` | `ServerScriptService.Server.Vendor` | Third-party modules kept as published (see `licenses/`) |
 | `tests/` | — (not synced) | Lune runner `tests/run.luau`, specs in `tests/specs/*.spec.luau` |
 | `docs/` | — | Design bible and other docs |
 
@@ -64,6 +65,11 @@ rojo build default.project.json -o build/JunkyardBrawl.rbxlx
   `Args` validators from `Net/Guard` (NaN/inf-safe, length-capped) and get a per-player rate limit
   (`Config.Net`, overridable per remote). Server code uses `Net.onServerEvent` / `Net.onServerInvoke`; it never
   touches RemoteEvents directly. Never use server → client invokes.
+- **Player data:** only change it through `Services/DataService` (`addScrap`, `spendScrap`, `addXP`,
+  `incrementStat`, `update`, `processReceipt`) so the owning client is synced and analytics are logged. New template
+  fields are filled in automatically; renames/removals need a migration (`src/server/Data/Migrations.luau`, bump
+  `VERSION` in `src/shared/Data/Template.luau`). Clients read their copy via `Controllers/DataController`.
+- **Vendored code** (`src/server/Vendor/`) is never edited and is excluded from StyLua/Selene/luau-lsp.
 - **Analytics:** log through `Services/Analytics` helpers (`scrapEarned`, `scrapSpent`, `onboardingStep`,
   `mapVoted`, `roundModePicked`, `styleUsed`, `roundFinished`, `custom`).
 - Pure logic (formulas, reward math, validation) goes in modules with no Roblox-instance dependencies so Lune specs can
@@ -95,7 +101,7 @@ any errors are fixed before the next item.
       (knockback, hitstun, Percent, XP curve, ranks, streak multiplier, reward math) with Lune specs.
 - [x] **1.2 Foundation** — typed remote layer with server-side rate limiting and argument validation, shared types,
       LocalizationTable (`GameStrings`) wiring, Analytics wrapper (so every later feature logs events as it is built).
-- [ ] **1.3 Data saving** — session-locked profiles, auto-save, BindToClose flush, retry/backoff, schema versions,
+- [x] **1.3 Data saving** — session-locked profiles, auto-save, BindToClose flush, retry/backoff, schema versions,
       purchase-receipt history (prevents duplicate grants). In-memory fallback when Studio has no API access.
 - [ ] **1.4 Maps framework + blockouts** — map layout data → builder that creates the Lobby (Rust Diner roof + Training
       Yard) and Broken Highway blockouts (exact sizes, gaps, spawn points, KillY, prop/structure spots); arenas live
@@ -149,7 +155,8 @@ any errors are fixed before the next item.
 | --- | --- | --- |
 | 2026-10-15 | Repo setup: Rojo project, toolchain, CI + auto-merge, Lune test runner, Loader, this file, project bible | #1 |
 | 2026-10-15 | 1.1 Config tree (all bible tunables) + pure Formulas with specs; luau-lsp strict type-check in CI; `.rbxlx` artifact | #2 |
-| 2026-10-15 | 1.2 Net layer (validated + rate-limited remotes), GameStrings localization, Analytics wrapper | 1.2 |
+| 2026-10-15 | 1.2 Net layer (validated + rate-limited remotes), GameStrings localization, Analytics wrapper | #3 |
+| 2026-10-15 | 1.3 DataService on vendored ProfileStore (session lock, autosave, receipts, migrations), client DataController | 1.3 |
 
 ## Decisions and interpretations
 
@@ -174,4 +181,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - None in code yet.
 - **Dash on Left Shift** conflicts with Roblox's default Shift Lock key; resolve in 1.5 (dash binding takes priority,
   Shift Lock stays on Right Shift / the camera button).
+- **Data in Studio:** with "Studio Access to API Services" off, ProfileStore uses an in-memory store and prints
+  "Roblox API services unavailable - data will not be saved". Turn it on to test real saving
+  (`Config.Data.UseMockInStudio = true` forces the in-memory store even with access on).
 - **Owner's Roblox UserId** is needed for `Config.Dev.AllowedUserIds` before live testing of the developer panel.
