@@ -32,19 +32,22 @@ jobs:
       - name: Lint (Selene)
         run: selene src
 
+      - name: Strict type-check (luau-lsp)
+        run: scripts/typecheck.sh
+
       - name: Syntax check + specs (Lune)
         run: lune run tests/run
 
       - name: Build place (Rojo)
         run: |
           mkdir -p build
-          rojo build default.project.json --output build/JunkyardBrawl.rbxl
+          rojo build default.project.json --output build/JunkyardBrawl.rbxlx
 
       - name: Upload place file
         uses: actions/upload-artifact@v6
         with:
           name: JunkyardBrawl-place
-          path: build/JunkyardBrawl.rbxl
+          path: build/JunkyardBrawl.rbxlx
           retention-days: 14
 
   # Squash-merges green PRs opened from claude/* branches in this repo.
