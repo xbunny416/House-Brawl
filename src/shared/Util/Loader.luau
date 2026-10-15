@@ -25,6 +25,13 @@ local function report(name: string, phase: string, err: unknown)
 	warn(`[Loader] {name}.{phase} failed: {err}`)
 end
 
+-- Runs a lifecycle method, reporting (not throwing) any error with its traceback.
+local function run(name: string, phase: string, method: (self: any) -> (), module: Module)
+	xpcall(method, function(err: unknown)
+		report(name, phase, debug.traceback(tostring(err), 2))
+	end, module)
+end
+
 local function collect(folder: Instance): { Entry }
 	local entries: { Entry } = {}
 	for _, child in folder:GetChildren() do
@@ -62,22 +69,14 @@ function Loader.Boot(folder: Instance): { [string]: Module }
 		loaded[entry.name] = entry.module
 		local init = entry.module.Init
 		if init then
-			local ok, err = xpcall(init, debug.traceback, entry.module)
-			if not ok then
-				report(entry.name, "Init", err)
-			end
+			run(entry.name, "Init", init, entry.module)
 		end
 	end
 
 	for _, entry in entries do
 		local start = entry.module.Start
 		if start then
-			task.spawn(function()
-				local ok, err = xpcall(start, debug.traceback, entry.module)
-				if not ok then
-					report(entry.name, "Start", err)
-				end
-			end)
+			task.spawn(run, entry.name, "Start", start, entry.module)
 		end
 	end
 

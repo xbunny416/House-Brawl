@@ -4,9 +4,9 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 
 ## Status at a glance
 
-- **Current phase:** Setup done. **Build order below is proposed and waiting for the owner's approval** — do not start
-  gameplay features until it is approved.
-- **Next step once approved:** 1.1 Config + Formulas.
+- **Build order approved** by the owner on 2026-10-15, with maps built from code (blockouts from layout data, art
+  pass later) and data saving via ProfileStore.
+- **Current phase:** Phase 1. **Next step:** 1.2 Foundation.
 
 ## How this repo works
 
@@ -23,7 +23,7 @@ Roblox Studio MCP server).
 3. Run `rojo serve`, open a place in Studio, click **Connect** in the Rojo plugin.
 4. Game settings in Studio: enable **Studio Access to API Services** (for DataStores) and turn on automatic translation
    in the Creator Dashboard.
-5. Alternative without Rojo: download the `JunkyardBrawl-place` artifact from the latest CI run and open the `.rbxl`.
+5. Alternative without Rojo: download the `JunkyardBrawl-place` artifact from the latest CI run and open the `.rbxlx`.
 
 ### Repo layout
 
@@ -43,8 +43,9 @@ first in `Priority` order, then each `Start()` runs in its own thread.
 ```sh
 stylua src tests            # format (CI runs stylua --check)
 selene src                  # lint
+scripts/typecheck.sh        # strict type-check with luau-lsp + Roblox API types
 lune run tests/run          # syntax-compile every src/*.luau + run specs
-rojo build default.project.json -o build/JunkyardBrawl.rbxl
+rojo build default.project.json -o build/JunkyardBrawl.rbxlx
 ```
 
 ## Conventions (required)
@@ -57,7 +58,8 @@ rojo build default.project.json -o build/JunkyardBrawl.rbxl
   formulas anywhere else. Keep `docs/PROJECT_BIBLE.md` in sync when Config changes.
 - **No hard-coded UI text:** every visible string is a LocalizationTable key.
 - Pure logic (formulas, reward math, validation) goes in modules with no Roblox-instance dependencies so Lune specs can
-  test it. Add specs for every formula.
+  test it. Add specs for every formula. Specs load game modules through `tests/roblox.luau`, a fake DataModel built
+  from `default.project.json`, so modules keep normal `require(script.Parent.X)` requires.
 - Filter all player-written text with TextService before others see it.
 - Track analytics events via the Analytics service wrapper (once built) for every feature that the bible lists.
 - Never delete or replace large parts of the place without asking the owner.
@@ -66,22 +68,22 @@ rojo build default.project.json -o build/JunkyardBrawl.rbxl
 ## GitHub workflow (automated)
 
 - Develop on the session's `claude/...` branch. One feature per PR.
-- **CI** (`.github/workflows/ci.yml`) on every PR: StyLua check → Selene → Lune (syntax + specs) → Rojo build
-  (uploads the `.rbxl` as an artifact).
+- **CI** (`.github/workflows/ci.yml`) on every PR: StyLua check → Selene → luau-lsp strict type-check → Lune (syntax +
+  specs) → Rojo build (uploads `JunkyardBrawl.rbxlx` as the `JunkyardBrawl-place` artifact).
 - **Auto-merge:** when CI is green, PRs from `claude/*` branches in this repo are squash-merged automatically and the
   branch is deleted. To stop a PR from merging, open it as a **draft** or add the **`no-automerge`** label.
 - After a merge, start the next feature from fresh `main` on the same branch name
   (`git fetch origin main && git checkout -B <branch> origin/main`).
 - Before pushing, run the commands above locally; a red CI blocks the merge.
 
-## Proposed build order (awaiting approval)
+## Build order (approved 2026-10-15)
 
 Each numbered item = one PR. After each: owner playtests in Studio (or a Studio-MCP session does), checks Output, and
 any errors are fixed before the next item.
 
 ### Phase 1 — Core loop playable
 
-- [ ] **1.1 Config + Formulas** — every tunable from the bible in one Config module tree; pure formula module
+- [x] **1.1 Config + Formulas** — every tunable from the bible in one Config module tree; pure formula module
       (knockback, hitstun, Percent, XP curve, ranks, streak multiplier, reward math) with Lune specs.
 - [ ] **1.2 Foundation** — typed remote layer with server-side rate limiting and argument validation, shared types,
       LocalizationTable (`GameStrings`) wiring, Analytics wrapper (so every later feature logs events as it is built).
@@ -137,11 +139,30 @@ any errors are fixed before the next item.
 
 | Date | Change | PR |
 | --- | --- | --- |
-| 2026-10-15 | Repo setup: Rojo project, toolchain, CI + auto-merge, Lune test runner, Loader, this file, project bible | setup |
+| 2026-10-15 | Repo setup: Rojo project, toolchain, CI + auto-merge, Lune test runner, Loader, this file, project bible | #1 |
+| 2026-10-15 | 1.1 Config tree (all bible tunables) + pure Formulas with specs; luau-lsp strict type-check in CI; `.rbxlx` artifact | 1.1 |
+
+## Decisions and interpretations
+
+Where the bible is silent or ambiguous, these choices were made (all are Config values unless noted):
+
+- **Placement rewards:** 1st place gets Win (+50/+100); 2nd–3rd get Top3. `Economy.WinnerAlsoGetsTop3` flips this.
+- **Participation:** the 60 s rule covers the completion reward too, and only non-AFK time counts. AFK at round end
+  pays nothing. KO and Perfect Dodge Scrap are paid regardless of time played.
+- **Bonus cap:** VIP + Premium apply to Scrap, the friend bonus to XP; each currency's bonus is capped at +60%. The
+  live-event multiplier (double-Scrap weekends) and the private-server 50% scale are applied outside the cap.
+- **Codes** live in the server-only `ServerScriptService.Server.ServerConfig` (not the shared Config) so clients
+  cannot read unreleased codes. `LAUNCH` is a placeholder.
+- **Structures** take each attack's Classic HP damage in every mode.
+- New tunables not in the bible: attack windups (Punch 0.1 s, Shove 0.15 s, needed for "dodge before the hit
+  lands"), punch chain reset 1 s, hitbox latency padding 0.5 studs, launch angle 30°, throw arc +14 studs/s, throw
+  cooldown 0.5 s, grab cooldown 0.3 s, results screen 8 s, minimum 2 players to start a round, platform fall 4 s.
+- Robux prices in Config are reference only; live prices come from the Creator Dashboard. Pass/product/badge/group
+  ids are 0 until created.
 
 ## Known bugs / open items
 
 - None in code yet.
-- Open decisions for the owner: see "Decisions needed" in the latest session summary (map building approach, data
-  saving library).
-- Strict type-checking (luau-lsp) is not yet in CI; Selene + Lune syntax compile are the current gates.
+- **Dash on Left Shift** conflicts with Roblox's default Shift Lock key; resolve in 1.5 (dash binding takes priority,
+  Shift Lock stays on Right Shift / the camera button).
+- **Owner's Roblox UserId** is needed for `Config.Dev.AllowedUserIds` before live testing of the developer panel.
