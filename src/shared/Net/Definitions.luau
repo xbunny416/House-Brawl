@@ -19,6 +19,10 @@ export type Definition = {
 local Definitions: { [string]: Definition } = {
 	-- Server -> client: show a localized notice. (key: string, args: { [string]: any }?)
 	Notify = { Kind = "Event", Direction = "ToClient" },
+	-- Server -> client: the player's full saved data once it loads. (data: PlayerData)
+	DataSync = { Kind = "Event", Direction = "ToClient" },
+	-- Server -> client: one top-level field of the player's data changed. (key: string, value: any)
+	DataChanged = { Kind = "Event", Direction = "ToClient" },
 }
 
 return Definitions

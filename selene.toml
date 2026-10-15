@@ -1,4 +1,6 @@
 std = "roblox"
+# Third-party code is kept exactly as published (see licenses/README.md).
+exclude = ["src/server/Vendor/*"]
 
 [lints]
 # Luau type annotations make some "unused" values intentional (e.g. exported types).

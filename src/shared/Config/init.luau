@@ -24,6 +24,7 @@ local Config = {
 	World = require(script.World),
 	Dev = require(script.Dev),
 	Net = require(script.Net),
+	Data = require(script.Data),
 }
 
 return Freeze.deep(Config)

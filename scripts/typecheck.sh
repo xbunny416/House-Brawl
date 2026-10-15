@@ -18,4 +18,5 @@ luau-lsp analyze \
 	--definitions="@roblox=$DEFS" \
 	--sourcemap=sourcemap.json \
 	--base-luaurc=.luaurc \
+	--ignore="**/Vendor/**" \
 	src
