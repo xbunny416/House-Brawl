@@ -6,7 +6,7 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 
 - **Build order approved** by the owner on 2026-10-15, with maps built from code (blockouts from layout data, art
   pass later) and data saving via ProfileStore.
-- **Current phase:** Phase 1. **Next step:** 1.2 Foundation.
+- **Current phase:** Phase 1. **Next step:** 1.3 Data saving.
 
 ## How this repo works
 
@@ -32,6 +32,7 @@ Roblox Studio MCP server).
 | `src/shared/` | `ReplicatedStorage.Shared` | Config, formulas, types, networking, utilities |
 | `src/server/` | `ServerScriptService.Server` | `Main.server.luau` + `Services/` (one module per system) |
 | `src/client/` | `StarterPlayer.StarterPlayerScripts.Client` | `Main.client.luau` + `Controllers/` (input, HUD, camera, VFX) |
+| `src/localization/GameStrings.csv` | `LocalizationService.GameStrings` | Every player-facing string (Key, Source, Context, Example) |
 | `tests/` | — (not synced) | Lune runner `tests/run.luau`, specs in `tests/specs/*.spec.luau` |
 | `docs/` | — | Design bible and other docs |
 
@@ -56,12 +57,19 @@ rojo build default.project.json -o build/JunkyardBrawl.rbxlx
   sanity-checked tolerance.
 - **All tunables in Config** (`src/shared/Config`). No magic numbers for prices, damage, cooldowns, rewards, odds or
   formulas anywhere else. Keep `docs/PROJECT_BIBLE.md` in sync when Config changes.
-- **No hard-coded UI text:** every visible string is a LocalizationTable key.
+- **No hard-coded UI text:** every visible string is a key in `src/localization/GameStrings.csv`, shown with
+  `Localization.format(key, args)`. A spec fails if code uses a key that is missing from the CSV. After adding keys,
+  upload the CSV to the game's localization table in the Creator Dashboard so automatic translation picks them up.
+- **Networking:** every remote is declared in `src/shared/Net/Definitions.luau`. Client → server remotes must list
+  `Args` validators from `Net/Guard` (NaN/inf-safe, length-capped) and get a per-player rate limit
+  (`Config.Net`, overridable per remote). Server code uses `Net.onServerEvent` / `Net.onServerInvoke`; it never
+  touches RemoteEvents directly. Never use server → client invokes.
+- **Analytics:** log through `Services/Analytics` helpers (`scrapEarned`, `scrapSpent`, `onboardingStep`,
+  `mapVoted`, `roundModePicked`, `styleUsed`, `roundFinished`, `custom`).
 - Pure logic (formulas, reward math, validation) goes in modules with no Roblox-instance dependencies so Lune specs can
   test it. Add specs for every formula. Specs load game modules through `tests/roblox.luau`, a fake DataModel built
   from `default.project.json`, so modules keep normal `require(script.Parent.X)` requires.
 - Filter all player-written text with TextService before others see it.
-- Track analytics events via the Analytics service wrapper (once built) for every feature that the bible lists.
 - Never delete or replace large parts of the place without asking the owner.
 - Only free Creator Store assets / Studio AI generation; ask before using anything paid.
 
@@ -85,7 +93,7 @@ any errors are fixed before the next item.
 
 - [x] **1.1 Config + Formulas** — every tunable from the bible in one Config module tree; pure formula module
       (knockback, hitstun, Percent, XP curve, ranks, streak multiplier, reward math) with Lune specs.
-- [ ] **1.2 Foundation** — typed remote layer with server-side rate limiting and argument validation, shared types,
+- [x] **1.2 Foundation** — typed remote layer with server-side rate limiting and argument validation, shared types,
       LocalizationTable (`GameStrings`) wiring, Analytics wrapper (so every later feature logs events as it is built).
 - [ ] **1.3 Data saving** — session-locked profiles, auto-save, BindToClose flush, retry/backoff, schema versions,
       purchase-receipt history (prevents duplicate grants). In-memory fallback when Studio has no API access.
@@ -140,7 +148,8 @@ any errors are fixed before the next item.
 | Date | Change | PR |
 | --- | --- | --- |
 | 2026-10-15 | Repo setup: Rojo project, toolchain, CI + auto-merge, Lune test runner, Loader, this file, project bible | #1 |
-| 2026-10-15 | 1.1 Config tree (all bible tunables) + pure Formulas with specs; luau-lsp strict type-check in CI; `.rbxlx` artifact | 1.1 |
+| 2026-10-15 | 1.1 Config tree (all bible tunables) + pure Formulas with specs; luau-lsp strict type-check in CI; `.rbxlx` artifact | #2 |
+| 2026-10-15 | 1.2 Net layer (validated + rate-limited remotes), GameStrings localization, Analytics wrapper | 1.2 |
 
 ## Decisions and interpretations
 

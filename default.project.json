@@ -19,6 +19,11 @@
 				}
 			}
 		},
+		"LocalizationService": {
+			"GameStrings": {
+				"$path": "src/localization/GameStrings.csv"
+			}
+		},
 		"Workspace": {
 			"$properties": {
 				"StreamingEnabled": true,
