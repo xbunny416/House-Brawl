@@ -1,0 +1,30 @@
+{
+	"name": "JunkyardBrawl",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"Shared": {
+				"$path": "src/shared"
+			}
+		},
+		"ServerScriptService": {
+			"Server": {
+				"$path": "src/server"
+			}
+		},
+		"StarterPlayer": {
+			"StarterPlayerScripts": {
+				"Client": {
+					"$path": "src/client"
+				}
+			}
+		},
+		"Workspace": {
+			"$properties": {
+				"StreamingEnabled": true,
+				"StreamingMinRadius": 128,
+				"StreamingTargetRadius": 256
+			}
+		}
+	}
+}
