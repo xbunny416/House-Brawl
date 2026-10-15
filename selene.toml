@@ -1,0 +1,6 @@
+std = "roblox"
+
+[lints]
+# Luau type annotations make some "unused" values intentional (e.g. exported types).
+unused_variable = "warn"
+shadowing = "warn"
