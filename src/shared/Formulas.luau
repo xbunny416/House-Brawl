@@ -73,6 +73,37 @@ function Formulas.launchSpeed(force: number): number
 	return force * Combat.Knockback.VelocityScale
 end
 
+--[[
+	Launch velocity (studs/s, x/y/z) for a hit: away from the attacker along the ground direction (dx, dz), tilted up
+	by LaunchAngleDegrees, with length `speed`. (fallbackX, fallbackZ) is used when the direction is (almost) zero,
+	e.g. the attacker's facing when both stand on the same spot.
+]]
+function Formulas.launchVelocity(
+	dx: number,
+	dz: number,
+	speed: number,
+	fallbackX: number,
+	fallbackZ: number
+): (number, number, number)
+	local length = math.sqrt(dx * dx + dz * dz)
+	if length < 1e-3 then
+		dx, dz = fallbackX, fallbackZ
+		length = math.sqrt(dx * dx + dz * dz)
+	end
+	if length < 1e-3 then
+		return 0, speed, 0
+	end
+	local angle = math.rad(Combat.Knockback.LaunchAngleDegrees)
+	local ground = math.cos(angle) * speed / length
+	return dx * ground, math.sin(angle) * speed, dz * ground
+end
+
+-- An attack hitbox grown by HitboxPadding on every side (absorbs network latency).
+function Formulas.paddedHitbox(box: Types.Box): Types.Box
+	local padding = Combat.HitboxPadding * 2
+	return { X = box.X + padding, Y = box.Y + padding, Z = box.Z + padding }
+end
+
 -- Seconds of hitstun after being hit at `percent`.
 function Formulas.hitstun(percent: number): number
 	local h = Combat.Hitstun

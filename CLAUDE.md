@@ -6,9 +6,10 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 
 - **Build order approved** by the owner on 2026-10-15, with maps built from code (blockouts from layout data, art
   pass later) and data saving via ProfileStore.
-- **Current phase:** Phase 1. **Waiting on:** the owner's Studio playtest of 1.1–1.5 (lobby + Broken Highway
-  blockouts, data saving, input on PC / gamepad / Device Emulator touch, camera zoom, Shift Lock, camera shake).
-  **Next step after that:** 1.6 Combat core.
+- **Current phase:** Phase 1. **Waiting on:** the owner's Studio playtest of 1.1–1.6 (lobby + Broken Highway
+  blockouts, data saving, input on PC / gamepad / Device Emulator touch, camera, Shift Lock, camera shake; combat on
+  the Training Yard dummy and 2-player PvP in the arena). The owner chose to continue building before playtesting.
+  **Next step:** 1.7 Dash + Perfect Dodge.
 
 ## How this repo works
 
@@ -32,7 +33,7 @@ Roblox Studio MCP server).
 | Path | Becomes in Studio | Contents |
 | --- | --- | --- |
 | `src/shared/` | `ReplicatedStorage.Shared` | Config, formulas, settings rules, types, networking, utilities |
-| `src/server/` | `ServerScriptService.Server` | `Main.server.luau` + `Services/` (one module per system) |
+| `src/server/` | `ServerScriptService.Server` | `Main.server.luau` + `Services/` (one module per system) + `Combat/` (pure combat rules) |
 | `src/client/` | `StarterPlayer.StarterPlayerScripts.Client` | `Main.client.luau` + `Controllers/` (input, HUD, camera, VFX) |
 | `src/client/Lib/` | `...Client.Lib` | Pure client logic tested by specs (action map, touch layout, camera shake) |
 | `src/localization/GameStrings.csv` | `LocalizationService.GameStrings` | Every player-facing string (Key, Source, Context, Example) |
@@ -89,6 +90,9 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
   `ActionEnded` with an action from `Config.Controls.Actions`; `getDevice()` / `DeviceChanged` for key hints). A new
   action needs a keyboard and a gamepad binding, a `Controls.<Action>` string, and a touch button in
   `Config.Controls.Touch.Layouts` if mobile players use it (a spec checks sizes and overlaps on many screens).
+- **Combat:** every hit goes through `Services/CombatService`, which owns one `Server/Combat/Fighter` per combatant
+  (player characters register automatically; anything else, like the dummy, calls `CombatService.register`). UI
+  reads the character attributes `HP` (modes with HP) and `Percent`; listen to `CombatService.KnockedOut` for KOs.
 - **Settings** (Settings menu values) are read and changed through `Controllers/SettingsController`; the server
   validates each change with `Shared/Settings` (`Services/SettingsService`). New numeric settings need a range in
   `Config.Data.SettingRanges`.
@@ -131,7 +135,7 @@ any errors are fixed before the next item.
       in ServerStorage, one active at a time; dusk lighting preset.
 - [x] **1.5 Input + camera** — one action map for keyboard/mouse, gamepad and touch (mobile button arc ≥ 64 px), camera
       limits, Shift Lock, camera shake toggle.
-- [ ] **1.6 Combat core** — Punch chain, charged Shove, server hitboxes, HP/Percent, knockback + hitstun, KO credit
+- [x] **1.6 Combat core** — Punch chain, charged Shove, server hitboxes, HP/Percent, knockback + hitstun, KO credit
       (6 s), launch trail flag.
 - [ ] **1.7 Dash + Perfect Dodge** — server-timed i-frames, air dash once per jump, dodge bonus.
 - [ ] **1.8 Rounds + modes** — vote (map + mode, 15 s) → teleport → Classic / Casual rules → results → lobby; respawn,
@@ -181,7 +185,8 @@ any errors are fixed before the next item.
 | 2026-10-15 | 1.2 Net layer (validated + rate-limited remotes), GameStrings localization, Analytics wrapper | #3 |
 | 2026-10-15 | 1.3 DataService on vendored ProfileStore (session lock, autosave, receipts, migrations), client DataController | #4 |
 | 2026-10-15 | 1.4 Lobby (Rust Diner) + Broken Highway blockouts generated from layout code, MapService (arena load/unload, lighting presets, falls, Studio preview pad) | #5 |
-| 2026-10-16 | 1.5 InputController (one action map: keyboard/mouse, gamepad, touch arc around the jump button), CameraController (zoom 8–30, Shift Lock on Right Shift, camera shake), validated settings changes (SettingsService/SettingsController), Studio input log + debug keys; LF line endings | 1.5 |
+| 2026-10-16 | 1.5 InputController (one action map: keyboard/mouse, gamepad, touch arc around the jump button), CameraController (zoom 8–30, Shift Lock on Right Shift, camera shake), validated settings changes (SettingsService/SettingsController), Studio input log + debug keys; LF line endings | #6 |
+| 2026-10-16 | 1.6 CombatService (Punch chain, charged Shove, server hitboxes, HP / Percent, knockback + hitstun, KO credit, trail flag) on a pure Fighter state machine; client knockback (Launch) + heavy-hit camera shake; right-drag cancels a Shove; Training Yard dummy; Studio hit log + hitbox flashes | 1.6 |
 
 ## Decisions and interpretations
 
@@ -206,12 +211,29 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   shorter side, 64–104 px, Attack 1.15×; the `ButtonLayout` setting picks a layout from
   `Config.Controls.Touch.Layouts` (only `Default` so far). Camera shake wobbles at 18 Hz and only moves the camera
   (never turns it). Setting ranges: volumes 0–1, camera sensitivity 0.25–2.
+- **Combat (1.6):** knockback uses the victim's Percent *after* the hit (Smash-style). Launch direction = attacker →
+  victim on the ground plane, 30° up. Whoever simulates the victim runs the launch (`Shared/Combat/Launch`): the
+  victim's own client for players, the server for dummies; the Humanoid is PlatformStand (no steering) and held
+  upright facing the attacker until hitstun is over and it has landed (max 3 s). An attack is lost if its attacker
+  is hit during the windup; no punching while charging; a hit cancels a charge; the Shove cooldown starts on release
+  and a cancelled charge has none. Heavy hits (Shove, punch finisher) shake the victim's camera (1.0) and the
+  attacker's (0.4). Right-dragging the mouse 12 px while charging a right-click Shove cancels it (camera turn).
+  The equipped style's multipliers already apply; the Wrecker parry comes with styles (2.2). PvP only between two
+  players in the arena; the dummy can always be hit. Training dummy respawns 2 s after a KO or falling 4 studs.
 
 ## Known bugs / open items
 
 - None in code yet.
-- **Right-click** (Shove) is also Roblox's hold-to-rotate camera button, so turning the camera with the mouse starts a
-  Shove. Decide in 1.6 whether a camera drag cancels the charge (or keep it: a whiffed Shove is harmless).
+- **Knockback feel is untested in Studio** (PlatformStand + upright hold, landing check). Tune in the playtest:
+  `Config.Combat.Knockback` (force), `Launch.MaxTime`, `Hitstun`. Exploiters can ignore knockback on their own
+  character (clients simulate it — a Roblox limit); server-side movement checks are a later hardening task.
+- **Falls and KOs before rounds exist (1.8):** falling out of the arena or reaching 0 HP is a KO (credit logged) and
+  sends you back to the lobby with full HP / 0%. The round system replaces `CombatService.setKnockOutHandler` and
+  `MapService.setFallHandler` (and calls `CombatService.knockOut` itself). Outside rounds the mode is
+  `Config.Modes.Default` (set it to `"Casual"` to test Casual).
+- **Studio combat debug:** `Config.Dev.LogCombat` prints every hit and KO; `Config.Dev.ShowHitboxes` flashes each
+  attack box (red hit, grey miss). Studio only. PvP needs two players: Test > Clients and Servers > 2 players, then
+  both use the teal pad to the arena.
 - **Gamepad Start / Select** (Menu / Scoreboard in the bible) may be kept by Roblox (Start opens the Roblox menu,
   Select toggles UI navigation). Check in the gamepad playtest (`[Input] Menu began` in Output); if they never
   arrive, pick other buttons in `Config.Controls.Gamepad` (owner's call).

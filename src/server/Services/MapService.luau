@@ -238,7 +238,8 @@ end
 -- Lifecycle
 ---------------------------------------------------------------------------------------------------------------------
 
-local function zoneOf(position: Vector3): FallZone
+-- Which zone a world position belongs to (whichever origin is closer on the ground plane).
+function MapService.getZone(position: Vector3): FallZone
 	local lobbyOrigin = toVector(Config.Maps.LobbyOrigin)
 	local arenaOrigin = toVector(Config.Maps.ArenaOrigin)
 	local flat = Vector3.new(1, 0, 1)
@@ -262,7 +263,7 @@ local function watchFalls()
 			local root = character and character:FindFirstChild("HumanoidRootPart")
 			if root and root:IsA("BasePart") then
 				local position = root.Position
-				local zone: FallZone = zoneOf(position)
+				local zone: FallZone = MapService.getZone(position)
 				local arena = activeArena
 				local killY = if zone == "Arena" and arena then arena:GetAttribute("KillY") :: number else lobbyKillY
 				if position.Y < killY and not handling[player] then

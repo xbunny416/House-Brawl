@@ -30,6 +30,9 @@ type CombatConfig = {
 		Punch: Types.PunchConfig,
 		Shove: Types.ShoveConfig,
 	},
+	Launch: { MaxTime: number },
+	Feedback: { VictimShake: number, AttackerShake: number },
+	Dummy: { RespawnTime: number, FallDistance: number },
 }
 
 local Combat: CombatConfig = {
@@ -94,6 +97,15 @@ local Combat: CombatConfig = {
 			ChargeSlow = 0.4, -- 40% slower while charging
 		},
 	},
+
+	-- A launched character cannot steer until its hitstun is over and it has landed, or after MaxTime seconds.
+	Launch = { MaxTime = 3 },
+
+	-- Camera shake intensity (0-1, scales Config.Controls.Camera.ShakeMagnitude) on heavy hits (Shove, punch finisher).
+	Feedback = { VictimShake = 1, AttackerShake = 0.4 },
+
+	-- Training Yard dummy (lobby): respawns this long after it is knocked out or falls this many studs below its spot.
+	Dummy = { RespawnTime = 2, FallDistance = 4 },
 }
 
 return Combat
