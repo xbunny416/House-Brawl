@@ -16,6 +16,7 @@ local Config = require(Shared:WaitForChild("Config"))
 local Net = require(Shared:WaitForChild("Net"))
 local StyleRules = require(Shared:WaitForChild("StyleRules"))
 
+local Attached = require(script.Parent.Parent:WaitForChild("Visuals"):WaitForChild("Attached"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local RoundService = require(script.Parent:WaitForChild("RoundService"))
 
@@ -38,42 +39,7 @@ end
 
 -- Replaces the weapon model on `character` with the one for `weaponId` (none for fists).
 local function buildWeapon(character: Model, weaponId: string)
-	local old = character:FindFirstChild(WEAPON_NAME)
-	if old then
-		old:Destroy()
-	end
-	local parts = Config.Styles.Weapons[weaponId]
-	if parts == nil then
-		return
-	end
-	local model = Instance.new("Model")
-	model.Name = WEAPON_NAME
-	for _, spec in parts do
-		local hand = character:FindFirstChild(`{spec.Hand}Hand`)
-		if hand == nil or not hand:IsA("BasePart") then
-			continue
-		end
-		local part = Instance.new("Part")
-		part.Name = spec.Name
-		part.Size = Vector3.new(spec.Size.X, spec.Size.Y, spec.Size.Z)
-		part.Shape = (Enum.PartType :: any)[spec.Shape or "Block"]
-		part.Material = (Enum.Material :: any)[spec.Material]
-		part.Color = Color3.fromHex(spec.Color)
-		part.CanCollide = false
-		part.CanQuery = false
-		part.CanTouch = false
-		part.Massless = true
-		part.CastShadow = false
-		local rotation =
-			CFrame.Angles(math.rad(spec.Rotation[1]), math.rad(spec.Rotation[2]), math.rad(spec.Rotation[3]))
-		part.CFrame = hand.CFrame * CFrame.new(spec.Offset[1], spec.Offset[2], spec.Offset[3]) * rotation
-		local weld = Instance.new("WeldConstraint")
-		weld.Part0 = hand
-		weld.Part1 = part
-		weld.Parent = part
-		part.Parent = model
-	end
-	model.Parent = character
+	Attached.build(character, WEAPON_NAME, Config.Styles.Weapons[weaponId])
 end
 
 local function refreshWeapon(player: Player)

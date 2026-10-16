@@ -6,7 +6,7 @@ type StylesConfig = {
 	Default: string,
 	Order: { string },
 	List: { [string]: Types.StyleConfig },
-	Weapons: { [string]: { Types.WeaponPart } },
+	Weapons: { [string]: { Types.AttachedPart } },
 }
 
 local NO_CHANGE: Types.StyleAttack = { DamageMultiplier = 1, KnockbackMultiplier = 1, ReachBonus = 0 }
@@ -68,7 +68,7 @@ local Styles: StylesConfig = {
 		BaseballBat = {
 			{
 				Name = "Bat",
-				Hand = "Right",
+				Attach = "RightHand",
 				Size = { X = 3.4, Y = 0.5, Z = 0.5 },
 				Offset = { 0, -0.1, -1.5 },
 				Rotation = { 0, 90, 0 },
@@ -80,7 +80,7 @@ local Styles: StylesConfig = {
 		Shovel = {
 			{
 				Name = "Handle",
-				Hand = "Right",
+				Attach = "RightHand",
 				Size = { X = 3.6, Y = 0.3, Z = 0.3 },
 				Offset = { 0, -0.1, -1.4 },
 				Rotation = { 0, 90, 0 },
@@ -90,7 +90,7 @@ local Styles: StylesConfig = {
 			},
 			{
 				Name = "Blade",
-				Hand = "Right",
+				Attach = "RightHand",
 				Size = { X = 1.3, Y = 0.15, Z = 1.2 },
 				Offset = { 0, -0.1, -3.5 },
 				Rotation = { 0, 0, 0 },
@@ -101,7 +101,7 @@ local Styles: StylesConfig = {
 		WrenchAndHubcap = {
 			{
 				Name = "Wrench",
-				Hand = "Right",
+				Attach = "RightHand",
 				Size = { X = 0.35, Y = 0.2, Z = 2.2 },
 				Offset = { 0, -0.1, -1 },
 				Rotation = { 0, 0, 0 },
@@ -110,7 +110,7 @@ local Styles: StylesConfig = {
 			},
 			{
 				Name = "WrenchHead",
-				Hand = "Right",
+				Attach = "RightHand",
 				Size = { X = 0.8, Y = 0.25, Z = 0.55 },
 				Offset = { 0, -0.1, -2.2 },
 				Rotation = { 0, 0, 0 },
@@ -119,7 +119,7 @@ local Styles: StylesConfig = {
 			},
 			{
 				Name = "Hubcap",
-				Hand = "Left",
+				Attach = "LeftHand",
 				Size = { X = 0.2, Y = 2.2, Z = 2.2 },
 				Offset = { -0.4, 0.3, 0 },
 				Rotation = { 0, 0, 0 },

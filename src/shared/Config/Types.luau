@@ -48,16 +48,28 @@ export type StyleConfig = {
 	Shove: StyleAttack,
 }
 
--- One block of a weapon's blockout model, welded to a hand (art pass replaces these with meshes).
-export type WeaponPart = {
+-- One block of a blockout model welded to a body part: weapons, hats, back items (art pass replaces with meshes).
+export type AttachedPart = {
 	Name: string,
-	Hand: "Right" | "Left", -- welded to RightHand / LeftHand
+	Attach: string, -- the R15 body part it is welded to, e.g. "RightHand", "Head", "UpperTorso"
 	Size: Box,
-	Offset: { number }, -- studs from the hand (x, y, z in the hand's space; -z is forward)
+	Offset: { number }, -- studs from that body part (x, y, z in its space; -z is forward)
 	Rotation: { number }, -- degrees (x, y, z)
 	Shape: string?, -- Enum.PartType name (default Block)
 	Material: string, -- Enum.Material name
 	Color: string, -- hex
+}
+
+export type CosmeticSlot = "Skin" | "Hat" | "BackItem" | "DashTrail" | "KOEffect" | "VictoryEmote" | "NameplateFrame"
+
+export type CosmeticItem = {
+	Slot: CosmeticSlot,
+	Rarity: string, -- a key of Config.Cosmetics.Rarities
+	Price: number, -- Scrap (0 for exclusive / Robux items)
+	Exclusive: string?, -- "VIP" or "Premium": granted by the pass / membership (step 3.1), never sold for Scrap
+	Colors: { string }?, -- Skin: head, torso, arms, legs; DashTrail: start → end; KOEffect: particle colors
+	Parts: { AttachedPart }?, -- Hat / BackItem
+	Emote: string?, -- VictoryEmote: which emote animation plays (step 2.6)
 }
 
 export type ModeConfig = {

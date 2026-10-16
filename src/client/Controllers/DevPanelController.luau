@@ -121,6 +121,7 @@ local function buildSections()
 	for _, styleId in Config.Styles.Order do
 		table.insert(styles, command(Localization.format(`Style.{styleId}.Name`), "SetStyle", styleId))
 	end
+	table.insert(styles, command(Localization.format("Dev.UnlockCosmetics"), "UnlockCosmetics"))
 	section("Dev.Style", styles)
 
 	section("Dev.Camera", {

@@ -7,8 +7,8 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 - **Build order approved** by the owner on 2026-10-15, with maps built from code (blockouts from layout data, art
   pass later) and data saving via ProfileStore.
 - **Phase 1 (core loop) is built and playtested** (1.1–1.13; two rounds of owner playtest fixes, "all clear" on
-  2026-10-16). **Phase 2 in progress:** 2.1 Round rewards and 2.2 Fighting styles are built (2.2 not yet playtested:
-  Wrecker parry needs two players). **Next step:** 2.3 Cosmetics system + Locker.
+  2026-10-16). **Phase 2 in progress:** 2.1 Round rewards, 2.2 Fighting styles and 2.3 Cosmetics + Locker are built
+  (2.2 / 2.3 not yet playtested; the Wrecker parry needs two players). **Next step:** 2.4 Shop.
 
 ## How this repo works
 
@@ -32,7 +32,7 @@ Roblox Studio MCP server).
 | Path | Becomes in Studio | Contents |
 | --- | --- | --- |
 | `src/shared/` | `ReplicatedStorage.Shared` | Config, formulas, settings rules, types, networking, utilities |
-| `src/server/` | `ServerScriptService.Server` | `Main.server.luau` + `Services/` (one module per system) + `Combat/`, `Round/` (pure rules) |
+| `src/server/` | `ServerScriptService.Server` | `Main.server.luau` + `Services/` (one module per system) + `Combat/`, `Round/`, ... (pure rules) + `Visuals/` (character models) |
 | `src/client/` | `StarterPlayer.StarterPlayerScripts.Client` | `Main.client.luau` + `Controllers/` (input, HUD, camera, VFX) |
 | `src/client/Lib/` | `...Client.Lib` | Pure client logic tested by specs (action map, touch layout, camera shake, dash rules) |
 | `src/client/Ui/` | `...Client.Ui` | `Kit`: shared look (colors, fonts) and builders for panels, labels, buttons |
@@ -160,7 +160,7 @@ any errors are fixed before the next item.
 
 - [x] 2.1 Round rewards (Scrap/XP, streaks, placement, anti-farm, bonuses) + levels and rank titles
 - [x] 2.2 Fighting styles: Slugger, Scrapper, Wrecker (parry) + welded weapon models
-- [ ] 2.3 Cosmetics system + Locker
+- [x] 2.3 Cosmetics system + Locker
 - [ ] 2.4 Shop (styles, cosmetics, 24 h UTC daily rotation)
 - [ ] 2.5 Junkyard Isles + Neon Motel maps (+ night lighting preset)
 - [ ] 2.6 Animations (R15)
@@ -205,6 +205,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 1st playtest fixes: throws launch a server-owned copy, grab takes ownership + "[E] Grab" prompt + Studio logs, fighters pass through each other (collision group), windups 0.05 s, dash 12 studs, stronger drift-free camera shake with tilt, client-drawn crumble (flash, shake, sink + fade) | #16 |
 | 2026-10-16 | 2nd playtest fixes: throws aimed from the thrower's own view (facing + position, 8-stud tolerance), 25% gravity while flying, 15° aim assist; arena pillars belong to their platforms (crumble with them) | #17 |
 | 2026-10-16 | 2.2 Fighting styles: Wrecker parry (0.2 s, reflects knockback onto the attacker), StyleService (level unlocks, EquipStyle, welded blockout weapons: bat, shovel, wrench + hubcap), shared StyleRules, DataService.LeveledUp, dev panel Style buttons | #18 |
+| 2026-10-16 | 2.3 Cosmetics + Locker: launch catalog (skins, hats, dash trails, KO effects, victory emotes) with blockout visuals, CosmeticService (EquipCosmetic, skins / hats / trails / KO bursts), shared CosmeticRules, Visuals/Attached (shared with weapons), CombatService.Dashed, left-edge MenuController, Locker UI (styles + cosmetics), dev "All cosmetics" | 2.3 |
 
 ## Decisions and interpretations
 
@@ -301,6 +302,16 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   and not while Playing / Respawning in a round. Weapons are welded blockout parts from `Config.Styles.Weapons`
   (Massless, CanCollide / CanQuery / CanTouch off: visual only, attack boxes hit the body). The style picker UI is
   part of the Locker (2.3); until then the developer panel's Style buttons own + equip any style.
+- **Cosmetics + Locker (2.3):** the launch catalog (6 skins, 6 hats, 4 dash trails, 4 KO effects, 4 victory emotes) lives
+  in `Config.Cosmetics.Items` with blockout visuals: skins recolor `BodyColors` (the avatar's own colors are kept as
+  attributes and restored when the skin comes off), hats are welded parts on the Head (`Server/Visuals/Attached`,
+  shared with style weapons), dash trails are a `Trail` on the root that `CombatService.Dashed` switches on for the
+  dash, KO effects are a particle burst (at the victim for HP KOs; around the scorer for ring-outs, whose victims are
+  in the void). Victory emotes are data until animations (2.6); back items and name plates have no items yet (their
+  Locker tabs stay hidden). `PremiumGold` (Premium) and `GoldTrail` (VIP) are exclusive: never sold for Scrap, granted
+  in 3.1. Cosmetics can change any time; styles not mid-fight. The Locker opens from a new left-edge menu
+  (`MenuController.addButton`, hidden while fighting) or the Menu action (M / D-pad Up). Nothing is buyable until the
+  Shop (2.4): the developer panel's "All cosmetics" grants everything for testing.
 - **HUD (1.12):** `HudController` (top bar, kill feed, bottom bar) replaced the 1.8 status line. Kill feed sits top-right
   (bible said top-center, which already holds the timer and the vote panel); lines fade after 6 s, max 5, and name
   the prop when a prop made the KO. Top bar info: Classic = fighters with lives left, Casual = your score. Vitals
