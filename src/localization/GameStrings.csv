@@ -99,3 +99,7 @@ Dev.Me,Me,Developer panel section: set your own Percent / HP,
 Dev.Camera,Camera,Developer panel section: camera checks,
 Dev.TestShake,Test shake,Developer panel button: play a camera shake,
 Dev.ToggleShake,Shake on/off,Developer panel button: switch the Camera Shake setting,
+Hud.Profile,{1}  ·  {2}  ·  {3},"Top-right profile chip: level, rank title, Scrap",Level 12  ·  Raider  ·  1250 Scrap
+Results.Reward,+{1} Scrap  ·  +{2} XP,What the local player earned in the round,+65 Scrap  ·  +140 XP
+Results.LevelUp,Level up! Level {1},Shown on the results panel after leveling up,Level up! Level 13
+Results.NewRank,New rank: {1},Shown on the results panel when the rank title changes,New rank: Raider

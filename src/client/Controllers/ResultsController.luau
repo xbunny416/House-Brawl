@@ -31,6 +31,19 @@ local ResultsController = {}
 local gui: ScreenGui
 local list: Frame
 local winnerLabel: TextLabel
+local rewardLabel: TextLabel
+
+-- What the local player earned (RoundReward arrives just after RoundResults).
+local function onReward(scrap: number, xp: number, level: number, levelsGained: number, newRank: string?)
+	local lines = { Localization.format("Results.Reward", { scrap, xp }) }
+	if levelsGained > 0 then
+		table.insert(lines, Localization.format("Results.LevelUp", { level }))
+	end
+	if newRank then
+		table.insert(lines, Localization.format("Results.NewRank", { Localization.format(`Rank.{newRank}`) }))
+	end
+	rewardLabel.Text = table.concat(lines, "   ")
+end
 
 local function rowText(row: Row, modeId: string): string
 	if Config.Modes.List[modeId] and Config.Modes.List[modeId].Lives == nil then
@@ -83,14 +96,16 @@ local function build()
 	local title = Kit.label(panel, Localization.format("Results.Title"), UDim2.fromScale(1, 0.13))
 	title.Font = Kit.TitleFont
 	title.LayoutOrder = 1
-	winnerLabel = Kit.label(panel, "", UDim2.fromScale(1, 0.11))
+	winnerLabel = Kit.label(panel, "", UDim2.fromScale(1, 0.1))
 	winnerLabel.TextColor3 = Kit.Colors.Accent
 	winnerLabel.LayoutOrder = 2
+	rewardLabel = Kit.label(panel, "", UDim2.fromScale(1, 0.08), 20)
+	rewardLabel.LayoutOrder = 3
 	list = Instance.new("Frame")
 	list.Name = "Standings"
 	list.BackgroundTransparency = 1
-	list.Size = UDim2.fromScale(1, 0.7)
-	list.LayoutOrder = 3
+	list.Size = UDim2.fromScale(1, 0.62)
+	list.LayoutOrder = 4
 	list.Parent = panel
 	Kit.list(list, Enum.FillDirection.Vertical, UDim.new(0.01, 0))
 end
@@ -98,9 +113,11 @@ end
 function ResultsController.Start(_self: any)
 	build()
 	Net.on("RoundResults", onResults)
+	Net.on("RoundReward", onReward)
 	Workspace:GetAttributeChangedSignal("RoundState"):Connect(function()
 		if Workspace:GetAttribute("RoundState") ~= "Results" then
 			gui.Enabled = false
+			rewardLabel.Text = "" -- the reward may arrive before or after the standings; clear it once they close
 		end
 	end)
 end

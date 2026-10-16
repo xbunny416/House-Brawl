@@ -9,7 +9,8 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 - **Phase 1 (core loop) is built** (1.1–1.13, 2026-10-16) but **not yet playtested in Studio**: the owner chose to
   keep building first. **Waiting on:** the owner's Studio playtest of the whole loop (lobby + training dummy, input on
   PC / gamepad / Device Emulator touch, camera, combat + knockback feel, dash, rounds and modes, props and barrels,
-  structures, crumbling, HUD, developer panel). Fix what it finds before Phase 2. **Next step:** 2.1 Round rewards.
+  structures, crumbling, HUD, developer panel). Fix what it finds before going further. Phase 2 has started (2.1 Round
+  rewards is built). **Next step:** 2.2 Fighting styles.
 
 ## How this repo works
 
@@ -156,7 +157,7 @@ any errors are fixed before the next item.
 
 ### Phase 2 — Progression & content
 
-- [ ] 2.1 Round rewards (Scrap/XP, streaks, placement, anti-farm, bonuses) + levels and rank titles
+- [x] 2.1 Round rewards (Scrap/XP, streaks, placement, anti-farm, bonuses) + levels and rank titles
 - [ ] 2.2 Fighting styles: Slugger, Scrapper, Wrecker (parry) + welded weapon models
 - [ ] 2.3 Cosmetics system + Locker
 - [ ] 2.4 Shop (styles, cosmetics, 24 h UTC daily rotation)
@@ -199,6 +200,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 1.11 CrumbleService (from 1:00 every 20 s a random outer platform flashes red + shakes 3 s, then falls 4 s with everyone on it; center never falls, 2 always remain), pure CrumbleRules, RoundStarted signal, spawn points / prop spots skip crumbling platforms, structures fall with their platform | #12 |
 | 2026-10-16 | 1.12 HUD (top bar: mode badge, timer, fighters left / score; kill feed; bottom bar: dash ring, HP + lives or Percent, held prop with key hints), hold-Tab scoreboard replacing Roblox's player list, KeyHint (key names / gamepad glyphs), pure HudFormat, KillFeed remote, prop names | #13 |
 | 2026-10-16 | 1.13 Developer panel (Studio): DevService + DevRules allowlist, DevAccess attribute, panel (start / end round, crumble, next map / mode, spawn prop, set Percent / HP, camera shake checks), RoundService force / startNow / endNow, CombatService setPercent / setHealth; K / L keys removed. Phase 1 complete | #14 |
+| 2026-10-16 | 2.1 RewardService (round payout: KO Scrap + streaks, Perfect Dodges, placement, completion, 60 s / AFK rules, VIP / Premium / friend bonuses, private-server scale; Scrap + XP + level-ups via DataService; rank attribute), pure Payout, RoundReward remote, results reward line, HUD profile chip | #15 |
 
 ## Decisions and interpretations
 
@@ -282,6 +284,13 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   that round starts; forced map / mode apply to the next vote result only. Set HP never goes below 1 (no KO from the
   panel); spawned props despawn like structure drops (30 s untouched). Spawning a prop for another player and the
   other Phase 3 tools (Scrap, levels, unlocks) are step 3.9. The K / L Studio keys were replaced by panel buttons.
+- **Round rewards (2.1):** `RewardService` pays every player still in the server when `RoundEnded` fires, through
+  `Server/Round/Payout` → `Formulas.roundPayout` (the 1.1 rules), then `DataService.addScrap` (sku "RoundReward",
+  logged as a Gameplay source) and `addXP`. Bonus inputs: VIP = game pass ownership (cached per session),
+  Premium = `MembershipType`, friends = other players in the server you are friends with (`IsFriendsWithAsync`),
+  private server = `PrivateServerId` with an owner (reserved servers do not count). The rank title is the player
+  attribute `Rank` (a rank id, set on load and after rewards). The results panel shows "+Scrap · +XP", level-ups and
+  a new rank; the HUD's top-right chip shows level · rank · Scrap. Lifetime stats were already counted in 1.8.
 
 ## Known bugs / open items
 
@@ -295,9 +304,8 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   ends when you lose your 3 lives; a solo Casual round runs the full 3:00.
 - **Studio combat debug:** `Config.Dev.LogCombat` prints every hit and KO; `Config.Dev.ShowHitboxes` flashes each
   attack box (red hit, grey miss). Studio only.
-- **Round rewards** (Scrap / XP) are not paid yet: `RoundService.RoundEnded` hands the standings (placement, KO Scrap,
-  Perfect Dodges, active seconds, AFK) to step 2.1. Lifetime stats (KOs, Falls, RingOuts, PerfectDodges, Wins,
-  RoundsPlayed, RoundsCompleted) are already counted in rounds.
+- **VIP bonus** stays off until the VIP game pass exists (`Config.Monetization.GamePasses.VIP.Id` is 0; step 3.1).
+  Premium and friend bonuses already apply. In Studio, rewards are paid from solo rounds too (Output: `[Rewards]`).
 - **All screens are plain first versions** (`src/client/Ui/Kit`: HUD, vote, results, spectate bar, scoreboard); the
   art / VFX passes restyle them. The lobby's CRT-TV vote screens from the bible are an art-pass item. The dash ring
   fills bottom-to-top (a true radial ring needs an image asset).
