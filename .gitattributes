@@ -1,0 +1,3 @@
+# Luau, CSV and generated maps must stay LF on every OS (StyLua and the maps spec compare exact bytes).
+* text=auto eol=lf
+*.exe binary

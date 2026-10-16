@@ -6,8 +6,9 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 
 - **Build order approved** by the owner on 2026-10-15, with maps built from code (blockouts from layout data, art
   pass later) and data saving via ProfileStore.
-- **Current phase:** Phase 1. **Waiting on:** the owner's first Studio playtest of 1.1–1.4 (lobby + Broken Highway
-  blockouts, data saving). **Next step after that:** 1.5 Input + camera.
+- **Current phase:** Phase 1. **Waiting on:** the owner's Studio playtest of 1.1–1.5 (lobby + Broken Highway
+  blockouts, data saving, input on PC / gamepad / Device Emulator touch, camera zoom, Shift Lock, camera shake).
+  **Next step after that:** 1.6 Combat core.
 
 ## How this repo works
 
@@ -30,9 +31,10 @@ Roblox Studio MCP server).
 
 | Path | Becomes in Studio | Contents |
 | --- | --- | --- |
-| `src/shared/` | `ReplicatedStorage.Shared` | Config, formulas, types, networking, utilities |
+| `src/shared/` | `ReplicatedStorage.Shared` | Config, formulas, settings rules, types, networking, utilities |
 | `src/server/` | `ServerScriptService.Server` | `Main.server.luau` + `Services/` (one module per system) |
 | `src/client/` | `StarterPlayer.StarterPlayerScripts.Client` | `Main.client.luau` + `Controllers/` (input, HUD, camera, VFX) |
+| `src/client/Lib/` | `...Client.Lib` | Pure client logic tested by specs (action map, touch layout, camera shake) |
 | `src/localization/GameStrings.csv` | `LocalizationService.GameStrings` | Every player-facing string (Key, Source, Context, Example) |
 | `src/server/Vendor/` | `ServerScriptService.Server.Vendor` | Third-party modules kept as published (see `licenses/`) |
 | `maps/layouts/` | — | Map layouts as code (platform sizes, spots, decor) — the source of truth for blockouts |
@@ -54,6 +56,8 @@ lune run tests/run          # syntax-compile every src/*.luau + run specs
 lune run maps/build         # regenerate maps/generated/*.rbxmx after editing maps/layouts (a spec checks this)
 rojo build default.project.json -o build/JunkyardBrawl.rbxlx
 ```
+
+Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fail on CRLF copies.
 
 ## Conventions (required)
 
@@ -81,6 +85,13 @@ rojo build default.project.json -o build/JunkyardBrawl.rbxlx
   `CanFall` attribute). Sign text comes from GameStrings keys (`LocKey` attribute on the label). For a final art
   pass a map can switch to a hand-built model: export it from Studio to `maps/<Name>.rbxmx`, point
   `default.project.json` at it, and remove it from `maps/build.luau`.
+- **Input:** gameplay code never reads raw keys. It listens to `Controllers/InputController` (`ActionBegan` /
+  `ActionEnded` with an action from `Config.Controls.Actions`; `getDevice()` / `DeviceChanged` for key hints). A new
+  action needs a keyboard and a gamepad binding, a `Controls.<Action>` string, and a touch button in
+  `Config.Controls.Touch.Layouts` if mobile players use it (a spec checks sizes and overlaps on many screens).
+- **Settings** (Settings menu values) are read and changed through `Controllers/SettingsController`; the server
+  validates each change with `Shared/Settings` (`Services/SettingsService`). New numeric settings need a range in
+  `Config.Data.SettingRanges`.
 - **Vendored code** (`src/server/Vendor/`) is never edited and is excluded from StyLua/Selene/luau-lsp.
 - **Analytics:** log through `Services/Analytics` helpers (`scrapEarned`, `scrapSpent`, `onboardingStep`,
   `mapVoted`, `roundModePicked`, `styleUsed`, `roundFinished`, `custom`).
@@ -118,7 +129,7 @@ any errors are fixed before the next item.
 - [x] **1.4 Maps framework + blockouts** — map layout data → builder that creates the Lobby (Rust Diner roof + Training
       Yard) and Broken Highway blockouts (exact sizes, gaps, spawn points, KillY, prop/structure spots); arenas live
       in ServerStorage, one active at a time; dusk lighting preset.
-- [ ] **1.5 Input + camera** — one action map for keyboard/mouse, gamepad and touch (mobile button arc ≥ 64 px), camera
+- [x] **1.5 Input + camera** — one action map for keyboard/mouse, gamepad and touch (mobile button arc ≥ 64 px), camera
       limits, Shift Lock, camera shake toggle.
 - [ ] **1.6 Combat core** — Punch chain, charged Shove, server hitboxes, HP/Percent, knockback + hitstun, KO credit
       (6 s), launch trail flag.
@@ -169,7 +180,8 @@ any errors are fixed before the next item.
 | 2026-10-15 | 1.1 Config tree (all bible tunables) + pure Formulas with specs; luau-lsp strict type-check in CI; `.rbxlx` artifact | #2 |
 | 2026-10-15 | 1.2 Net layer (validated + rate-limited remotes), GameStrings localization, Analytics wrapper | #3 |
 | 2026-10-15 | 1.3 DataService on vendored ProfileStore (session lock, autosave, receipts, migrations), client DataController | #4 |
-| 2026-10-15 | 1.4 Lobby (Rust Diner) + Broken Highway blockouts generated from layout code, MapService (arena load/unload, lighting presets, falls, Studio preview pad) | 1.4 |
+| 2026-10-15 | 1.4 Lobby (Rust Diner) + Broken Highway blockouts generated from layout code, MapService (arena load/unload, lighting presets, falls, Studio preview pad) | #5 |
+| 2026-10-16 | 1.5 InputController (one action map: keyboard/mouse, gamepad, touch arc around the jump button), CameraController (zoom 8–30, Shift Lock on Right Shift, camera shake), validated settings changes (SettingsService/SettingsController), Studio input log + debug keys; LF line endings | 1.5 |
 
 ## Decisions and interpretations
 
@@ -188,12 +200,27 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   cooldown 0.5 s, grab cooldown 0.3 s, results screen 8 s, minimum 2 players to start a round, platform fall 4 s.
 - Robux prices in Config are reference only; live prices come from the Creator Dashboard. Pass/product/badge/group
   ids are 0 until created.
+- **Controls (1.5):** Shift Lock toggles on Right Shift only (Left Shift is Dash), by rewriting the `BoundKeys` value of
+  Roblox's MouseLockController at runtime. Camera zoom 8–30 studs (8 keeps it third-person; bible only gave max 30).
+  Mobile buttons are placed around Roblox's own jump button (kept, not replaced): base size 17% of the screen's
+  shorter side, 64–104 px, Attack 1.15×; the `ButtonLayout` setting picks a layout from
+  `Config.Controls.Touch.Layouts` (only `Default` so far). Camera shake wobbles at 18 Hz and only moves the camera
+  (never turns it). Setting ranges: volumes 0–1, camera sensitivity 0.25–2.
 
 ## Known bugs / open items
 
 - None in code yet.
-- **Dash on Left Shift** conflicts with Roblox's default Shift Lock key; resolve in 1.5 (dash binding takes priority,
-  Shift Lock stays on Right Shift / the camera button).
+- **Right-click** (Shove) is also Roblox's hold-to-rotate camera button, so turning the camera with the mouse starts a
+  Shove. Decide in 1.6 whether a camera drag cancels the charge (or keep it: a whiffed Shove is harmless).
+- **Gamepad Start / Select** (Menu / Scoreboard in the bible) may be kept by Roblox (Start opens the Roblox menu,
+  Select toggles UI navigation). Check in the gamepad playtest (`[Input] Menu began` in Output); if they never
+  arrive, pick other buttons in `Config.Controls.Gamepad` (owner's call).
+- **Tab** also toggles Roblox's player list until the scoreboard (1.12) turns the core player list off.
+- **Camera sensitivity** is saved and validated but not applied: Roblox does not let scripts change mouse/gamepad
+  sensitivity. Needs a custom approach in 3.10.
+- **Studio input debug:** `Config.Dev.LogInput` prints every action and device change to Output in Studio playtests;
+  `Config.Dev.StudioKeys` adds K (test camera shake) and L (toggle the saved Camera Shake setting). Studio only; the
+  developer panel (1.13) replaces the keys. Test touch with Studio's Device Emulator (a phone in landscape).
 - **Data in Studio:** with "Studio Access to API Services" off, ProfileStore uses an in-memory store and prints
   "Roblox API services unavailable - data will not be saved". Turn it on to test real saving
   (`Config.Data.UseMockInStudio = true` forces the in-memory store even with access on).

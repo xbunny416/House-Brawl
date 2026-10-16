@@ -50,6 +50,16 @@ return {
 		expect.equal(Guard.optional(Guard.boolean)(nil), true)
 		expect.equal(Guard.optional(Guard.boolean)(1), false)
 	end,
+	["anyOf accepts a value that passes any check"] = function()
+		local check = Guard.anyOf(Guard.boolean, Guard.number, Guard.string(4))
+		expect.equal(check(true), true)
+		expect.equal(check(0.5), true)
+		expect.equal(check("abcd"), true)
+		expect.equal(check("abcde"), false)
+		expect.equal(check(0 / 0), false)
+		expect.equal(check(nil), false)
+		expect.equal(check({}), false)
+	end,
 	["args rejects extra or invalid arguments"] = function()
 		local checks = { Guard.number, Guard.optional(Guard.boolean) }
 		expect.equal(Guard.args(checks, pack(1)), true)

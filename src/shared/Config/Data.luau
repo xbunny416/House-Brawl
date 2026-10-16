@@ -13,6 +13,12 @@ return {
 		CameraSensitivity = 1,
 		CameraShake = true,
 		LowGraphics = false,
-		ButtonLayout = "Default",
+		ButtonLayout = "Default", -- a key of Config.Controls.Touch.Layouts
+	},
+	-- Allowed range of every numeric setting (changes outside it are rejected by the server).
+	SettingRanges = {
+		MusicVolume = { Min = 0, Max = 1 },
+		SfxVolume = { Min = 0, Max = 1 },
+		CameraSensitivity = { Min = 0.25, Max = 2 },
 	},
 }

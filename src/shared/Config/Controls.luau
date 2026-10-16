@@ -1,20 +1,43 @@
 --!strict
--- Input bindings and camera. Names map to Enum.KeyCode / Enum.UserInputType at runtime. Bible §5.2.
+--[[
+	Input bindings, the mobile button arc and the camera. Bible §5.1–5.2.
+	Binding names are Enum.KeyCode names, or Enum.UserInputType names for mouse buttons ("MouseButton1").
+	Jump and movement stay on Roblox's default controls (Space / A / the touch jump button and thumbstick).
+]]
 type Bindings = { [string]: { string } }
 
+export type TouchButton = {
+	Action: string,
+	Angle: number, -- degrees around the jump button's center: 90 = straight above, 180 = straight left
+	Distance: number, -- gap from the jump button's edge to this button's edge, in base button sizes
+	Scale: number, -- size relative to the base button size
+}
+
 type ControlsConfig = {
+	Actions: { string },
 	Keyboard: Bindings,
 	Gamepad: Bindings,
-	Touch: { MinButtonSize: number },
+	Touch: {
+		MinButtonSize: number,
+		ButtonSize: number,
+		MaxButtonSize: number,
+		Gap: number,
+		Layouts: { [string]: { TouchButton } },
+	},
 	Camera: {
+		MinZoom: number,
 		MaxZoom: number,
 		ShiftLockAllowed: boolean,
+		ShiftLockKeys: { string },
 		ShakeMagnitude: number,
 		ShakeDuration: number,
+		ShakeFrequency: number,
 	},
 }
 
 local Controls: ControlsConfig = {
+	-- Every action the game listens for. Each one needs a keyboard and a gamepad binding.
+	Actions = { "Attack", "Shove", "Grab", "Dash", "Scoreboard", "Menu" },
 	Keyboard = {
 		Attack = { "MouseButton1" },
 		Shove = { "MouseButton2" },
@@ -31,12 +54,30 @@ local Controls: ControlsConfig = {
 		Scoreboard = { "ButtonSelect" },
 		Menu = { "ButtonStart" },
 	},
-	Touch = { MinButtonSize = 64 }, -- pixels
+	Touch = {
+		MinButtonSize = 64, -- pixels; no touch button is ever smaller
+		ButtonSize = 0.17, -- base button size as a fraction of the screen's shorter side...
+		MaxButtonSize = 104, -- ...capped in pixels so tablet buttons stay thumb-sized
+		Gap = 0.15, -- minimum space between buttons, in base button sizes
+		-- Bottom-right arc around Roblox's jump button. Settings > Button Layout picks one by name.
+		Layouts = {
+			Default = {
+				{ Action = "Attack", Angle = 180, Distance = 0.2, Scale = 1.15 },
+				{ Action = "Dash", Angle = 90, Distance = 0.2, Scale = 1 },
+				{ Action = "Shove", Angle = 155, Distance = 1.35, Scale = 1 },
+				{ Action = "Grab", Angle = 115, Distance = 1.35, Scale = 1 },
+			},
+		},
+	},
 	Camera = {
+		MinZoom = 8, -- studs; keeps the camera third-person (no first person)
 		MaxZoom = 30,
 		ShiftLockAllowed = true,
-		ShakeMagnitude = 0.6, -- studs, heavy hits only (can be turned off in Settings)
+		-- Shift Lock toggle keys. Left Shift is left out because it is a Dash key.
+		ShiftLockKeys = { "RightShift" },
+		ShakeMagnitude = 0.6, -- studs at full intensity, heavy hits only (can be turned off in Settings)
 		ShakeDuration = 0.25,
+		ShakeFrequency = 18, -- wobbles per second
 	},
 }
 
