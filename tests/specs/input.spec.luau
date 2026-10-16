@@ -130,12 +130,11 @@ return {
 		end
 		expect.equal(lookup.LeftShift[1], "Dash")
 	end,
-	["studio debug keys are real keys and never steal an action key"] = function()
+	["the developer panel key is a real key and never steals an action key"] = function()
 		local lookup = ActionMap.lookup(Controls.Keyboard)
-		for name, key in Config.Dev.StudioKeys do
-			expect.truthy(isEnumItem(roblox.Enum.KeyCode, key), `{name} key {key}`)
-			expect.equal(lookup[key], nil, `{name} uses action key {key}`)
-		end
+		local key = Config.Dev.PanelKey
+		expect.truthy(isEnumItem(roblox.Enum.KeyCode, key), `panel key {key}`)
+		expect.equal(lookup[key], nil, `panel key {key} is an action key`)
 	end,
 	["camera limits: third person and max zoom 30"] = function()
 		expect.equal(Controls.Camera.MaxZoom, 30)

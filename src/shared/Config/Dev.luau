@@ -14,9 +14,6 @@ return {
 	LogCombat = true,
 	-- Studio playtests only: flash every attack hitbox (red = hit something, grey = missed).
 	ShowHitboxes = true,
-	-- Studio playtests only: debug keys (KeyCode names). The developer panel replaces these in step 1.13.
-	StudioKeys = {
-		TestCameraShake = "K",
-		ToggleCameraShake = "L",
-	},
+	-- Key that opens / closes the developer panel (KeyCode name; only for players with panel access).
+	PanelKey = "Backquote",
 }

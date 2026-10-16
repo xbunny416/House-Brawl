@@ -240,6 +240,24 @@ function CombatService.addPercent(character: Model, amount: number)
 	end
 end
 
+-- Developer panel: sets a combatant's Percent (in modes with HP, the HP that gives it).
+function CombatService.setPercent(character: Model, percent: number)
+	local fighter = fighters[character]
+	if fighter and not knockedOut[character] then
+		Fighter.setPercent(fighter, percent)
+		syncAttributes(character, fighter)
+	end
+end
+
+-- Developer panel: sets a combatant's HP (modes with HP only; never below 1).
+function CombatService.setHealth(character: Model, health: number)
+	local fighter = fighters[character]
+	if fighter and not knockedOut[character] then
+		Fighter.setHealth(fighter, health)
+		syncAttributes(character, fighter)
+	end
+end
+
 function CombatService.getFighter(character: Model): Fighter?
 	return fighters[character]
 end

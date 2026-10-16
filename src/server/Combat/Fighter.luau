@@ -110,6 +110,26 @@ function Fighter.addPercent(fighter: Fighter, amount: number)
 	end
 end
 
+-- Developer panel: sets the fighter's Percent (Casual: 0..PercentCap; modes with HP: sets the HP that gives it).
+function Fighter.setPercent(fighter: Fighter, percent: number)
+	local mode = getMode(fighter.ModeId)
+	if mode.MaxHealth == nil then
+		fighter.Percent = math.clamp(percent, 0, mode.PercentCap or math.huge)
+	else
+		Fighter.setHealth(fighter, mode.MaxHealth - percent / (mode.HealthToPercent or 1))
+	end
+end
+
+-- Developer panel: sets HP (modes with HP; clamped to 1..MaxHealth so it never knocks out) and the matching Percent.
+function Fighter.setHealth(fighter: Fighter, health: number)
+	local mode = getMode(fighter.ModeId)
+	if mode.MaxHealth == nil then
+		return
+	end
+	fighter.Health = math.clamp(health, 1, mode.MaxHealth)
+	fighter.Percent = Formulas.classicPercent(fighter.Health)
+end
+
 -- True while the fighter can attack (not knocked out, not in hitstun).
 function Fighter.canAct(fighter: Fighter, now: number): boolean
 	return not fighter.Defeated and now >= fighter.StunnedUntil
