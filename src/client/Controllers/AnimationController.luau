@@ -1,17 +1,18 @@
 --!strict
 --[[
 	AnimationController — plays the scripted R15 animations (Shared/Animation) on every character this client sees.
-	Roblox's default animations keep running; each frame, after they have posed the rig (RunService.Stepped), the
-	joints a clip uses are blended toward the clip's pose. Nothing replicates: every client poses every character
+	A clip turns each joint it uses through the joint's C0 (its rest offset), every frame before rendering. Roblox's
+	default walk / idle animations never touch C0, so they keep playing on top of the clip (arms still swing a little
+	while walking) and nothing has to win a race with them. Nothing replicates: every client poses every character
 	from the same signals.
 	  * One-shots: the server's Animate event (punch chain / weapon swings, Shove, parry, grab, throw, victory
 	    emotes, other players' dashes); the local dash (DashController.Dashed, no round trip); hits from CombatHit (a
 	    short recoil, or a tumble looping through a long hitstun).
 	  * Loops from replicated attributes: ShoveCharge while ShoveCharging is set, Carry while HeldProp is set. They
 	    blend in when the state starts and out when it ends; a one-shot plays on top of a loop.
-	A joint Roblox's Animator leaves alone (or any joint of a dummy, which has no default animations) is put back to
-	rest when a clip lets go of it. A clip with an uploaded animation in Config.Animations.AssetIds plays that
-	animation instead.
+	When a clip lets go of a joint, its C0 goes back to the rest offset it had before. A clip with an uploaded
+	animation in Config.Animations.AssetIds plays that animation instead. Studio: Config.Dev.LogAnimations prints
+	every clip started.
 ]]
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
@@ -31,9 +32,8 @@ local DUMMY_TAG = "TrainingDummy"
 type Playing = { Clip: Pose.Clip, Name: string, StartedAt: number, Length: number? }
 type Rig = {
 	Joints: { [string]: Motor6D },
-	-- What we wrote to each joint last frame. A joint still holding it was not re-posed by Roblox's Animator (a
-	-- dummy, or a joint the default animations leave alone), so its real base pose is rest, not our old value.
-	Written: { [Motor6D]: CFrame },
+	RestC0: { [Motor6D]: CFrame }, -- each joint's own C0, before any clip turned it
+	Posed: { [Motor6D]: boolean }, -- joints a clip turned last frame
 	OneShot: Playing?,
 	Loop: Playing?,
 	Fading: Playing?, -- the loop that just ended, blending out
@@ -49,34 +49,43 @@ local function now(): number
 	return os.clock()
 end
 
+local function log(message: string)
+	if RunService:IsStudio() and Config.Dev.LogAnimations then
+		print(`[Anim] {message}`)
+	end
+end
+
 local function rigOf(character: Model): Rig?
-	local rig = rigs[character]
-	if rig and next(rig.Joints) ~= nil then
-		return rig
+	local existing = rigs[character]
+	if existing then
+		return existing
 	end
 	local joints: { [string]: Motor6D } = {}
+	local rest: { [Motor6D]: CFrame } = {}
 	for _, descendant in character:GetDescendants() do
 		if descendant:IsA("Motor6D") and table.find(Pose.Joints, descendant.Name) then
 			joints[descendant.Name] = descendant
+			rest[descendant] = descendant.C0
 		end
 	end
 	if next(joints) == nil then
 		return nil -- not streamed in yet, or not an R15 rig
 	end
-	local built: Rig = {
+	local rig: Rig = {
 		Joints = joints,
-		Written = {},
+		RestC0 = rest,
+		Posed = {},
 		OneShot = nil,
 		Loop = nil,
 		Fading = nil,
 		FadeStartedAt = 0,
 		Tracks = {},
 	}
-	rigs[character] = built
+	rigs[character] = rig
 	character.Destroying:Connect(function()
 		rigs[character] = nil
 	end)
-	return built
+	return rig
 end
 
 -- Plays an uploaded animation for `clipName` if one is configured. True when it did.
@@ -111,7 +120,15 @@ end
 function AnimationController.play(character: Model, clipName: string, length: number?)
 	local clip = Clips[clipName]
 	local rig = rigOf(character)
-	if clip == nil or rig == nil or playAsset(character, rig, clipName) then
+	if clip == nil then
+		log(`unknown clip {clipName}`)
+		return
+	elseif rig == nil then
+		log(`{clipName}: no R15 joints found on {character.Name}`)
+		return
+	end
+	log(`{clipName} on {character.Name}`)
+	if playAsset(character, rig, clipName) then
 		return
 	end
 	rig.OneShot = { Clip = clip, Name = clipName, StartedAt = now(), Length = length }
@@ -172,29 +189,23 @@ local function update(character: Model, rig: Rig, t: number)
 		table.insert(layers, { Sample = Pose.sample(oneShot.Clip, elapsed), Weight = weight })
 	end
 
-	local written: { [Motor6D]: CFrame } = {}
+	local posed: { [Motor6D]: boolean } = {}
 	for name, motor in rig.Joints do
-		local last: CFrame? = rig.Written[motor]
-		local untouchedByAnimator = false
-		if last then
-			untouchedByAnimator = motor.Transform == last
-		end
-		local result: CFrame? = nil
+		local turn: CFrame? = nil
 		for _, layer in layers do
 			local values = layer.Sample[name]
 			if values then
-				local base = result or (if untouchedByAnimator then CFrame.identity else motor.Transform)
-				result = base:Lerp(toCFrame(values), layer.Weight)
+				turn = (turn or CFrame.identity):Lerp(toCFrame(values), layer.Weight)
 			end
 		end
-		if result then
-			motor.Transform = result
-			written[motor] = result
-		elseif untouchedByAnimator then
-			motor.Transform = CFrame.identity -- nothing else will put this joint back to rest
+		if turn then
+			motor.C0 = rig.RestC0[motor] * turn
+			posed[motor] = true
+		elseif rig.Posed[motor] then
+			motor.C0 = rig.RestC0[motor] -- the clip let go: back to rest
 		end
 	end
-	rig.Written = written
+	rig.Posed = posed
 end
 
 local function onCombatHit(
@@ -230,7 +241,8 @@ function AnimationController.Start(_self: any)
 			AnimationController.play(character, "Dash")
 		end
 	end)
-	RunService.Stepped:Connect(function()
+	-- Right before each frame is drawn.
+	RunService.RenderStepped:Connect(function()
 		local t = now()
 		-- Characters with something to show: a one-shot, or a state loop (players only; dummies never carry).
 		for _, player in Players:GetPlayers() do
@@ -249,6 +261,7 @@ function AnimationController.Start(_self: any)
 			end
 		end
 	end)
+	log("ready")
 end
 
 return AnimationController
