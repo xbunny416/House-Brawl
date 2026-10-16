@@ -6,11 +6,12 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 
 - **Build order approved** by the owner on 2026-10-15, with maps built from code (blockouts from layout data, art
   pass later) and data saving via ProfileStore.
-- **Current phase:** Phase 1. **Waiting on:** the owner's Studio playtest of 1.1–1.10 (lobby + Broken Highway
+- **Current phase:** Phase 1. **Waiting on:** the owner's Studio playtest of 1.1–1.11 (lobby + Broken Highway
   blockouts, data saving, input on PC / gamepad / Device Emulator touch, camera, Shift Lock, camera shake; combat on
   the Training Yard dummy and 2-player PvP in the arena; dash, air dash across gaps, Perfect Dodge; the full round
   loop: vote, Classic / Casual, respawn + shield, spectate, results; grabbing and throwing props, barrels; breaking
-  structures). The owner chose to continue building before playtesting. **Next step:** 1.11 Crumbling platforms.
+  structures; crumbling platforms). The owner chose to continue building before playtesting. **Next step:** 1.12
+  Basic HUD.
 
 ## How this repo works
 
@@ -149,7 +150,7 @@ any errors are fixed before the next item.
 - [x] **1.9 Props** — spawn spots, grab/carry/throw (server-checked range and rate), weight classes, explosive barrel,
       40-prop cap, despawn.
 - [x] **1.10 Breakable structures** — HP, prop drops, respawn.
-- [ ] **1.11 Crumbling platforms** — 3 s warning, fall, rules (center never falls, ≥ 2 remain).
+- [x] **1.11 Crumbling platforms** — 3 s warning, fall, rules (center never falls, ≥ 2 remain).
 - [ ] **1.12 Basic HUD** — HP + lives / Percent, timer, mode badge, kill feed, dash ring, held prop, Tab scoreboard,
       spectate view; mobile / PC / gamepad.
 - [ ] **1.13 Developer panel (minimal)** — *moved up from Phase 3* so testing is faster: force map/mode, start/end
@@ -197,6 +198,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 1.8 RoundService (Waiting → map + mode vote → Classic / Casual round → results), pure Vote + Scoreboard, respawn via Roblox respawn + spawn shield, spectate (ReplicationFocus), Casual late join + passive gain, AFK / active-time tracking, round stats + analytics; vote, results, spectate and status UI (Ui/Kit); Studio solo rounds | #9 |
 | 2026-10-16 | 1.9 PropService (spots + respawn, grab / carry / drop / throw, server-swept flights, class blows, explosive barrels with fuse + chain, 40-prop cap, despawn), pure Carrier rules, CombatService refactor (shared blow path, hitWith / explode, Swung / Hit signals, interceptor, speed modifiers), Throw / Drop touch labels, prop + chair KO stats; gamepad Menu / Scoreboard on the D-pad | #10 |
 | 2026-10-16 | 1.10 StructureService (structures on StructureSpots, damage from attack boxes / thrown props / blasts, darken with damage, break into drops, respawn 45 s, StructuresBroken stat), pure StructureRules, blockout sizes in Config, PropService.spawnLoose + Impact / Exploded signals | #11 |
+| 2026-10-16 | 1.11 CrumbleService (from 1:00 every 20 s a random outer platform flashes red + shakes 3 s, then falls 4 s with everyone on it; center never falls, 2 always remain), pure CrumbleRules, RoundStarted signal, spawn points / prop spots skip crumbling platforms, structures fall with their platform | #12 |
 
 ## Decisions and interpretations
 
@@ -262,6 +264,11 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   structure's largest side. A structure darkens up to 55% as it loses HP. Drops pop out around it and vanish after
   `Structures.DropDespawnTime` (30 s, new) unless picked up; the 40-prop cap still applies, so a full arena drops
   fewer. The player who lands the breaking hit gets `StructuresBroken`. Respawns are skipped if the arena changed.
+- **Crumbling (1.11):** the warning is a red `Highlight` flashing every 0.25 s plus a ±0.15-stud server-side shake of
+  the whole platform (crack VFX and rumble SFX come with 2.7 / 2.8). Then every part is welded to the platform's base
+  and unanchored, so it really falls (players on it fall with it and are KO'd at KillY, credited to their last
+  attacker within 6 s); it is removed after FallTime. The schedule counts from the round start (os.clock); a round
+  ending stops it. `CrumbleService.crumbleNext()` crumbles one at once (for the developer panel, 1.13).
 
 ## Known bugs / open items
 

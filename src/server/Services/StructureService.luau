@@ -20,6 +20,7 @@ local Server = script.Parent.Parent
 local StructureRules = require(Server:WaitForChild("Structures"):WaitForChild("StructureRules"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
+local CrumbleService = require(script.Parent:WaitForChild("CrumbleService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
 local PropService = require(script.Parent:WaitForChild("PropService"))
 
@@ -182,6 +183,28 @@ local function onExploded(center: Vector3, radius: number, damage: number, attac
 	end
 end
 
+-- Structures on a crumbling platform fall with it: welded to its base (unanchored with it right after), no longer
+-- breakable, removed when the platform is.
+local function onPlatformFalling(platform: Model)
+	local base = platform.PrimaryPart
+	if base == nil then
+		return
+	end
+	for model, structure in structures do
+		if structure.Marker:IsDescendantOf(platform) then
+			structures[model] = nil
+			local weld = Instance.new("WeldConstraint")
+			weld.Part0 = base
+			weld.Part1 = structure.Part
+			weld.Parent = structure.Part
+			structure.Part.Anchored = false
+			task.delay(Config.Round.Crumble.FallTime, function()
+				model:Destroy()
+			end)
+		end
+	end
+end
+
 local function onArenaLoaded(_mapId: string, arena: Model)
 	generation += 1
 	table.clear(structures)
@@ -211,6 +234,7 @@ function StructureService.Init(_self: any)
 	PropService.Exploded:Connect(onExploded)
 	MapService.ArenaLoaded:Connect(onArenaLoaded)
 	MapService.ArenaUnloaded:Connect(onArenaUnloaded)
+	CrumbleService.PlatformFalling:Connect(onPlatformFalling)
 end
 
 return StructureService

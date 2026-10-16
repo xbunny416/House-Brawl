@@ -73,6 +73,8 @@ local SPAWN_WAIT = 10
 
 local RoundService = {
 	Priority = 0, -- after CombatService, whose knock-out and fall handlers this replaces
+	-- (modeId, mapId) when a round starts, right after its arena is loaded and before players are moved in.
+	RoundStarted = Signal.new() :: Signal.Signal<string, string>,
 	-- (summary) when a round ends, before everyone returns to the lobby.
 	RoundEnded = Signal.new() :: Signal.Signal<Summary>,
 }
@@ -398,6 +400,7 @@ local function startRound(mapId: string, modeId: string): boolean
 	Workspace:SetAttribute("RoundMap", mapId)
 	setState("Playing", r.EndsAt)
 	log(`{modeId} on {mapId} with {#participants} player(s)`)
+	RoundService.RoundStarted:Fire(modeId, mapId)
 
 	for _, player in Players:GetPlayers() do
 		if not table.find(participants, player) then
