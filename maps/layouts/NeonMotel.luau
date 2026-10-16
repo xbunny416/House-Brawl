@@ -180,7 +180,7 @@ local function parapet(from: { number }, to: { number }, neon: string)
 		Color = "Concrete",
 		Material = "Concrete",
 	})
-	B.part({
+	local tube = B.part({
 		Name = "NeonTube",
 		Size = if alongX then { length, 0.25, 0.25 } else { 0.25, 0.25, length },
 		Position = { center[1], 0.95, center[2] },
@@ -189,6 +189,27 @@ local function parapet(from: { number }, to: { number }, neon: string)
 		CanCollide = false,
 		Tags = FLICKER,
 	})
+	B.light(tube, neon, 18, 1.6)
+end
+
+-- A lamp post on a roof corner: thin pole, warm light over the fighters.
+local function roofLamp(at: { number })
+	B.part({
+		Name = "LampPole",
+		Size = { 0.4, 7, 0.4 },
+		Position = { at[1], 3.5, at[2] },
+		Color = "MetalDark",
+		Material = "Metal",
+	})
+	local head = B.part({
+		Name = "LampHead",
+		Size = { 1.4, 0.5, 1.4 },
+		Position = { at[1], 7.2, at[2] },
+		Color = "WarmLight",
+		Material = "Neon",
+		CanCollide = false,
+	})
+	B.light(head, "WarmLight", 32, 1.8)
 end
 
 local function acUnit(at: { number })
@@ -214,6 +235,8 @@ end
 local function centerDecor()
 	acUnit({ 1, 1 })
 	acUnit({ -24, 0 })
+	roofLamp({ 27, 17 })
+	roofLamp({ -27, -17 })
 	B.part({
 		Name = "RoofHatch",
 		Size = { 3, 0.6, 3 },
@@ -286,7 +309,7 @@ local function signDecor(platform: Platform)
 			Material = "Metal",
 		})
 	end
-	B.sign({
+	local motel = B.sign({
 		Name = "MotelSign",
 		Size = { 16, 5, 0.6 },
 		Position = { edgeX, 9.5, 0 },
@@ -298,6 +321,7 @@ local function signDecor(platform: Platform)
 		Glow = true,
 		Tags = FLICKER,
 	})
+	B.light(motel, "NeonPink", 32, 2)
 	for _, tube in
 		{
 			{ size = { 0.25, 0.25, 16.4 }, pos = { 12.2, 0 } },
@@ -330,6 +354,7 @@ local function signDecor(platform: Platform)
 end
 
 local function northDecor()
+	roofLamp({ 12, 9 })
 	B.part({
 		Name = "Chimney",
 		Size = { 2, 4, 2 },
@@ -351,6 +376,7 @@ local function northDecor()
 end
 
 local function southDecor()
+	roofLamp({ -11, -9 })
 	B.part({
 		Name = "Skylight",
 		Size = { 4, 0.2, 3 },
@@ -398,7 +424,7 @@ local function billboard(platform: Platform)
 		Key = "Map.NeonMotel.Sign.Billboard",
 		TextColor = "Black",
 	})
-	B.part({
+	local strip = B.part({
 		Name = "BillboardLight",
 		Size = { 11, 0.3, 0.3 },
 		Position = { 0, 5.3, backZ + 0.6 },
@@ -407,6 +433,7 @@ local function billboard(platform: Platform)
 		CanCollide = false,
 		Tags = FLICKER,
 	})
+	B.light(strip, "WarmLight", 16, 1.5)
 	for _, x in { -4, 4 } do
 		B.part({
 			Name = "BillboardLeg",

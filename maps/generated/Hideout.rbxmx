@@ -2489,7 +2489,7 @@
             <R21>0</R21>
             <R22>1</R22>
           </CoordinateFrame>
-          <Color3uint8 name="Color3uint8">15591126</Color3uint8>
+          <Color3uint8 name="Color3uint8">5593438</Color3uint8>
           <token name="Material">272</token>
           <token name="shape">1</token>
           <Vector3 name="size">
@@ -2521,8 +2521,8 @@
             <R22>1</R22>
           </CoordinateFrame>
           <bool name="CastShadow">false</bool>
-          <Color3uint8 name="Color3uint8">1973794</Color3uint8>
-          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4885654</Color3uint8>
+          <token name="Material">288</token>
           <token name="shape">1</token>
           <Vector3 name="size">
             <X>6.399994</X>
@@ -2532,8 +2532,21 @@
           <BinaryString name="Tags">Vm90ZVNjcmVlbg==</BinaryString>
           <token name="TopSurface">0</token>
         </Properties>
+        <Item class="PointLight" referent="83">
+          <Properties>
+            <string name="Name">PointLight</string>
+            <float name="Brightness">0.8</float>
+            <Color3 name="Color">
+              <R>0.2901961</R>
+              <G>0.54901963</G>
+              <B>0.5882353</B>
+            </Color3>
+            <float name="Range">10</float>
+            <bool name="Shadows">false</bool>
+          </Properties>
+        </Item>
       </Item>
-      <Item class="Part" referent="83">
+      <Item class="Part" referent="84">
         <Properties>
           <string name="Name">Antenna</string>
           <bool name="Anchored">true</bool>
@@ -2564,7 +2577,7 @@
           <token name="TopSurface">0</token>
         </Properties>
       </Item>
-      <Item class="Part" referent="84">
+      <Item class="Part" referent="85">
         <Properties>
           <string name="Name">Antenna</string>
           <bool name="Anchored">true</bool>
@@ -2596,7 +2609,7 @@
         </Properties>
       </Item>
     </Item>
-    <Item class="Part" referent="85">
+    <Item class="Part" referent="86">
       <Properties>
         <string name="Name">TVMount</string>
         <bool name="Anchored">true</bool>
@@ -2628,11 +2641,11 @@
         <token name="TopSurface">0</token>
       </Properties>
     </Item>
-    <Item class="Model" referent="86">
+    <Item class="Model" referent="87">
       <Properties>
         <string name="Name">MapTV2</string>
       </Properties>
-      <Item class="Part" referent="87">
+      <Item class="Part" referent="88">
         <Properties>
           <string name="Name">Casing</string>
           <bool name="Anchored">true</bool>
@@ -2651,7 +2664,7 @@
             <R21>0</R21>
             <R22>1</R22>
           </CoordinateFrame>
-          <Color3uint8 name="Color3uint8">15591126</Color3uint8>
+          <Color3uint8 name="Color3uint8">5593438</Color3uint8>
           <token name="Material">272</token>
           <token name="shape">1</token>
           <Vector3 name="size">
@@ -2662,7 +2675,7 @@
           <token name="TopSurface">0</token>
         </Properties>
       </Item>
-      <Item class="Part" referent="88">
+      <Item class="Part" referent="89">
         <Properties>
           <string name="Name">Screen</string>
           <bool name="Anchored">true</bool>
@@ -2683,8 +2696,8 @@
             <R22>1</R22>
           </CoordinateFrame>
           <bool name="CastShadow">false</bool>
-          <Color3uint8 name="Color3uint8">1973794</Color3uint8>
-          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4885654</Color3uint8>
+          <token name="Material">288</token>
           <token name="shape">1</token>
           <Vector3 name="size">
             <X>6.399994</X>
@@ -2694,8 +2707,21 @@
           <BinaryString name="Tags">Vm90ZVNjcmVlbg==</BinaryString>
           <token name="TopSurface">0</token>
         </Properties>
+        <Item class="PointLight" referent="90">
+          <Properties>
+            <string name="Name">PointLight</string>
+            <float name="Brightness">0.8</float>
+            <Color3 name="Color">
+              <R>0.2901961</R>
+              <G>0.54901963</G>
+              <B>0.5882353</B>
+            </Color3>
+            <float name="Range">10</float>
+            <bool name="Shadows">false</bool>
+          </Properties>
+        </Item>
       </Item>
-      <Item class="Part" referent="89">
+      <Item class="Part" referent="91">
         <Properties>
           <string name="Name">Antenna</string>
           <bool name="Anchored">true</bool>
@@ -2726,7 +2752,7 @@
           <token name="TopSurface">0</token>
         </Properties>
       </Item>
-      <Item class="Part" referent="90">
+      <Item class="Part" referent="92">
         <Properties>
           <string name="Name">Antenna</string>
           <bool name="Anchored">true</bool>
@@ -2758,7 +2784,7 @@
         </Properties>
       </Item>
     </Item>
-    <Item class="Part" referent="91">
+    <Item class="Part" referent="93">
       <Properties>
         <string name="Name">TVMount</string>
         <bool name="Anchored">true</bool>
@@ -2790,11 +2816,11 @@
         <token name="TopSurface">0</token>
       </Properties>
     </Item>
-    <Item class="Model" referent="92">
+    <Item class="Model" referent="94">
       <Properties>
         <string name="Name">MapTV3</string>
       </Properties>
-      <Item class="Part" referent="93">
+      <Item class="Part" referent="95">
         <Properties>
           <string name="Name">Casing</string>
           <bool name="Anchored">true</bool>
@@ -2813,7 +2839,7 @@
             <R21>0</R21>
             <R22>1</R22>
           </CoordinateFrame>
-          <Color3uint8 name="Color3uint8">15591126</Color3uint8>
+          <Color3uint8 name="Color3uint8">5593438</Color3uint8>
           <token name="Material">272</token>
           <token name="shape">1</token>
           <Vector3 name="size">
@@ -2824,7 +2850,7 @@
           <token name="TopSurface">0</token>
         </Properties>
       </Item>
-      <Item class="Part" referent="94">
+      <Item class="Part" referent="96">
         <Properties>
           <string name="Name">Screen</string>
           <bool name="Anchored">true</bool>
@@ -2845,8 +2871,8 @@
             <R22>1</R22>
           </CoordinateFrame>
           <bool name="CastShadow">false</bool>
-          <Color3uint8 name="Color3uint8">1973794</Color3uint8>
-          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4885654</Color3uint8>
+          <token name="Material">288</token>
           <token name="shape">1</token>
           <Vector3 name="size">
             <X>6.399994</X>
@@ -2856,8 +2882,21 @@
           <BinaryString name="Tags">Vm90ZVNjcmVlbg==</BinaryString>
           <token name="TopSurface">0</token>
         </Properties>
+        <Item class="PointLight" referent="97">
+          <Properties>
+            <string name="Name">PointLight</string>
+            <float name="Brightness">0.8</float>
+            <Color3 name="Color">
+              <R>0.2901961</R>
+              <G>0.54901963</G>
+              <B>0.5882353</B>
+            </Color3>
+            <float name="Range">10</float>
+            <bool name="Shadows">false</bool>
+          </Properties>
+        </Item>
       </Item>
-      <Item class="Part" referent="95">
+      <Item class="Part" referent="98">
         <Properties>
           <string name="Name">Antenna</string>
           <bool name="Anchored">true</bool>
@@ -2888,7 +2927,7 @@
           <token name="TopSurface">0</token>
         </Properties>
       </Item>
-      <Item class="Part" referent="96">
+      <Item class="Part" referent="99">
         <Properties>
           <string name="Name">Antenna</string>
           <bool name="Anchored">true</bool>
@@ -2920,7 +2959,7 @@
         </Properties>
       </Item>
     </Item>
-    <Item class="Part" referent="97">
+    <Item class="Part" referent="100">
       <Properties>
         <string name="Name">TVMount</string>
         <bool name="Anchored">true</bool>
@@ -2952,11 +2991,11 @@
         <token name="TopSurface">0</token>
       </Properties>
     </Item>
-    <Item class="Model" referent="98">
+    <Item class="Model" referent="101">
       <Properties>
         <string name="Name">ModeTV1</string>
       </Properties>
-      <Item class="Part" referent="99">
+      <Item class="Part" referent="102">
         <Properties>
           <string name="Name">Casing</string>
           <bool name="Anchored">true</bool>
@@ -2975,7 +3014,7 @@
             <R21>0</R21>
             <R22>1</R22>
           </CoordinateFrame>
-          <Color3uint8 name="Color3uint8">15591126</Color3uint8>
+          <Color3uint8 name="Color3uint8">5593438</Color3uint8>
           <token name="Material">272</token>
           <token name="shape">1</token>
           <Vector3 name="size">
@@ -2986,7 +3025,7 @@
           <token name="TopSurface">0</token>
         </Properties>
       </Item>
-      <Item class="Part" referent="100">
+      <Item class="Part" referent="103">
         <Properties>
           <string name="Name">Screen</string>
           <bool name="Anchored">true</bool>
@@ -3007,8 +3046,8 @@
             <R22>1</R22>
           </CoordinateFrame>
           <bool name="CastShadow">false</bool>
-          <Color3uint8 name="Color3uint8">1973794</Color3uint8>
-          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4885654</Color3uint8>
+          <token name="Material">288</token>
           <token name="shape">1</token>
           <Vector3 name="size">
             <X>4</X>
@@ -3018,8 +3057,21 @@
           <BinaryString name="Tags">Vm90ZVNjcmVlbg==</BinaryString>
           <token name="TopSurface">0</token>
         </Properties>
+        <Item class="PointLight" referent="104">
+          <Properties>
+            <string name="Name">PointLight</string>
+            <float name="Brightness">0.8</float>
+            <Color3 name="Color">
+              <R>0.2901961</R>
+              <G>0.54901963</G>
+              <B>0.5882353</B>
+            </Color3>
+            <float name="Range">10</float>
+            <bool name="Shadows">false</bool>
+          </Properties>
+        </Item>
       </Item>
-      <Item class="Part" referent="101">
+      <Item class="Part" referent="105">
         <Properties>
           <string name="Name">Antenna</string>
           <bool name="Anchored">true</bool>
@@ -3050,7 +3102,7 @@
           <token name="TopSurface">0</token>
         </Properties>
       </Item>
-      <Item class="Part" referent="102">
+      <Item class="Part" referent="106">
         <Properties>
           <string name="Name">Antenna</string>
           <bool name="Anchored">true</bool>
@@ -3082,11 +3134,11 @@
         </Properties>
       </Item>
     </Item>
-    <Item class="Model" referent="103">
+    <Item class="Model" referent="107">
       <Properties>
         <string name="Name">ModeTV2</string>
       </Properties>
-      <Item class="Part" referent="104">
+      <Item class="Part" referent="108">
         <Properties>
           <string name="Name">Casing</string>
           <bool name="Anchored">true</bool>
@@ -3105,7 +3157,7 @@
             <R21>0</R21>
             <R22>1</R22>
           </CoordinateFrame>
-          <Color3uint8 name="Color3uint8">15591126</Color3uint8>
+          <Color3uint8 name="Color3uint8">5593438</Color3uint8>
           <token name="Material">272</token>
           <token name="shape">1</token>
           <Vector3 name="size">
@@ -3116,7 +3168,7 @@
           <token name="TopSurface">0</token>
         </Properties>
       </Item>
-      <Item class="Part" referent="105">
+      <Item class="Part" referent="109">
         <Properties>
           <string name="Name">Screen</string>
           <bool name="Anchored">true</bool>
@@ -3137,8 +3189,8 @@
             <R22>1</R22>
           </CoordinateFrame>
           <bool name="CastShadow">false</bool>
-          <Color3uint8 name="Color3uint8">1973794</Color3uint8>
-          <token name="Material">272</token>
+          <Color3uint8 name="Color3uint8">4885654</Color3uint8>
+          <token name="Material">288</token>
           <token name="shape">1</token>
           <Vector3 name="size">
             <X>4</X>
@@ -3148,8 +3200,21 @@
           <BinaryString name="Tags">Vm90ZVNjcmVlbg==</BinaryString>
           <token name="TopSurface">0</token>
         </Properties>
+        <Item class="PointLight" referent="110">
+          <Properties>
+            <string name="Name">PointLight</string>
+            <float name="Brightness">0.8</float>
+            <Color3 name="Color">
+              <R>0.2901961</R>
+              <G>0.54901963</G>
+              <B>0.5882353</B>
+            </Color3>
+            <float name="Range">10</float>
+            <bool name="Shadows">false</bool>
+          </Properties>
+        </Item>
       </Item>
-      <Item class="Part" referent="106">
+      <Item class="Part" referent="111">
         <Properties>
           <string name="Name">Antenna</string>
           <bool name="Anchored">true</bool>
@@ -3180,7 +3245,7 @@
           <token name="TopSurface">0</token>
         </Properties>
       </Item>
-      <Item class="Part" referent="107">
+      <Item class="Part" referent="112">
         <Properties>
           <string name="Name">Antenna</string>
           <bool name="Anchored">true</bool>
@@ -3212,13 +3277,13 @@
         </Properties>
       </Item>
     </Item>
-    <Item class="Model" referent="108">
+    <Item class="Model" referent="113">
       <Properties>
         <string name="Name">ShopNPC</string>
         <BinaryString name="AttributesSerialize">AQAAAAQAAABSb2xlAgQAAABTaG9w</BinaryString>
         <BinaryString name="Tags">U2hvcE5QQw==</BinaryString>
       </Properties>
-      <Item class="Part" referent="109">
+      <Item class="Part" referent="114">
         <Properties>
           <string name="Name">Leg</string>
           <bool name="Anchored">true</bool>
@@ -3249,7 +3314,7 @@
           <token name="TopSurface">0</token>
         </Properties>
       </Item>
-      <Item class="Part" referent="110">
+      <Item class="Part" referent="115">
         <Properties>
           <string name="Name">Leg</string>
           <bool name="Anchored">true</bool>
@@ -3280,7 +3345,7 @@
           <token name="TopSurface">0</token>
         </Properties>
       </Item>
-      <Item class="Part" referent="111">
+      <Item class="Part" referent="116">
         <Properties>
           <string name="Name">Torso</string>
           <bool name="Anchored">true</bool>
@@ -3311,7 +3376,7 @@
           <token name="TopSurface">0</token>
         </Properties>
       </Item>
-      <Item class="Part" referent="112">
+      <Item class="Part" referent="117">
         <Properties>
           <string name="Name">Apron</string>
           <bool name="Anchored">true</bool>
@@ -3342,7 +3407,7 @@
           <token name="TopSurface">0</token>
         </Properties>
       </Item>
-      <Item class="Part" referent="113">
+      <Item class="Part" referent="118">
         <Properties>
           <string name="Name">Arm</string>
           <bool name="Anchored">true</bool>
@@ -3373,7 +3438,7 @@
           <token name="TopSurface">0</token>
         </Properties>
       </Item>
-      <Item class="Part" referent="114">
+      <Item class="Part" referent="119">
         <Properties>
           <string name="Name">Arm</string>
           <bool name="Anchored">true</bool>
@@ -3404,7 +3469,7 @@
           <token name="TopSurface">0</token>
         </Properties>
       </Item>
-      <Item class="Part" referent="115">
+      <Item class="Part" referent="120">
         <Properties>
           <string name="Name">Head</string>
           <bool name="Anchored">true</bool>
@@ -3435,7 +3500,7 @@
           <token name="TopSurface">0</token>
         </Properties>
       </Item>
-      <Item class="Part" referent="116">
+      <Item class="Part" referent="121">
         <Properties>
           <string name="Name">Bandana</string>
           <bool name="Anchored">true</bool>
@@ -3467,120 +3532,6 @@
         </Properties>
       </Item>
     </Item>
-    <Item class="Model" referent="117">
-      <Properties>
-        <string name="Name">Lamp</string>
-      </Properties>
-      <Item class="Part" referent="118">
-        <Properties>
-          <string name="Name">Cord</string>
-          <bool name="Anchored">true</bool>
-          <token name="BottomSurface">0</token>
-          <CoordinateFrame name="CFrame">
-            <X>-12</X>
-            <Y>119.25</Y>
-            <Z>21</Z>
-            <R00>1</R00>
-            <R01>0</R01>
-            <R02>0</R02>
-            <R10>0</R10>
-            <R11>1</R11>
-            <R12>0</R12>
-            <R20>0</R20>
-            <R21>0</R21>
-            <R22>1</R22>
-          </CoordinateFrame>
-          <bool name="CanCollide">false</bool>
-          <bool name="CastShadow">false</bool>
-          <Color3uint8 name="Color3uint8">1973794</Color3uint8>
-          <token name="Material">272</token>
-          <token name="shape">1</token>
-          <Vector3 name="size">
-            <X>0.1499939</X>
-            <Y>5.5</Y>
-            <Z>0.1499939</Z>
-          </Vector3>
-          <token name="TopSurface">0</token>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="119">
-        <Properties>
-          <string name="Name">Shade</string>
-          <bool name="Anchored">true</bool>
-          <token name="BottomSurface">0</token>
-          <CoordinateFrame name="CFrame">
-            <X>-12</X>
-            <Y>116.5</Y>
-            <Z>21</Z>
-            <R00>-0</R00>
-            <R01>-1</R01>
-            <R02>0</R02>
-            <R10>1</R10>
-            <R11>-0</R11>
-            <R12>0</R12>
-            <R20>0</R20>
-            <R21>0</R21>
-            <R22>1</R22>
-          </CoordinateFrame>
-          <bool name="CanCollide">false</bool>
-          <bool name="CastShadow">false</bool>
-          <Color3uint8 name="Color3uint8">5593438</Color3uint8>
-          <token name="Material">1088</token>
-          <token name="shape">2</token>
-          <Vector3 name="size">
-            <X>1.199997</X>
-            <Y>2.399994</Y>
-            <Z>2.399994</Z>
-          </Vector3>
-          <token name="TopSurface">0</token>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="120">
-        <Properties>
-          <string name="Name">Bulb</string>
-          <bool name="Anchored">true</bool>
-          <token name="BottomSurface">0</token>
-          <CoordinateFrame name="CFrame">
-            <X>-12</X>
-            <Y>115.8</Y>
-            <Z>21</Z>
-            <R00>1</R00>
-            <R01>0</R01>
-            <R02>0</R02>
-            <R10>0</R10>
-            <R11>1</R11>
-            <R12>0</R12>
-            <R20>0</R20>
-            <R21>0</R21>
-            <R22>1</R22>
-          </CoordinateFrame>
-          <bool name="CanCollide">false</bool>
-          <bool name="CastShadow">false</bool>
-          <Color3uint8 name="Color3uint8">16763274</Color3uint8>
-          <token name="Material">288</token>
-          <token name="shape">0</token>
-          <Vector3 name="size">
-            <X>0.8999939</X>
-            <Y>0.8999939</Y>
-            <Z>0.8999939</Z>
-          </Vector3>
-          <token name="TopSurface">0</token>
-        </Properties>
-        <Item class="PointLight" referent="121">
-          <Properties>
-            <string name="Name">PointLight</string>
-            <float name="Brightness">1.6</float>
-            <Color3 name="Color">
-              <R>1</R>
-              <G>0.7882353</G>
-              <B>0.5411765</B>
-            </Color3>
-            <float name="Range">26</float>
-            <bool name="Shadows">false</bool>
-          </Properties>
-        </Item>
-      </Item>
-    </Item>
     <Item class="Model" referent="122">
       <Properties>
         <string name="Name">Lamp</string>
@@ -3591,7 +3542,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>0</X>
+            <X>-6</X>
             <Y>119.25</Y>
             <Z>21</Z>
             <R00>1</R00>
@@ -3623,7 +3574,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>0</X>
+            <X>-6</X>
             <Y>116.5</Y>
             <Z>21</Z>
             <R00>-0</R00>
@@ -3655,7 +3606,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>0</X>
+            <X>-6</X>
             <Y>115.8</Y>
             <Z>21</Z>
             <R00>1</R00>
@@ -3670,7 +3621,7 @@
           </CoordinateFrame>
           <bool name="CanCollide">false</bool>
           <bool name="CastShadow">false</bool>
-          <Color3uint8 name="Color3uint8">16763274</Color3uint8>
+          <Color3uint8 name="Color3uint8">13137950</Color3uint8>
           <token name="Material">288</token>
           <token name="shape">0</token>
           <Vector3 name="size">
@@ -3683,7 +3634,7 @@
         <Item class="PointLight" referent="126">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.6</float>
+            <float name="Brightness">1.3</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -3705,7 +3656,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>12</X>
+            <X>6</X>
             <Y>119.25</Y>
             <Z>21</Z>
             <R00>1</R00>
@@ -3737,7 +3688,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>12</X>
+            <X>6</X>
             <Y>116.5</Y>
             <Z>21</Z>
             <R00>-0</R00>
@@ -3769,7 +3720,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>12</X>
+            <X>6</X>
             <Y>115.8</Y>
             <Z>21</Z>
             <R00>1</R00>
@@ -3784,7 +3735,7 @@
           </CoordinateFrame>
           <bool name="CanCollide">false</bool>
           <bool name="CastShadow">false</bool>
-          <Color3uint8 name="Color3uint8">16763274</Color3uint8>
+          <Color3uint8 name="Color3uint8">13137950</Color3uint8>
           <token name="Material">288</token>
           <token name="shape">0</token>
           <Vector3 name="size">
@@ -3797,7 +3748,7 @@
         <Item class="PointLight" referent="131">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.6</float>
+            <float name="Brightness">1.3</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -6248,7 +6199,7 @@
           </CoordinateFrame>
           <bool name="CanCollide">false</bool>
           <bool name="CastShadow">false</bool>
-          <Color3uint8 name="Color3uint8">16763274</Color3uint8>
+          <Color3uint8 name="Color3uint8">13137950</Color3uint8>
           <token name="Material">288</token>
           <token name="shape">0</token>
           <Vector3 name="size">
@@ -6261,7 +6212,7 @@
         <Item class="PointLight" referent="226">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.6</float>
+            <float name="Brightness">1.3</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -6563,7 +6514,7 @@
           </CoordinateFrame>
           <bool name="CanCollide">false</bool>
           <bool name="CastShadow">false</bool>
-          <Color3uint8 name="Color3uint8">16763274</Color3uint8>
+          <Color3uint8 name="Color3uint8">13137950</Color3uint8>
           <token name="Material">288</token>
           <token name="shape">0</token>
           <Vector3 name="size">
@@ -6576,7 +6527,7 @@
         <Item class="PointLight" referent="240">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.6</float>
+            <float name="Brightness">1.3</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -7059,7 +7010,7 @@
           </CoordinateFrame>
           <bool name="CanCollide">false</bool>
           <bool name="CastShadow">false</bool>
-          <Color3uint8 name="Color3uint8">16763274</Color3uint8>
+          <Color3uint8 name="Color3uint8">13137950</Color3uint8>
           <token name="Material">288</token>
           <token name="shape">0</token>
           <Vector3 name="size">
@@ -7072,7 +7023,7 @@
         <Item class="PointLight" referent="259">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.6</float>
+            <float name="Brightness">1.3</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -7173,7 +7124,7 @@
           </CoordinateFrame>
           <bool name="CanCollide">false</bool>
           <bool name="CastShadow">false</bool>
-          <Color3uint8 name="Color3uint8">16763274</Color3uint8>
+          <Color3uint8 name="Color3uint8">13137950</Color3uint8>
           <token name="Material">288</token>
           <token name="shape">0</token>
           <Vector3 name="size">
@@ -7186,7 +7137,7 @@
         <Item class="PointLight" referent="264">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.6</float>
+            <float name="Brightness">1.3</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -7287,7 +7238,7 @@
           </CoordinateFrame>
           <bool name="CanCollide">false</bool>
           <bool name="CastShadow">false</bool>
-          <Color3uint8 name="Color3uint8">16763274</Color3uint8>
+          <Color3uint8 name="Color3uint8">13137950</Color3uint8>
           <token name="Material">288</token>
           <token name="shape">0</token>
           <Vector3 name="size">
@@ -7300,7 +7251,7 @@
         <Item class="PointLight" referent="269">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.6</float>
+            <float name="Brightness">1.3</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>

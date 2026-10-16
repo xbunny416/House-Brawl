@@ -32,20 +32,21 @@ local Lighting: { [string]: Preset } = {
 		Bloom = { Intensity = 0.6, Size = 24, Threshold = 1.4 },
 		ColorCorrection = { Brightness = 0.02, Contrast = 0.08, Saturation = 0.05, TintColor = "#FFF1E0" },
 	},
-	-- Night with neon (Neon Motel, step 2.5).
+	-- Night with neon (Neon Motel, step 2.5). Brightened after the owner's first look ("a bit too dark"): bright
+	-- moonlight and a purple ambient so fighters stay readable; the neon and roof lamps add colour.
 	Night = {
 		ClockTime = 0.5,
 		GeographicLatitude = 30,
-		Brightness = 1,
-		Ambient = "#2A2440",
-		OutdoorAmbient = "#3A3260",
+		Brightness = 2,
+		Ambient = "#4A4270",
+		OutdoorAmbient = "#6A5CA0",
 		ColorShiftTop = "#7A5CFF",
 		ColorShiftBottom = "#1A1030",
-		EnvironmentDiffuseScale = 0.3,
+		EnvironmentDiffuseScale = 0.5,
 		EnvironmentSpecularScale = 0.4,
-		Atmosphere = { Density = 0.4, Offset = 0.1, Color = "#3A2A60", Decay = "#1A1030", Glare = 0, Haze = 1.2 },
+		Atmosphere = { Density = 0.3, Offset = 0.1, Color = "#3A2A60", Decay = "#1A1030", Glare = 0, Haze = 0.8 },
 		Bloom = { Intensity = 0.9, Size = 28, Threshold = 1.2 },
-		ColorCorrection = { Brightness = 0, Contrast = 0.12, Saturation = 0.15, TintColor = "#E8E0FF" },
+		ColorCorrection = { Brightness = 0.06, Contrast = 0.1, Saturation = 0.15, TintColor = "#EEE8FF" },
 	},
 }
 

@@ -128,7 +128,7 @@ local function shell()
 	end
 end
 
--- A lamp hanging from the ceiling with a warm light.
+-- A lamp hanging from the ceiling with a warm light (a dim amber bulb, so it does not glare).
 local function lamp(at: { number }, lightColor: string, range: number)
 	B.model("Lamp", function()
 		B.part({
@@ -153,32 +153,34 @@ local function lamp(at: { number }, lightColor: string, range: number)
 			Size = { 0.9, 0.9, 0.9 },
 			Position = { at[1], at[2] - 0.7, at[3] },
 			Shape = "Ball",
-			Color = lightColor,
+			Color = "Amber",
 			Material = "Neon",
 			CanCollide = false,
 		})
-		B.light(bulb, lightColor, range, 1.6)
+		B.light(bulb, lightColor, range, 1.3)
 	end)
 end
 
+-- An old CRT TV: dark casing, glowing screen that lights the bar a little.
 local function tv(name: string, at: { number }, size: { number }, voteKind: string, index: number)
 	B.model(name, function()
 		B.part({
 			Name = "Casing",
 			Size = size,
 			Position = at,
-			Color = "OffWhite",
+			Color = "MetalDark",
 			Material = "SmoothPlastic",
 		})
-		B.part({
+		local screen = B.part({
 			Name = "Screen",
 			Size = { size[1] * 0.8, size[2] * 0.75, 0.2 },
 			Position = { at[1], at[2] + 0.2, at[3] - size[3] / 2 - 0.1 },
-			Color = "Black",
-			Material = "SmoothPlastic",
+			Color = "CrtGlow",
+			Material = "Neon",
 			Tags = { "VoteScreen" },
 			Attributes = { VoteKind = voteKind, Index = index },
 		})
+		B.light(screen, "CrtGlow", 10, 0.8)
 		for _, side in { -1, 1 } do
 			B.part({
 				Name = "Antenna",
@@ -331,7 +333,8 @@ local function bar()
 		B.part({ Name = "Bandana", Size = { 1.7, 0.45, 1.7 }, Position = { 0, 6.6, npcZ }, Color = "RustOrange" })
 	end, { Role = "Shop" }):AddTag("ShopNPC")
 
-	for _, x in { -12, 0, 12 } do
+	-- Between the TVs, not in front of them.
+	for _, x in { -6, 6 } do
 		lamp({ x, 16.5, counterZ - 5 }, "WarmLight", 26)
 	end
 end
