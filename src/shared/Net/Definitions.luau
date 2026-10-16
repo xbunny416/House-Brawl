@@ -46,9 +46,13 @@ local Definitions: { [string]: Definition } = {
 	Dash = { Kind = "Event", Direction = "ToServer", Args = {} },
 	-- Server -> the victim's client: launch your character. (velocity: Vector3, hitstun: number)
 	Knockback = { Kind = "Event", Direction = "ToClient" },
-	-- Server -> all clients: a hit landed, for feedback (camera shake; VFX/SFX later).
-	-- (attacker: Model, victim: Model, attack: "Punch" | "Shove", heavy: boolean, trail: boolean)
+	-- Server -> all clients: a hit landed, for feedback (camera shake, the victim's hit / tumble animation; VFX/SFX
+	-- later). (attacker: Model, victim: Model, attack: "Punch" | "Shove" | ..., heavy: boolean, trail: boolean,
+	-- hitstun: number — seconds)
 	CombatHit = { Kind = "UnreliableEvent", Direction = "ToClient" },
+	-- Server -> clients: play a scripted animation clip (Shared/Animation/Clips) on a character. (character: Model,
+	-- clip: string)
+	Animate = { Kind = "UnreliableEvent", Direction = "ToClient" },
 
 	-- Client -> server: vote during the intermission. (kind: "Map" | "Mode", option: map or mode id)
 	Vote = {

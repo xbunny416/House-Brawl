@@ -225,6 +225,12 @@ Punch chain jab/cross/uppercut (0.3 s each); Shove charge + two-hand shove (0.5 
 Dash lean (0.25 s); Grab crouch-lift (0.3 s) + carry idle/walk loop; overhead Throw (0.4 s); hit reaction / launched
 tumble (0.6 s, loops in hitstun); 4 victory emotes (2 s).
 
+Built as **scripted** R15 poses (step 2.6): keyframed joint angles blended over Roblox's default walk / idle
+animations on every client, triggered by the server when an action really happens. Weapon styles chain two swings
+and an overhead smash (Scrapper's shovel sweeps low); the Wrecker's Shove is a parry pose with the hubcap; the
+tumble backflips through the whole hitstun. The round winner plays their victory emote back in the lobby; equipping
+an emote previews it. Any clip can later be replaced by an uploaded animation (Config.Animations.AssetIds).
+
 ### 4.3 VFX
 
 Hit sparks scaling with Percent (white → yellow → red); smoke launch trail above 100%; comic "POW" KO starburst +

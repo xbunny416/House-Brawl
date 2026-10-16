@@ -10,7 +10,8 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   2026-10-16). **Phase 2 in progress:** 2.1 Round rewards, 2.2 Fighting styles, 2.3 Cosmetics + Locker and 2.4 Shop
   are built (2.2–2.4 not yet playtested; the Wrecker parry needs two players). Owner's lobby rework (2026-10-16):
   enclosed hideout bar lobby, join pad to enter rounds, no Training Yard. 2.5 Junkyard Isles + Neon Motel are built
-  (lobby rework and 2.5 not yet playtested). **Next step:** 2.6 Animations (R15).
+  (owner looked: Motel brightened, lobby TVs fixed). 2.6 Animations (scripted R15) are built, not yet playtested.
+  **Next step:** 2.7 VFX pass + Low Graphics setting.
 
 ## How this repo works
 
@@ -101,6 +102,12 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
 - **Shop:** purchases go through `Services/ShopService` (`Buy` remote → `StyleService.grant` /
   `CosmeticService.grant`); what is for sale, prices and the daily rotation are `Shared/ShopRules`, shared with the
   Shop UI so both show the same price.
+- **Animations** are scripted R15 poses: clips in `Shared/Animation/Clips` (sampled by the pure `Shared/Animation/Pose`),
+  played on every client by `Controllers/AnimationController`. Server code triggers a one-shot with
+  `Server/Visuals/Animate.play(character, clip, except?)` when an action really happens; looping states come from
+  replicated attributes (`ShoveCharging`, `HeldProp`); hits come from `CombatHit` (with the hitstun). A style's clips
+  are `Config.Styles.List[id].Animations`; an uploaded animation can replace any clip via
+  `Config.Animations.AssetIds`.
 - **Lobby menu screens** (Shop, Locker, later Quests, Daily Reward, Settings ...) register with
   `Controllers/MenuController.addScreen(text, order, gui, onOpen)`: a left-edge button, one screen open at a time,
   closed while fighting; the Menu action (M / D-pad Up) closes the open screen or opens the first one.
@@ -172,7 +179,7 @@ any errors are fixed before the next item.
 - [x] 2.3 Cosmetics system + Locker
 - [x] 2.4 Shop (styles, cosmetics, 24 h UTC daily rotation)
 - [x] 2.5 Junkyard Isles + Neon Motel maps (+ night lighting preset)
-- [ ] 2.6 Animations (R15)
+- [x] 2.6 Animations (R15)
 - [ ] 2.7 VFX pass + Low Graphics setting
 - [ ] 2.8 Music + SFX (per-map tracks, last-30 s tension layer)
 - [ ] 2.9 Tutorial + first-round tips (the Training Yard it was planned in was removed with the lobby rework on
@@ -220,6 +227,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | Owner's lobby rework: enclosed hideout bar lobby "The Hideout" (bar counter = Shop, vote TVs over the bar, ARENA door, lockers, jukebox, quest board, leaderboard screens, pool table, booths, lamps) replacing the Rust Diner rooftop; Training Yard removed (practice dummy is now a dev panel "Dummy" button); join pad: only players standing on it (not AFK) start the vote, vote and are taken into a round (Casual: stepping on joins mid-round), everyone else stays in the lobby; QueueStatus / PlayersQueued attributes, pad status lines on the HUD, vote panel only on the pad | #21 |
 | 2026-10-16 | 2.5 Junkyard Isles (dusk: scrap-heap centre, container stack, car pile, crane barge, barge, tire-stack ledges, sludge) + Neon Motel (night: motel roofs, pool roof, MOTEL sign roof, water-tower and billboard ledges, flooded street) arenas from layout code, shared maps/lib/Arena builder (Broken Highway output unchanged), 4 new structure types, NeonFlickerController, both maps in the vote; arena rules checked for every map | #22 |
 | 2026-10-16 | Owner's look at 2.5 + lobby: Neon Motel brighter (Night preset: moonlight 2, purple ambient, less fog; neon parapets, MOTEL sign and billboard cast light; 4 roof lamps; flicker switches their light too); lobby TVs now dark casings with glowing CRT screens, bar lamps moved between the TVs with dim amber bulbs | #23 |
+| 2026-10-16 | 2.6 Animations (scripted R15, bible §4.2): clips for the punch chain, bat / wrench swings, shovel sweeps, overhead smash, Shove charge + push, Wrecker parry, dash lean, grab, carry loop, throw, hit recoil, launch tumble (backflips through the hitstun) and the 4 victory emotes; pure Pose sampler; AnimationController layers them over the default animations on every client (blend in / out, joints the Animator leaves alone go back to rest); Animate remote + server hooks (CombatService, PropService), ShoveCharging attribute, hitstun in CombatHit; winners emote in the lobby after a round, equipping an emote previews it; optional uploaded animations per clip | #PR |
 
 ## Decisions and interpretations
 
@@ -299,7 +307,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   `Fighters` collision group, which does not collide with itself: no body-pushing someone along or off a ledge by
   walking into them (the "stacking push"), and dashes pass through players. Windups 0.05 s, dash 12 studs, camera
   shake 1 stud + 1.5° tilt over 0.35 s (removed again before each camera update, so it never drifts), attacker shake
-  0.6. Ragdoll / tumble on big launches is deferred to the animations step (2.6).
+  0.6. Ragdoll / tumble on big launches came with the animations step (2.6: the Tumble clip).
 - **2nd playtest fixes (2026-10-16):** throws were "really off": the server used its lagged view of the thrower and
   full gravity dropped a 90 studs/s throw ~6 studs over 30 studs. Now the client sends its facing and position with
   Punch (position used when within `Props.ThrowOriginTolerance` = 8 studs of the server's view), thrown props feel
@@ -321,7 +329,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   attributes and restored when the skin comes off), hats are welded parts on the Head (`Server/Visuals/Attached`,
   shared with style weapons), dash trails are a `Trail` on the root that `CombatService.Dashed` switches on for the
   dash, KO effects are a particle burst (at the victim for HP KOs; around the scorer for ring-outs, whose victims are
-  in the void). Victory emotes are data until animations (2.6); back items and name plates have no items yet (their
+  in the void). Victory emotes play as scripted clips (2.6); back items and name plates have no items yet (their
   Locker tabs stay hidden). `PremiumGold` (Premium) and `GoldTrail` (VIP) are exclusive: never sold for Scrap, granted
   in 3.1. Cosmetics can change any time; styles not mid-fight. The Locker opens from a new left-edge menu
   (`MenuController`, hidden while fighting). The developer panel's "All cosmetics" grants everything for testing.
@@ -336,6 +344,19 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   cosmetics) comes with 3.1. The Menu action now belongs to `MenuController`: it closes the open screen, or opens
   the Shop (gamepad: selects the first menu button). The developer panel's "+5000 Scrap" (`Config.Dev.GiveScrap`) is
   for testing purchases.
+- **Animations (2.6):** scripted, not uploaded assets (the bible allows "scripted"; nothing can be uploaded from a
+  code session and paid packs are out). Each frame, after Roblox's default walk / idle animations, the joints a clip
+  uses are blended toward its pose (`Motor6D.Transform` in `RunService.Stepped`); the legs keep walking unless the
+  clip moves them. Angles: X swings a limb forward / tilts the body back, Y turns left, Z swings a right limb out (a
+  left limb with −Z); Root offsets crouch or bob the whole body. Nothing replicates, so every client poses every
+  character from the same signals. The attacker sees their own swing when the server's Animate event comes back
+  (one round trip, like the hit itself); only the dash plays at once on the dasher's client. Punch chains: Brawler
+  Jab → Cross → Uppercut; Slugger and Wrecker SwingRight → SwingLeft → Smash; Scrapper low SweepRight → SweepLeft →
+  Smash. A hit with hitstun ≥ 0.6 s (the Tumble length) plays the tumble — backflips around the root for the whole
+  hitstun, the "ragdoll" from the 1st playtest — shorter hits a 0.6 s recoil; dashing out of a launch ends it. The
+  round's winners (placement 1, not AFK) play their equipped victory emote 1 s after the round (they are back in
+  the lobby, under the results panel); equipping an emote in the Locker plays it once as a preview. A real
+  animation made later in Studio can replace any clip: put its id in `Config.Animations.AssetIds`.
 - **Arenas (2.5):** the bible only names Junkyard Isles ("stacked car and container islands over toxic sludge") and
   Neon Motel ("sinking motel rooftops, flickering retro neon, pool on one roof"), so both follow Broken Highway's
   numbers (see the bible §3.2 "Every arena"): 1 centre + 4 sides + 2 ledges, gaps 8–14, ledges ≤ 6 above the
@@ -419,8 +440,8 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   fills bottom-to-top (a true radial ring needs an image asset).
 - **Props are plain blocks** (size / material / color from `Config.Props.Types`) until the art pass; a lit barrel turns
   Neon, explosions use Roblox's `Explosion` visual (no physics: `BlastPressure = 0`). Carry pose and throw animation
-  come with 2.6. Flights are simulated by the server (props are server-owned while flying), so throws look slightly
-  delayed on high ping.
+  are scripted clips (2.6). Flights are simulated by the server (props are server-owned while flying), so throws
+  look slightly delayed on high ping.
 - **Camera sensitivity** is saved and validated but not applied: Roblox does not let scripts change mouse/gamepad
   sensitivity. Needs a custom approach in 3.10.
 - **Studio input debug:** `Config.Dev.LogInput` prints every action and device change to Output in Studio playtests.
@@ -443,6 +464,8 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Owner's Roblox UserId** is needed for `Config.Dev.AllowedUserIds` before live testing of the developer panel.
 - **Shop NPC and Locker booth** in the lobby are not interactive yet (open the Shop / Locker from the left-edge menu).
   A ProximityPrompt needs its own key: E is Grab and X is Punch on gamepad. Worth doing with the lobby art pass.
-- **Victory emotes** can be bought and equipped but play nothing until animations (2.6).
+- **Animations are scripted poses** (2.6), tuned blind: angles may need flipping or softening after the first
+  playtest (e.g. an arm swinging the wrong way). Real animations can replace any clip later via
+  `Config.Animations.AssetIds` (made in Studio's Animation Editor or free Creator Store ones).
 - **Shop test (Studio):** dev panel → "+5000 Scrap" → Shop: buy a daily deal (20% off), a style (then Equip), check
   the Scrap chip drops; buying something you own or can't afford is refused with a message. Output shows `[Shop]`.

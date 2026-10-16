@@ -31,6 +31,7 @@ local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
 
 local Server = script.Parent.Parent
 local Carrier = require(Server:WaitForChild("Props"):WaitForChild("Carrier"))
+local Animate = require(Server:WaitForChild("Visuals"):WaitForChild("Animate"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
 
@@ -187,7 +188,8 @@ local function attach(prop: Prop, player: Player, character: Model, root: BasePa
 	weld.Part1 = part
 	weld.Parent = part
 	part:SetAttribute("Held", true)
-	character:SetAttribute("HeldProp", prop.TypeId)
+	character:SetAttribute("HeldProp", prop.TypeId) -- also the carry pose on every client
+	Animate.play(character, "Grab")
 	local slow = Config.Props.Classes[prop.Class].CarrySlow
 	CombatService.setSpeedModifier(character, CARRY_SPEED_KEY, if slow > 0 then 1 - slow else nil)
 	log(`{player.Name} grabbed {prop.TypeId}`)
@@ -454,6 +456,7 @@ local function throw(player: Player, facing: Vector3?, position: Vector3?): bool
 		return true -- throw cooldown
 	end
 	CombatService.breakShield(character)
+	Animate.play(character, "Throw")
 	local origin, direction = throwAim(player, root, facing, position)
 	-- A fresh copy flies, owned by the server: the held prop is part of the thrower's character (simulated by their
 	-- client), so the server cannot reliably take it over in the same frame. The held one is removed (its Destroying
