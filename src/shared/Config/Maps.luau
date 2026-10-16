@@ -23,8 +23,8 @@ local Maps: MapsConfig = {
 	KillYBelowLowestPlatform = 60,
 	List = {
 		BrokenHighway = { Enabled = true, Lighting = "Dusk" },
-		JunkyardIsles = { Enabled = false, Lighting = "Dusk" }, -- built in step 2.5
-		NeonMotel = { Enabled = false, Lighting = "Night" }, -- built in step 2.5
+		JunkyardIsles = { Enabled = true, Lighting = "Dusk" },
+		NeonMotel = { Enabled = true, Lighting = "Night" },
 	},
 }
 

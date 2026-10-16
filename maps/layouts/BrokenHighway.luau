@@ -9,27 +9,11 @@
 	Gameplay markers ride on their platform so they fall with it: 12 spawns, 14 loose prop spots,
 	4 breakable structures, 1 explosive barrel per side platform.
 ]]
+local Arena = require("../lib/Arena")
 local B = require("../lib/Builder")
 
-export type Platform = {
-	Id: string,
-	Kind: "Center" | "Side" | "Ledge",
-	Center: { number }, -- X, Z
-	Size: { number }, -- X, Z
-	Top: number,
-	Thickness: number,
-	Color: string,
-	Material: string,
-}
-
-type Spot = { number } -- X, Z relative to the platform's top centre
-
-type Contents = {
-	Spawns: { Spot }?,
-	Props: { Spot }?,
-	Explosive: Spot?,
-	Structures: { { Type: string, At: Spot, Yaw: number } }?,
-}
+type Platform = Arena.Platform
+type Contents = Arena.Contents
 
 local Layout = {}
 
@@ -142,20 +126,9 @@ Layout.Contents = {
 	},
 } :: { [string]: Contents }
 
-local KILL_DEPTH = 60 -- bible: KillY 60 studs below the lowest platform
-
 -- Lowest platform bottom (relative to the arena origin) minus the kill depth.
 function Layout.killY(): number
-	local lowest = math.huge
-	for _, platform in Layout.Platforms do
-		lowest = math.min(lowest, platform.Top - platform.Thickness)
-	end
-	return lowest - KILL_DEPTH
-end
-
-local function facingCenter(x: number, z: number): { number }
-	-- Yaw that points a marker's front (-Z) at the arena centre.
-	return { 0, math.deg(math.atan2(x, z)), 0 }
+	return Arena.killY(Layout.Platforms)
 end
 
 local function centerDecor(platform: Platform)
@@ -235,88 +208,43 @@ local function exitSign(at: { number }, facing: string)
 	})
 end
 
-local function buildPlatform(platform: Platform)
-	local contents = Layout.Contents[platform.Id] or {}
-	local centerX, centerZ = platform.Center[1], platform.Center[2]
-	local model = B.model(platform.Id, function()
-		B.within({ centerX, platform.Top, centerZ }, function()
-			B.slab({
-				Name = "Base",
-				Size = { platform.Size[1], platform.Thickness, platform.Size[2] },
-				Position = { 0, 0, 0 },
-				Color = platform.Color,
-				Material = platform.Material,
-				CastShadow = true,
-			})
-			-- Jagged broken underside.
-			B.part({
-				Name = "Underside",
-				Size = { platform.Size[1] * 0.7, 3, platform.Size[2] * 0.6 },
-				Position = { 0, -platform.Thickness - 1.2, 0 },
-				Rotation = { 0, 8, 4 },
-				Color = "ConcreteDark",
-				Material = "Concrete",
-			})
-			-- Overpass pillars hanging under the platform (decor only). Part of the platform so they crumble with it.
-			if platform.Kind ~= "Ledge" then
-				local diameter = if platform.Kind == "Center" then 8 else 5
-				local length = if platform.Kind == "Center" then 46 else 30
-				local offsets = if platform.Kind == "Center" then { -15, 15 } else { 0 }
-				for _, offset in offsets do
-					B.part({
-						Name = "Pillar",
-						Size = { length, diameter, diameter },
-						Position = { offset, -platform.Thickness - length / 2, 0 },
-						Rotation = { 0, 0, 90 },
-						Shape = "Cylinder",
-						Color = "Concrete",
-						Material = "Concrete",
-						CanCollide = false,
-					})
-				end
-			end
-
-			if platform.Kind == "Center" then
-				centerDecor(platform)
-			elseif platform.Id == "LedgeNE" then
-				exitSign({ 2, 2 }, "South")
-			elseif platform.Id == "LedgeSW" then
-				exitSign({ -2, -2 }, "North")
-			end
-
-			for index, spot in contents.Spawns or {} do
-				B.marker(
-					"SpawnPoint",
-					`Spawn{index}`,
-					{ spot[1], 0, spot[2] },
-					nil,
-					facingCenter(centerX + spot[1], centerZ + spot[2])
-				)
-			end
-			for index, spot in contents.Props or {} do
-				B.marker("PropSpot", `PropSpot{index}`, { spot[1], 0, spot[2] })
-			end
-			if contents.Explosive then
-				B.marker("ExplosiveSpot", "ExplosiveSpot", { contents.Explosive[1], 0, contents.Explosive[2] })
-			end
-			for index, structure in contents.Structures or {} do
-				B.marker(
-					"StructureSpot",
-					`StructureSpot{index}`,
-					{ structure.At[1], 0, structure.At[2] },
-					{ StructureType = structure.Type },
-					{ 0, structure.Yaw, 0 }
-				)
-			end
-		end)
-	end, {
-		PlatformId = platform.Id,
-		Kind = platform.Kind,
-		CanFall = platform.Kind ~= "Center",
+-- Decor on each platform (positions from its top centre). Part of the platform, so it crumbles with it.
+local function decorate(platform: Platform)
+	-- Jagged broken underside.
+	B.part({
+		Name = "Underside",
+		Size = { platform.Size[1] * 0.7, 3, platform.Size[2] * 0.6 },
+		Position = { 0, -platform.Thickness - 1.2, 0 },
+		Rotation = { 0, 8, 4 },
+		Color = "ConcreteDark",
+		Material = "Concrete",
 	})
-	model.PrimaryPart = model:FindFirstChild("Base")
-	model.ModelStreamingMode = B.Enum.ModelStreamingMode.Persistent
-	model:AddTag("Platform")
+	-- Overpass pillars hanging under the platform (decor only).
+	if platform.Kind ~= "Ledge" then
+		local diameter = if platform.Kind == "Center" then 8 else 5
+		local length = if platform.Kind == "Center" then 46 else 30
+		local offsets = if platform.Kind == "Center" then { -15, 15 } else { 0 }
+		for _, offset in offsets do
+			B.part({
+				Name = "Pillar",
+				Size = { length, diameter, diameter },
+				Position = { offset, -platform.Thickness - length / 2, 0 },
+				Rotation = { 0, 0, 90 },
+				Shape = "Cylinder",
+				Color = "Concrete",
+				Material = "Concrete",
+				CanCollide = false,
+			})
+		end
+	end
+
+	if platform.Kind == "Center" then
+		centerDecor(platform)
+	elseif platform.Id == "LedgeNE" then
+		exitSign({ 2, 2 }, "South")
+	elseif platform.Id == "LedgeSW" then
+		exitSign({ -2, -2 }, "North")
+	end
 end
 
 local function scenery(killY: number)
@@ -355,23 +283,7 @@ end
 
 -- Builds the arena model at `origin` (world position of the centre platform's top centre).
 function Layout.build(origin: { number }): any
-	local killY = Layout.killY()
-	return B.root(Layout.Id, function()
-		B.within(origin, function()
-			B.folder("Platforms", function()
-				for _, platform in Layout.Platforms do
-					buildPlatform(platform)
-				end
-			end)
-			B.folder("Scenery", function()
-				scenery(killY)
-			end)
-		end)
-	end, {
-		MapId = Layout.Id,
-		Lighting = Layout.Lighting,
-		KillY = origin[2] + killY,
-	})
+	return Arena.build(Layout :: any, origin, decorate, scenery)
 end
 
 return Layout

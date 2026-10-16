@@ -9,8 +9,8 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 - **Phase 1 (core loop) is built and playtested** (1.1–1.13; two rounds of owner playtest fixes, "all clear" on
   2026-10-16). **Phase 2 in progress:** 2.1 Round rewards, 2.2 Fighting styles, 2.3 Cosmetics + Locker and 2.4 Shop
   are built (2.2–2.4 not yet playtested; the Wrecker parry needs two players). Owner's lobby rework (2026-10-16):
-  enclosed hideout bar lobby, join pad to enter rounds, no Training Yard (not yet playtested). **Next step:** 2.5
-  Junkyard Isles + Neon Motel maps.
+  enclosed hideout bar lobby, join pad to enter rounds, no Training Yard. 2.5 Junkyard Isles + Neon Motel are built
+  (lobby rework and 2.5 not yet playtested). **Next step:** 2.6 Animations (R15).
 
 ## How this repo works
 
@@ -171,7 +171,7 @@ any errors are fixed before the next item.
 - [x] 2.2 Fighting styles: Slugger, Scrapper, Wrecker (parry) + welded weapon models
 - [x] 2.3 Cosmetics system + Locker
 - [x] 2.4 Shop (styles, cosmetics, 24 h UTC daily rotation)
-- [ ] 2.5 Junkyard Isles + Neon Motel maps (+ night lighting preset)
+- [x] 2.5 Junkyard Isles + Neon Motel maps (+ night lighting preset)
 - [ ] 2.6 Animations (R15)
 - [ ] 2.7 VFX pass + Low Graphics setting
 - [ ] 2.8 Music + SFX (per-map tracks, last-30 s tension layer)
@@ -218,6 +218,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 2.3 Cosmetics + Locker: launch catalog (skins, hats, dash trails, KO effects, victory emotes) with blockout visuals, CosmeticService (EquipCosmetic, skins / hats / trails / KO bursts), shared CosmeticRules, Visuals/Attached (shared with weapons), CombatService.Dashed, left-edge MenuController, Locker UI (styles + cosmetics), dev "All cosmetics" | #19 |
 | 2026-10-16 | 2.4 Shop: ShopService (Buy remote: checks, spendScrap, grant; analytics), shared ShopRules (what is for sale, daily rotation of 4 cosmetics seeded by the UTC day at 20% off, purchase checks incl. price-changed), Shop UI (Daily deals with countdown, Styles, one tab per slot, purchase confirmation + Equip), MenuController screens (one open at a time, Menu action), dev "+5000 Scrap" | #20 |
 | 2026-10-16 | Owner's lobby rework: enclosed hideout bar lobby "The Hideout" (bar counter = Shop, vote TVs over the bar, ARENA door, lockers, jukebox, quest board, leaderboard screens, pool table, booths, lamps) replacing the Rust Diner rooftop; Training Yard removed (practice dummy is now a dev panel "Dummy" button); join pad: only players standing on it (not AFK) start the vote, vote and are taken into a round (Casual: stepping on joins mid-round), everyone else stays in the lobby; QueueStatus / PlayersQueued attributes, pad status lines on the HUD, vote panel only on the pad | #21 |
+| 2026-10-16 | 2.5 Junkyard Isles (dusk: scrap-heap centre, container stack, car pile, crane barge, barge, tire-stack ledges, sludge) + Neon Motel (night: motel roofs, pool roof, MOTEL sign roof, water-tower and billboard ledges, flooded street) arenas from layout code, shared maps/lib/Arena builder (Broken Highway output unchanged), 4 new structure types, NeonFlickerController, both maps in the vote; arena rules checked for every map | #PR |
 
 ## Decisions and interpretations
 
@@ -334,6 +335,16 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   cosmetics) comes with 3.1. The Menu action now belongs to `MenuController`: it closes the open screen, or opens
   the Shop (gamepad: selects the first menu button). The developer panel's "+5000 Scrap" (`Config.Dev.GiveScrap`) is
   for testing purchases.
+- **Arenas (2.5):** the bible only names Junkyard Isles ("stacked car and container islands over toxic sludge") and
+  Neon Motel ("sinking motel rooftops, flickering retro neon, pool on one roof"), so both follow Broken Highway's
+  numbers (see the bible §3.2 "Every arena"): 1 centre + 4 sides + 2 ledges, gaps 8–14, ledges ≤ 6 above the
+  centre, 12 spawns, 14 prop spots, 4 structures, 4 barrels, KillY 60 below. The maps spec checks these rules for
+  every arena. Shared code is `maps/lib/Arena.luau` (platform models, markers, KillY); each layout adds its own
+  decor and scenery. New structure types keep the bible's HP tiers: CrushedCarStack 100, ScrapPile 60 (Isles),
+  IceMachine 80, LawnChairStack 60 (Motel). Tall decor is at platform corners (crane mast) or walk-through
+  (crane arm, MOTEL sign tubes, buildings and scenery under the platforms); the pool water and rim are
+  walk-through. `NeonFlicker`-tagged parts blink on the client (`NeonFlickerController`; candidates for the Low
+  Graphics setting in 2.7). All three maps are enabled, so every vote offers all of them.
 - **Lobby rework (owner, 2026-10-16):** "I need an area for players to be in to start the round — right now every
   player has to play, no time to shop", "delete the Training Yard too", and "a closed-space lobby, hideout mixed with
   bar style, not open like this". So:
@@ -417,7 +428,9 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Data in Studio:** with "Studio Access to API Services" off, ProfileStore uses an in-memory store and prints
   "Roblox API services unavailable - data will not be saved". Turn it on to test real saving
   (`Config.Data.UseMockInStudio = true` forces the in-memory store even with access on).
-- **Arena gaps** of 9–12 studs need a jump + air dash (1.7); worth confirming every gap in the playtest.
+- **Arena gaps** of 8.5–12 studs (all three arenas) need a jump + air dash (1.7); worth confirming every gap in the
+  playtest, and the 6-stud-high ledges (diagonal gaps 8.5–10). Neon Motel is the first night map: check it is not
+  too dark (Night preset + neon).
 - **Perfect Dodge feedback** (blue flash, chime, "+5") comes with VFX/SFX/HUD (2.7, 2.8, 1.12); for now Studio's
   Output shows `PERFECT DODGE`. Rounds count them (stat + standings); the +5 Scrap is paid with round rewards (2.1).
 - **Dash movement is client-side** (clients simulate their character), so the once-per-jump air rule is enforced by

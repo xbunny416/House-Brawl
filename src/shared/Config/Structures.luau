@@ -40,6 +40,44 @@ local Structures: StructuresConfig = {
 			Material = "Concrete",
 			Color = "#E8742A",
 		},
+		-- Junkyard Isles (step 2.5; HP tiers as on Broken Highway: 100 / 80 / 60).
+		CrushedCarStack = {
+			Health = 100,
+			MinDrops = 2,
+			MaxDrops = 4,
+			DropTable = { "CarDoor", "Tire", "Barrel" },
+			Size = { X = 5, Y = 5, Z = 8 },
+			Material = "CorrodedMetal",
+			Color = "#6E5A4A",
+		},
+		ScrapPile = {
+			Health = 60,
+			MinDrops = 2,
+			MaxDrops = 4,
+			DropTable = { "Crate", "Bucket", "Tire" },
+			Size = { X = 6, Y = 3, Z = 6 },
+			Material = "CorrodedMetal",
+			Color = "#7A6A55",
+		},
+		-- Neon Motel (step 2.5).
+		IceMachine = {
+			Health = 80,
+			MinDrops = 2,
+			MaxDrops = 4,
+			DropTable = { "VendingChunk", "Bucket", "Crate" },
+			Size = { X = 4, Y = 6, Z = 3 },
+			Material = "Metal",
+			Color = "#9FD6E0",
+		},
+		LawnChairStack = {
+			Health = 60,
+			MinDrops = 2,
+			MaxDrops = 4,
+			DropTable = { "Chair", "Bucket", "Crate" },
+			Size = { X = 5, Y = 3, Z = 3 },
+			Material = "SmoothPlastic",
+			Color = "#3FB8AF",
+		},
 	},
 }
 

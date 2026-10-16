@@ -50,16 +50,28 @@ return {
 		end
 	end,
 	["every arena structure spot names a known structure with a blockout size"] = function()
-		local BrokenHighway = require("../../maps/layouts/BrokenHighway")
-		local count = 0
-		for _, contents in BrokenHighway.Contents do
-			for _, structure in contents.Structures or {} do
-				count += 1
-				local typeConfig = Config.Structures.Types[structure.Type]
-				expect.truthy(typeConfig, structure.Type)
-				expect.truthy(typeConfig.Size.X > 0 and typeConfig.Size.Y > 0 and typeConfig.Size.Z > 0, "size")
+		for _, layout in
+			{
+				require("../../maps/layouts/BrokenHighway"),
+				require("../../maps/layouts/JunkyardIsles"),
+				require("../../maps/layouts/NeonMotel"),
+			}
+		do
+			local count = 0
+			for _, contents in layout.Contents do
+				for _, structure in contents.Structures or {} do
+					count += 1
+					local typeConfig = Config.Structures.Types[structure.Type]
+					expect.truthy(typeConfig, `{layout.Id} {structure.Type}`)
+					expect.truthy(typeConfig.Size.X > 0 and typeConfig.Size.Y > 0 and typeConfig.Size.Z > 0, "size")
+				end
 			end
+			expect.equal(count, 4, `{layout.Id}: 4 breakable structures (as on Broken Highway, bible)`)
 		end
-		expect.equal(count, 4, "bible: 4 breakable structures on Broken Highway")
+	end,
+	["new structure types keep the bible's HP tiers (100 / 80 / 60)"] = function()
+		for typeId, structure in Config.Structures.Types do
+			expect.truthy(table.find({ 100, 80, 60 }, structure.Health), `{typeId} HP {structure.Health}`)
+		end
 	end,
 }

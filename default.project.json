@@ -17,6 +17,12 @@
 				"$className": "Folder",
 				"BrokenHighway": {
 					"$path": "maps/generated/BrokenHighway.rbxmx"
+				},
+				"JunkyardIsles": {
+					"$path": "maps/generated/JunkyardIsles.rbxmx"
+				},
+				"NeonMotel": {
+					"$path": "maps/generated/NeonMotel.rbxmx"
 				}
 			}
 		},
