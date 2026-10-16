@@ -155,13 +155,25 @@ function MapService.getArena(): (Model?, string?)
 	return activeArena, activeMapId
 end
 
--- Tagged parts of a kind (e.g. "SpawnPoint", "PropSpot") inside the active arena.
+-- False for markers on a platform that is crumbling or falling (its "Crumbling" attribute is set).
+local function onSolidGround(marker: Instance, arena: Model): boolean
+	local node = marker.Parent
+	while node and node ~= arena do
+		if node:HasTag("Platform") then
+			return node:GetAttribute("Crumbling") ~= true
+		end
+		node = node.Parent
+	end
+	return true
+end
+
+-- Tagged parts of a kind (e.g. "SpawnPoint", "PropSpot") inside the active arena, skipping crumbling platforms.
 function MapService.getArenaMarkers(tag: string): { BasePart }
 	local markers: { BasePart } = {}
 	local arena = activeArena
 	if arena then
 		for _, instance in CollectionService:GetTagged(tag) do
-			if instance:IsA("BasePart") and instance:IsDescendantOf(arena) then
+			if instance:IsA("BasePart") and instance:IsDescendantOf(arena) and onSolidGround(instance, arena) then
 				table.insert(markers, instance)
 			end
 		end
