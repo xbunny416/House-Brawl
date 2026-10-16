@@ -408,7 +408,38 @@ local function endFlight(prop: Prop, restAt: Vector3?)
 end
 
 -- Holding a prop turns Punch into a throw. Returns true when the Punch was used up by the prop.
-local function throw(player: Player): boolean
+local function flat(vector: Vector3): Vector3?
+	local flatVector = Vector3.new(vector.X, 0, vector.Z)
+	return if flatVector.Magnitude > 1e-3 then flatVector.Unit else nil
+end
+
+-- Where a throw starts and which way it goes (flat). Uses the thrower's own view (`facing` / `position` from their
+-- client, sanity-checked) so the throw leaves from where they see themselves, then bends toward a fighter inside
+-- the aim-assist cone.
+local function throwAim(player: Player, root: BasePart, facing: Vector3?, position: Vector3?): (Vector3, Vector3)
+	local origin = root.Position
+	if position and (position - origin).Magnitude <= Config.Props.ThrowOriginTolerance then
+		origin = position
+	end
+	local direction = (facing and flat(facing)) or flat(root.CFrame.LookVector) or Vector3.zAxis
+	local targets: { { X: number, Z: number } } = {}
+	local positions: { Vector3 } = {}
+	for _, character in CombatService.combatants() do
+		local target = rootOf(character)
+		if character ~= player.Character and target and CombatService.isTarget(character, origin) then
+			local offset = target.Position - origin
+			table.insert(targets, { X = offset.X, Z = offset.Z })
+			table.insert(positions, target.Position)
+		end
+	end
+	local index = Formulas.aimAssistIndex(direction.X, direction.Z, targets)
+	if index then
+		direction = flat(positions[index] - origin) or direction
+	end
+	return origin, direction
+end
+
+local function throw(player: Player, facing: Vector3?, position: Vector3?): boolean
 	local carrier = carriers[player]
 	if carrier == nil or carrier.Held == nil then
 		return false
@@ -423,12 +454,14 @@ local function throw(player: Player): boolean
 		return true -- throw cooldown
 	end
 	CombatService.breakShield(character)
+	local origin, direction = throwAim(player, root, facing, position)
 	-- A fresh copy flies, owned by the server: the held prop is part of the thrower's character (simulated by their
 	-- client), so the server cannot reliably take it over in the same frame. The held one is removed (its Destroying
 	-- handler gives the thrower their speed back).
 	local size = held.Part.Size
 	local reach = math.max(size.X, size.Y, size.Z) / 2 + 1
-	local prop = makeProp(held.TypeId, root.CFrame * CFrame.new(0, THROW_HEIGHT, -reach), held.Zone, nil)
+	local start = CFrame.lookAt(origin, origin + direction) * CFrame.new(0, THROW_HEIGHT, -reach)
+	local prop = makeProp(held.TypeId, start, held.Zone, nil)
 	if held.FuseAt and prop then
 		prop.FuseAt, prop.Igniter = held.FuseAt, held.Igniter
 		prop.Part.Material = Enum.Material.Neon
@@ -443,8 +476,7 @@ local function throw(player: Player): boolean
 	pcall(function()
 		part:SetNetworkOwner(nil)
 	end)
-	local look = root.CFrame.LookVector
-	local vx, vy, vz = Formulas.throwVelocity(look.X, look.Z)
+	local vx, vy, vz = Formulas.throwVelocity(direction.X, direction.Z)
 	part.AssemblyLinearVelocity = Vector3.new(vx, vy, vz)
 	part.AssemblyAngularVelocity = Vector3.new(rng:NextNumber(-1, 1), rng:NextNumber(-1, 1), 0) * THROW_SPIN
 	prop.Thrower = player
@@ -467,11 +499,13 @@ local function combatantOf(instance: Instance, candidates: { Instance }): Model?
 end
 
 -- Moves a flight one frame: the first fighter in the way is hit, anything else ends the flight.
-local function sweep(prop: Prop)
+local function sweep(prop: Prop, deltaTime: number)
 	local part = prop.Part
 	local from = prop.LastPosition
 	local delta = part.Position - from
 	prop.LastPosition = part.Position
+	-- Thrown props feel only part of gravity, for a flatter, more accurate throw.
+	part.AssemblyLinearVelocity += Vector3.yAxis * Workspace.Gravity * (1 - Config.Props.ThrowGravityScale) * deltaTime
 	if os.clock() - prop.FlightStartedAt > FLIGHT_MAX_TIME then
 		endFlight(prop)
 		return
@@ -628,12 +662,12 @@ function PropService.Init(_self: any)
 	end)
 
 	-- Holding a prop: Punch throws it and Shove is blocked.
-	CombatService.setInterceptor(function(player: Player, attack: string): boolean
+	CombatService.setInterceptor(function(player: Player, attack: string, facing: Vector3?, position: Vector3?): boolean
 		if heldBy(player) == nil then
 			return false
 		end
 		if attack == "Punch" then
-			throw(player)
+			throw(player, facing, position)
 		end
 		return true
 	end)
@@ -678,7 +712,7 @@ function PropService.Start(_self: any)
 	RunService.Heartbeat:Connect(function(deltaTime: number)
 		for _, prop in props do
 			if prop.Flying then
-				sweep(prop)
+				sweep(prop, deltaTime)
 			end
 		end
 		elapsed += deltaTime

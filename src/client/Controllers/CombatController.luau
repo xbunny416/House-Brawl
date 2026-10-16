@@ -28,7 +28,14 @@ local dragged = 0
 
 local function onActionBegan(action: string)
 	if action == "Attack" then
-		Net.fire("Punch")
+		-- Our facing and position as we see them; the server uses them to aim a throw (when holding a prop).
+		local character = player.Character
+		local root = character and character:FindFirstChild("HumanoidRootPart")
+		if root and root:IsA("BasePart") then
+			Net.fire("Punch", root.CFrame.LookVector, root.Position)
+		else
+			Net.fire("Punch")
+		end
 	elseif action == "Shove" then
 		charging = true
 		dragged = 0

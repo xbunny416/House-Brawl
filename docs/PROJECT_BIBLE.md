@@ -167,8 +167,9 @@ billboards, Codes jukebox, Training Yard ramp with a dummy and a small gap to pr
 **Props (grab & throw):**
 
 - Grab range 6 studs (server-checked). Hold 1 prop. Holding replaces Punch with Throw and blocks Shove.
-- Throw speed 90 studs/s, slight arc, the way the character faces (owner's choice). Thrown and dropped props despawn 8 s
-  after landing. Max 40 props per arena.
+- Throw speed 90 studs/s the way the character faces (owner's choice), with a slight arc under 25% gravity so long
+  throws stay level, and a gentle aim assist toward a fighter within 15° (80 studs). Thrown and dropped props despawn
+  8 s after landing. Max 40 props per arena.
 
 | Class | Examples | Damage / Percent | KB scale | Carrier slow |
 | --- | --- | --- | --- | --- |

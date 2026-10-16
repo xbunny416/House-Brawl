@@ -59,6 +59,10 @@ export type Blow = {
 
 type KnockOutHandler = (character: Model, killer: Player?, cause: KOCause, weapon: string?) -> ()
 
+-- Takes over an attack intent (returns true when it did). `facing` / `position`: the attacker's facing and position
+-- on their own screen, sent with Punch (unchecked; a user must sanity-check them).
+export type Interceptor = (player: Player, attack: Formulas.AttackName, facing: Vector3?, position: Vector3?) -> boolean
+
 type Fighter = Fighter.Fighter
 
 -- One attack on its way to the hit check.
@@ -96,7 +100,7 @@ local fighters: { [Model]: Fighter } = {}
 local knockedOut: { [Model]: boolean } = {}
 local speedModifiers: { [Model]: { [string]: number } } = {}
 local modeId: string = Config.Modes.Default
-local interceptor: ((player: Player, attack: Formulas.AttackName) -> boolean)? = nil
+local interceptor: Interceptor? = nil
 
 local function isStudioFlag(flag: boolean): boolean
 	return flag and RunService:IsStudio()
@@ -305,7 +309,7 @@ end
 
 -- Lets another system take over an attack intent before CombatService handles it. The interceptor returns true
 -- when it took the intent (e.g. a player holding a prop: Punch throws it, Shove is blocked).
-function CombatService.setInterceptor(handler: (player: Player, attack: Formulas.AttackName) -> boolean)
+function CombatService.setInterceptor(handler: Interceptor)
 	interceptor = handler
 end
 
@@ -346,6 +350,11 @@ local function canBeHit(victim: Model, attackerInArena: boolean): boolean
 	end
 	local root = rootOf(victim)
 	return attackerInArena and root ~= nil and MapService.getZone(root.Position) == "Arena"
+end
+
+-- True if an attack coming from `from` could hit `victim` (alive, not knocked out, PvP rules for that zone).
+function CombatService.isTarget(victim: Model, from: Vector3): boolean
+	return canBeHit(victim, MapService.getZone(from) == "Arena")
 end
 
 -- The combatant a part belongs to (walks up past accessories and welded models).
@@ -571,14 +580,14 @@ local function fighterOf(player: Player): (Model?, Fighter?)
 	return character, fighters[character]
 end
 
-local function intercepted(player: Player, attack: Formulas.AttackName): boolean
+local function intercepted(player: Player, attack: Formulas.AttackName, facing: Vector3?, position: Vector3?): boolean
 	local handler = interceptor
-	return handler ~= nil and handler(player, attack)
+	return handler ~= nil and handler(player, attack, facing, position)
 end
 
-local function onPunch(player: Player)
+local function onPunch(player: Player, facing: Vector3?, position: Vector3?)
 	local character, fighter = fighterOf(player)
-	if character == nil or fighter == nil or intercepted(player, "Punch") then
+	if character == nil or fighter == nil or intercepted(player, "Punch", facing, position) then
 		return
 	end
 	local styleId = styleOf(player)
