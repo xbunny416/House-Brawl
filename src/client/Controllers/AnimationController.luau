@@ -29,11 +29,24 @@ local DashController = require(script.Parent:WaitForChild("DashController"))
 
 local DUMMY_TAG = "TrainingDummy"
 
+-- R6 joint names → the R15 names the clips use (R6 has no waist, elbows, wrists, knees or ankles).
+local R6_JOINTS: { [string]: string } = {
+	RootJoint = "Root",
+	Neck = "Neck",
+	["Right Shoulder"] = "RightShoulder",
+	["Left Shoulder"] = "LeftShoulder",
+	["Right Hip"] = "RightHip",
+	["Left Hip"] = "LeftHip",
+}
+
+-- One joint a clip can turn: a Motor6D (through C0) or an AnimationConstraint (through its parent-side
+-- Attachment0); `Rest` is that offset before any clip turned it.
+type Joint = { Motor: Motor6D?, Attachment: Attachment?, Rest: CFrame }
+
 type Playing = { Clip: Pose.Clip, Name: string, StartedAt: number, Length: number? }
 type Rig = {
-	Joints: { [string]: Motor6D },
-	RestC0: { [Motor6D]: CFrame }, -- each joint's own C0, before any clip turned it
-	Posed: { [Motor6D]: boolean }, -- joints a clip turned last frame
+	Joints: { [string]: Joint },
+	Posed: { [string]: boolean }, -- joints a clip turned last frame
 	OneShot: Playing?,
 	Loop: Playing?,
 	Fading: Playing?, -- the loop that just ended, blending out
@@ -55,25 +68,65 @@ local function log(message: string)
 	end
 end
 
+-- The clip joint name an instance stands for (R15 names as they are, R6 names mapped), or nil.
+local function clipJointOf(instance: Instance): string?
+	if table.find(Pose.Joints, instance.Name) then
+		return instance.Name
+	end
+	return R6_JOINTS[instance.Name]
+end
+
+local function findJoints(character: Model): { [string]: Joint }
+	local joints: { [string]: Joint } = {}
+	for _, descendant in character:GetDescendants() do
+		local name = clipJointOf(descendant)
+		local current = name and joints[name]
+		if name and (current == nil or current.Motor == nil) then
+			if descendant:IsA("Motor6D") then
+				joints[name] = { Motor = descendant, Rest = descendant.C0 }
+			elseif current == nil and descendant:IsA("AnimationConstraint") and descendant.Attachment0 then
+				local attachment = descendant.Attachment0 :: Attachment
+				joints[name] = { Attachment = attachment, Rest = attachment.CFrame }
+			end
+		end
+	end
+	return joints
+end
+
+-- Studio diagnostics: what a character without usable joints has instead (logged once per character).
+local reported: { [Model]: boolean } = {}
+local function reportMissingJoints(character: Model)
+	if reported[character] or not (RunService:IsStudio() and Config.Dev.LogAnimations) then
+		return
+	end
+	reported[character] = true
+	local found: { string } = {}
+	for _, descendant in character:GetDescendants() do
+		if descendant:IsA("JointInstance") or descendant:IsA("Constraint") or descendant:IsA("Bone") then
+			table.insert(found, `{descendant.ClassName} "{descendant.Name}" in {(descendant.Parent :: Instance).Name}`)
+		end
+	end
+	log(`no joints to animate on {character.Name}; it has: {if #found > 0 then table.concat(found, ", ") else "none"}`)
+end
+
 local function rigOf(character: Model): Rig?
 	local existing = rigs[character]
 	if existing then
 		return existing
 	end
-	local joints: { [string]: Motor6D } = {}
-	local rest: { [Motor6D]: CFrame } = {}
-	for _, descendant in character:GetDescendants() do
-		if descendant:IsA("Motor6D") and table.find(Pose.Joints, descendant.Name) then
-			joints[descendant.Name] = descendant
-			rest[descendant] = descendant.C0
-		end
-	end
+	local joints = findJoints(character)
 	if next(joints) == nil then
-		return nil -- not streamed in yet, or not an R15 rig
+		reportMissingJoints(character)
+		return nil -- not streamed in yet, or a rig we do not know
 	end
+	local kinds: { string } = {}
+	for name, joint in joints do
+		table.insert(kinds, `{name}:{if joint.Motor then "Motor6D" else "AnimationConstraint"}`)
+	end
+	table.sort(kinds)
+	log(`{character.Name}: {table.concat(kinds, " ")}`)
 	local rig: Rig = {
 		Joints = joints,
-		RestC0 = rest,
 		Posed = {},
 		OneShot = nil,
 		Loop = nil,
@@ -124,7 +177,7 @@ function AnimationController.play(character: Model, clipName: string, length: nu
 		log(`unknown clip {clipName}`)
 		return
 	elseif rig == nil then
-		log(`{clipName}: no R15 joints found on {character.Name}`)
+		log(`{clipName}: no joints to animate on {character.Name}`)
 		return
 	end
 	log(`{clipName} on {character.Name}`)
@@ -147,6 +200,22 @@ end
 local function toCFrame(values: { number }): CFrame
 	return CFrame.new(values[4], values[5], values[6])
 		* CFrame.fromEulerAnglesYXZ(math.rad(values[1]), math.rad(values[2]), math.rad(values[3]))
+end
+
+--[[
+	Turns a joint by `turn` (nil = back to rest). The turn is applied around the joint's pivot in the parent body
+	part's axes, whatever rotation the joint's own offset has (R15 offsets have none; R6 shoulders and hips are turned
+	90°), so a clip means the same on every rig.
+]]
+local function setTurn(joint: Joint, turn: CFrame?)
+	local rest = joint.Rest
+	local offset = if turn then CFrame.new(rest.Position) * turn * rest.Rotation else rest
+	local motor, attachment = joint.Motor, joint.Attachment
+	if motor then
+		motor.C0 = offset
+	elseif attachment then
+		attachment.CFrame = offset
+	end
 end
 
 local function update(character: Model, rig: Rig, t: number)
@@ -189,8 +258,8 @@ local function update(character: Model, rig: Rig, t: number)
 		table.insert(layers, { Sample = Pose.sample(oneShot.Clip, elapsed), Weight = weight })
 	end
 
-	local posed: { [Motor6D]: boolean } = {}
-	for name, motor in rig.Joints do
+	local posed: { [string]: boolean } = {}
+	for name, joint in rig.Joints do
 		local turn: CFrame? = nil
 		for _, layer in layers do
 			local values = layer.Sample[name]
@@ -199,10 +268,10 @@ local function update(character: Model, rig: Rig, t: number)
 			end
 		end
 		if turn then
-			motor.C0 = rig.RestC0[motor] * turn
-			posed[motor] = true
-		elseif rig.Posed[motor] then
-			motor.C0 = rig.RestC0[motor] -- the clip let go: back to rest
+			setTurn(joint, turn)
+			posed[name] = true
+		elseif rig.Posed[name] then
+			setTurn(joint, nil) -- the clip let go: back to rest
 		end
 	end
 	rig.Posed = posed
