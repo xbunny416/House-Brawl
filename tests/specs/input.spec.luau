@@ -13,6 +13,7 @@ local Settings = Roblox.require(Shared.Settings)
 local ActionMap = Roblox.require(Lib.ActionMap)
 local TouchLayout = Roblox.require(Lib.TouchLayout)
 local CameraShake = Roblox.require(Lib.CameraShake)
+local DashRules = Roblox.require(Lib.DashRules)
 
 local Controls = Config.Controls
 
@@ -241,6 +242,29 @@ return {
 			late += math.abs(lx) + math.abs(ly)
 		end
 		expect.truthy(late < early, "later frames shake less")
+	end,
+
+	-- Dash ------------------------------------------------------------------------------------------------------------
+	["dash: cooldown between dashes; ground dashes do not use the air dash"] = function()
+		local dash = Config.Combat.Dash
+		local state = DashRules.new()
+		expect.equal(DashRules.tryDash(state, 0, false, dash), true)
+		expect.equal(DashRules.tryDash(state, dash.Cooldown - 0.01, false, dash), false, "cooldown")
+		expect.near(DashRules.cooldownLeft(state, 1), dash.Cooldown - 1)
+		expect.equal(DashRules.tryDash(state, dash.Cooldown, true, dash), true, "air dash still available")
+		expect.equal(DashRules.cooldownLeft(state, 100), 0)
+	end,
+	["dash: once per stay in the air, again after landing"] = function()
+		local dash = Config.Combat.Dash
+		local state = DashRules.new()
+		expect.equal(DashRules.tryDash(state, 0, true, dash), true)
+		expect.equal(DashRules.tryDash(state, 10, true, dash), false, "second air dash before landing")
+		DashRules.landed(state)
+		expect.equal(DashRules.tryDash(state, 10, true, dash), true)
+	end,
+	["dash speed covers 18 studs in 0.25 s"] = function()
+		local Formulas = Roblox.require(Shared.Formulas)
+		expect.near(Formulas.dashSpeed() * Config.Combat.Dash.Duration, 18)
 	end,
 
 	-- Settings --------------------------------------------------------------------------------------------------------
