@@ -54,8 +54,9 @@ local Controls: ControlsConfig = {
 		Shove = { "ButtonY" },
 		Grab = { "ButtonB" },
 		Dash = { "ButtonR1" },
-		Scoreboard = { "ButtonSelect" },
-		Menu = { "ButtonStart" },
+		-- Not Select / Start: Roblox keeps those for its own menu and UI navigation (owner's choice, 2026-10-16).
+		Scoreboard = { "DPadDown" },
+		Menu = { "DPadUp" },
 		SpectatePrevious = { "DPadLeft" },
 		SpectateNext = { "DPadRight" },
 	},

@@ -17,6 +17,10 @@
 	Round rules (lives, respawns, scoring) live in RoundService, which replaces the knock-out handler and the
 	MapService fall handler. The defaults here (KO = back to the lobby with full HP and 0%) only run without it.
 	The spawn shield (CombatService.shield) blocks hits until it runs out or the fighter attacks.
+
+	Other systems hook in without CombatService knowing them: thrown props and explosions land through hitWith /
+	explode, Swung lets props and structures react to attack boxes, Hit reports every landed blow, the interceptor
+	can take over an attack intent (holding a prop turns Punch into Throw), and walk-speed modifiers stack.
 ]]
 local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
@@ -38,35 +42,59 @@ local MapService = require(script.Parent:WaitForChild("MapService"))
 
 export type KOCause = "Health" | "Fall"
 
+-- One blow on its way to a victim: a swing, a thrown prop or an explosion.
+export type Blow = {
+	Attacker: Player, -- gets the KO credit
+	AttackerCharacter: Model?, -- for hit feedback
+	Damage: number, -- Classic HP
+	Percent: number, -- Casual Percent
+	KnockbackScale: number,
+	Multiplier: number, -- extra knockback (finisher, charge, ...)
+	Source: string, -- "Punch", "Shove" or a prop type
+	Label: string, -- Studio log, e.g. "Punch 3"
+	Heavy: boolean, -- shakes the camera
+	Fallback: Vector3, -- launch direction when the victim is right on top of the blow's origin
+}
+
+type KnockOutHandler = (character: Model, killer: Player?, cause: KOCause, weapon: string?) -> ()
+
 type Fighter = Fighter.Fighter
 
 -- One attack on its way to the hit check.
 type Swing = {
 	Name: Formulas.AttackName,
-	Label: string, -- for the Studio log, e.g. "Punch 3" or "Shove 0.80 s"
+	Label: string,
 	Attack: Formulas.ResolvedAttack,
 	Multiplier: number, -- finisher / charge knockback multiplier
-	Heavy: boolean, -- shakes the camera
+	Heavy: boolean,
 }
 
 local DUMMY_TAG = "TrainingDummy"
 local SHIELD_NAME = "SpawnShield"
+local CHARGE_SPEED_KEY = "Charge"
 local HITBOX_FLASH_TIME = 0.25
 local HITBOX_HIT_COLOR = Color3.fromHex("#FF3B30")
 local HITBOX_MISS_COLOR = Color3.fromHex("#B0B0B0")
 
 local CombatService = {
 	Priority = -20,
-	-- (victim character, credited Player or nil, cause) whenever a combatant is knocked out (dummies included).
-	KnockedOut = Signal.new() :: Signal.Signal<Model, Player?, KOCause>,
+	-- (victim character, credited Player or nil, cause, weapon of the credited hit) whenever a combatant is knocked
+	-- out (dummies included).
+	KnockedOut = Signal.new() :: Signal.Signal<Model, Player?, KOCause, string?>,
 	-- (dodger character, attacker) when a dash started in the last moment before a hit (+Scrap at round end, and the
 	-- dodger's next hit gets bonus knockback).
 	PerfectDodged = Signal.new() :: Signal.Signal<Model, Player>,
+	-- (victim character, attacker) after every blow that landed.
+	Hit = Signal.new() :: Signal.Signal<Model, Player>,
+	-- (attacker, box CFrame, box size, Classic damage) for every Punch / Shove hit check, hit or miss.
+	Swung = Signal.new() :: Signal.Signal<Player, CFrame, Vector3, number>,
 }
 
 local fighters: { [Model]: Fighter } = {}
 local knockedOut: { [Model]: boolean } = {}
+local speedModifiers: { [Model]: { [string]: number } } = {}
 local modeId: string = Config.Modes.Default
+local interceptor: ((player: Player, attack: Formulas.AttackName) -> boolean)? = nil
 
 local function isStudioFlag(flag: boolean): boolean
 	return flag and RunService:IsStudio()
@@ -88,21 +116,45 @@ local function syncAttributes(character: Model, fighter: Fighter)
 	character:SetAttribute("Percent", fighter.Percent)
 end
 
+local function applySpeed(character: Model)
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	if humanoid == nil or Players:GetPlayerFromCharacter(character) == nil then
+		return
+	end
+	local multiplier = 1
+	local modifiers = speedModifiers[character]
+	if modifiers then
+		for _, factor in modifiers do
+			multiplier *= factor
+		end
+	end
+	humanoid.WalkSpeed = Config.World.WalkSpeed * multiplier
+end
+
+-- Sets (or with nil, removes) one named walk-speed multiplier on a player character, e.g. "Carry" = 0.85.
+-- All modifiers multiply together.
+function CombatService.setSpeedModifier(character: Model, key: string, multiplier: number?)
+	local modifiers = speedModifiers[character]
+	if modifiers == nil then
+		modifiers = {}
+		speedModifiers[character] = modifiers
+	end
+	if multiplier then
+		modifiers[key] = multiplier
+	else
+		modifiers[key] = nil
+	end
+	applySpeed(character)
+end
+
 -- Walk speed: slowed while a Shove is charging.
 local function setCharging(character: Model, charging: boolean)
-	local humanoid = character:FindFirstChildOfClass("Humanoid")
-	if humanoid and Players:GetPlayerFromCharacter(character) then
-		local slow = if charging then Config.Combat.Attacks.Shove.ChargeSlow else 0
-		humanoid.WalkSpeed = Config.World.WalkSpeed * (1 - slow)
-	end
+	local slow = Config.Combat.Attacks.Shove.ChargeSlow
+	CombatService.setSpeedModifier(character, CHARGE_SPEED_KEY, if charging then 1 - slow else nil)
 end
 
 -- Default knock-out handler (the round system replaces it): players go back to the lobby with a fresh fighter.
-local knockOutHandler: (character: Model, killer: Player?, cause: KOCause) -> () = function(
-	character: Model,
-	_killer: Player?,
-	_cause: KOCause
-)
+local knockOutHandler: KnockOutHandler = function(character: Model, _killer: Player?, _cause: KOCause, _weapon: string?)
 	local player = Players:GetPlayerFromCharacter(character)
 	if player then
 		CombatService.resetFighter(character)
@@ -126,6 +178,7 @@ end
 function CombatService.unregister(character: Model)
 	fighters[character] = nil
 	knockedOut[character] = nil
+	speedModifiers[character] = nil
 end
 
 -- Starts a new life for a combatant: full HP, 0%, no cooldowns.
@@ -133,6 +186,15 @@ function CombatService.resetFighter(character: Model)
 	if fighters[character] then
 		CombatService.register(character)
 	end
+end
+
+-- Every registered combatant character (players and dummies).
+function CombatService.combatants(): { Model }
+	local list: { Model } = {}
+	for character in fighters do
+		table.insert(list, character)
+	end
+	return list
 end
 
 local function removeShieldVisual(character: Model)
@@ -160,6 +222,15 @@ function CombatService.shield(character: Model, seconds: number)
 	end)
 end
 
+-- Ends a spawn shield early (the fighter attacked in a way CombatService does not see, e.g. a throw).
+function CombatService.breakShield(character: Model)
+	local fighter = fighters[character]
+	if fighter then
+		Fighter.breakShield(fighter)
+		removeShieldVisual(character)
+	end
+end
+
 -- Adds Percent outside of hits (Casual passive gain).
 function CombatService.addPercent(character: Model, amount: number)
 	local fighter = fighters[character]
@@ -171,6 +242,12 @@ end
 
 function CombatService.getFighter(character: Model): Fighter?
 	return fighters[character]
+end
+
+-- True while the character can attack (registered, alive, not knocked out or in hitstun).
+function CombatService.canAct(character: Model): boolean
+	local fighter = fighters[character]
+	return fighter ~= nil and isAlive(character) and not knockedOut[character] and Fighter.canAct(fighter, os.clock())
 end
 
 function CombatService.getMode(): string
@@ -187,8 +264,14 @@ function CombatService.setMode(newModeId: string)
 end
 
 -- Replaces what happens to a knocked-out player (the round system: lives, respawn delay, spectate).
-function CombatService.setKnockOutHandler(handler: (character: Model, killer: Player?, cause: KOCause) -> ())
+function CombatService.setKnockOutHandler(handler: KnockOutHandler)
 	knockOutHandler = handler
+end
+
+-- Lets another system take over an attack intent before CombatService handles it. The interceptor returns true
+-- when it took the intent (e.g. a player holding a prop: Punch throws it, Shove is blocked).
+function CombatService.setInterceptor(handler: (player: Player, attack: Formulas.AttackName) -> boolean)
+	interceptor = handler
 end
 
 -- Knocks a combatant out (HP reached 0, or it fell). The last attacker within KOCreditWindow gets the credit.
@@ -199,16 +282,18 @@ function CombatService.knockOut(character: Model, cause: KOCause)
 	end
 	knockedOut[character] = true
 	fighter.Defeated = true
-	local killer = Fighter.koCredit(fighter, os.clock()) :: Player?
+	local credited, weapon = Fighter.koCredit(fighter, os.clock())
+	local killer = credited :: Player?
 	if killer and (killer.Parent ~= Players or killer.Character == character) then
-		killer = nil
+		killer, weapon = nil, nil
 	end
 	if isStudioFlag(Config.Dev.LogCombat) then
-		print(`[Combat] KO: {character.Name} ({cause}), credit: {if killer then killer.Name else "none"}`)
+		local credit = if killer then `{killer.Name} ({weapon})` else "none"
+		print(`[Combat] KO: {character.Name} ({cause}), credit: {credit}`)
 	end
-	CombatService.KnockedOut:Fire(character, killer, cause)
+	CombatService.KnockedOut:Fire(character, killer, cause, weapon)
 	if not character:HasTag(DUMMY_TAG) then
-		knockOutHandler(character, killer, cause)
+		knockOutHandler(character, killer, cause, weapon)
 	end
 end
 
@@ -218,7 +303,7 @@ end
 
 -- PvP only counts inside the arena; training dummies can always be hit.
 local function canBeHit(victim: Model, attackerInArena: boolean): boolean
-	if not isAlive(victim) or knockedOut[victim] then
+	if fighters[victim] == nil or not isAlive(victim) or knockedOut[victim] then
 		return false
 	end
 	if victim:HasTag(DUMMY_TAG) then
@@ -285,53 +370,44 @@ local function showHitbox(box: CFrame, size: Vector3, hit: boolean)
 	Debris:AddItem(part, HITBOX_FLASH_TIME)
 end
 
--- A hit met a dashing or shielded victim: no damage or knockback. A Perfect Dodge is announced.
-local function dodged(attacker: Player, victim: Model, swing: Swing, evade: Fighter.Evade)
+-- A blow met a dashing or shielded victim: no damage or knockback. A Perfect Dodge is announced.
+local function dodged(victim: Model, blow: Blow, evade: Fighter.Evade)
 	if evade == "Perfect" then
-		CombatService.PerfectDodged:Fire(victim, attacker)
+		CombatService.PerfectDodged:Fire(victim, blow.Attacker)
 	end
 	if isStudioFlag(Config.Dev.LogCombat) then
 		local kind = if evade == "Perfect" then "PERFECT DODGE" elseif evade == "Shielded" then "shielded" else "dodged"
-		print(`[Combat] {victim.Name} {kind}: {attacker.Name} {swing.Label}`)
+		print(`[Combat] {victim.Name} {kind}: {blow.Attacker.Name} {blow.Label}`)
 	end
 end
 
--- Applies one swing to one victim. `bonus` is the attacker's Perfect Dodge knockback bonus (1 when none).
--- Returns false when the victim dodged it.
-local function applyHit(
-	attacker: Player,
-	attackerCharacter: Model,
-	attackerRoot: BasePart,
-	victim: Model,
-	swing: Swing,
-	bonus: number
-): boolean
+-- Applies one blow to one victim, launching it along `away` (flat; blow.Fallback when ~zero).
+-- Returns false when the victim dodged or was shielded.
+local function land(victim: Model, blow: Blow, away: Vector3): boolean
 	local fighter = fighters[victim]
-	local victimRoot = rootOf(victim)
-	if fighter == nil or victimRoot == nil then
+	if fighter == nil or rootOf(victim) == nil then
 		return false
 	end
 	local now = os.clock()
 	local evade: Fighter.Evade = Fighter.evade(fighter, now)
 	if evade == "Perfect" or evade == "Dodged" or evade == "Shielded" then
-		dodged(attacker, victim, swing, evade)
+		dodged(victim, blow, evade)
 		return false
 	end
-	local attack = swing.Attack
 	local result = Fighter.takeHit(fighter, {
-		Damage = attack.Damage,
-		Percent = attack.Percent,
-		KnockbackScale = attack.KnockbackScale,
-		Multiplier = swing.Multiplier * bonus,
-	}, attacker, now)
+		Damage = blow.Damage,
+		Percent = blow.Percent,
+		KnockbackScale = blow.KnockbackScale,
+		Multiplier = blow.Multiplier,
+		Source = blow.Source,
+	}, blow.Attacker, now)
 	if result.InterruptedCharge then
 		setCharging(victim, false)
 	end
 	syncAttributes(victim, fighter)
 
-	local away = victimRoot.Position - attackerRoot.Position
-	local look = attackerRoot.CFrame.LookVector
-	local vx, vy, vz = Formulas.launchVelocity(away.X, away.Z, Formulas.launchSpeed(result.Force), look.X, look.Z)
+	local speed = Formulas.launchSpeed(result.Force)
+	local vx, vy, vz = Formulas.launchVelocity(away.X, away.Z, speed, blow.Fallback.X, blow.Fallback.Z)
 	local velocity = Vector3.new(vx, vy, vz)
 	local victimPlayer = Players:GetPlayerFromCharacter(victim)
 	if victimPlayer then
@@ -339,21 +415,66 @@ local function applyHit(
 	else
 		Launch.apply(victim, velocity, result.Hitstun)
 	end
-	Net.fireAll("CombatHit", attackerCharacter, victim, swing.Name, swing.Heavy, result.Trail)
+	Net.fireAll("CombatHit", blow.AttackerCharacter, victim, blow.Source, blow.Heavy, result.Trail)
+	CombatService.Hit:Fire(victim, blow.Attacker)
 
 	if isStudioFlag(Config.Dev.LogCombat) then
 		local hp = if victim:GetAttribute("HP") ~= nil then ` HP {fighter.Health},` else ""
 		print(
-			`[Combat] {attacker.Name} {swing.Label} -> {victim.Name}:{hp} {string.format("%.0f", fighter.Percent)}%,`
+			`[Combat] {blow.Attacker.Name} {blow.Label} -> {victim.Name}:{hp} {string.format("%.0f", fighter.Percent)}%,`
 				.. ` knockback {string.format("%.1f", result.Force)}, hitstun {string.format("%.2f", result.Hitstun)} s`
 				.. (if result.Trail then ", trail" else "")
-				.. (if bonus > 1 then ", Perfect Dodge bonus" else "")
+				.. (if blow.Multiplier > 1 then ` (x{string.format("%.2f", blow.Multiplier)})` else "")
 		)
 	end
 	if result.Defeated then
 		CombatService.knockOut(victim, "Health")
 	end
 	return true
+end
+
+-- The attacker's Perfect Dodge knockback bonus (1 when none), and a function that uses it up.
+local function dodgeBonus(attacker: Player): (number, () -> ())
+	local character = attacker.Character
+	local fighter = character and fighters[character]
+	if fighter == nil then
+		return 1, function() end
+	end
+	return Fighter.dodgeBonus(fighter, os.clock()), function()
+		Fighter.clearDodgeBonus(fighter)
+	end
+end
+
+-- A thrown prop (or another projectile) at `at`, flying along `direction`, hits `victim`. PvP rules use the zone of
+-- `at`. Returns true if the blow landed.
+function CombatService.hitWith(victim: Model, blow: Blow, at: Vector3, direction: Vector3): boolean
+	if not canBeHit(victim, MapService.getZone(at) == "Arena") then
+		return false
+	end
+	local bonus, useBonus = dodgeBonus(blow.Attacker)
+	local boosted = table.clone(blow)
+	boosted.Multiplier *= bonus
+	local landed = land(victim, boosted, Vector3.new(direction.X, 0, direction.Z))
+	if landed and bonus > 1 then
+		useBonus()
+	end
+	return landed
+end
+
+-- An explosion at `center`: every combatant within `radius` studs (the attacker too) takes the blow and is knocked
+-- away from the center. Returns the characters that were hit.
+function CombatService.explode(center: Vector3, radius: number, blow: Blow): { Model }
+	local inArena = MapService.getZone(center) == "Arena"
+	local hit: { Model } = {}
+	for _, character in CombatService.combatants() do
+		local root = rootOf(character)
+		if root and (root.Position - center).Magnitude <= radius and canBeHit(character, inArena) then
+			if land(character, blow, root.Position - center) then
+				table.insert(hit, character)
+			end
+		end
+	end
+	return hit
 end
 
 -- Runs when an attack's windup ends. The swing is lost if the attacker was hit, knocked out or respawned meanwhile.
@@ -370,15 +491,30 @@ local function strike(attacker: Player, character: Model, fighter: Fighter, star
 	local box = root.CFrame * CFrame.new(0, 0, -swing.Attack.Hitbox.Z / 2)
 	local victims = findVictims(character, root, box, size)
 	showHitbox(box, size, #victims > 0)
-	local bonus = Fighter.dodgeBonus(fighter, os.clock())
+	CombatService.Swung:Fire(attacker, box, size, swing.Attack.Damage)
+
+	local bonus, useBonus = dodgeBonus(attacker)
+	local blow: Blow = {
+		Attacker = attacker,
+		AttackerCharacter = character,
+		Damage = swing.Attack.Damage,
+		Percent = swing.Attack.Percent,
+		KnockbackScale = swing.Attack.KnockbackScale,
+		Multiplier = swing.Multiplier * bonus,
+		Source = swing.Name,
+		Label = swing.Label,
+		Heavy = swing.Heavy,
+		Fallback = root.CFrame.LookVector,
+	}
 	local landed = false
 	for _, victim in victims do
-		if applyHit(attacker, character, root, victim, swing, bonus) then
+		local victimRoot = rootOf(victim)
+		if victimRoot and land(victim, blow, victimRoot.Position - root.Position) then
 			landed = true
 		end
 	end
 	if landed and bonus > 1 then
-		Fighter.clearDodgeBonus(fighter)
+		useBonus()
 	end
 end
 
@@ -400,9 +536,14 @@ local function fighterOf(player: Player): (Model?, Fighter?)
 	return character, fighters[character]
 end
 
+local function intercepted(player: Player, attack: Formulas.AttackName): boolean
+	local handler = interceptor
+	return handler ~= nil and handler(player, attack)
+end
+
 local function onPunch(player: Player)
 	local character, fighter = fighterOf(player)
-	if character == nil or fighter == nil then
+	if character == nil or fighter == nil or intercepted(player, "Punch") then
 		return
 	end
 	local styleId = styleOf(player)
@@ -437,7 +578,7 @@ local function onShove(player: Player, phase: string)
 	end
 	local now = os.clock()
 	if phase == "Start" then
-		if Fighter.startShove(fighter, now) then
+		if not intercepted(player, "Shove") and Fighter.startShove(fighter, now) then
 			setCharging(character, true)
 			removeShieldVisual(character) -- attacking ended the spawn shield
 		end
