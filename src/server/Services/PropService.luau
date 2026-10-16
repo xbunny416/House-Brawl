@@ -27,6 +27,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local Formulas = require(Shared:WaitForChild("Formulas"))
 local Net = require(Shared:WaitForChild("Net"))
+local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
 
 local Server = script.Parent.Parent
 local Carrier = require(Server:WaitForChild("Props"):WaitForChild("Carrier"))
@@ -71,7 +72,13 @@ local LANDING_SLOWDOWN = 0.3 -- share of its speed a prop keeps when its flight 
 local THROW_SPIN = 6 -- radians/s of tumble on a throw
 local TICK = 0.2 -- spots, despawns and fuses are checked this often; flights every frame
 
-local PropService = {}
+local PropService = {
+	-- (part hit, the prop class's Classic damage, thrower) when a thrown prop's flight ends on something that is not
+	-- a fighter (structures take damage from it).
+	Impact = Signal.new() :: Signal.Signal<BasePart, number, Player>,
+	-- (center, radius, Classic damage, credited player or nil) when a barrel explodes.
+	Exploded = Signal.new() :: Signal.Signal<Vector3, number, number, Player?>,
+}
 
 local props: { [BasePart]: Prop } = {}
 local spots: { Spot } = {}
@@ -225,7 +232,8 @@ local function forget(part: BasePart)
 	end
 end
 
-local function spawnProp(typeId: string, marker: BasePart, zone: Zone, spot: Spot?): Prop?
+-- Spawns a prop standing on `floor` (a CFrame at floor level).
+local function spawnProp(typeId: string, floor: CFrame, zone: Zone, spot: Spot?): Prop?
 	local folder = if zone == "Lobby" then lobbyFolder else arenaFolder
 	local typeConfig = Config.Props.Types[typeId]
 	if folder == nil or typeConfig == nil then
@@ -236,8 +244,7 @@ local function spawnProp(typeId: string, marker: BasePart, zone: Zone, spot: Spo
 	part.Size = Vector3.new(typeConfig.Size.X, typeConfig.Size.Y, typeConfig.Size.Z)
 	part.Material = (Enum.Material :: any)[typeConfig.Material]
 	part.Color = Color3.fromHex(typeConfig.Color)
-	-- Markers lie on the floor; stand the prop on the same floor.
-	part.CFrame = marker.CFrame * CFrame.new(0, (part.Size.Y - marker.Size.Y) / 2 + 0.05, 0)
+	part.CFrame = floor * CFrame.new(0, part.Size.Y / 2 + 0.05, 0)
 	part:SetAttribute("PropType", typeId)
 	part:AddTag(PROP_TAG)
 	local prop: Prop = {
@@ -270,11 +277,29 @@ local function fillSpot(spot: Spot)
 	end
 	local loose = Config.Props.LooseSpotTypes
 	local typeId = spot.TypeId or loose[rng:NextInteger(1, #loose)]
-	local prop = spawnProp(typeId, spot.Marker, spot.Zone, spot)
+	-- Markers lie on the floor: their bottom face is floor level.
+	local floor = spot.Marker.CFrame * CFrame.new(0, -spot.Marker.Size.Y / 2, 0)
+	local prop = spawnProp(typeId, floor, spot.Zone, spot)
 	if prop then
 		spot.Prop = prop
 		spot.RespawnAt = nil
 	end
+end
+
+-- Spawns a loose prop standing on `floor` (e.g. a structure's drops), if the zone has fewer than MaxActive props.
+-- Unless someone picks it up first it vanishes after `despawnAfter` seconds. Returns its part, or nil.
+function PropService.spawnLoose(typeId: string, floor: CFrame, zone: Zone, despawnAfter: number?): BasePart?
+	if countIn(zone) >= Config.Props.MaxActive then
+		return nil
+	end
+	local prop = spawnProp(typeId, floor, zone, nil)
+	if prop == nil then
+		return nil
+	end
+	if despawnAfter then
+		prop.DespawnAt = os.clock() + despawnAfter
+	end
+	return prop.Part
 end
 
 local function addSpot(marker: BasePart, typeId: string?, zone: Zone)
@@ -341,6 +366,7 @@ function explode(prop: Prop, igniter: Player?)
 		local hit = CombatService.explode(center, radius, blowFor(prop, credited))
 		log(`{prop.TypeId} exploded ({credited.Name}), {#hit} hit`)
 	end
+	PropService.Exploded:Fire(center, radius, class.Damage, credited)
 	for otherPart, other in props do
 		if other.Class == "Explosive" and (otherPart.Position - center).Magnitude <= radius then
 			light(other, credited)
@@ -455,6 +481,10 @@ local function sweep(prop: Prop)
 	worldParams.FilterDescendantsInstances = ignore
 	local result = Workspace:Spherecast(from, radius, delta, worldParams)
 	if result then
+		local hitPart = result.Instance
+		if thrower and prop.Class ~= "Explosive" and hitPart:IsA("BasePart") then
+			PropService.Impact:Fire(hitPart, Config.Props.Classes[prop.Class].Damage, thrower)
+		end
 		endFlight(prop, result.Position + result.Normal * radius)
 	end
 end

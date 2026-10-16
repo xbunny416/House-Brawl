@@ -177,7 +177,8 @@ billboards, Codes jukebox, Training Yard ramp with a dummy and a small gap to pr
 | Explosive barrel | — | 25 HP / 20% in 10-stud radius | 1.5 | 15% (explodes on impact or 3 s after being hit) |
 
 - Getting hit while carrying drops the prop. A barrel's blast also hits its thrower, and lights other barrels in range.
-- Breakable structures take damage from any attack or thrown prop and break into 2–4 random props.
+- Breakable structures take damage from any attack (its Classic damage), thrown prop or barrel blast and break into
+  2–4 random props from their drop table; drops nobody picks up vanish after 30 s.
 
 ## 4. Assets
 
