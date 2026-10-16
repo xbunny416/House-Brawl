@@ -42,6 +42,25 @@ return {
 		expect.equal(Carrier.throw(carrier, Props.ThrowCooldown), "tire")
 		expect.equal(Carrier.throw(Carrier.new(), 10), nil, "nothing to throw")
 	end,
+	["aim assist picks the target closest to the facing inside the cone and range"] = function()
+		local assist = Props.ThrowAimAssist
+		local inside = math.tan(math.rad(assist.Angle * 0.5)) * 20
+		local targets = {
+			{ X = 30, Z = 0 }, -- off to the side
+			{ X = inside, Z = -20 }, -- slightly off the facing (-Z)
+			{ X = 0, Z = -(assist.Range + 5) }, -- dead ahead but too far
+		}
+		expect.equal(Formulas.aimAssistIndex(0, -1, targets), 2)
+		expect.equal(Formulas.aimAssistIndex(0, -1, { { X = 30, Z = 0 } }), nil, "outside the cone")
+		expect.equal(Formulas.aimAssistIndex(0, -1, {}), nil)
+		expect.equal(Formulas.aimAssistIndex(0, -1, { { X = 0, Z = -10 }, { X = 1, Z = -10 } }), 1, "closest angle")
+	end,
+	["low flight gravity keeps a 45-stud throw near the thrower's height"] = function()
+		local gravity = 196.2 * Props.ThrowGravityScale
+		local seconds = 45 / Props.ThrowSpeed
+		local height = Props.ThrowUpwardSpeed * seconds - 0.5 * gravity * seconds * seconds
+		expect.truthy(math.abs(height) < 3, `ends {height} studs off`)
+	end,
 	["throw velocity: ThrowSpeed along the facing plus a slight upward arc"] = function()
 		local vx, vy, vz = Formulas.throwVelocity(0, -2)
 		expect.near(vx, 0)

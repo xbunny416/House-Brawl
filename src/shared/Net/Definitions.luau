@@ -26,7 +26,13 @@ local Definitions: { [string]: Definition } = {
 	DataChanged = { Kind = "Event", Direction = "ToClient" },
 
 	-- Client -> server: the Attack action was pressed. The server runs the punch chain, cooldown and hit check.
-	Punch = { Kind = "Event", Direction = "ToServer", Args = {} },
+	-- (facing: Vector3?, position: Vector3?) — the character's facing and position on the sender's screen, used only
+	-- to aim a throw when the player holds a prop (the position must be close to the server's view).
+	Punch = {
+		Kind = "Event",
+		Direction = "ToServer",
+		Args = { Guard.optional(Guard.vector3(1.5)), Guard.optional(Guard.vector3()) },
+	},
 	-- Client -> server: Shove "Start" (pressed: charge), "Release" (let go: shove) or "Cancel" (stop charging).
 	Shove = {
 		Kind = "Event",

@@ -110,6 +110,30 @@ function Formulas.throwVelocity(lookX: number, lookZ: number): (number, number, 
 	return lookX * scale, props.ThrowUpwardSpeed, lookZ * scale
 end
 
+--[[
+	Throw aim assist: the target closest to the thrower's facing (fx, fz) among `targets` (offsets from the thrower,
+	x/z), if it is within Props.ThrowAimAssist.Angle degrees and Range studs. Returns its index, or nil.
+]]
+function Formulas.aimAssistIndex(fx: number, fz: number, targets: { { X: number, Z: number } }): number?
+	local assist = Config.Props.ThrowAimAssist
+	local facingLength = math.sqrt(fx * fx + fz * fz)
+	if assist.Angle <= 0 or facingLength < 1e-3 then
+		return nil
+	end
+	local maxCos = math.cos(math.rad(assist.Angle))
+	local best, bestCos = nil, maxCos
+	for index, target in targets do
+		local distance = math.sqrt(target.X * target.X + target.Z * target.Z)
+		if distance > 1e-3 and distance <= assist.Range then
+			local cos = (fx * target.X + fz * target.Z) / (facingLength * distance)
+			if cos >= bestCos then
+				best, bestCos = index, cos
+			end
+		end
+	end
+	return best
+end
+
 -- An attack hitbox grown by HitboxPadding on every side (absorbs network latency).
 function Formulas.paddedHitbox(box: Types.Box): Types.Box
 	local padding = Combat.HitboxPadding * 2

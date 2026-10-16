@@ -257,6 +257,24 @@ local function buildPlatform(platform: Platform)
 				Color = "ConcreteDark",
 				Material = "Concrete",
 			})
+			-- Overpass pillars hanging under the platform (decor only). Part of the platform so they crumble with it.
+			if platform.Kind ~= "Ledge" then
+				local diameter = if platform.Kind == "Center" then 8 else 5
+				local length = if platform.Kind == "Center" then 46 else 30
+				local offsets = if platform.Kind == "Center" then { -15, 15 } else { 0 }
+				for _, offset in offsets do
+					B.part({
+						Name = "Pillar",
+						Size = { length, diameter, diameter },
+						Position = { offset, -platform.Thickness - length / 2, 0 },
+						Rotation = { 0, 0, 90 },
+						Shape = "Cylinder",
+						Color = "Concrete",
+						Material = "Concrete",
+						CanCollide = false,
+					})
+				end
+			end
 
 			if platform.Kind == "Center" then
 				centerDecor(platform)
@@ -302,30 +320,6 @@ local function buildPlatform(platform: Platform)
 end
 
 local function scenery(killY: number)
-	-- Overpass pillars hanging under the platforms (decor only).
-	for _, platform in Layout.Platforms do
-		if platform.Kind ~= "Ledge" then
-			local diameter = if platform.Kind == "Center" then 8 else 5
-			local length = if platform.Kind == "Center" then 46 else 30
-			local offsets = if platform.Kind == "Center" then { -15, 15 } else { 0 }
-			for _, offset in offsets do
-				B.part({
-					Name = "Pillar",
-					Size = { length, diameter, diameter },
-					Position = {
-						platform.Center[1] + offset,
-						platform.Top - platform.Thickness - length / 2,
-						platform.Center[2],
-					},
-					Rotation = { 0, 0, 90 },
-					Shape = "Cylinder",
-					Color = "Concrete",
-					Material = "Concrete",
-					CanCollide = false,
-				})
-			end
-		end
-	end
 	-- Floating debris chunks around the arena.
 	for index, chunk in
 		{

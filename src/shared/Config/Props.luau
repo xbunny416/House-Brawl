@@ -8,6 +8,9 @@ type PropsConfig = {
 	ThrowSpeed: number,
 	ThrowUpwardSpeed: number,
 	ThrowCooldown: number,
+	ThrowGravityScale: number,
+	ThrowOriginTolerance: number,
+	ThrowAimAssist: { Angle: number, Range: number },
 	DespawnAfterLanding: number,
 	MaxActive: number,
 	SpotRespawnTime: number,
@@ -23,6 +26,14 @@ local Props: PropsConfig = {
 	ThrowSpeed = 90, -- studs/s
 	ThrowUpwardSpeed = 14, -- studs/s added upward for a slight arc
 	ThrowCooldown = 0.5, -- server-enforced throw rate
+	-- Share of world gravity a thrown prop feels while flying. Full gravity dropped a 90 studs/s throw about 6 studs
+	-- over 30 studs, so long throws hit the floor (owner playtest: "throws are off").
+	ThrowGravityScale = 0.25,
+	-- The thrower's client reports where it is when it throws; the server uses that position if it is within this
+	-- many studs of where the server sees the thrower (otherwise the server's own), so throws start where you are.
+	ThrowOriginTolerance = 8,
+	-- A throw bends toward a fighter within Angle degrees of the thrower's facing and Range studs (Angle 0 = off).
+	ThrowAimAssist = { Angle = 15, Range = 80 },
 	DespawnAfterLanding = 8,
 	MaxActive = 40, -- per arena
 	SpotRespawnTime = 20,

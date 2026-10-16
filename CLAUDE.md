@@ -202,6 +202,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 1.13 Developer panel (Studio): DevService + DevRules allowlist, DevAccess attribute, panel (start / end round, crumble, next map / mode, spawn prop, set Percent / HP, camera shake checks), RoundService force / startNow / endNow, CombatService setPercent / setHealth; K / L keys removed. Phase 1 complete | #14 |
 | 2026-10-16 | 2.1 RewardService (round payout: KO Scrap + streaks, Perfect Dodges, placement, completion, 60 s / AFK rules, VIP / Premium / friend bonuses, private-server scale; Scrap + XP + level-ups via DataService; rank attribute), pure Payout, RoundReward remote, results reward line, HUD profile chip | #15 |
 | 2026-10-16 | 1st playtest fixes: throws launch a server-owned copy, grab takes ownership + "[E] Grab" prompt + Studio logs, fighters pass through each other (collision group), windups 0.05 s, dash 12 studs, stronger drift-free camera shake with tilt, client-drawn crumble (flash, shake, sink + fade) | #16 |
+| 2026-10-16 | 2nd playtest fixes: throws aimed from the thrower's own view (facing + position, 8-stud tolerance), 25% gravity while flying, 15° aim assist; arena pillars belong to their platforms (crumble with them) | PT2 |
 
 ## Decisions and interpretations
 
@@ -282,6 +283,12 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   walking into them (the "stacking push"), and dashes pass through players. Windups 0.05 s, dash 12 studs, camera
   shake 1 stud + 1.5° tilt over 0.35 s (removed again before each camera update, so it never drifts), attacker shake
   0.6. Ragdoll / tumble on big launches is deferred to the animations step (2.6).
+- **2nd playtest fixes (2026-10-16):** throws were "really off": the server used its lagged view of the thrower and
+  full gravity dropped a 90 studs/s throw ~6 studs over 30 studs. Now the client sends its facing and position with
+  Punch (position used when within `Props.ThrowOriginTolerance` = 8 studs of the server's view), thrown props feel
+  `ThrowGravityScale` = 25% gravity while flying (the server adds the rest back each frame), and `ThrowAimAssist`
+  bends a throw toward a fighter within 15° / 80 studs of the facing (Angle 0 turns it off). Broken Highway's pillars
+  now belong to their platform models, so they sink with a crumbling platform instead of staying behind.
 - **HUD (1.12):** `HudController` (top bar, kill feed, bottom bar) replaced the 1.8 status line. Kill feed sits top-right
   (bible said top-center, which already holds the timer and the vote panel); lines fade after 6 s, max 5, and name
   the prop when a prop made the KO. Top bar info: Classic = fighters with lives left, Casual = your score. Vitals
