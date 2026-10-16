@@ -202,7 +202,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 1.13 Developer panel (Studio): DevService + DevRules allowlist, DevAccess attribute, panel (start / end round, crumble, next map / mode, spawn prop, set Percent / HP, camera shake checks), RoundService force / startNow / endNow, CombatService setPercent / setHealth; K / L keys removed. Phase 1 complete | #14 |
 | 2026-10-16 | 2.1 RewardService (round payout: KO Scrap + streaks, Perfect Dodges, placement, completion, 60 s / AFK rules, VIP / Premium / friend bonuses, private-server scale; Scrap + XP + level-ups via DataService; rank attribute), pure Payout, RoundReward remote, results reward line, HUD profile chip | #15 |
 | 2026-10-16 | 1st playtest fixes: throws launch a server-owned copy, grab takes ownership + "[E] Grab" prompt + Studio logs, fighters pass through each other (collision group), windups 0.05 s, dash 12 studs, stronger drift-free camera shake with tilt, client-drawn crumble (flash, shake, sink + fade) | #16 |
-| 2026-10-16 | 2nd playtest fixes: throws aimed from the thrower's own view (facing + position, 8-stud tolerance), 25% gravity while flying, 15° aim assist; arena pillars belong to their platforms (crumble with them) | PT2 |
+| 2026-10-16 | 2nd playtest fixes: throws aimed from the thrower's own view (facing + position, 8-stud tolerance), 25% gravity while flying, 15° aim assist; arena pillars belong to their platforms (crumble with them) | #17 |
 
 ## Decisions and interpretations
 
