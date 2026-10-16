@@ -84,6 +84,15 @@ local Definitions: { [string]: Definition } = {
 			Guard.optional(Guard.keyOf(Config.Cosmetics.Items)),
 		},
 	},
+	-- Client -> server: buy a style or cosmetic with Scrap. (kind: "Style" | "Cosmetic", id: string, price: number —
+	-- the price the Shop showed; a different price today is refused). Returns (ok: boolean, reason: string?), the
+	-- reason being one of Shared/ShopRules.Reasons.
+	Buy = {
+		Kind = "Function",
+		Direction = "ToServer",
+		Args = { Guard.oneOf({ "Style", "Cosmetic" }), Guard.string(32), Guard.integer(0, 1000000) },
+		RateLimit = { Rate = 2, Burst = 4 },
+	},
 	-- Client -> server: a developer panel command (only allowed players; see Server/Dev/DevRules).
 	-- (command: string, text: string? — a map / mode / prop id, value: number? — a Percent or HP)
 	DevCommand = {

@@ -8,8 +8,8 @@
 	  * KOEffect: a particle burst on each KO you score — at the victim for HP KOs, around you for ring-outs (the
 	    victim is out in the void by then).
 	VictoryEmote plays from the animations step (2.6); NameplateFrame has no items yet.
-	EquipCosmetic(slot, itemId?) equips an owned item (nil takes the slot off). Items are bought in the Shop (2.4);
-	Exclusive ones (VIP / Premium) are granted by the pass / membership (3.1).
+	EquipCosmetic(slot, itemId?) equips an owned item (nil takes the slot off). Items are bought in the Shop
+	(ShopService → grant); Exclusive ones (VIP / Premium) are granted by the pass / membership (3.1).
 ]]
 local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
@@ -215,6 +215,17 @@ function CosmeticService.equip(player: Player, slot: string, itemId: string?, gr
 	applyAll(player)
 	log(`{player.Name}: {slot} = {itemId or "none"}`)
 	return true
+end
+
+-- Gives the player an item without equipping it (Shop purchases). Returns false for an unknown item or before
+-- their data has loaded.
+function CosmeticService.grant(player: Player, itemId: string): boolean
+	if Config.Cosmetics.Items[itemId] == nil then
+		return false
+	end
+	return DataService.update(player, "Cosmetics", function(changed)
+		changed.Cosmetics.Owned[itemId] = true
+	end)
 end
 
 -- Gives every item in the catalog (developer panel).

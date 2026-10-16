@@ -1,8 +1,8 @@
 --!strict
 --[[
 	StyleRules — which fighting styles a player has (pure; shared so the Locker / Shop UI agrees with the server).
-	The default style is always owned. A style unlocks for free once the player reaches its UnlockLevel; buying it
-	with Scrap (Config.Styles.List[id].Price) comes with the Shop (step 2.4).
+	The default style is always owned. A style unlocks for free once the player reaches its UnlockLevel, or is bought
+	earlier with Scrap in the Shop (Shared/ShopRules, Config.Styles.List[id].Price).
 ]]
 local Config = require(script.Parent.Config)
 

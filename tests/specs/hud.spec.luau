@@ -20,6 +20,12 @@ return {
 		expect.equal(HudFormat.clock(9), "0:09")
 		expect.equal(HudFormat.clock(-4), "0:00")
 	end,
+	["long clock shows h:mm:ss, rounded up, never negative"] = function()
+		expect.equal(HudFormat.longClock(5 * 3600 + 12 * 60 + 9), "5:12:09")
+		expect.equal(HudFormat.longClock(59.5), "0:01:00")
+		expect.equal(HudFormat.longClock(86400), "24:00:00")
+		expect.equal(HudFormat.longClock(-1), "0:00:00")
+	end,
 	["percent color: white at 0%, yellow at 60%, red from 150%"] = function()
 		local white = HudFormat.percentColor(0)
 		expect.equal(white.R + white.G + white.B, 3)

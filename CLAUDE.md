@@ -7,8 +7,9 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 - **Build order approved** by the owner on 2026-10-15, with maps built from code (blockouts from layout data, art
   pass later) and data saving via ProfileStore.
 - **Phase 1 (core loop) is built and playtested** (1.1–1.13; two rounds of owner playtest fixes, "all clear" on
-  2026-10-16). **Phase 2 in progress:** 2.1 Round rewards, 2.2 Fighting styles and 2.3 Cosmetics + Locker are built
-  (2.2 / 2.3 not yet playtested; the Wrecker parry needs two players). **Next step:** 2.4 Shop.
+  2026-10-16). **Phase 2 in progress:** 2.1 Round rewards, 2.2 Fighting styles, 2.3 Cosmetics + Locker and 2.4 Shop
+  are built (2.2–2.4 not yet playtested; the Wrecker parry needs two players). **Next step:** 2.5 Junkyard Isles +
+  Neon Motel maps.
 
 ## How this repo works
 
@@ -96,6 +97,12 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
 - **Styles:** ownership and the equipped style go through `Services/StyleService` (`equip`, `equippedOf`); the rules
   (`Shared/StyleRules`: owns, unlockedAt) are shared with UI. Combat reads the equipped style through
   `Formulas.resolveAttack`.
+- **Shop:** purchases go through `Services/ShopService` (`Buy` remote → `StyleService.grant` /
+  `CosmeticService.grant`); what is for sale, prices and the daily rotation are `Shared/ShopRules`, shared with the
+  Shop UI so both show the same price.
+- **Lobby menu screens** (Shop, Locker, later Quests, Daily Reward, Settings ...) register with
+  `Controllers/MenuController.addScreen(text, order, gui, onOpen)`: a left-edge button, one screen open at a time,
+  closed while fighting; the Menu action (M / D-pad Up) closes the open screen or opens the first one.
 - **Rounds:** `Services/RoundService` owns the loop, the scoreboard (`Server/Round/Scoreboard`) and round stats.
   UI reads attributes: Workspace `RoundState`, `RoundEndsAt` (compare with `Workspace:GetServerTimeNow()`),
   `RoundMode`, `RoundMap`, `PlayersNeeded`; Player `RoundStatus`, `Lives`, `KOs`, `Falls`. Rewards and quests hook
@@ -161,7 +168,7 @@ any errors are fixed before the next item.
 - [x] 2.1 Round rewards (Scrap/XP, streaks, placement, anti-farm, bonuses) + levels and rank titles
 - [x] 2.2 Fighting styles: Slugger, Scrapper, Wrecker (parry) + welded weapon models
 - [x] 2.3 Cosmetics system + Locker
-- [ ] 2.4 Shop (styles, cosmetics, 24 h UTC daily rotation)
+- [x] 2.4 Shop (styles, cosmetics, 24 h UTC daily rotation)
 - [ ] 2.5 Junkyard Isles + Neon Motel maps (+ night lighting preset)
 - [ ] 2.6 Animations (R15)
 - [ ] 2.7 VFX pass + Low Graphics setting
@@ -206,6 +213,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 2nd playtest fixes: throws aimed from the thrower's own view (facing + position, 8-stud tolerance), 25% gravity while flying, 15° aim assist; arena pillars belong to their platforms (crumble with them) | #17 |
 | 2026-10-16 | 2.2 Fighting styles: Wrecker parry (0.2 s, reflects knockback onto the attacker), StyleService (level unlocks, EquipStyle, welded blockout weapons: bat, shovel, wrench + hubcap), shared StyleRules, DataService.LeveledUp, dev panel Style buttons | #18 |
 | 2026-10-16 | 2.3 Cosmetics + Locker: launch catalog (skins, hats, dash trails, KO effects, victory emotes) with blockout visuals, CosmeticService (EquipCosmetic, skins / hats / trails / KO bursts), shared CosmeticRules, Visuals/Attached (shared with weapons), CombatService.Dashed, left-edge MenuController, Locker UI (styles + cosmetics), dev "All cosmetics" | #19 |
+| 2026-10-16 | 2.4 Shop: ShopService (Buy remote: checks, spendScrap, grant; analytics), shared ShopRules (what is for sale, daily rotation of 4 cosmetics seeded by the UTC day at 20% off, purchase checks incl. price-changed), Shop UI (Daily deals with countdown, Styles, one tab per slot, purchase confirmation + Equip), MenuController screens (one open at a time, Menu action), dev "+5000 Scrap" | #PR |
 
 ## Decisions and interpretations
 
@@ -310,8 +318,18 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   in the void). Victory emotes are data until animations (2.6); back items and name plates have no items yet (their
   Locker tabs stay hidden). `PremiumGold` (Premium) and `GoldTrail` (VIP) are exclusive: never sold for Scrap, granted
   in 3.1. Cosmetics can change any time; styles not mid-fight. The Locker opens from a new left-edge menu
-  (`MenuController.addButton`, hidden while fighting) or the Menu action (M / D-pad Up). Nothing is buyable until the
-  Shop (2.4): the developer panel's "All cosmetics" grants everything for testing.
+  (`MenuController`, hidden while fighting). The developer panel's "All cosmetics" grants everything for testing.
+- **Shop (2.4):** every Scrap item is always for sale (Styles tab, one tab per cosmetic slot); the **Daily deals** tab
+  (bible: 4 cosmetics every 24 h UTC) sells its items at `DailyRotation.Discount` = 20% off (new; the bible gives no
+  reason to visit the daily tab otherwise). The daily picks are a shuffle of the Scrap cosmetics seeded by the UTC day
+  number (Park–Miller, exact in doubles), so every server and client agrees without saving or sending anything.
+  Exclusive (VIP / Premium) items show in the slot tabs as "VIP only" / "Premium only" and are never sold; the
+  default style is never sold; styles are never discounted and still unlock free at their level. The client sends
+  the price it showed: if the rotation changed in between, the server refuses (`PriceChanged`) instead of charging
+  a different price. Buying never equips; the confirmation offers Equip. The Robux tab (Scrap packs, passes, premium
+  cosmetics) comes with 3.1. The Menu action now belongs to `MenuController`: it closes the open screen, or opens
+  the Shop (gamepad: selects the first menu button). The developer panel's "+5000 Scrap" (`Config.Dev.GiveScrap`) is
+  for testing purchases.
 - **HUD (1.12):** `HudController` (top bar, kill feed, bottom bar) replaced the 1.8 status line. Kill feed sits top-right
   (bible said top-center, which already holds the timer and the vote panel); lines fade after 6 s, max 5, and name
   the prop when a prop made the KO. Top bar info: Classic = fighters with lives left, Casual = your score. Vitals
@@ -368,8 +386,8 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Developer panel (Studio):** press ` (Backquote, `Config.Dev.PanelKey`) or click DEV (top left). Round: start now
   (starts the vote even alone, or closes it), end now, crumble a platform; next map / mode (or back to the vote);
   spawn any prop in front of you; set your own Percent (0 / 100 / 200) or HP (100 / 50 / 10); own + equip any
-  fighting style; test camera shake and
-  switch the Camera Shake setting. Output shows `[Dev]` lines.
+  fighting style; own every cosmetic; +5000 Scrap; test camera shake and switch the Camera Shake setting. Output
+  shows `[Dev]` lines.
 - **Data in Studio:** with "Studio Access to API Services" off, ProfileStore uses an in-memory store and prints
   "Roblox API services unavailable - data will not be saved". Turn it on to test real saving
   (`Config.Data.UseMockInStudio = true` forces the in-memory store even with access on).
@@ -379,3 +397,8 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Dash movement is client-side** (clients simulate their character), so the once-per-jump air rule is enforced by
   the client; the server enforces the cooldown and hitstun, which gate the invulnerability and Perfect Dodge.
 - **Owner's Roblox UserId** is needed for `Config.Dev.AllowedUserIds` before live testing of the developer panel.
+- **Shop NPC and Locker booth** in the lobby are not interactive yet (open the Shop / Locker from the left-edge menu).
+  A ProximityPrompt needs its own key: E is Grab and X is Punch on gamepad. Worth doing with the lobby art pass.
+- **Victory emotes** can be bought and equipped but play nothing until animations (2.6).
+- **Shop test (Studio):** dev panel → "+5000 Scrap" → Shop: buy a daily deal (20% off), a style (then Equip), check
+  the Scrap chip drops; buying something you own or can't afford is refused with a message. Output shows `[Shop]`.

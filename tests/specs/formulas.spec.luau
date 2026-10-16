@@ -206,4 +206,15 @@ return {
 		expect.equal(F.dayNumber(86400), 1)
 		expect.equal(F.dayNumber(86400 + 3600, 2), 0)
 	end,
+	["seconds until the next daily reset"] = function()
+		expect.equal(F.secondsUntilNextDay(0), 86400)
+		expect.equal(F.secondsUntilNextDay(86399), 1)
+		expect.equal(F.secondsUntilNextDay(86400 + 3600, 2), 3600) -- reset at 02:00, it is 01:00
+		expect.equal(F.secondsUntilNextDay(86400 + 7200, 2), 86400) -- just reset
+	end,
+	["discounted price rounds to whole Scrap"] = function()
+		expect.equal(F.discountedPrice(400, 0.2), 320)
+		expect.equal(F.discountedPrice(450, 0.25), 338) -- 337.5
+		expect.equal(F.discountedPrice(500, 0), 500)
+	end,
 }

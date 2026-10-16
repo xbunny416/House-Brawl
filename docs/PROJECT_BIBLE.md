@@ -103,7 +103,9 @@ Not used. Long-term goals are levels/ranks, styles, cosmetics and leaderboards.
   Catalog in `Config.Cosmetics.Items` (blockout visuals until the art pass). KO effects burst at the victim for HP KOs
   and around the scorer for ring-outs. Victory emotes play once animations exist (2.6). Equipped in the Locker.
   Common 300–800 Scrap; Rare 1,200–2,500 Scrap; Premium = Robux only.
-- **Daily rotating shop:** 4 cosmetics rotate every 24 h (UTC).
+- **Daily rotating shop:** 4 cosmetics rotate every 24 h (UTC) and sell at 20% off (`DailyRotation.Discount`); the
+  picks are the same for everyone (seeded by the day). Every Scrap item is always buyable in its own tab; exclusive
+  VIP / Premium items never sell for Scrap.
 
 ### 2.4 Pets & eggs
 

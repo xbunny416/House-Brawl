@@ -150,3 +150,36 @@ Cosmetic.Flex.Name,Flex,Victory emote name,
 Cosmetic.JunkDance.Name,Junk Dance,Victory emote name,
 Cosmetic.Taunt.Name,Taunt,Victory emote name,
 Cosmetic.Champion.Name,Champion,Victory emote name,
+Common.Cancel,Cancel,Button that cancels a choice,
+Menu.Shop,Shop,Lobby menu button that opens the Shop,
+Dev.GiveScrap,+{1} Scrap,Developer panel button: give yourself Scrap,+5000 Scrap
+Slot.Skin.One,Skin,Cosmetic slot name for one item,
+Slot.Hat.One,Hat,Cosmetic slot name for one item,
+Slot.BackItem.One,Back item,Cosmetic slot name for one item,
+Slot.DashTrail.One,Dash trail,Cosmetic slot name for one item,
+Slot.KOEffect.One,KO effect,Cosmetic slot name for one item,
+Slot.VictoryEmote.One,Victory emote,Cosmetic slot name for one item,
+Slot.NameplateFrame.One,Name plate,Cosmetic slot name for one item,
+Shop.Title,Shop,Title of the Shop (buy styles and cosmetics with Scrap),
+Shop.Daily,Daily deals,Shop tab: today's discounted cosmetics,
+Shop.Styles,Styles,Shop tab: fighting styles,
+Shop.DailyInfo,{1}% off today · new deals in {2},"Shop: daily discount and time until the deals change (hours:minutes:seconds)",20% off today · new deals in 5:12:09
+Shop.StylesInfo,Styles also unlock for free when you reach their level.,Shop: note above the styles,
+Shop.CosmeticsInfo,Equip what you own in the Locker.,Shop: note above the cosmetics,
+Shop.Owned,Owned,Shop card: the player already owns this,
+Shop.DealPrice,{1} Scrap (was {2}),Shop card: discounted price and the normal price,320 Scrap (was 400)
+Shop.StylePrice,{1} Scrap or Level {2},"Shop card: style price, or the level that unlocks it for free",1500 Scrap or Level 5
+Shop.NotForSale,Not for sale,Shop card: item that cannot be bought with Scrap,
+Shop.ItemDetail,{1} · {2},"Shop card: item type and rarity",Hat · Common
+Shop.Confirm,Buy {1} for {2} Scrap? You have {3} Scrap.,"Purchase confirmation (item name, price, the player's Scrap)",Buy Cone Hat for 300 Scrap? You have 1250 Scrap.
+Shop.NeedMore,{1} costs {2} Scrap. You need {3} more Scrap: play rounds to earn it.,"Purchase confirmation when the player cannot afford the item (name, price, Scrap missing)",Chrome King costs 2500 Scrap. You need 400 more Scrap: play rounds to earn it.
+Shop.Buy,Buy,Purchase confirmation button,
+Shop.Buying,Buying...,Purchase confirmation button while the purchase is on its way,
+Shop.Bought,You got {1}!,Message after a purchase (item name),You got Cone Hat!
+Shop.Equip,Equip,Button after a purchase: put the new item on now,
+Shop.Error.NotForSale,This item can't be bought with Scrap.,Purchase refused,
+Shop.Error.Owned,You already own this.,Purchase refused,
+Shop.Error.NotEnoughScrap,Not enough Scrap.,Purchase refused,
+Shop.Error.PriceChanged,The daily deals just changed. Check the new price and try again.,Purchase refused because the price changed,
+Shop.Error.NotLoaded,Your data is still loading. Try again in a moment.,Purchase refused,
+Shop.Error.TryAgain,Something went wrong. Try again.,Purchase failed (no answer from the server),

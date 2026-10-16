@@ -16,4 +16,6 @@ return {
 	ShowHitboxes = true,
 	-- Key that opens / closes the developer panel (KeyCode name; only for players with panel access).
 	PanelKey = "Backquote",
+	-- Scrap the developer panel's "+Scrap" button gives (to test the Shop).
+	GiveScrap = 5000,
 }

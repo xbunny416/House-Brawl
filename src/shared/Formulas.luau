@@ -343,4 +343,19 @@ function Formulas.dayNumber(unixTime: number, resetHourUTC: number?): number
 	return math.floor((unixTime - (resetHourUTC or 0) * 3600) / 86400)
 end
 
+-- Seconds from `unixTime` until the next daily reset (always > 0).
+function Formulas.secondsUntilNextDay(unixTime: number, resetHourUTC: number?): number
+	local nextDay = Formulas.dayNumber(unixTime, resetHourUTC) + 1
+	return nextDay * 86400 + (resetHourUTC or 0) * 3600 - unixTime
+end
+
+---------------------------------------------------------------------------------------------------------------------
+-- Shop
+---------------------------------------------------------------------------------------------------------------------
+
+-- A price with `discount` (0..1) taken off, rounded to whole Scrap.
+function Formulas.discountedPrice(price: number, discount: number): number
+	return round(price * (1 - discount))
+end
+
 return Formulas

@@ -22,6 +22,7 @@ DevRules.Commands = {
 	"SetHealth",
 	"SetStyle",
 	"UnlockCosmetics",
+	"GiveScrap",
 }
 
 function DevRules.isAllowed(userId: number, inStudio: boolean): boolean

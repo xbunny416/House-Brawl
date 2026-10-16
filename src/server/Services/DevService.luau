@@ -12,6 +12,7 @@
 	  SetPercent / SetHealth (n)     your own Percent / HP
 	  SetStyle (styleId)             own and equip a fighting style
 	  UnlockCosmetics                own every cosmetic (equip them in the Locker)
+	  GiveScrap                      Config.Dev.GiveScrap Scrap (to test the Shop)
 ]]
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -23,9 +24,11 @@ local Net = require(Shared:WaitForChild("Net"))
 
 local Server = script.Parent.Parent
 local DevRules = require(Server:WaitForChild("Dev"):WaitForChild("DevRules"))
+local Analytics = require(script.Parent:WaitForChild("Analytics"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local CosmeticService = require(script.Parent:WaitForChild("CosmeticService"))
 local CrumbleService = require(script.Parent:WaitForChild("CrumbleService"))
+local DataService = require(script.Parent:WaitForChild("DataService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
 local PropService = require(script.Parent:WaitForChild("PropService"))
 local RoundService = require(script.Parent:WaitForChild("RoundService"))
@@ -92,6 +95,9 @@ local commands: { [string]: Command } = {
 	end,
 	UnlockCosmetics = function(player)
 		CosmeticService.grantAll(player)
+	end,
+	GiveScrap = function(player)
+		DataService.addScrap(player, Config.Dev.GiveScrap, Analytics.Transaction.Gameplay, "DevPanel")
 	end,
 }
 
