@@ -20,6 +20,7 @@ local Styles: StylesConfig = {
 			Price = 0,
 			UnlockLevel = 1,
 			AttackSpeed = 1,
+			Animations = { Punch = { "Jab", "Cross", "Uppercut" }, Shove = "Shove" },
 			Punch = NO_CHANGE,
 			Shove = NO_CHANGE,
 		},
@@ -29,6 +30,7 @@ local Styles: StylesConfig = {
 			Price = 1500,
 			UnlockLevel = 5,
 			AttackSpeed = 0.8,
+			Animations = { Punch = { "SwingRight", "SwingLeft", "Smash" }, Shove = "Shove" },
 			Punch = { DamageMultiplier = 1.15, KnockbackMultiplier = 1, ReachBonus = 2 },
 			Shove = { DamageMultiplier = 1.15, KnockbackMultiplier = 1, ReachBonus = 2 },
 		},
@@ -38,6 +40,7 @@ local Styles: StylesConfig = {
 			Price = 3000,
 			UnlockLevel = 12,
 			AttackSpeed = 1,
+			Animations = { Punch = { "SweepRight", "SweepLeft", "Smash" }, Shove = "Shove" },
 			Punch = {
 				DamageMultiplier = 0.9,
 				KnockbackMultiplier = 1,
@@ -52,6 +55,7 @@ local Styles: StylesConfig = {
 			Price = 6000,
 			UnlockLevel = 25,
 			AttackSpeed = 1,
+			Animations = { Punch = { "SwingRight", "SwingLeft", "Smash" }, Shove = "Parry" },
 			Punch = { DamageMultiplier = 0.95, KnockbackMultiplier = 1, ReachBonus = 0 },
 			Shove = {
 				DamageMultiplier = 1,

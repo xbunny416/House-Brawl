@@ -44,6 +44,8 @@ export type StyleConfig = {
 	Price: number,
 	UnlockLevel: number,
 	AttackSpeed: number, -- 1 = normal; cooldowns and windups are divided by this
+	-- Scripted animation clips (Shared/Animation/Clips): one per punch-chain hit, and the Shove (or parry) clip.
+	Animations: { Punch: { string }, Shove: string },
 	Punch: StyleAttack,
 	Shove: StyleAttack,
 }

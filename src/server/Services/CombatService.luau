@@ -38,6 +38,7 @@ local Launch = require(Shared:WaitForChild("Combat"):WaitForChild("Launch"))
 
 local Server = script.Parent.Parent
 local Fighter = require(Server:WaitForChild("Combat"):WaitForChild("Fighter"))
+local Animate = require(Server:WaitForChild("Visuals"):WaitForChild("Animate"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
 
@@ -162,10 +163,11 @@ function CombatService.setSpeedModifier(character: Model, key: string, multiplie
 	applySpeed(character)
 end
 
--- Walk speed: slowed while a Shove is charging.
+-- Walk speed: slowed while a Shove is charging. The ShoveCharging attribute shows the charge pose on every client.
 local function setCharging(character: Model, charging: boolean)
 	local slow = Config.Combat.Attacks.Shove.ChargeSlow
 	CombatService.setSpeedModifier(character, CHARGE_SPEED_KEY, if charging then 1 - slow else nil)
+	character:SetAttribute("ShoveCharging", if charging then true else nil)
 end
 
 -- Default knock-out handler (the round system replaces it): players go back to the lobby with a fresh fighter.
@@ -504,7 +506,7 @@ function land(victim: Model, blow: Blow, away: Vector3): boolean
 	else
 		Launch.apply(victim, velocity, result.Hitstun)
 	end
-	Net.fireAll("CombatHit", blow.AttackerCharacter, victim, blow.Source, blow.Heavy, result.Trail)
+	Net.fireAll("CombatHit", blow.AttackerCharacter, victim, blow.Source, blow.Heavy, result.Trail, result.Hitstun)
 	CombatService.Hit:Fire(victim, blow.Attacker)
 
 	if isStudioFlag(Config.Dev.LogCombat) then
@@ -636,6 +638,8 @@ local function onPunch(player: Player, facing: Vector3?, position: Vector3?)
 		return
 	end
 	removeShieldVisual(character) -- attacking ended the spawn shield
+	local clips = Config.Styles.List[styleId].Animations.Punch
+	Animate.play(character, clips[(hitIndex - 1) % #clips + 1])
 	local attack = Formulas.resolveAttack(styleId, "Punch")
 	task.delay(
 		attack.Windup,
@@ -664,12 +668,16 @@ local function onShove(player: Player, phase: string)
 		if intercepted(player, "Shove") then
 			return
 		end
-		local shove = Formulas.resolveAttack(styleOf(player), "Shove")
+		local styleId = styleOf(player)
+		local shove = Formulas.resolveAttack(styleId, "Shove")
 		local parry = shove.Parry
 		if parry then
 			-- Parry styles (Wrecker): Shove is an instant parry instead of a charged push.
-			if Fighter.parry(fighter, now, parry.Window, shove.Cooldown) and isStudioFlag(Config.Dev.LogCombat) then
-				print(`[Combat] {player.Name} parries`)
+			if Fighter.parry(fighter, now, parry.Window, shove.Cooldown) then
+				Animate.play(character, Config.Styles.List[styleId].Animations.Shove)
+				if isStudioFlag(Config.Dev.LogCombat) then
+					print(`[Combat] {player.Name} parries`)
+				end
 			end
 		elseif Fighter.startShove(fighter, now) then
 			setCharging(character, true)
@@ -680,12 +688,14 @@ local function onShove(player: Player, phase: string)
 			setCharging(character, false)
 		end
 	else
-		local attack = Formulas.resolveAttack(styleOf(player), "Shove")
+		local styleId = styleOf(player)
+		local attack = Formulas.resolveAttack(styleId, "Shove")
 		local charge = Fighter.releaseShove(fighter, attack.Cooldown, now)
 		if charge == nil then
 			return
 		end
 		setCharging(character, false)
+		Animate.play(character, Config.Styles.List[styleId].Animations.Shove)
 		task.delay(
 			attack.Windup,
 			strike,
@@ -717,6 +727,7 @@ local function onDash(player: Player)
 	if wasCharging then
 		setCharging(character, false)
 	end
+	Animate.play(character, "Dash", player) -- the dasher's own client already showed it
 	CombatService.Dashed:Fire(player, character)
 	if isStudioFlag(Config.Dev.LogCombat) then
 		print(`[Combat] {player.Name} dashed`)
