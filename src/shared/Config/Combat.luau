@@ -65,7 +65,7 @@ local Combat: CombatConfig = {
 	},
 
 	Dash = {
-		Distance = 18,
+		Distance = 12, -- owner playtest 2026-10-16: 18 crossed too much of the map (bible had 18)
 		Duration = 0.25,
 		InvulnerabilityTime = 0.25,
 		Cooldown = 2.5,
@@ -82,7 +82,7 @@ local Combat: CombatConfig = {
 			Percent = 6,
 			KnockbackScale = 1,
 			Cooldown = 0.35, -- between chain hits
-			Windup = 0.1,
+			Windup = 0.05, -- owner playtest: 0.1 felt delayed
 			Hitbox = { X = 4, Y = 4, Z = 5 },
 			ChainLength = 3,
 			FinisherKnockbackMultiplier = 1.5, -- 3rd hit
@@ -94,7 +94,7 @@ local Combat: CombatConfig = {
 			Percent = 11,
 			KnockbackScale = 1.6,
 			Cooldown = 1.2,
-			Windup = 0.15, -- after the charge is released
+			Windup = 0.05, -- after the charge is released (owner playtest: 0.15 felt delayed)
 			Hitbox = { X = 5, Y = 5, Z = 6 },
 			MaxChargeTime = 0.8,
 			MaxChargeKnockbackMultiplier = 1.5,
@@ -106,7 +106,7 @@ local Combat: CombatConfig = {
 	Launch = { MaxTime = 3 },
 
 	-- Camera shake intensity (0-1, scales Config.Controls.Camera.ShakeMagnitude) on heavy hits (Shove, punch finisher).
-	Feedback = { VictimShake = 1, AttackerShake = 0.4 },
+	Feedback = { VictimShake = 1, AttackerShake = 0.6 },
 
 	-- Training Yard dummy (lobby): respawns this long after it is knocked out or falls this many studs below its spot.
 	Dummy = { RespawnTime = 2, FallDistance = 4 },

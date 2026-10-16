@@ -232,6 +232,18 @@ return {
 		x, y = CameraShake.offset(0.1, duration, 0, frequency, 12.5)
 		expect.equal(x + y, 0, "zero magnitude")
 	end,
+	["shake tilt stays within its degrees and stops after the duration"] = function()
+		local degrees, duration = Config.Controls.Camera.ShakeRotation, Config.Controls.Camera.ShakeDuration
+		local tilted = false
+		for step = 0, 49 do
+			local pitch, roll = CameraShake.tilt(step * duration / 50, duration, degrees, 18, 3.5)
+			expect.truthy(math.abs(pitch) <= degrees and math.abs(roll) <= degrees, "bounded")
+			tilted = tilted or pitch ~= 0 or roll ~= 0
+		end
+		expect.truthy(tilted, "the camera tilts")
+		local pitch, roll = CameraShake.tilt(duration, duration, degrees, 18, 3.5)
+		expect.equal(pitch + roll, 0)
+	end,
 	["shake fades out"] = function()
 		local early, late = 0, 0
 		for seed = 1, 50 do
@@ -261,9 +273,10 @@ return {
 		DashRules.landed(state)
 		expect.equal(DashRules.tryDash(state, 10, true, dash), true)
 	end,
-	["dash speed covers 18 studs in 0.25 s"] = function()
+	["dash speed covers 12 studs in 0.25 s (owner playtest: 18 was too far)"] = function()
 		local Formulas = Roblox.require(Shared.Formulas)
-		expect.near(Formulas.dashSpeed() * Config.Combat.Dash.Duration, 18)
+		expect.equal(Config.Combat.Dash.Distance, 12)
+		expect.near(Formulas.dashSpeed() * Config.Combat.Dash.Duration, 12)
 	end,
 
 	-- Settings --------------------------------------------------------------------------------------------------------

@@ -201,6 +201,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 1.12 HUD (top bar: mode badge, timer, fighters left / score; kill feed; bottom bar: dash ring, HP + lives or Percent, held prop with key hints), hold-Tab scoreboard replacing Roblox's player list, KeyHint (key names / gamepad glyphs), pure HudFormat, KillFeed remote, prop names | #13 |
 | 2026-10-16 | 1.13 Developer panel (Studio): DevService + DevRules allowlist, DevAccess attribute, panel (start / end round, crumble, next map / mode, spawn prop, set Percent / HP, camera shake checks), RoundService force / startNow / endNow, CombatService setPercent / setHealth; K / L keys removed. Phase 1 complete | #14 |
 | 2026-10-16 | 2.1 RewardService (round payout: KO Scrap + streaks, Perfect Dodges, placement, completion, 60 s / AFK rules, VIP / Premium / friend bonuses, private-server scale; Scrap + XP + level-ups via DataService; rank attribute), pure Payout, RoundReward remote, results reward line, HUD profile chip | #15 |
+| 2026-10-16 | 1st playtest fixes: throws launch a server-owned copy, grab takes ownership + "[E] Grab" prompt + Studio logs, fighters pass through each other (collision group), windups 0.05 s, dash 12 studs, stronger drift-free camera shake with tilt, client-drawn crumble (flash, shake, sink + fade) | #16 |
 
 ## Decisions and interpretations
 
@@ -214,8 +215,8 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Codes** live in the server-only `ServerScriptService.Server.ServerConfig` (not the shared Config) so clients
   cannot read unreleased codes. `LAUNCH` is a placeholder.
 - **Structures** take each attack's Classic HP damage in every mode.
-- New tunables not in the bible: attack windups (Punch 0.1 s, Shove 0.15 s, needed for "dodge before the hit
-  lands"), punch chain reset 1 s, hitbox latency padding 0.5 studs, launch angle 30°, throw arc +14 studs/s, throw
+- New tunables not in the bible: attack windups (Punch and Shove 0.05 s since the 1st playtest, needed for "dodge
+  before the hit lands"), punch chain reset 1 s, hitbox latency padding 0.5 studs, launch angle 30°, throw arc +14 studs/s, throw
   cooldown 0.5 s, grab cooldown 0.3 s, results screen 8 s, minimum 2 players to start a round, platform fall 4 s.
 - Robux prices in Config are reference only; live prices come from the Creator Dashboard. Pass/product/badge/group
   ids are 0 until created.
@@ -234,8 +235,8 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   attacker's (0.4). Right-dragging the mouse 12 px while charging a right-click Shove cancels it (camera turn).
   The equipped style's multipliers already apply; the Wrecker parry comes with styles (2.2). PvP only between two
   players in the arena; the dummy can always be hit. Training dummy respawns 2 s after a KO or falling 4 studs.
-- **Dash (1.7):** the client moves at once (LinearVelocity, 72 studs/s for 0.25 s, level, along the move direction or
-  else the facing) and sends `Dash`; the server grants invulnerability from when the intent arrives, accepting it up
+- **Dash (1.7):** the client moves at once (LinearVelocity, 48 studs/s for 0.25 s = 12 studs, level, along the move
+  direction or else the facing) and sends `Dash`; the server grants invulnerability from when the intent arrives, accepting it up
   to 0.15 s before the cooldown ends (`Dash.CooldownTolerance`, network jitter). A dash cancels a Shove charge, and a
   dash after hitstun ends a launch (recovery). One Perfect Dodge per dash; dodged hits give no KO credit. The bonus
   applies to every victim of the dodger's next landed swing, then is used up.
@@ -266,11 +267,21 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   structure's largest side. A structure darkens up to 55% as it loses HP. Drops pop out around it and vanish after
   `Structures.DropDespawnTime` (30 s, new) unless picked up; the 40-prop cap still applies, so a full arena drops
   fewer. The player who lands the breaking hit gets `StructuresBroken`. Respawns are skipped if the arena changed.
-- **Crumbling (1.11):** the warning is a red `Highlight` flashing every 0.25 s plus a ±0.15-stud server-side shake of
-  the whole platform (crack VFX and rumble SFX come with 2.7 / 2.8). Then every part is welded to the platform's base
-  and unanchored, so it really falls (players on it fall with it and are KO'd at KillY, credited to their last
-  attacker within 6 s); it is removed after FallTime. The schedule counts from the round start (os.clock); a round
-  ending stops it. `CrumbleService.crumbleNext()` crumbles one at once (for the developer panel, 1.13).
+- **Crumbling (1.11, reworked after the 1st playtest):** the server only sets attributes: `Crumbling` (warning) and,
+  after WarningTime, `Falling` together with CanCollide off on every platform part, so players, props and structures
+  drop into the void (KO at KillY, credited to their last attacker within 6 s); it is removed after FallTime. Each
+  client draws it (`CrumbleController`): a red `Highlight` flashing every 0.25 s and a smooth ±0.25-stud shake, then
+  the platform sinking 45 studs and fading out. The first version (server-side shake + unanchored welded fall)
+  looked choppy and tumbled. The schedule counts from the round start (os.clock); a round ending stops it.
+  `CrumbleService.crumbleNext()` crumbles one at once (developer panel).
+- **1st playtest fixes (2026-10-16):** throws now launch a fresh server-owned copy of the held prop (the held one is
+  part of the thrower's client-simulated character, so the server could not give it velocity); grabbing takes server
+  ownership of the loose prop before welding; a "[E] Grab" prompt shows when a free prop is in reach (props carry a
+  `Held` attribute while held) and Studio logs why a grab found nothing. Fighters (players and dummies) are in the
+  `Fighters` collision group, which does not collide with itself: no body-pushing someone along or off a ledge by
+  walking into them (the "stacking push"), and dashes pass through players. Windups 0.05 s, dash 12 studs, camera
+  shake 1 stud + 1.5° tilt over 0.35 s (removed again before each camera update, so it never drifts), attacker shake
+  0.6. Ragdoll / tumble on big launches is deferred to the animations step (2.6).
 - **HUD (1.12):** `HudController` (top bar, kill feed, bottom bar) replaced the 1.8 status line. Kill feed sits top-right
   (bible said top-center, which already holds the timer and the vote panel); lines fade after 6 s, max 5, and name
   the prop when a prop made the KO. Top bar info: Classic = fighters with lives left, Casual = your score. Vitals
@@ -295,9 +306,16 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 ## Known bugs / open items
 
 - None in code yet.
-- **Knockback feel is untested in Studio** (PlatformStand + upright hold, landing check). Tune in the playtest:
-  `Config.Combat.Knockback` (force), `Launch.MaxTime`, `Hitstun`. Exploiters can ignore knockback on their own
-  character (clients simulate it — a Roblox limit); server-side movement checks are a later hardening task.
+- **1st playtest (2026-10-16), owner's notes:** couldn't grab/throw props (fixed: see decisions), hits felt delayed
+  and walking into players "stacked" pushes (windups cut, fighters no longer collide), dash too far (12 studs now),
+  camera shake not noticeable (stronger + tilt), crumbling looked funny (client-drawn now), barrels worked. An orange
+  "asset is not approved for the requester" warning (rbxassetid://135644804609151) is not from our code (no asset
+  ids in `src/`); most likely an item on the tester's avatar. To re-check after the fixes: grab + throw, hit feel,
+  crumble look, camera shake. Remaining hit delay seen by the attacker is mostly Roblox replication of the victim's
+  client-simulated movement (victim → server → attacker); a server-owned launch is the next lever if still too slow.
+- **Knockback tuning:** `Config.Combat.Knockback` (force), `Launch.MaxTime`, `Hitstun`. Exploiters can ignore
+  knockback on their own character (clients simulate it — a Roblox limit); server-side movement checks are a later
+  hardening task.
 - **Rounds in Studio:** `Config.Dev.StudioMinPlayers = 1` lets a round start with you alone (vote → arena → results
   → vote ...); set it to 2 to stay in the lobby, e.g. for the training dummy. Output shows `[Round]` lines (state
   changes, KOs, joins, winner). PvP needs two players: Test > Clients and Servers > 2 players. A solo Classic round

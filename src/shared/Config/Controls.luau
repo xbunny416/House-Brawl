@@ -31,6 +31,7 @@ type ControlsConfig = {
 		ShiftLockAllowed: boolean,
 		ShiftLockKeys: { string },
 		ShakeMagnitude: number,
+		ShakeRotation: number,
 		ShakeDuration: number,
 		ShakeFrequency: number,
 	},
@@ -84,8 +85,9 @@ local Controls: ControlsConfig = {
 		ShiftLockAllowed = true,
 		-- Shift Lock toggle keys. Left Shift is left out because it is a Dash key.
 		ShiftLockKeys = { "RightShift" },
-		ShakeMagnitude = 0.6, -- studs at full intensity, heavy hits only (can be turned off in Settings)
-		ShakeDuration = 0.25,
+		ShakeMagnitude = 1, -- studs at full intensity, heavy hits only (can be turned off in Settings)
+		ShakeRotation = 1.5, -- degrees of tilt at full intensity
+		ShakeDuration = 0.35,
 		ShakeFrequency = 18, -- wobbles per second
 	},
 }

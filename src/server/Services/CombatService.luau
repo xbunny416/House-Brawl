@@ -23,6 +23,7 @@
 	can take over an attack intent (holding a prop turns Punch into Throw), and walk-speed modifiers stack.
 ]]
 local Debris = game:GetService("Debris")
+local PhysicsService = game:GetService("PhysicsService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -70,6 +71,7 @@ type Swing = {
 }
 
 local DUMMY_TAG = "TrainingDummy"
+local FIGHTER_GROUP = "Fighters"
 local SHIELD_NAME = "SpawnShield"
 local CHARGE_SPEED_KEY = "Charge"
 local HITBOX_FLASH_TIME = 0.25
@@ -173,6 +175,21 @@ function CombatService.register(character: Model)
 	knockedOut[character] = nil
 	syncAttributes(character, fighter)
 	setCharging(character, false)
+	if character:GetAttribute("FighterCollisions") == nil then
+		character:SetAttribute("FighterCollisions", true)
+		-- Fighters pass through each other: no body-pushing someone off a ledge by walking into them, and dashes
+		-- go through players. Hits use overlap queries, which collision groups do not affect.
+		for _, part in character:GetDescendants() do
+			if part:IsA("BasePart") then
+				part.CollisionGroup = FIGHTER_GROUP
+			end
+		end
+		character.DescendantAdded:Connect(function(part: Instance)
+			if part:IsA("BasePart") then
+				part.CollisionGroup = FIGHTER_GROUP
+			end
+		end)
+	end
 end
 
 function CombatService.unregister(character: Model)
@@ -660,6 +677,9 @@ local function watchPlayer(player: Player)
 end
 
 function CombatService.Init(_self: any)
+	PhysicsService:RegisterCollisionGroup(FIGHTER_GROUP)
+	PhysicsService:CollisionGroupSetCollidable(FIGHTER_GROUP, FIGHTER_GROUP, false)
+
 	Net.onServerEvent("Punch", onPunch)
 	Net.onServerEvent("Shove", onShove)
 	Net.onServerEvent("Dash", onDash)
