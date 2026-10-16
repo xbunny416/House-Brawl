@@ -170,6 +170,32 @@ return {
 		expect.equal(Fighter.dodgeBonus(f, 0.2), 1, "used up")
 	end,
 
+	-- Spawn shield and passive gain -----------------------------------------------------------------------------------
+	["spawn shield blocks hits until it runs out or the fighter attacks"] = function()
+		local f = Fighter.new("Classic")
+		Fighter.shield(f, 0, Config.Round.SpawnShieldTime)
+		expect.equal(Fighter.evade(f, 1), "Shielded")
+		expect.equal(Fighter.evade(f, Config.Round.SpawnShieldTime), "None", "expired")
+		Fighter.shield(f, 10, Config.Round.SpawnShieldTime)
+		Fighter.punch(f, 1, 10.5)
+		expect.equal(Fighter.isShielded(f, 10.6), false, "a punch ends it")
+		local g = Fighter.new("Classic")
+		Fighter.shield(g, 0, 2)
+		Fighter.startShove(g, 0.5)
+		expect.equal(Fighter.isShielded(g, 0.6), false, "a shove ends it")
+	end,
+	["passive gain adds Percent in Casual only"] = function()
+		local casual = Fighter.new("Casual")
+		Fighter.addPercent(casual, 1)
+		expect.equal(casual.Percent, 1)
+		casual.Percent = 300
+		Fighter.addPercent(casual, 1)
+		expect.equal(casual.Percent, 300, "cap")
+		local classic = Fighter.new("Classic")
+		Fighter.addPercent(classic, 1)
+		expect.equal(classic.Percent, 0)
+	end,
+
 	-- KO credit -------------------------------------------------------------------------------------------------------
 	["KO credit goes to the last attacker within 6 s"] = function()
 		local f = Fighter.new("Casual")

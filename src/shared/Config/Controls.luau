@@ -38,7 +38,7 @@ type ControlsConfig = {
 
 local Controls: ControlsConfig = {
 	-- Every action the game listens for. Each one needs a keyboard and a gamepad binding.
-	Actions = { "Attack", "Shove", "Grab", "Dash", "Scoreboard", "Menu" },
+	Actions = { "Attack", "Shove", "Grab", "Dash", "Scoreboard", "Menu", "SpectatePrevious", "SpectateNext" },
 	Keyboard = {
 		Attack = { "MouseButton1" },
 		Shove = { "MouseButton2" },
@@ -46,6 +46,8 @@ local Controls: ControlsConfig = {
 		Dash = { "Q", "LeftShift" },
 		Scoreboard = { "Tab" },
 		Menu = { "M" },
+		SpectatePrevious = { "Z" }, -- only while spectating (touch: the arrows on the spectate bar)
+		SpectateNext = { "X" },
 	},
 	Gamepad = {
 		Attack = { "ButtonX" },
@@ -54,6 +56,8 @@ local Controls: ControlsConfig = {
 		Dash = { "ButtonR1" },
 		Scoreboard = { "ButtonSelect" },
 		Menu = { "ButtonStart" },
+		SpectatePrevious = { "DPadLeft" },
+		SpectateNext = { "DPadRight" },
 	},
 	-- Right-click is also Roblox's drag-to-turn-the-camera button: dragging the mouse this many pixels while a
 	-- right-click Shove is charging cancels the Shove (it was a camera turn). nil keeps the Shove.

@@ -279,31 +279,6 @@ local function watchFalls()
 	end)
 end
 
--- Studio playtests only: loads the preview arena and puts a teleport pad next to the lobby spawns.
-local function setUpStudioPreview()
-	local previewId = Config.Dev.StudioArenaPreview
-	if not (RunService:IsStudio() and previewId) then
-		return
-	end
-	MapService.loadArena(previewId)
-	local pad = Instance.new("Part")
-	pad.Name = "StudioArenaPad"
-	pad.Anchored = true
-	pad.Size = Vector3.new(8, 1, 8)
-	pad.Material = Enum.Material.Neon
-	pad.Color = Color3.fromHex("#3FF2E0")
-	pad.CFrame = CFrame.new(toVector(Config.Maps.LobbyOrigin) + Vector3.new(0, 0.5, -24))
-	pad.Parent = lobby
-	local cooldown: { [Player]: number } = {}
-	pad.Touched:Connect(function(hit: BasePart)
-		local player = Players:GetPlayerFromCharacter(hit.Parent)
-		if player and os.clock() - (cooldown[player] or 0) > 2 then
-			cooldown[player] = os.clock()
-			MapService.sendToArena(player)
-		end
-	end)
-end
-
 function MapService.Init(_self: any)
 	lobby = Workspace:WaitForChild("Lobby") :: Model
 	hideMarkers(lobby)
@@ -315,7 +290,6 @@ function MapService.Init(_self: any)
 end
 
 function MapService.Start(_self: any)
-	setUpStudioPreview()
 	watchFalls()
 end
 

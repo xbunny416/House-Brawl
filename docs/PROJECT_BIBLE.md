@@ -65,9 +65,13 @@ this file in the same PR as the Config change.
 ### Modes and round rules
 
 - **Classic:** 100 HP, 3 lives (stocks). Lose a life at 0 HP or by falling below KillY. Last fighter standing wins; at
-  time-out most KOs wins (tiebreak: fewest falls).
-- **Casual:** no HP, unlimited respawns. Score = KOs − falls. Highest score at time-out wins.
-- Round 3:00. Intermission/vote 15 s. Respawn delay 3 s. Spawn shield 2 s (breaks if you attack).
+  time-out most KOs wins (tiebreak: fewest falls) among the fighters still in, who all rank above the eliminated
+  (eliminated later = higher).
+- **Casual:** no HP, unlimited respawns. Score = KOs − falls. Highest score at time-out wins (tiebreak: more KOs, then
+  fewer falls). Equal records share a placement.
+- Every KO you take is a fall (also resetting your character in the arena; the last attacker still gets the KO).
+- Round 3:00. Intermission/vote 15 s (up to 3 enabled maps + both modes; ties random). Respawn delay 3 s. Spawn
+  shield 2 s (breaks if you attack). Results 8 s. A round needs 2 active players; AFK players sit out the next round.
 
 ### Attacks
 

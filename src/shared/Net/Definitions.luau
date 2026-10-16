@@ -42,6 +42,23 @@ local Definitions: { [string]: Definition } = {
 	-- (attacker: Model, victim: Model, attack: "Punch" | "Shove", heavy: boolean, trail: boolean)
 	CombatHit = { Kind = "UnreliableEvent", Direction = "ToClient" },
 
+	-- Client -> server: vote during the intermission. (kind: "Map" | "Mode", option: map or mode id)
+	Vote = {
+		Kind = "Event",
+		Direction = "ToServer",
+		Args = { Guard.oneOf({ "Map", "Mode" }), Guard.string(32) },
+	},
+	-- Server -> client: the ballot and vote counts (sent when voting opens and after every vote).
+	-- (maps: { string }, modes: { string }, mapCounts: { [string]: number }, modeCounts: { [string]: number })
+	VoteState = { Kind = "Event", Direction = "ToClient" },
+	-- Server -> all clients: final standings when a round ends.
+	-- (rows: { { UserId, Name, Placement, KOs, Falls, Score, Lives? } }, modeId: string, mapId: string)
+	RoundResults = { Kind = "Event", Direction = "ToClient" },
+	-- Client -> server: spectate this player (UserId), or 0 to stop. Only while the sender is spectating.
+	Spectate = { Kind = "Event", Direction = "ToServer", Args = { Guard.integer(0, 2 ^ 53) } },
+	-- Client -> server: "I had input lately" (AFK tracking), at most every Round.Participation.ActivityPingInterval.
+	Activity = { Kind = "Event", Direction = "ToServer", Args = {}, RateLimit = { Rate = 1, Burst = 3 } },
+
 	-- Client -> server: change one Settings-menu value. (key: string, value: boolean | number | string)
 	-- Shared/Settings checks the value for that key before it is saved.
 	ChangeSetting = {

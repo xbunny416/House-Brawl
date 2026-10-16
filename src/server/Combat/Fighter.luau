@@ -32,10 +32,12 @@ export type Fighter = {
 	DashStartedAt: number?, -- server time of the last accepted dash (its invulnerability starts here)
 	PerfectDodgeDash: number?, -- the dash that already earned a Perfect Dodge (one per dash)
 	DodgeBonusUntil: number?, -- the next hit before this time gets the Perfect Dodge knockback bonus
+	ShieldUntil: number, -- spawn shield: hits do nothing before this time (attacking ends it early)
 }
 
--- How a hit meets a dashing fighter: it lands, is dodged (invulnerable), or is Perfect-Dodged.
-export type Evade = "None" | "Dodged" | "Perfect"
+-- How a hit meets the fighter: it lands, is dodged (dash invulnerability), Perfect-Dodged, or blocked by the
+-- spawn shield.
+export type Evade = "None" | "Dodged" | "Perfect" | "Shielded"
 
 -- One hit as it lands: the attack's values plus every extra knockback multiplier (finisher, charge, ...).
 export type Hit = {
@@ -80,7 +82,24 @@ function Fighter.new(modeId: string): Fighter
 		DashStartedAt = nil,
 		PerfectDodgeDash = nil,
 		DodgeBonusUntil = nil,
+		ShieldUntil = 0,
 	}
+end
+
+-- Starts a spawn shield lasting `seconds`.
+function Fighter.shield(fighter: Fighter, now: number, seconds: number)
+	fighter.ShieldUntil = now + seconds
+end
+
+function Fighter.isShielded(fighter: Fighter, now: number): boolean
+	return now < fighter.ShieldUntil
+end
+
+-- Casual passive gain: adds Percent (capped). No effect in modes with HP, where Percent follows the HP.
+function Fighter.addPercent(fighter: Fighter, amount: number)
+	if getMode(fighter.ModeId).MaxHealth == nil then
+		fighter.Percent = Formulas.addCasualPercent(fighter.Percent, amount)
+	end
 end
 
 -- True while the fighter can attack (not knocked out, not in hitstun).
@@ -104,6 +123,7 @@ function Fighter.punch(fighter: Fighter, attackSpeed: number, now: number): numb
 	end
 	fighter.PunchChain += 1
 	fighter.LastPunchAt = now
+	fighter.ShieldUntil = 0 -- attacking ends the spawn shield
 	fighter.NextPunchAt = now + Formulas.punchCooldown(fighter.PunchChain, attackSpeed)
 	return fighter.PunchChain
 end
@@ -114,6 +134,7 @@ function Fighter.startShove(fighter: Fighter, now: number): boolean
 		return false
 	end
 	fighter.ChargeStartedAt = now
+	fighter.ShieldUntil = 0 -- attacking ends the spawn shield
 	return true
 end
 
@@ -150,9 +171,13 @@ function Fighter.dash(fighter: Fighter, now: number): boolean
 	return true
 end
 
--- Whether a hit landing now misses because of the fighter's dash. A Perfect Dodge (the dash started within
--- PerfectDodge.Window before the hit) arms the knockback bonus for the fighter's next hit; one per dash.
+-- Whether a hit landing now misses: blocked by the spawn shield, or dodged by the fighter's dash. A Perfect Dodge
+-- (the dash started within PerfectDodge.Window before the hit) arms the knockback bonus for the fighter's next hit;
+-- one per dash.
 function Fighter.evade(fighter: Fighter, now: number): Evade
+	if Fighter.isShielded(fighter, now) then
+		return "Shielded"
+	end
 	local started = fighter.DashStartedAt
 	if started == nil or not Formulas.isDashInvulnerable(started, now) then
 		return "None"
