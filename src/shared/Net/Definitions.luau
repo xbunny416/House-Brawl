@@ -75,6 +75,15 @@ local Definitions: { [string]: Definition } = {
 
 	-- Client -> server: equip an owned fighting style (refused while fighting in a round). (styleId: string)
 	EquipStyle = { Kind = "Event", Direction = "ToServer", Args = { Guard.keyOf(Config.Styles.List) } },
+	-- Client -> server: equip an owned cosmetic in its slot, or nil to take the slot off. (slot: string, itemId: string?)
+	EquipCosmetic = {
+		Kind = "Event",
+		Direction = "ToServer",
+		Args = {
+			Guard.oneOf(Config.Cosmetics.Slots),
+			Guard.optional(Guard.keyOf(Config.Cosmetics.Items)),
+		},
+	},
 	-- Client -> server: a developer panel command (only allowed players; see Server/Dev/DevRules).
 	-- (command: string, text: string? — a map / mode / prop id, value: number? — a Percent or HP)
 	DevCommand = {

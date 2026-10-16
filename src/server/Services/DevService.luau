@@ -11,6 +11,7 @@
 	  SpawnProp (typeId)             a prop in front of you
 	  SetPercent / SetHealth (n)     your own Percent / HP
 	  SetStyle (styleId)             own and equip a fighting style
+	  UnlockCosmetics                own every cosmetic (equip them in the Locker)
 ]]
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -23,6 +24,7 @@ local Net = require(Shared:WaitForChild("Net"))
 local Server = script.Parent.Parent
 local DevRules = require(Server:WaitForChild("Dev"):WaitForChild("DevRules"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
+local CosmeticService = require(script.Parent:WaitForChild("CosmeticService"))
 local CrumbleService = require(script.Parent:WaitForChild("CrumbleService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
 local PropService = require(script.Parent:WaitForChild("PropService"))
@@ -87,6 +89,9 @@ local commands: { [string]: Command } = {
 		if text then
 			StyleService.equip(player, text, true)
 		end
+	end,
+	UnlockCosmetics = function(player)
+		CosmeticService.grantAll(player)
 	end,
 }
 

@@ -94,6 +94,8 @@ local CombatService = {
 	Hit = Signal.new() :: Signal.Signal<Model, Player>,
 	-- (attacker, box CFrame, box size, Classic damage) for every Punch / Shove hit check, hit or miss.
 	Swung = Signal.new() :: Signal.Signal<Player, CFrame, Vector3, number>,
+	-- (player, character) when a dash is accepted (its invulnerability started): dash trails, VFX.
+	Dashed = Signal.new() :: Signal.Signal<Player, Model>,
 }
 
 local fighters: { [Model]: Fighter } = {}
@@ -715,6 +717,7 @@ local function onDash(player: Player)
 	if wasCharging then
 		setCharging(character, false)
 	end
+	CombatService.Dashed:Fire(player, character)
 	if isStudioFlag(Config.Dev.LogCombat) then
 		print(`[Combat] {player.Name} dashed`)
 	end

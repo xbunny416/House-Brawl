@@ -100,6 +100,8 @@ Not used. Long-term goals are levels/ranks, styles, cosmetics and leaderboards.
 | Wrecker | Wrench + hubcap shield | 6,000 Scrap or Level 25 | Shove becomes a 0.2 s parry: a punch or shove landing in it misses and its knockback (not damage) hits the attacker instead; Punch Damage ×0.95 |
 
 - **Cosmetics** (Scrap or Robux): skins, hats, back items, dash trails, KO effects, victory emotes, name-plate frames.
+  Catalog in `Config.Cosmetics.Items` (blockout visuals until the art pass). KO effects burst at the victim for HP KOs
+  and around the scorer for ring-outs. Victory emotes play once animations exist (2.6). Equipped in the Locker.
   Common 300–800 Scrap; Rare 1,200–2,500 Scrap; Premium = Robux only.
 - **Daily rotating shop:** 4 cosmetics rotate every 24 h (UTC).
 

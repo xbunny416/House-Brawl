@@ -73,7 +73,7 @@ return {
 			else
 				expect.truthy(parts and #parts > 0, `{id} weapon {style.Weapon}`)
 				for _, part in parts do
-					expect.truthy(part.Hand == "Right" or part.Hand == "Left", `{part.Name} hand`)
+					expect.truthy(part.Attach == "RightHand" or part.Attach == "LeftHand", `{part.Name} hand`)
 					expect.truthy(isEnumItem(roblox.Enum.Material, part.Material), `{part.Name} material`)
 					expect.truthy(isEnumItem(roblox.Enum.PartType, part.Shape or "Block"), `{part.Name} shape`)
 					expect.equal(#part.Offset, 3, `{part.Name} offset`)

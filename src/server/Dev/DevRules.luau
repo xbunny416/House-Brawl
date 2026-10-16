@@ -21,6 +21,7 @@ DevRules.Commands = {
 	"SetPercent",
 	"SetHealth",
 	"SetStyle",
+	"UnlockCosmetics",
 }
 
 function DevRules.isAllowed(userId: number, inStudio: boolean): boolean

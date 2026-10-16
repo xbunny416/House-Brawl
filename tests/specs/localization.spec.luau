@@ -57,6 +57,15 @@ return {
 		for id in Config.Props.Types do
 			expect.truthy(keys[`Prop.{id}.Name`], `Prop.{id}.Name`)
 		end
+		for id in Config.Cosmetics.Items do
+			expect.truthy(keys[`Cosmetic.{id}.Name`], `Cosmetic.{id}.Name`)
+		end
+		for _, slot in Config.Cosmetics.Slots do
+			expect.truthy(keys[`Slot.{slot}`], `Slot.{slot}`)
+		end
+		for rarity in Config.Cosmetics.Rarities do
+			expect.truthy(keys[`Rarity.{rarity}`], `Rarity.{rarity}`)
+		end
 	end,
 	["every literal key used in code exists"] = function()
 		local files: { string } = {}
