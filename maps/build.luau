@@ -10,6 +10,8 @@ local roblox = require("@lune/roblox")
 
 local Shim = require("../tests/roblox")
 local BrokenHighway = require("./layouts/BrokenHighway")
+local JunkyardIsles = require("./layouts/JunkyardIsles")
+local NeonMotel = require("./layouts/NeonMotel")
 local Hideout = require("./layouts/Hideout")
 
 local Config = Shim.require(Shim.game.ReplicatedStorage.Shared.Config)
@@ -20,6 +22,8 @@ local function outputs(): { { file: string, model: any } }
 	return {
 		{ file = "Hideout.rbxmx", model = Hideout.build(Config.Maps.LobbyOrigin) },
 		{ file = "BrokenHighway.rbxmx", model = BrokenHighway.build(Config.Maps.ArenaOrigin) },
+		{ file = "JunkyardIsles.rbxmx", model = JunkyardIsles.build(Config.Maps.ArenaOrigin) },
+		{ file = "NeonMotel.rbxmx", model = NeonMotel.build(Config.Maps.ArenaOrigin) },
 	}
 end
 

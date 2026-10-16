@@ -151,6 +151,23 @@ beams, neon trim.
   3 s, then falls. The central platform never falls; at least 2 platforms always remain. Clear 3 s warning (shake,
   crack VFX, rumble SFX).
 
+**Every arena** follows the same rules as Broken Highway: one centre platform that never falls, 4 side platforms,
+2 high ledges (≤ 6 studs above the centre), every outer platform 8–14 studs from its nearest neighbour, 12 spawn
+points, 14 loose prop spots, 4 breakable structures (HP 100 / 80 / 60 tiers), 1 explosive barrel spot per side
+platform, KillY 60 studs below the lowest platform, crumbling as above. Edge decor stays low so knockback carries
+over it.
+
+**Junkyard Isles arena** (dusk): a 48×48 scrap-heap centre island; a 20×28 shipping-container stack (east, "JOE'S
+SCRAP & SALVAGE"), a 22×22 car pile (west), a 24×20 crane barge whose crane arm reaches over the centre (north) and
+a 28×18 barge (south); two 10×10 tire-stack ledges. Toxic green sludge below with junk mounds and floating barrels.
+Structures: crushed car stack (HP 100) ×2, wrecked car (HP 100), scrap pile (HP 60).
+
+**Neon Motel arena** (night): a 56×36 main motel roof with AC units and neon-trimmed parapets; a 24×26 pool roof
+(east), a 22×22 roof under a giant flickering MOTEL / NO VACANCY sign (west), 26×20 and 24×20 lower roofs (north,
+south); a water-tower ledge and a billboard catwalk ledge. Motel buildings sink into a flooded street below,
+surrounded by dark towers with neon signs. Neon flickers now and then. Structures: vending machine (HP 80), ice
+machine (HP 80) ×2, lawn chair stack (HP 60).
+
 **Art & performance:**
 
 - Low-poly retro post-apocalypse, fun and chaotic (not grim). Faded 80s/90s palette: rust orange, teal, dusty pink,

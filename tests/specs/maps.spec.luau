@@ -1,5 +1,5 @@
 --!strict
--- Map layouts match the bible's numbers, and the committed .rbxmx files match the layouts.
+-- Map layouts match the bible's numbers and the shared arena rules, and the committed .rbxmx files match the layouts.
 local fs = require("@lune/fs")
 local roblox = require("@lune/roblox")
 local Roblox = require("../roblox")
@@ -7,6 +7,8 @@ local expect = require("../expect")
 
 local BrokenHighway = require("../../maps/layouts/BrokenHighway")
 local Hideout = require("../../maps/layouts/Hideout")
+local JunkyardIsles = require("../../maps/layouts/JunkyardIsles")
+local NeonMotel = require("../../maps/layouts/NeonMotel")
 
 local Config = Roblox.require(Roblox.game.ReplicatedStorage.Shared.Config)
 
@@ -29,18 +31,45 @@ local function gap(a: any, b: any): number
 	return math.sqrt(dx * dx + dz * dz)
 end
 
-local arena = BrokenHighway.build(ORIGIN)
+-- Every arena in the vote rotation, built at the origin.
+local arenas = {
+	{ Layout = BrokenHighway, Model = BrokenHighway.build(ORIGIN) },
+	{ Layout = JunkyardIsles, Model = JunkyardIsles.build(ORIGIN) },
+	{ Layout = NeonMotel, Model = NeonMotel.build(ORIGIN) },
+}
 local lobby = Hideout.build(Config.Maps.LobbyOrigin)
+
+local function eachArena(check: (layout: any, model: any) -> ())
+	for _, arena in arenas do
+		check(arena.Layout, arena.Model)
+	end
+end
 
 return {
 	["generated .rbxmx files are up to date (run: lune run maps/build)"] = function()
 		local expected = {
-			["maps/generated/BrokenHighway.rbxmx"] = BrokenHighway.build(Config.Maps.ArenaOrigin),
 			["maps/generated/Hideout.rbxmx"] = lobby,
 		}
+		for _, arena in arenas do
+			expected[`maps/generated/{arena.Layout.Id}.rbxmx`] = arena.Layout.build(Config.Maps.ArenaOrigin)
+		end
 		for path, model in expected do
 			expect.truthy(fs.isFile(path), `{path} exists`)
 			expect.equal(fs.readFile(path) == roblox.serializeModel({ model }, true), true, path)
+		end
+	end,
+	["every map in the rotation has a layout and its configured lighting"] = function()
+		for _, mapId in Config.Maps.Rotation do
+			local found = nil
+			for _, arena in arenas do
+				if arena.Layout.Id == mapId then
+					found = arena
+				end
+			end
+			expect.truthy(found, `{mapId} layout`)
+			expect.equal(found.Layout.Lighting, Config.Maps.List[mapId].Lighting, `{mapId} lighting`)
+			expect.truthy(Config.Lighting[found.Layout.Lighting], `{mapId} lighting preset`)
+			expect.equal(found.Model:GetAttribute("MapId"), mapId)
 		end
 	end,
 	["broken highway: platform sizes from the bible"] = function()
@@ -58,84 +87,139 @@ return {
 		expect.equal(counts.Side, 4)
 		expect.equal(counts.Ledge, 2)
 	end,
-	["broken highway: every outer platform is 8-14 studs from its nearest neighbour"] = function()
-		for _, platform in BrokenHighway.Platforms do
-			if platform.Kind ~= "Center" then
-				local nearest = math.huge
-				for _, other in BrokenHighway.Platforms do
-					if other ~= platform then
-						nearest = math.min(nearest, gap(platform, other))
+	["arenas: one centre, four sides, two ledges; platforms never overlap"] = function()
+		eachArena(function(layout)
+			local counts = { Center = 0, Side = 0, Ledge = 0 }
+			for index, platform in layout.Platforms do
+				counts[platform.Kind] += 1
+				for other = index + 1, #layout.Platforms do
+					local second = layout.Platforms[other]
+					expect.truthy(gap(platform, second) > 0, `{layout.Id}: {platform.Id} overlaps {second.Id}`)
+				end
+			end
+			expect.equal(counts.Center, 1, `{layout.Id} centre`)
+			expect.equal(counts.Side, 4, `{layout.Id} sides`)
+			expect.equal(counts.Ledge, 2, `{layout.Id} ledges`)
+		end)
+	end,
+	["arenas: every outer platform is 8-14 studs from its nearest neighbour"] = function()
+		eachArena(function(layout)
+			for _, platform in layout.Platforms do
+				if platform.Kind ~= "Center" then
+					local nearest = math.huge
+					for _, other in layout.Platforms do
+						if other ~= platform then
+							nearest = math.min(nearest, gap(platform, other))
+						end
+					end
+					expect.truthy(nearest >= 8 and nearest <= 14, `{layout.Id} {platform.Id} nearest gap {nearest}`)
+				end
+			end
+		end)
+	end,
+	["arenas: ledges at most 6 studs above the centre, sides within 3"] = function()
+		eachArena(function(layout)
+			for _, platform in layout.Platforms do
+				local limit = if platform.Kind == "Ledge" then 6 else 3
+				expect.truthy(math.abs(platform.Top) <= limit, `{layout.Id} {platform.Id} top {platform.Top}`)
+			end
+		end)
+	end,
+	["arenas: marker counts"] = function()
+		eachArena(function(layout, model)
+			expect.equal(#tagged(model, "SpawnPoint"), 12, `{layout.Id} spawn points`)
+			expect.equal(#tagged(model, "PropSpot"), 14, `{layout.Id} loose prop spots`)
+			expect.equal(#tagged(model, "StructureSpot"), 4, `{layout.Id} breakable structures`)
+			expect.equal(#tagged(model, "ExplosiveSpot"), 4, `{layout.Id} explosive barrel spots`)
+			expect.equal(#tagged(model, "Platform"), 7, `{layout.Id} platforms`)
+		end)
+	end,
+	["arenas: one explosive spot per side platform"] = function()
+		eachArena(function(layout)
+			for _, platform in layout.Platforms do
+				local contents = layout.Contents[platform.Id]
+				local hasExplosive = contents ~= nil and contents.Explosive ~= nil
+				expect.equal(hasExplosive, platform.Kind == "Side", `{layout.Id} {platform.Id}`)
+			end
+		end)
+	end,
+	["arenas: structure types exist in Config"] = function()
+		eachArena(function(layout, model)
+			for _, marker in tagged(model, "StructureSpot") do
+				local structureType = marker:GetAttribute("StructureType")
+				expect.truthy(Config.Structures.Types[structureType], `{layout.Id} structure {structureType}`)
+			end
+		end)
+	end,
+	["arenas: spots sit inside their platform and do not crowd each other"] = function()
+		eachArena(function(layout)
+			for platformId, contents in layout.Contents do
+				local platform
+				for _, candidate in layout.Platforms do
+					if candidate.Id == platformId then
+						platform = candidate
 					end
 				end
-				expect.truthy(nearest >= 8 and nearest <= 14, `{platform.Id} nearest gap {nearest}`)
-			end
-		end
-	end,
-	["broken highway: marker counts"] = function()
-		expect.equal(#tagged(arena, "SpawnPoint"), 12, "spawn points")
-		expect.equal(#tagged(arena, "PropSpot"), 14, "loose prop spots")
-		expect.equal(#tagged(arena, "StructureSpot"), 4, "breakable structures")
-		expect.equal(#tagged(arena, "ExplosiveSpot"), 4, "explosive barrel spots")
-		expect.equal(#tagged(arena, "Platform"), 7, "platforms")
-	end,
-	["broken highway: one explosive spot per side platform"] = function()
-		for _, platform in BrokenHighway.Platforms do
-			local contents = BrokenHighway.Contents[platform.Id]
-			local hasExplosive = contents ~= nil and contents.Explosive ~= nil
-			expect.equal(hasExplosive, platform.Kind == "Side", platform.Id)
-		end
-	end,
-	["broken highway: structure types exist in Config"] = function()
-		for _, marker in tagged(arena, "StructureSpot") do
-			local structureType = marker:GetAttribute("StructureType")
-			expect.truthy(Config.Structures.Types[structureType], `structure {structureType}`)
-		end
-	end,
-	["broken highway: spots sit inside their platform and do not crowd each other"] = function()
-		for platformId, contents in BrokenHighway.Contents do
-			local platform
-			for _, candidate in BrokenHighway.Platforms do
-				if candidate.Id == platformId then
-					platform = candidate
+				expect.truthy(platform, `{layout.Id} platform {platformId}`)
+				local where = `{layout.Id} {platformId}`
+				local spots: { { x: number, z: number, radius: number, name: string } } = {}
+				local function add(spot: { number }, radius: number, name: string)
+					local halfX, halfZ = platform.Size[1] / 2, platform.Size[2] / 2
+					expect.truthy(math.abs(spot[1]) <= halfX - 1.5, `{where} {name} X inside`)
+					expect.truthy(math.abs(spot[2]) <= halfZ - 1.5, `{where} {name} Z inside`)
+					table.insert(spots, { x = spot[1], z = spot[2], radius = radius, name = name })
+				end
+				for index, spot in contents.Spawns or {} do
+					add(spot, 1.5, `spawn {index}`)
+				end
+				for index, spot in contents.Props or {} do
+					add(spot, 1.5, `prop {index}`)
+				end
+				if contents.Explosive then
+					add(contents.Explosive, 1.5, "explosive")
+				end
+				for index, structure in contents.Structures or {} do
+					add(structure.At, 4, `structure {index}`)
+				end
+				for i = 1, #spots do
+					for j = i + 1, #spots do
+						local a, b = spots[i], spots[j]
+						local distance = math.sqrt((a.x - b.x) ^ 2 + (a.z - b.z) ^ 2)
+						expect.truthy(distance >= a.radius + b.radius, `{where}: {a.name} too close to {b.name}`)
+					end
 				end
 			end
-			expect.truthy(platform, `platform {platformId}`)
-			local spots: { { x: number, z: number, radius: number, name: string } } = {}
-			local function add(spot: { number }, radius: number, name: string)
-				local halfX, halfZ = platform.Size[1] / 2, platform.Size[2] / 2
-				expect.truthy(math.abs(spot[1]) <= halfX - 1.5, `{platformId} {name} X inside`)
-				expect.truthy(math.abs(spot[2]) <= halfZ - 1.5, `{platformId} {name} Z inside`)
-				table.insert(spots, { x = spot[1], z = spot[2], radius = radius, name = name })
-			end
-			for index, spot in contents.Spawns or {} do
-				add(spot, 1.5, `spawn {index}`)
-			end
-			for index, spot in contents.Props or {} do
-				add(spot, 1.5, `prop {index}`)
-			end
-			if contents.Explosive then
-				add(contents.Explosive, 1.5, "explosive")
-			end
-			for index, structure in contents.Structures or {} do
-				add(structure.At, 4, `structure {index}`)
-			end
-			for i = 1, #spots do
-				for j = i + 1, #spots do
-					local a, b = spots[i], spots[j]
-					local distance = math.sqrt((a.x - b.x) ^ 2 + (a.z - b.z) ^ 2)
-					expect.truthy(distance >= a.radius + b.radius, `{platformId}: {a.name} too close to {b.name}`)
-				end
-			end
-		end
+		end)
 	end,
-	["broken highway: KillY is 60 studs below the lowest platform; centre never falls"] = function()
+	["arenas: KillY is 60 studs below the lowest platform; centre never falls"] = function()
 		expect.equal(BrokenHighway.killY(), -2 - 3 - 60)
-		expect.equal(arena:GetAttribute("KillY"), BrokenHighway.killY())
-		for _, platform in tagged(arena, "Platform") do
-			expect.equal(platform:GetAttribute("CanFall"), platform.Name ~= "Center", platform.Name)
-			expect.equal(platform.ModelStreamingMode, roblox.Enum.ModelStreamingMode.Persistent, platform.Name)
-			expect.truthy(platform.PrimaryPart, `{platform.Name} PrimaryPart`)
-		end
+		eachArena(function(layout, model)
+			local lowest = math.huge
+			for _, platform in layout.Platforms do
+				lowest = math.min(lowest, platform.Top - platform.Thickness)
+			end
+			expect.equal(layout.killY(), lowest - 60, `{layout.Id} KillY`)
+			expect.equal(model:GetAttribute("KillY"), layout.killY(), `{layout.Id} KillY attribute`)
+			for _, platform in tagged(model, "Platform") do
+				local name = `{layout.Id} {platform.Name}`
+				expect.equal(platform:GetAttribute("CanFall"), platform.Name ~= "Center", name)
+				expect.equal(platform.ModelStreamingMode, roblox.Enum.ModelStreamingMode.Persistent, name)
+				expect.truthy(platform.PrimaryPart, `{name} PrimaryPart`)
+			end
+		end)
+	end,
+	["arenas: markers ride on their platform (they fall with it)"] = function()
+		eachArena(function(layout, model)
+			for _, tag in { "SpawnPoint", "PropSpot", "ExplosiveSpot", "StructureSpot" } do
+				for _, marker in tagged(model, tag) do
+					local node = marker.Parent
+					while node and not node:HasTag("Platform") do
+						node = node.Parent
+					end
+					expect.truthy(node, `{layout.Id} {marker.Name} is not on a platform`)
+				end
+			end
+		end)
 	end,
 	["lobby: interactive objects and spawns exist; no Training Yard"] = function()
 		for _, tag in { "ShopNPC", "ShopCounter", "Locker", "CodesJukebox", "QuestBoard", "ArenaDoor" } do
