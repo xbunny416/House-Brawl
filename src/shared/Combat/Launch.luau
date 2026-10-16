@@ -4,7 +4,8 @@
 	player characters (Net "Knockback"), the server for training dummies.
 	While launched the Humanoid stops steering (PlatformStand), so it cannot cancel the knockback, and an
 	AlignOrientation keeps the body upright and facing the hit (the tumble is an animation, step 2.6). Control comes
-	back once hitstun is over and the character has landed, or after Config.Combat.Launch.MaxTime seconds.
+	back once hitstun is over and the character has landed, after Config.Combat.Launch.MaxTime seconds, or when
+	Launch.stop is called (an air dash after hitstun is the way to recover).
 ]]
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
@@ -16,10 +17,15 @@ local UPRIGHT_NAME = "LaunchUpright"
 local GROUND_MARGIN = 1
 local LAND_RISE_SPEED = 1
 
+type Active = {
+	startedAt: number,
+	hitstun: number,
+	finish: () -> (),
+}
+
 local Launch = {}
 
-local launches: { [Model]: number } = {}
-local lastId = 0
+local launches: { [Model]: Active } = {}
 
 -- Yaw-only rotation facing back along the launch (towards the attacker), or the current facing.
 local function facing(root: BasePart, velocity: Vector3): CFrame
@@ -63,10 +69,6 @@ function Launch.apply(character: Model, velocity: Vector3, hitstun: number)
 	if humanoid == nil or root == nil or not root:IsA("BasePart") or humanoid.Health <= 0 then
 		return
 	end
-	lastId += 1
-	local id = lastId
-	launches[character] = id -- a newer launch takes over from this one
-
 	local upright = keepUpright(root, facing(root, velocity))
 	humanoid.PlatformStand = true
 	root.AssemblyLinearVelocity = velocity
@@ -77,14 +79,28 @@ function Launch.apply(character: Model, velocity: Vector3, hitstun: number)
 	params.FilterDescendantsInstances = { character }
 	params.RespectCanCollide = true
 
-	local started = os.clock()
+	local active: Active
 	local connection: RBXScriptConnection
+	local function finish()
+		connection:Disconnect()
+		if launches[character] == active then
+			launches[character] = nil
+		end
+		upright:Destroy()
+		if humanoid.Parent and humanoid.Health > 0 then
+			humanoid.PlatformStand = false
+			humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+		end
+	end
+	active = { startedAt = os.clock(), hitstun = hitstun, finish = finish }
+	launches[character] = active -- replaces any earlier launch, whose loop then stops without cleaning up
+
 	connection = RunService.Heartbeat:Connect(function()
-		if launches[character] ~= id then
-			connection:Disconnect()
+		if launches[character] ~= active then
+			connection:Disconnect() -- replaced by a newer launch, which owns the cleanup
 			return
 		end
-		local elapsed = os.clock() - started
+		local elapsed = os.clock() - active.startedAt
 		local over = elapsed >= Config.Combat.Launch.MaxTime or not root:IsDescendantOf(Workspace)
 		if not over then
 			if elapsed < hitstun or root.AssemblyLinearVelocity.Y > LAND_RISE_SPEED then
@@ -95,19 +111,27 @@ function Launch.apply(character: Model, velocity: Vector3, hitstun: number)
 				return
 			end
 		end
-		connection:Disconnect()
-		launches[character] = nil
-		upright:Destroy()
-		if humanoid.Parent and humanoid.Health > 0 then
-			humanoid.PlatformStand = false
-			humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
-		end
+		finish()
 	end)
 end
 
 -- True while `character` is flying from a hit.
 function Launch.isLaunched(character: Model): boolean
 	return launches[character] ~= nil
+end
+
+-- True while `character` is in the hitstun of its current launch (it cannot act).
+function Launch.inHitstun(character: Model): boolean
+	local active = launches[character]
+	return active ~= nil and os.clock() - active.startedAt < active.hitstun
+end
+
+-- Ends the launch now and gives control back (e.g. the player air-dashed out of it after hitstun).
+function Launch.stop(character: Model)
+	local active = launches[character]
+	if active then
+		active.finish()
+	end
 end
 
 return Launch

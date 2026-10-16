@@ -6,10 +6,10 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 
 - **Build order approved** by the owner on 2026-10-15, with maps built from code (blockouts from layout data, art
   pass later) and data saving via ProfileStore.
-- **Current phase:** Phase 1. **Waiting on:** the owner's Studio playtest of 1.1–1.6 (lobby + Broken Highway
+- **Current phase:** Phase 1. **Waiting on:** the owner's Studio playtest of 1.1–1.7 (lobby + Broken Highway
   blockouts, data saving, input on PC / gamepad / Device Emulator touch, camera, Shift Lock, camera shake; combat on
-  the Training Yard dummy and 2-player PvP in the arena). The owner chose to continue building before playtesting.
-  **Next step:** 1.7 Dash + Perfect Dodge.
+  the Training Yard dummy and 2-player PvP in the arena; dash, air dash across gaps, Perfect Dodge). The owner chose
+  to continue building before playtesting. **Next step:** 1.8 Rounds + modes.
 
 ## How this repo works
 
@@ -137,7 +137,7 @@ any errors are fixed before the next item.
       limits, Shift Lock, camera shake toggle.
 - [x] **1.6 Combat core** — Punch chain, charged Shove, server hitboxes, HP/Percent, knockback + hitstun, KO credit
       (6 s), launch trail flag.
-- [ ] **1.7 Dash + Perfect Dodge** — server-timed i-frames, air dash once per jump, dodge bonus.
+- [x] **1.7 Dash + Perfect Dodge** — server-timed i-frames, air dash once per jump, dodge bonus.
 - [ ] **1.8 Rounds + modes** — vote (map + mode, 15 s) → teleport → Classic / Casual rules → results → lobby; respawn,
       spawn shield, spectate, late joiners, AFK + 60 s participation tracking.
 - [ ] **1.9 Props** — spawn spots, grab/carry/throw (server-checked range and rate), weight classes, explosive barrel,
@@ -186,7 +186,8 @@ any errors are fixed before the next item.
 | 2026-10-15 | 1.3 DataService on vendored ProfileStore (session lock, autosave, receipts, migrations), client DataController | #4 |
 | 2026-10-15 | 1.4 Lobby (Rust Diner) + Broken Highway blockouts generated from layout code, MapService (arena load/unload, lighting presets, falls, Studio preview pad) | #5 |
 | 2026-10-16 | 1.5 InputController (one action map: keyboard/mouse, gamepad, touch arc around the jump button), CameraController (zoom 8–30, Shift Lock on Right Shift, camera shake), validated settings changes (SettingsService/SettingsController), Studio input log + debug keys; LF line endings | #6 |
-| 2026-10-16 | 1.6 CombatService (Punch chain, charged Shove, server hitboxes, HP / Percent, knockback + hitstun, KO credit, trail flag) on a pure Fighter state machine; client knockback (Launch) + heavy-hit camera shake; right-drag cancels a Shove; Training Yard dummy; Studio hit log + hitbox flashes | 1.6 |
+| 2026-10-16 | 1.6 CombatService (Punch chain, charged Shove, server hitboxes, HP / Percent, knockback + hitstun, KO credit, trail flag) on a pure Fighter state machine; client knockback (Launch) + heavy-hit camera shake; right-drag cancels a Shove; Training Yard dummy; Studio hit log + hitbox flashes | #7 |
+| 2026-10-16 | 1.7 Dash (client-moved, server-timed invulnerability, cooldown tolerance, once per stay in the air, ends a launch) + Perfect Dodge (one per dash, +25% knockback on the next hit within 2 s, `PerfectDodged` signal) | 1.7 |
 
 ## Decisions and interpretations
 
@@ -220,6 +221,11 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   attacker's (0.4). Right-dragging the mouse 12 px while charging a right-click Shove cancels it (camera turn).
   The equipped style's multipliers already apply; the Wrecker parry comes with styles (2.2). PvP only between two
   players in the arena; the dummy can always be hit. Training dummy respawns 2 s after a KO or falling 4 studs.
+- **Dash (1.7):** the client moves at once (LinearVelocity, 72 studs/s for 0.25 s, level, along the move direction or
+  else the facing) and sends `Dash`; the server grants invulnerability from when the intent arrives, accepting it up
+  to 0.15 s before the cooldown ends (`Dash.CooldownTolerance`, network jitter). A dash cancels a Shove charge, and a
+  dash after hitstun ends a launch (recovery). One Perfect Dodge per dash; dodged hits give no KO credit. The bonus
+  applies to every victim of the dodger's next landed swing, then is used up.
 
 ## Known bugs / open items
 
@@ -246,7 +252,12 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Data in Studio:** with "Studio Access to API Services" off, ProfileStore uses an in-memory store and prints
   "Roblox API services unavailable - data will not be saved". Turn it on to test real saving
   (`Config.Data.UseMockInStudio = true` forces the in-memory store even with access on).
-- **Arena gaps** of 9–12 studs need the dash (step 1.7); until then only the 8–9 stud gaps are jumpable.
+- **Arena gaps** of 9–12 studs need a jump + air dash (1.7); worth confirming every gap in the playtest.
+- **Perfect Dodge feedback** (blue flash, chime, "+5") comes with VFX/SFX/HUD (2.7, 2.8, 1.12); for now Studio's
+  Output shows `PERFECT DODGE`. Its +5 Scrap and the `PerfectDodges` stat are paid/counted by the round system from
+  `CombatService.PerfectDodged` (1.8 / 2.1).
+- **Dash movement is client-side** (clients simulate their character), so the once-per-jump air rule is enforced by
+  the client; the server enforces the cooldown and hitstun, which gate the invulnerability and Perfect Dodge.
 - **Falling off the arena** currently returns you to the lobby (MapService default); the round system (1.8) will
   take over with lives/respawns.
 - **Studio arena preview:** `Config.Dev.StudioArenaPreview` loads Broken Highway in Studio playtests and adds a

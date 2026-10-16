@@ -127,6 +127,49 @@ return {
 		expect.equal(Fighter.canAct(f, 100), false)
 	end,
 
+	-- Dash and Perfect Dodge -----------------------------------------------------------------------------------------
+	["server dash: cooldown with network tolerance, none during hitstun"] = function()
+		local Dash = Config.Combat.Dash
+		local f = Fighter.new("Classic")
+		expect.equal(Fighter.dash(f, 0), true)
+		expect.equal(Fighter.dash(f, Dash.Cooldown - Dash.CooldownTolerance - 0.01), false)
+		expect.equal(Fighter.dash(f, Dash.Cooldown - Dash.CooldownTolerance), true, "jitter-early dash accepted")
+		local stunned = Fighter.new("Classic")
+		local result = Fighter.takeHit(stunned, punchHit(), "a", 0)
+		expect.equal(Fighter.dash(stunned, result.Hitstun / 2), false, "hitstun")
+	end,
+	["a dash cancels a Shove charge"] = function()
+		local f = Fighter.new("Classic")
+		Fighter.startShove(f, 0)
+		Fighter.dash(f, 0.1)
+		expect.equal(f.ChargeStartedAt, nil)
+	end,
+	["hits inside the dash's invulnerability miss; the first 0.15 s is a Perfect Dodge (once per dash)"] = function()
+		local Dash = Config.Combat.Dash
+		local window = Config.Combat.PerfectDodge.Window
+		local f = Fighter.new("Classic")
+		expect.equal(Fighter.evade(f, 0), "None", "not dashing")
+		Fighter.dash(f, 10)
+		expect.equal(Fighter.evade(f, 10 + window * 0.9), "Perfect")
+		expect.equal(Fighter.evade(f, 10 + window * 0.95), "Dodged", "one Perfect Dodge per dash")
+		expect.equal(Fighter.evade(f, 10 + Dash.InvulnerabilityTime * 0.99), "Dodged")
+		expect.equal(Fighter.evade(f, 10 + Dash.InvulnerabilityTime + 0.01), "None")
+		local late = Fighter.new("Classic")
+		Fighter.dash(late, 0)
+		expect.equal(Fighter.evade(late, window + 0.01), "Dodged", "dodged, but too early for a Perfect Dodge")
+	end,
+	["Perfect Dodge bonus: x1.25 knockback on the next hit within 2 s"] = function()
+		local PerfectDodge = Config.Combat.PerfectDodge
+		local f = Fighter.new("Classic")
+		expect.equal(Fighter.dodgeBonus(f, 0), 1)
+		Fighter.dash(f, 0)
+		Fighter.evade(f, 0.1)
+		expect.equal(Fighter.dodgeBonus(f, 0.1 + PerfectDodge.BonusWindow), PerfectDodge.BonusKnockbackMultiplier)
+		expect.equal(Fighter.dodgeBonus(f, 0.1 + PerfectDodge.BonusWindow + 0.01), 1, "expired")
+		Fighter.clearDodgeBonus(f)
+		expect.equal(Fighter.dodgeBonus(f, 0.2), 1, "used up")
+	end,
+
 	-- KO credit -------------------------------------------------------------------------------------------------------
 	["KO credit goes to the last attacker within 6 s"] = function()
 		local f = Fighter.new("Casual")

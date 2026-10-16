@@ -33,6 +33,9 @@ local Definitions: { [string]: Definition } = {
 		Direction = "ToServer",
 		Args = { Guard.oneOf({ "Start", "Release", "Cancel" }) },
 	},
+	-- Client -> server: the local player dashed (the client already moved its character). The server checks the
+	-- cooldown and hitstun and starts the dash's invulnerability.
+	Dash = { Kind = "Event", Direction = "ToServer", Args = {} },
 	-- Server -> the victim's client: launch your character. (velocity: Vector3, hitstun: number)
 	Knockback = { Kind = "Event", Direction = "ToClient" },
 	-- Server -> all clients: a hit landed, for feedback (camera shake; VFX/SFX later).

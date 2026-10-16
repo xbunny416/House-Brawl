@@ -40,7 +40,8 @@ this file in the same PR as the Config change.
 | Round completed (stayed to the end) | +15 | +40 |
 
 - **Perfect Dodge:** dashing through an attack in the last 0.15 s before it lands = no damage/knockback, +5 Scrap, and
-  the next hit within 2 s deals +25% knockback.
+  the next hit within 2 s deals +25% knockback. Any hit inside a dash's 0.25 s invulnerability misses; only the first
+  0.15 s counts as a Perfect Dodge (one per dash). The Scrap is paid with the round rewards.
 - **KO streak multiplier:** starts x1.0, +0.1 per consecutive KO without being KO'd, caps x1.5, resets when KO'd or at
   round end. Applies to Scrap from KOs only.
 - **Storage cap / conversion:** not used.
@@ -74,7 +75,7 @@ this file in the same PR as the Config change.
 | --- | --- | --- | --- | --- |
 | Punch (3-hit chain) | 8 HP / 6% per hit | 3rd hit ×1.5 KB | 4×4×5 | 0.35 s between hits, 0.8 s after 3rd |
 | Shove (heavy) | 14 HP / 11% (×1.75 base) | AttackKBScale 1.6; charge up to 0.8 s for up to ×1.5 KB; 40% slow while charging | 5×5×6 | 1.2 s |
-| Dash | — | 18 studs, 0.25 s invulnerability, once in the air per jump | — | 2.5 s |
+| Dash | — | 18 studs in 0.25 s, level (no gravity), 0.25 s invulnerability, once in the air per jump; ends a launch after hitstun (recovery) | — | 2.5 s |
 
 ### Reward distribution
 

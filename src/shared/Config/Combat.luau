@@ -25,6 +25,7 @@ type CombatConfig = {
 		InvulnerabilityTime: number,
 		Cooldown: number,
 		AirDashesPerJump: number,
+		CooldownTolerance: number,
 	},
 	Attacks: {
 		Punch: Types.PunchConfig,
@@ -68,7 +69,10 @@ local Combat: CombatConfig = {
 		Duration = 0.25,
 		InvulnerabilityTime = 0.25,
 		Cooldown = 2.5,
-		AirDashesPerJump = 1,
+		AirDashesPerJump = 1, -- dashes allowed per stay in the air (jump, fall or launch); ground dashes are unlimited
+		-- The client dashes at once and tells the server; the server accepts a dash this many seconds before the
+		-- cooldown ends so network jitter never costs a legitimate dash its invulnerability.
+		CooldownTolerance = 0.15,
 	},
 
 	-- Base (Brawler) attacks. Fighting styles scale these in Config.Styles.

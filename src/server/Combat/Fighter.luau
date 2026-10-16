@@ -12,6 +12,8 @@ local Formulas = require(Shared:WaitForChild("Formulas"))
 
 local Punch = Config.Combat.Attacks.Punch
 local Shove = Config.Combat.Attacks.Shove
+local Dash = Config.Combat.Dash
+local PerfectDodge = Config.Combat.PerfectDodge
 
 export type Fighter = {
 	ModeId: string,
@@ -26,7 +28,14 @@ export type Fighter = {
 	LastHitAt: number,
 	LastAttacker: any?, -- whoever hit last (a Player on the server)
 	Defeated: boolean,
+	NextDashAt: number,
+	DashStartedAt: number?, -- server time of the last accepted dash (its invulnerability starts here)
+	PerfectDodgeDash: number?, -- the dash that already earned a Perfect Dodge (one per dash)
+	DodgeBonusUntil: number?, -- the next hit before this time gets the Perfect Dodge knockback bonus
 }
+
+-- How a hit meets a dashing fighter: it lands, is dodged (invulnerable), or is Perfect-Dodged.
+export type Evade = "None" | "Dodged" | "Perfect"
 
 -- One hit as it lands: the attack's values plus every extra knockback multiplier (finisher, charge, ...).
 export type Hit = {
@@ -67,6 +76,10 @@ function Fighter.new(modeId: string): Fighter
 		LastHitAt = -math.huge,
 		LastAttacker = nil,
 		Defeated = false,
+		NextDashAt = 0,
+		DashStartedAt = nil,
+		PerfectDodgeDash = nil,
+		DodgeBonusUntil = nil,
 	}
 end
 
@@ -123,6 +136,44 @@ function Fighter.cancelShove(fighter: Fighter): boolean
 	end
 	fighter.ChargeStartedAt = nil
 	return true
+end
+
+-- Starts a dash's invulnerability (the client already moved the character). False if not allowed now: hitstun, or
+-- the cooldown is not over (minus CooldownTolerance for network jitter). A dash cancels a Shove charge.
+function Fighter.dash(fighter: Fighter, now: number): boolean
+	if not Fighter.canAct(fighter, now) or now < fighter.NextDashAt then
+		return false
+	end
+	fighter.DashStartedAt = now
+	fighter.NextDashAt = now + Dash.Cooldown - Dash.CooldownTolerance
+	Fighter.cancelShove(fighter)
+	return true
+end
+
+-- Whether a hit landing now misses because of the fighter's dash. A Perfect Dodge (the dash started within
+-- PerfectDodge.Window before the hit) arms the knockback bonus for the fighter's next hit; one per dash.
+function Fighter.evade(fighter: Fighter, now: number): Evade
+	local started = fighter.DashStartedAt
+	if started == nil or not Formulas.isDashInvulnerable(started, now) then
+		return "None"
+	end
+	if Formulas.isPerfectDodge(started, now) and fighter.PerfectDodgeDash ~= started then
+		fighter.PerfectDodgeDash = started
+		fighter.DodgeBonusUntil = now + PerfectDodge.BonusWindow
+		return "Perfect"
+	end
+	return "Dodged"
+end
+
+-- Knockback multiplier for a hit this fighter lands now: the Perfect Dodge bonus while it is armed, else 1.
+function Fighter.dodgeBonus(fighter: Fighter, now: number): number
+	local untilTime = fighter.DodgeBonusUntil
+	return if untilTime ~= nil and now <= untilTime then PerfectDodge.BonusKnockbackMultiplier else 1
+end
+
+-- Uses up the Perfect Dodge bonus (after a hit landed with it).
+function Fighter.clearDodgeBonus(fighter: Fighter)
+	fighter.DodgeBonusUntil = nil
 end
 
 -- Applies a hit: HP and Percent (Classic) or Percent (Casual), then knockback from the new Percent, hitstun and KO

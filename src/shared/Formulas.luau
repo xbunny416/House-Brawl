@@ -168,6 +168,11 @@ function Formulas.shoveChargeMultiplier(chargeTime: number): number
 	return 1 + t * (shove.MaxChargeKnockbackMultiplier - 1)
 end
 
+-- Dash speed in studs/s (Distance covered over Duration).
+function Formulas.dashSpeed(): number
+	return Combat.Dash.Distance / Combat.Dash.Duration
+end
+
 -- True if a dash that started at `dashStart` turns a hit landing at `hitTime` into a Perfect Dodge.
 function Formulas.isPerfectDodge(dashStart: number, hitTime: number): boolean
 	local before = hitTime - dashStart

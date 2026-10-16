@@ -8,6 +8,11 @@
 	run by whoever simulates the victim: its own client for players (Net "Knockback"), this server for training
 	dummies. PvP only counts inside the arena; training dummies can always be hit.
 
+	Dash: the client moves its own character and sends Dash; the server checks cooldown and hitstun and starts the
+	invulnerability (Dash.InvulnerabilityTime). A hit landing inside it misses; if the dash began within
+	PerfectDodge.Window before the hit, it is a Perfect Dodge (PerfectDodged signal; the dodger's next hit within
+	BonusWindow gets BonusKnockbackMultiplier). The Perfect Dodge Scrap is paid with the round rewards.
+
 	Every combatant has a Fighter and the character attributes HP (modes with HP) and Percent, which UI reads.
 	Round rules (lives, respawns, scoring) live elsewhere: the round system replaces the knock-out handler and the
 	MapService fall handler (step 1.8). Until then a knocked-out player returns to the lobby with full HP and 0%.
@@ -52,6 +57,9 @@ local CombatService = {
 	Priority = -20,
 	-- (victim character, credited Player or nil, cause) whenever a combatant is knocked out (dummies included).
 	KnockedOut = Signal.new() :: Signal.Signal<Model, Player?, KOCause>,
+	-- (dodger character, attacker) when a dash started in the last moment before a hit (+Scrap at round end, and the
+	-- dodger's next hit gets bonus knockback).
+	PerfectDodged = Signal.new() :: Signal.Signal<Model, Player>,
 }
 
 local fighters: { [Model]: Fighter } = {}
@@ -241,19 +249,45 @@ local function showHitbox(box: CFrame, size: Vector3, hit: boolean)
 	Debris:AddItem(part, HITBOX_FLASH_TIME)
 end
 
-local function applyHit(attacker: Player, attackerCharacter: Model, attackerRoot: BasePart, victim: Model, swing: Swing)
+-- A hit met a dashing victim: no damage or knockback. A Perfect Dodge is announced.
+local function dodged(attacker: Player, victim: Model, swing: Swing, evade: Fighter.Evade)
+	if evade == "Perfect" then
+		CombatService.PerfectDodged:Fire(victim, attacker)
+	end
+	if isStudioFlag(Config.Dev.LogCombat) then
+		local kind = if evade == "Perfect" then "PERFECT DODGE" else "dodged"
+		print(`[Combat] {victim.Name} {kind}: {attacker.Name} {swing.Label}`)
+	end
+end
+
+-- Applies one swing to one victim. `bonus` is the attacker's Perfect Dodge knockback bonus (1 when none).
+-- Returns false when the victim dodged it.
+local function applyHit(
+	attacker: Player,
+	attackerCharacter: Model,
+	attackerRoot: BasePart,
+	victim: Model,
+	swing: Swing,
+	bonus: number
+): boolean
 	local fighter = fighters[victim]
 	local victimRoot = rootOf(victim)
 	if fighter == nil or victimRoot == nil then
-		return
+		return false
+	end
+	local now = os.clock()
+	local evade: Fighter.Evade = Fighter.evade(fighter, now)
+	if evade == "Perfect" or evade == "Dodged" then
+		dodged(attacker, victim, swing, evade)
+		return false
 	end
 	local attack = swing.Attack
 	local result = Fighter.takeHit(fighter, {
 		Damage = attack.Damage,
 		Percent = attack.Percent,
 		KnockbackScale = attack.KnockbackScale,
-		Multiplier = swing.Multiplier,
-	}, attacker, os.clock())
+		Multiplier = swing.Multiplier * bonus,
+	}, attacker, now)
 	if result.InterruptedCharge then
 		setCharging(victim, false)
 	end
@@ -277,11 +311,13 @@ local function applyHit(attacker: Player, attackerCharacter: Model, attackerRoot
 			`[Combat] {attacker.Name} {swing.Label} -> {victim.Name}:{hp} {string.format("%.0f", fighter.Percent)}%,`
 				.. ` knockback {string.format("%.1f", result.Force)}, hitstun {string.format("%.2f", result.Hitstun)} s`
 				.. (if result.Trail then ", trail" else "")
+				.. (if bonus > 1 then ", Perfect Dodge bonus" else "")
 		)
 	end
 	if result.Defeated then
 		CombatService.knockOut(victim, "Health")
 	end
+	return true
 end
 
 -- Runs when an attack's windup ends. The swing is lost if the attacker was hit, knocked out or respawned meanwhile.
@@ -298,8 +334,15 @@ local function strike(attacker: Player, character: Model, fighter: Fighter, star
 	local box = root.CFrame * CFrame.new(0, 0, -swing.Attack.Hitbox.Z / 2)
 	local victims = findVictims(character, root, box, size)
 	showHitbox(box, size, #victims > 0)
+	local bonus = Fighter.dodgeBonus(fighter, os.clock())
+	local landed = false
 	for _, victim in victims do
-		applyHit(attacker, character, root, victim, swing)
+		if applyHit(attacker, character, root, victim, swing, bonus) then
+			landed = true
+		end
+	end
+	if landed and bonus > 1 then
+		Fighter.clearDodgeBonus(fighter)
 	end
 end
 
@@ -389,6 +432,24 @@ local function onShove(player: Player, phase: string)
 	end
 end
 
+-- The client already moved its character; the server only grants the invulnerability (cooldown + hitstun checked).
+local function onDash(player: Player)
+	local character, fighter = fighterOf(player)
+	if character == nil or fighter == nil then
+		return
+	end
+	local wasCharging = fighter.ChargeStartedAt ~= nil
+	if not Fighter.dash(fighter, os.clock()) then
+		return
+	end
+	if wasCharging then
+		setCharging(character, false)
+	end
+	if isStudioFlag(Config.Dev.LogCombat) then
+		print(`[Combat] {player.Name} dashed`)
+	end
+end
+
 ---------------------------------------------------------------------------------------------------------------------
 -- Lifecycle
 ---------------------------------------------------------------------------------------------------------------------
@@ -404,6 +465,7 @@ end
 function CombatService.Init(_self: any)
 	Net.onServerEvent("Punch", onPunch)
 	Net.onServerEvent("Shove", onShove)
+	Net.onServerEvent("Dash", onDash)
 
 	Players.PlayerAdded:Connect(watchPlayer)
 	for _, player in Players:GetPlayers() do
