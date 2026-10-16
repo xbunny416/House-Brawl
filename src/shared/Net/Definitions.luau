@@ -73,6 +73,8 @@ local Definitions: { [string]: Definition } = {
 	-- Client -> server: "I had input lately" (AFK tracking), at most every Round.Participation.ActivityPingInterval.
 	Activity = { Kind = "Event", Direction = "ToServer", Args = {}, RateLimit = { Rate = 1, Burst = 3 } },
 
+	-- Client -> server: equip an owned fighting style (refused while fighting in a round). (styleId: string)
+	EquipStyle = { Kind = "Event", Direction = "ToServer", Args = { Guard.keyOf(Config.Styles.List) } },
 	-- Client -> server: a developer panel command (only allowed players; see Server/Dev/DevRules).
 	-- (command: string, text: string? — a map / mode / prop id, value: number? — a Percent or HP)
 	DevCommand = {

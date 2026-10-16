@@ -6,6 +6,7 @@ type StylesConfig = {
 	Default: string,
 	Order: { string },
 	List: { [string]: Types.StyleConfig },
+	Weapons: { [string]: { Types.WeaponPart } },
 }
 
 local NO_CHANGE: Types.StyleAttack = { DamageMultiplier = 1, KnockbackMultiplier = 1, ReachBonus = 0 }
@@ -57,6 +58,74 @@ local Styles: StylesConfig = {
 				KnockbackMultiplier = 1,
 				ReachBonus = 0,
 				Parry = { Window = 0.2, ReflectMultiplier = 1 },
+			},
+		},
+	},
+
+	-- Blockout weapon models (welded accessories, not Tools), keyed by a style's Weapon. "Fists" has none.
+	-- Offsets are in the hand's space: -Z points forward out of the fist, -Y down along the arm.
+	Weapons = {
+		BaseballBat = {
+			{
+				Name = "Bat",
+				Hand = "Right",
+				Size = { X = 3.4, Y = 0.5, Z = 0.5 },
+				Offset = { 0, -0.1, -1.5 },
+				Rotation = { 0, 90, 0 },
+				Shape = "Cylinder",
+				Material = "Wood",
+				Color = "#C9A26B",
+			},
+		},
+		Shovel = {
+			{
+				Name = "Handle",
+				Hand = "Right",
+				Size = { X = 3.6, Y = 0.3, Z = 0.3 },
+				Offset = { 0, -0.1, -1.4 },
+				Rotation = { 0, 90, 0 },
+				Shape = "Cylinder",
+				Material = "WoodPlanks",
+				Color = "#8A6A44",
+			},
+			{
+				Name = "Blade",
+				Hand = "Right",
+				Size = { X = 1.3, Y = 0.15, Z = 1.2 },
+				Offset = { 0, -0.1, -3.5 },
+				Rotation = { 0, 0, 0 },
+				Material = "Metal",
+				Color = "#8F9399",
+			},
+		},
+		WrenchAndHubcap = {
+			{
+				Name = "Wrench",
+				Hand = "Right",
+				Size = { X = 0.35, Y = 0.2, Z = 2.2 },
+				Offset = { 0, -0.1, -1 },
+				Rotation = { 0, 0, 0 },
+				Material = "Metal",
+				Color = "#B8BEC6",
+			},
+			{
+				Name = "WrenchHead",
+				Hand = "Right",
+				Size = { X = 0.8, Y = 0.25, Z = 0.55 },
+				Offset = { 0, -0.1, -2.2 },
+				Rotation = { 0, 0, 0 },
+				Material = "Metal",
+				Color = "#B8BEC6",
+			},
+			{
+				Name = "Hubcap",
+				Hand = "Left",
+				Size = { X = 0.2, Y = 2.2, Z = 2.2 },
+				Offset = { -0.4, 0.3, 0 },
+				Rotation = { 0, 0, 0 },
+				Shape = "Cylinder",
+				Material = "DiamondPlate",
+				Color = "#D8DCE0",
 			},
 		},
 	},

@@ -34,11 +34,12 @@ export type Fighter = {
 	PerfectDodgeDash: number?, -- the dash that already earned a Perfect Dodge (one per dash)
 	DodgeBonusUntil: number?, -- the next hit before this time gets the Perfect Dodge knockback bonus
 	ShieldUntil: number, -- spawn shield: hits do nothing before this time (attacking ends it early)
+	ParryUntil: number, -- parry styles: melee hits before this time are turned back on the attacker
 }
 
--- How a hit meets the fighter: it lands, is dodged (dash invulnerability), Perfect-Dodged, or blocked by the
--- spawn shield.
-export type Evade = "None" | "Dodged" | "Perfect" | "Shielded"
+-- How a hit meets the fighter: it lands, is dodged (dash invulnerability), Perfect-Dodged, blocked by the spawn
+-- shield, or parried (Wrecker style: the attacker takes the knockback instead).
+export type Evade = "None" | "Dodged" | "Perfect" | "Shielded" | "Parried"
 
 -- One hit as it lands: the attack's values plus every extra knockback multiplier (finisher, charge, ...).
 export type Hit = {
@@ -86,6 +87,7 @@ function Fighter.new(modeId: string): Fighter
 		PerfectDodgeDash = nil,
 		DodgeBonusUntil = nil,
 		ShieldUntil = 0,
+		ParryUntil = 0,
 	}
 end
 
@@ -199,12 +201,26 @@ function Fighter.dash(fighter: Fighter, now: number): boolean
 	return true
 end
 
--- Whether a hit landing now misses: blocked by the spawn shield, or dodged by the fighter's dash. A Perfect Dodge
--- (the dash started within PerfectDodge.Window before the hit) arms the knockback bonus for the fighter's next hit;
--- one per dash.
-function Fighter.evade(fighter: Fighter, now: number): Evade
+-- Parry (styles whose Shove is a parry): for `window` seconds melee hits are turned back on their attacker. Shares
+-- the Shove cooldown. False if not allowed now (cooldown, hitstun, charging).
+function Fighter.parry(fighter: Fighter, now: number, window: number, cooldown: number): boolean
+	if not Fighter.canAct(fighter, now) or now < fighter.NextShoveAt or fighter.ChargeStartedAt ~= nil then
+		return false
+	end
+	fighter.ParryUntil = now + window
+	fighter.NextShoveAt = now + cooldown
+	return true
+end
+
+-- Whether a hit landing now misses: blocked by the spawn shield, parried (only melee hits: `parryable`), or dodged
+-- by the fighter's dash. A Perfect Dodge (the dash started within PerfectDodge.Window before the hit) arms the
+-- knockback bonus for the fighter's next hit; one per dash.
+function Fighter.evade(fighter: Fighter, now: number, parryable: boolean?): Evade
 	if Fighter.isShielded(fighter, now) then
 		return "Shielded"
+	end
+	if parryable and now < fighter.ParryUntil then
+		return "Parried"
 	end
 	local started = fighter.DashStartedAt
 	if started == nil or not Formulas.isDashInvulnerable(started, now) then

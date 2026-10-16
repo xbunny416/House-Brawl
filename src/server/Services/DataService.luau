@@ -48,6 +48,8 @@ local DataService = {
 
 	-- Fires once per player when their data is ready: (player, data)
 	Loaded = Signal.new() :: Signal.Signal<Player, PlayerData>,
+	-- Fires when a player gains one or more levels: (player, new level)
+	LeveledUp = Signal.new() :: Signal.Signal<Player, number>,
 }
 
 local profiles: { [Player]: Profile } = {}
@@ -204,6 +206,7 @@ function DataService.addXP(player: Player, amount: number): number
 	if gained > 0 then
 		replicate(player, "Level")
 		player:SetAttribute("Level", level)
+		DataService.LeveledUp:Fire(player, level)
 	end
 	return gained
 end
