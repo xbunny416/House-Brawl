@@ -42,6 +42,28 @@ return {
 	["knockback: extra multiplier applies last"] = function()
 		expect.near(F.knockbackForce(0, 1, "Classic", 1.25), 37.5)
 	end,
+	["launch: away from the attacker, 30 degrees up, at the given speed"] = function()
+		local vx, vy, vz = F.launchVelocity(3, 4, 100, 0, -1)
+		expect.near(math.sqrt(vx * vx + vy * vy + vz * vz), 100, 1e-9, "speed")
+		expect.near(vy, 50, 1e-9, "sin 30 * 100")
+		expect.near(vx / vz, 3 / 4, 1e-9, "direction")
+		expect.truthy(vx > 0 and vz > 0, "away from the attacker")
+	end,
+	["launch: same spot uses the fallback direction, then straight up"] = function()
+		local vx, vy, vz = F.launchVelocity(0, 0, 10, 0, -2)
+		expect.near(vx, 0)
+		expect.near(vy, 5)
+		expect.near(vz, -10 * math.cos(math.rad(30)))
+		vx, vy, vz = F.launchVelocity(0, 0, 10, 0, 0)
+		expect.equal(vx + vz, 0)
+		expect.equal(vy, 10)
+	end,
+	["hitbox padding adds 0.5 studs on every side"] = function()
+		local box = F.paddedHitbox({ X = 4, Y = 4, Z = 5 })
+		expect.equal(box.X, 5)
+		expect.equal(box.Y, 5)
+		expect.equal(box.Z, 6)
+	end,
 	["hitstun: base, growth and cap"] = function()
 		expect.near(F.hitstun(0), 0.15)
 		expect.near(F.hitstun(100), 0.35)

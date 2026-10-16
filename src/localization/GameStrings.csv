@@ -45,3 +45,6 @@ Controls.Grab,Grab,Mobile button and key hint for grabbing or dropping a prop,
 Controls.Dash,Dash,Mobile button and key hint for the Dash action,
 Controls.Scoreboard,Scoreboard,Key hint for showing the round scoreboard,
 Controls.Menu,Menu,Key hint for opening the menu,
+Training.Dummy.Name,Training Dummy,Label above the punching dummy in the lobby's Training Yard,
+Combat.Percent,{1}%,"A fighter's Percent (higher = flies further when hit)",120%
+Combat.HP,{1} HP,A fighter's remaining health points (Classic mode),64 HP

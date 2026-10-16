@@ -9,6 +9,10 @@ return {
 	StudioArenaPreview = "BrokenHighway" :: string?,
 	-- Studio playtests only: print every input action and device change to Output.
 	LogInput = true,
+	-- Studio playtests only: print every hit (damage, Percent, knockback, hitstun) and KO to Output.
+	LogCombat = true,
+	-- Studio playtests only: flash every attack hitbox (red = hit something, grey = missed).
+	ShowHitboxes = true,
 	-- Studio playtests only: debug keys (KeyCode names). The developer panel replaces these in step 1.13.
 	StudioKeys = {
 		TestCameraShake = "K",

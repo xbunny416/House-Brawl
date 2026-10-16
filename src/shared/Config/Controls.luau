@@ -17,6 +17,7 @@ type ControlsConfig = {
 	Actions: { string },
 	Keyboard: Bindings,
 	Gamepad: Bindings,
+	ShoveDragCancel: number?,
 	Touch: {
 		MinButtonSize: number,
 		ButtonSize: number,
@@ -54,6 +55,9 @@ local Controls: ControlsConfig = {
 		Scoreboard = { "ButtonSelect" },
 		Menu = { "ButtonStart" },
 	},
+	-- Right-click is also Roblox's drag-to-turn-the-camera button: dragging the mouse this many pixels while a
+	-- right-click Shove is charging cancels the Shove (it was a camera turn). nil keeps the Shove.
+	ShoveDragCancel = 12,
 	Touch = {
 		MinButtonSize = 64, -- pixels; no touch button is ever smaller
 		ButtonSize = 0.17, -- base button size as a fraction of the screen's shorter side...

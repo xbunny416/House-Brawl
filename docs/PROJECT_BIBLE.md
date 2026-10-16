@@ -54,6 +54,8 @@ this file in the same PR as the Config change.
   own meter.
 - **Knockback force** = `(BaseKB + (Percent / 100) × KBGrowth × AttackKBScale) × ModeMultiplier`
   - BaseKB = 30, KBGrowth = 70, ModeMultiplier: Classic 1.0, Casual 1.15
+  - Uses the victim's Percent *after* the hit's damage. Applied as launch speed (studs/s), away from the attacker
+    and 30° upward; a launched player cannot steer until hitstun is over and they land (max 3 s).
 - **Damage (Classic)** = `AttackBaseDamage × StyleDamageMultiplier`
 - **Percent gain (Casual)** = `AttackBasePercent × StyleDamageMultiplier`
 - **Casual passive gain:** +1% every 5 s while alive. Percent cap 300%.
@@ -149,7 +151,8 @@ billboards, Codes jukebox, Training Yard ramp with a dummy and a small gap to pr
 
 ### 3.3 Combat rules
 
-- **No NPC enemies.** Only the Training Yard dummy (stands still, shows Percent, respawns 2 s after falling).
+- **No NPC enemies.** Only the Training Yard dummy (stands still, shows Percent, respawns 2 s after falling 4+ studs
+  below its spot or reaching 0 HP; anyone can hit it, also in the Lobby).
 - **Classic:** 100 HP, 3 lives, 3 s respawn with 2 s spawn shield. Out of lives = spectate until round end.
 - **Casual:** no HP, Percent shown above head and in HUD, unlimited respawns, Percent resets to 0% on respawn.
 - **KO credit:** last player who hit you within 6 s before you fell.
