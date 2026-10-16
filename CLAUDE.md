@@ -6,11 +6,11 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 
 - **Build order approved** by the owner on 2026-10-15, with maps built from code (blockouts from layout data, art
   pass later) and data saving via ProfileStore.
-- **Current phase:** Phase 1. **Waiting on:** the owner's Studio playtest of 1.1–1.9 (lobby + Broken Highway
+- **Current phase:** Phase 1. **Waiting on:** the owner's Studio playtest of 1.1–1.10 (lobby + Broken Highway
   blockouts, data saving, input on PC / gamepad / Device Emulator touch, camera, Shift Lock, camera shake; combat on
   the Training Yard dummy and 2-player PvP in the arena; dash, air dash across gaps, Perfect Dodge; the full round
-  loop: vote, Classic / Casual, respawn + shield, spectate, results; grabbing and throwing props, barrels). The owner
-  chose to continue building before playtesting. **Next step:** 1.10 Breakable structures.
+  loop: vote, Classic / Casual, respawn + shield, spectate, results; grabbing and throwing props, barrels; breaking
+  structures). The owner chose to continue building before playtesting. **Next step:** 1.11 Crumbling platforms.
 
 ## How this repo works
 
@@ -148,7 +148,7 @@ any errors are fixed before the next item.
       spawn shield, spectate, late joiners, AFK + 60 s participation tracking.
 - [x] **1.9 Props** — spawn spots, grab/carry/throw (server-checked range and rate), weight classes, explosive barrel,
       40-prop cap, despawn.
-- [ ] **1.10 Breakable structures** — HP, prop drops, respawn.
+- [x] **1.10 Breakable structures** — HP, prop drops, respawn.
 - [ ] **1.11 Crumbling platforms** — 3 s warning, fall, rules (center never falls, ≥ 2 remain).
 - [ ] **1.12 Basic HUD** — HP + lives / Percent, timer, mode badge, kill feed, dash ring, held prop, Tab scoreboard,
       spectate view; mobile / PC / gamepad.
@@ -196,6 +196,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 1.7 Dash (client-moved, server-timed invulnerability, cooldown tolerance, once per stay in the air, ends a launch) + Perfect Dodge (one per dash, +25% knockback on the next hit within 2 s, `PerfectDodged` signal) | #8 |
 | 2026-10-16 | 1.8 RoundService (Waiting → map + mode vote → Classic / Casual round → results), pure Vote + Scoreboard, respawn via Roblox respawn + spawn shield, spectate (ReplicationFocus), Casual late join + passive gain, AFK / active-time tracking, round stats + analytics; vote, results, spectate and status UI (Ui/Kit); Studio solo rounds | #9 |
 | 2026-10-16 | 1.9 PropService (spots + respawn, grab / carry / drop / throw, server-swept flights, class blows, explosive barrels with fuse + chain, 40-prop cap, despawn), pure Carrier rules, CombatService refactor (shared blow path, hitWith / explode, Swung / Hit signals, interceptor, speed modifiers), Throw / Drop touch labels, prop + chair KO stats; gamepad Menu / Scoreboard on the D-pad | #10 |
+| 2026-10-16 | 1.10 StructureService (structures on StructureSpots, damage from attack boxes / thrown props / blasts, darken with damage, break into drops, respawn 45 s, StructuresBroken stat), pure StructureRules, blockout sizes in Config, PropService.spawnLoose + Impact / Exploded signals | #11 |
 
 ## Decisions and interpretations
 
@@ -256,6 +257,11 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   Dodge bonus applies), anything else ends the flight; the thrower is never hit by their own flying prop. Attack boxes
   light barrels (3 s fuse, credited to the attacker); explosions light other barrels in range. Prop KOs count
   `PropKOs` (and `ChairKOs` for chairs) from the last hit's source. Walk-speed modifiers multiply (charge, carry).
+- **Structures (1.10):** blockout sizes / colors are new Config values (car 4.6×3.6×9, vending machine 4×7×3, barrier
+  stack 8×3×2.4). Thrown props deal their class's Classic damage, barrel blasts 25 within radius + half the
+  structure's largest side. A structure darkens up to 55% as it loses HP. Drops pop out around it and vanish after
+  `Structures.DropDespawnTime` (30 s, new) unless picked up; the 40-prop cap still applies, so a full arena drops
+  fewer. The player who lands the breaking hit gets `StructuresBroken`. Respawns are skipped if the arena changed.
 
 ## Known bugs / open items
 

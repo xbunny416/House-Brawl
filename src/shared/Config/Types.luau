@@ -85,6 +85,9 @@ export type StructureConfig = {
 	MinDrops: number,
 	MaxDrops: number,
 	DropTable: { string },
+	Size: Box, -- studs (width, height, length), used by blockout models
+	Material: string, -- Enum.Material name, used by blockout models
+	Color: string, -- hex, used by blockout models
 }
 
 export type RankConfig = { Level: number, Id: string }
