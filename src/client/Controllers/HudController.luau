@@ -8,6 +8,7 @@
 	    white → yellow → red), and the held prop with Throw / Drop key hints.
 	Key hints follow the input device (KeyHint). Hidden while spectating (the spectate bar takes the bottom).
 ]]
+local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -57,7 +58,7 @@ local vitals = {} :: {
 	Lives: { Frame },
 	Percent: TextLabel,
 }
-local held = {} :: { Frame: Frame, Name: TextLabel }
+local held = {} :: { Frame: Frame, Name: TextLabel, Hints: Frame, Prompt: Frame }
 local profileLabel: TextLabel
 
 local function rgb(color: HudFormat.Rgb): Color3
@@ -244,6 +245,38 @@ local function buildHeld(parent: Frame)
 		local label = Kit.label(hints, Localization.format(pair[2]), UDim2.fromScale(0.24, 1), 16)
 		label.LayoutOrder = order * 2
 	end
+	held.Hints = hints
+
+	-- Not holding anything, but a free prop is in reach: "[E] Grab".
+	local prompt = Instance.new("Frame")
+	prompt.Name = "GrabPrompt"
+	prompt.BackgroundTransparency = 1
+	prompt.Position = UDim2.fromScale(0, 0.52)
+	prompt.Size = UDim2.fromScale(1, 0.45)
+	prompt.Parent = frame
+	Kit.list(prompt, Enum.FillDirection.Horizontal, UDim.new(0.03, 0))
+	local hint = KeyHint.new(prompt, "Grab", UDim2.fromScale(0.24, 1))
+	hint.LayoutOrder = 1
+	local label = Kit.label(prompt, Localization.format("Controls.Grab"), UDim2.fromScale(0.4, 1), 16)
+	label.LayoutOrder = 2
+	held.Prompt = prompt
+end
+
+-- The free prop (not held by anyone) closest to the local character within grab reach, if any.
+local function propInReach(root: BasePart): BasePart?
+	local best: BasePart? = nil
+	local bestDistance = math.huge
+	for _, instance in CollectionService:GetTagged("Prop") do
+		if instance:IsA("BasePart") and instance:GetAttribute("Held") == nil and instance:IsDescendantOf(Workspace) then
+			local size = instance.Size
+			local distance = (instance.Position - root.Position).Magnitude
+			local reach = Config.Props.GrabRange + math.max(size.X, size.Y, size.Z) / 2
+			if distance <= reach and distance < bestDistance then
+				best, bestDistance = instance, distance
+			end
+		end
+	end
+	return best
 end
 
 local function buildBottom()
@@ -371,9 +404,17 @@ local function refreshBottom()
 	end
 
 	local heldType = character and character:GetAttribute("HeldProp")
-	held.Frame.Visible = type(heldType) == "string"
+	local holding = type(heldType) == "string"
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	local nearby = if not holding and root and root:IsA("BasePart") then propInReach(root) else nil
+	held.Frame.Visible = holding or nearby ~= nil
+	held.Hints.Visible = holding
+	held.Prompt.Visible = not holding and nearby ~= nil
 	if type(heldType) == "string" then
 		held.Name.Text = Localization.format(`Prop.{heldType}.Name`)
+	elseif nearby then
+		local typeId = nearby:GetAttribute("PropType")
+		held.Name.Text = if type(typeId) == "string" then Localization.format(`Prop.{typeId}.Name`) else ""
 	end
 end
 

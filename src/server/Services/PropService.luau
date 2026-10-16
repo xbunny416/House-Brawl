@@ -151,6 +151,7 @@ local function detach(prop: Prop)
 	end
 	prop.Part.Massless = false
 	prop.Part.CanCollide = true
+	prop.Part:SetAttribute("Held", nil)
 	local character = prop.HolderCharacter
 	if character then
 		character:SetAttribute("HeldProp", nil)
@@ -170,17 +171,22 @@ local function attach(prop: Prop, player: Player, character: Model, root: BasePa
 	prop.Thrower = nil
 	prop.DespawnAt = nil
 	local part = prop.Part
+	-- Take the loose prop from whichever client was simulating it, so the move below is not fought over; once welded
+	-- it becomes part of the character, which the holder's client simulates.
 	pcall(function()
-		part:SetNetworkOwnershipAuto()
+		part:SetNetworkOwner(nil)
 	end)
 	part.CanCollide = false
 	part.Massless = true
+	part.AssemblyLinearVelocity = Vector3.zero
+	part.AssemblyAngularVelocity = Vector3.zero
 	part.CFrame = root.CFrame * CFrame.new(0, HOLD_HEIGHT + part.Size.Y / 2, 0)
 	local weld = Instance.new("WeldConstraint")
 	weld.Name = HOLD_NAME
 	weld.Part0 = root
 	weld.Part1 = part
 	weld.Parent = part
+	part:SetAttribute("Held", true)
 	character:SetAttribute("HeldProp", prop.TypeId)
 	local slow = Config.Props.Classes[prop.Class].CarrySlow
 	CombatService.setSpeedModifier(character, CARRY_SPEED_KEY, if slow > 0 then 1 - slow else nil)
@@ -232,8 +238,8 @@ local function forget(part: BasePart)
 	end
 end
 
--- Spawns a prop standing on `floor` (a CFrame at floor level).
-local function spawnProp(typeId: string, floor: CFrame, zone: Zone, spot: Spot?): Prop?
+-- Creates a prop centered at `center` in a zone's folder (no cap check).
+local function makeProp(typeId: string, center: CFrame, zone: Zone, spot: Spot?): Prop?
 	local folder = if zone == "Lobby" then lobbyFolder else arenaFolder
 	local typeConfig = Config.Props.Types[typeId]
 	if folder == nil or typeConfig == nil then
@@ -244,7 +250,7 @@ local function spawnProp(typeId: string, floor: CFrame, zone: Zone, spot: Spot?)
 	part.Size = Vector3.new(typeConfig.Size.X, typeConfig.Size.Y, typeConfig.Size.Z)
 	part.Material = (Enum.Material :: any)[typeConfig.Material]
 	part.Color = Color3.fromHex(typeConfig.Color)
-	part.CFrame = floor * CFrame.new(0, part.Size.Y / 2 + 0.05, 0)
+	part.CFrame = center
 	part:SetAttribute("PropType", typeId)
 	part:AddTag(PROP_TAG)
 	local prop: Prop = {
@@ -269,6 +275,15 @@ local function spawnProp(typeId: string, floor: CFrame, zone: Zone, spot: Spot?)
 	end)
 	part.Parent = folder
 	return prop
+end
+
+-- Spawns a prop standing on `floor` (a CFrame at floor level).
+local function spawnProp(typeId: string, floor: CFrame, zone: Zone, spot: Spot?): Prop?
+	local typeConfig = Config.Props.Types[typeId]
+	if typeConfig == nil then
+		return nil
+	end
+	return makeProp(typeId, floor * CFrame.new(0, typeConfig.Size.Y / 2 + 0.05, 0), zone, spot)
 end
 
 local function fillSpot(spot: Spot)
@@ -403,15 +418,27 @@ local function throw(player: Player): boolean
 	if character == nil or root == nil or not CombatService.canAct(character) then
 		return true -- holding, but in hitstun: no punch either
 	end
-	local prop = Carrier.throw(carrier, os.clock()) :: Prop?
-	if prop == nil then
+	local held = Carrier.throw(carrier, os.clock()) :: Prop?
+	if held == nil then
 		return true -- throw cooldown
 	end
-	detach(prop)
 	CombatService.breakShield(character)
+	-- A fresh copy flies, owned by the server: the held prop is part of the thrower's character (simulated by their
+	-- client), so the server cannot reliably take it over in the same frame. The held one is removed (its Destroying
+	-- handler gives the thrower their speed back).
+	local size = held.Part.Size
+	local reach = math.max(size.X, size.Y, size.Z) / 2 + 1
+	local prop = makeProp(held.TypeId, root.CFrame * CFrame.new(0, THROW_HEIGHT, -reach), held.Zone, nil)
+	if held.FuseAt and prop then
+		prop.FuseAt, prop.Igniter = held.FuseAt, held.Igniter
+		prop.Part.Material = Enum.Material.Neon
+		prop.Part:SetAttribute("Lit", true)
+	end
+	held.Part:Destroy()
+	if prop == nil then
+		return true
+	end
 	local part = prop.Part
-	local reach = math.max(part.Size.X, part.Size.Y, part.Size.Z) / 2 + 1
-	part.CFrame = root.CFrame * CFrame.new(0, THROW_HEIGHT, -reach)
 	part.CanCollide = false -- the flight is swept by the server instead
 	pcall(function()
 		part:SetNetworkOwner(nil)
@@ -576,20 +603,26 @@ function PropService.Init(_self: any)
 		local character = player.Character
 		local root = rootOf(character)
 		if character == nil or root == nil or not CombatService.canAct(character) then
+			log(`{player.Name} can't grab right now (no character, knocked out or in hitstun)`)
 			return
 		end
 		local candidates: { Carrier.Candidate } = {}
+		local closest = math.huge
 		for part, prop in props do
 			if prop.Holder == nil and not prop.Flying then
+				local distance = (part.Position - root.Position).Magnitude
+				closest = math.min(closest, distance)
 				table.insert(candidates, {
 					Item = prop,
-					Distance = (part.Position - root.Position).Magnitude,
+					Distance = distance,
 					Radius = math.max(part.Size.X, part.Size.Y, part.Size.Z) / 2,
 				})
 			end
 		end
 		local prop = Carrier.nearest(candidates) :: Prop?
-		if prop and Carrier.grab(carrier, prop, os.clock()) then
+		if prop == nil then
+			log(`{player.Name}: nothing to grab within {Config.Props.GrabRange} studs (closest {math.floor(closest)})`)
+		elseif Carrier.grab(carrier, prop, os.clock()) then
 			attach(prop, player, character, root)
 		end
 	end)

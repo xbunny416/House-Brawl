@@ -22,7 +22,8 @@ local PLAYER_MODULE_TIMEOUT = 10
 
 type Shake = {
 	startedAt: number,
-	magnitude: number,
+	magnitude: number, -- studs
+	degrees: number, -- tilt
 	seed: number,
 }
 
@@ -41,40 +42,58 @@ function CameraController.shake(intensity: number?)
 	table.insert(shakes, {
 		startedAt = os.clock(),
 		magnitude = cameraConfig.ShakeMagnitude * scale,
+		degrees = cameraConfig.ShakeRotation * scale,
 		seed = random:NextNumber(0, 1000) + 0.5,
 	})
 end
 
--- Runs right after Roblox's camera update each frame and nudges the camera sideways/up without turning it, so the
--- default camera scripts never drift.
+-- The shake added to the camera last frame. It is taken off again just before Roblox's camera update, so the camera
+-- scripts never see it and never drift.
+local applied: CFrame? = nil
+
+local function removeShake()
+	local current = Workspace.CurrentCamera
+	if applied and current then
+		current.CFrame *= applied:Inverse()
+	end
+	applied = nil
+end
+
+-- Runs right after Roblox's camera update each frame: moves and tilts the camera by every running shake.
 local function applyShakes()
 	if #shakes == 0 then
 		return
 	end
 	local now = os.clock()
-	local x, y = 0, 0
+	local x, y, pitch, roll = 0, 0, 0, 0
 	for index = #shakes, 1, -1 do
 		local shake = shakes[index]
 		local elapsed = now - shake.startedAt
 		if elapsed >= cameraConfig.ShakeDuration then
 			table.remove(shakes, index)
 		else
-			local dx, dy = CameraShake.offset(
-				elapsed,
-				cameraConfig.ShakeDuration,
-				shake.magnitude,
-				cameraConfig.ShakeFrequency,
-				shake.seed
-			)
+			local duration, frequency = cameraConfig.ShakeDuration, cameraConfig.ShakeFrequency
+			local dx, dy = CameraShake.offset(elapsed, duration, shake.magnitude, frequency, shake.seed)
+			local dPitch, dRoll = CameraShake.tilt(elapsed, duration, shake.degrees, frequency, shake.seed)
 			x += dx
 			y += dy
+			pitch += dPitch
+			roll += dRoll
 		end
 	end
-	local limit = cameraConfig.ShakeMagnitude
 	local current = Workspace.CurrentCamera
-	if current then
-		current.CFrame *= CFrame.new(math.clamp(x, -limit, limit), math.clamp(y, -limit, limit), 0)
+	if current == nil then
+		return
 	end
+	local limit, tiltLimit = cameraConfig.ShakeMagnitude, cameraConfig.ShakeRotation
+	local offset = CFrame.new(math.clamp(x, -limit, limit), math.clamp(y, -limit, limit), 0)
+		* CFrame.Angles(
+			math.rad(math.clamp(pitch, -tiltLimit, tiltLimit)),
+			0,
+			math.rad(math.clamp(roll, -tiltLimit, tiltLimit))
+		)
+	current.CFrame *= offset
+	applied = offset
 end
 
 -- Roblox's MouseLockController reads its toggle keys from a "BoundKeys" StringValue and rebinds when it changes.
@@ -109,6 +128,7 @@ function CameraController.Init(_self: any)
 			table.clear(shakes)
 		end
 	end)
+	RunService:BindToRenderStep("CameraShakeUndo", Enum.RenderPriority.Camera.Value - 1, removeShake)
 	RunService:BindToRenderStep("CameraShake", Enum.RenderPriority.Camera.Value + 1, applyShakes)
 end
 

@@ -183,21 +183,16 @@ local function onExploded(center: Vector3, radius: number, damage: number, attac
 	end
 end
 
--- Structures on a crumbling platform fall with it: welded to its base (unanchored with it right after), no longer
--- breakable, removed when the platform is.
+-- Structures on a platform that gives way drop into the void with everything else: no longer breakable, removed
+-- when the platform is.
 local function onPlatformFalling(platform: Model)
-	local base = platform.PrimaryPart
-	if base == nil then
-		return
-	end
 	for model, structure in structures do
 		if structure.Marker:IsDescendantOf(platform) then
 			structures[model] = nil
-			local weld = Instance.new("WeldConstraint")
-			weld.Part0 = base
-			weld.Part1 = structure.Part
-			weld.Parent = structure.Part
 			structure.Part.Anchored = false
+			pcall(function()
+				structure.Part:SetNetworkOwner(nil)
+			end)
 			task.delay(Config.Round.Crumble.FallTime, function()
 				model:Destroy()
 			end)
