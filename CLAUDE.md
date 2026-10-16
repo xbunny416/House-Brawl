@@ -187,7 +187,7 @@ any errors are fixed before the next item.
 | 2026-10-15 | 1.4 Lobby (Rust Diner) + Broken Highway blockouts generated from layout code, MapService (arena load/unload, lighting presets, falls, Studio preview pad) | #5 |
 | 2026-10-16 | 1.5 InputController (one action map: keyboard/mouse, gamepad, touch arc around the jump button), CameraController (zoom 8–30, Shift Lock on Right Shift, camera shake), validated settings changes (SettingsService/SettingsController), Studio input log + debug keys; LF line endings | #6 |
 | 2026-10-16 | 1.6 CombatService (Punch chain, charged Shove, server hitboxes, HP / Percent, knockback + hitstun, KO credit, trail flag) on a pure Fighter state machine; client knockback (Launch) + heavy-hit camera shake; right-drag cancels a Shove; Training Yard dummy; Studio hit log + hitbox flashes | #7 |
-| 2026-10-16 | 1.7 Dash (client-moved, server-timed invulnerability, cooldown tolerance, once per stay in the air, ends a launch) + Perfect Dodge (one per dash, +25% knockback on the next hit within 2 s, `PerfectDodged` signal) | 1.7 |
+| 2026-10-16 | 1.7 Dash (client-moved, server-timed invulnerability, cooldown tolerance, once per stay in the air, ends a launch) + Perfect Dodge (one per dash, +25% knockback on the next hit within 2 s, `PerfectDodged` signal) | #8 |
 
 ## Decisions and interpretations
 
