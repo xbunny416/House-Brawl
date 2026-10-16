@@ -87,6 +87,19 @@ function Guard.optional(check: Check): Check
 	end
 end
 
+-- Accepts a value that passes at least one of `checks`.
+function Guard.anyOf(...: Check): Check
+	local checks = { ... }
+	return function(value: unknown): boolean
+		for _, check in checks do
+			if check(value) then
+				return true
+			end
+		end
+		return false
+	end
+end
+
 -- Validates a packed argument list against a list of checks. Extra arguments are rejected.
 function Guard.args(checks: { Check }, args: { n: number, [number]: unknown }): boolean
 	if args.n > #checks then

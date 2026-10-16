@@ -206,7 +206,9 @@ cartoon explosion with ring shockwave; dash streak and blue Perfect Dodge flash.
 
 AnchorPoint (0.5, 0.5), Scale coordinates (no fixed offsets), UIAspectRatioConstraint.
 
-- **Mobile:** bottom-right arc — Attack (Punch/Throw), Shove, Grab, Dash, Jump (≥ 64 px targets). Bottom-center — own
+- **Mobile:** bottom-right arc — Attack (Punch/Throw), Shove, Grab, Dash around Roblox's Jump button (≥ 64 px
+  targets: 17% of the screen's shorter side, 64–104 px, Attack 1.15× larger; Settings > Button Layout picks the
+  arrangement). Shown only while touch is the player's input. Bottom-center — own
   Percent (Casual) or HP bar + lives (Classic), held-prop icon, dash cooldown ring. Top-center — round timer, mode
   badge, players alive / score, kill feed. Left edge (Lobby only) — Shop, Locker, Quests, Daily Reward, Leaderboard,
   Settings. Default thumbstick bottom-left.
@@ -226,8 +228,9 @@ AnchorPoint (0.5, 0.5), Scale coordinates (no fixed offsets), UIAspectRatioConst
 | Scoreboard | Tab | Select | — |
 | Menu | M | Start | — |
 
-Third-person follow, max zoom 30, Shift Lock allowed on PC. Small camera shake on heavy hits (toggle in Settings).
-Spectate camera cycles alive players.
+Third-person follow, zoom 8–30 studs (no first person), Shift Lock allowed on PC and toggled with Right Shift (Left
+Shift is Dash). Small camera shake on heavy hits (0.6 studs, 0.25 s; toggle in Settings). Spectate camera cycles alive
+players.
 
 ### 5.3 Screens
 
