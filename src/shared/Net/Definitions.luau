@@ -64,6 +64,15 @@ local Definitions: { [string]: Definition } = {
 	-- Client -> server: "I had input lately" (AFK tracking), at most every Round.Participation.ActivityPingInterval.
 	Activity = { Kind = "Event", Direction = "ToServer", Args = {}, RateLimit = { Rate = 1, Burst = 3 } },
 
+	-- Client -> server: a developer panel command (only allowed players; see Server/Dev/DevRules).
+	-- (command: string, text: string? — a map / mode / prop id, value: number? — a Percent or HP)
+	DevCommand = {
+		Kind = "Event",
+		Direction = "ToServer",
+		Args = { Guard.string(24), Guard.optional(Guard.string(32)), Guard.optional(Guard.range(0, 1000)) },
+		RateLimit = { Rate = 5, Burst = 10 },
+	},
+
 	-- Client -> server: change one Settings-menu value. (key: string, value: boolean | number | string)
 	-- Shared/Settings checks the value for that key before it is saved.
 	ChangeSetting = {

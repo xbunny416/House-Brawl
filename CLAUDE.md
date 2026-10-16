@@ -6,12 +6,10 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 
 - **Build order approved** by the owner on 2026-10-15, with maps built from code (blockouts from layout data, art
   pass later) and data saving via ProfileStore.
-- **Current phase:** Phase 1. **Waiting on:** the owner's Studio playtest of 1.1–1.12 (lobby + Broken Highway
-  blockouts, data saving, input on PC / gamepad / Device Emulator touch, camera, Shift Lock, camera shake; combat on
-  the Training Yard dummy and 2-player PvP in the arena; dash, air dash across gaps, Perfect Dodge; the full round
-  loop: vote, Classic / Casual, respawn + shield, spectate, results; grabbing and throwing props, barrels; breaking
-  structures; crumbling platforms; HUD + scoreboard). The owner chose to continue building before playtesting.
-  **Next step:** 1.13 Developer panel (minimal).
+- **Phase 1 (core loop) is built** (1.1–1.13, 2026-10-16) but **not yet playtested in Studio**: the owner chose to
+  keep building first. **Waiting on:** the owner's Studio playtest of the whole loop (lobby + training dummy, input on
+  PC / gamepad / Device Emulator touch, camera, combat + knockback feel, dash, rounds and modes, props and barrels,
+  structures, crumbling, HUD, developer panel). Fix what it finds before Phase 2. **Next step:** 2.1 Round rewards.
 
 ## How this repo works
 
@@ -153,7 +151,7 @@ any errors are fixed before the next item.
 - [x] **1.11 Crumbling platforms** — 3 s warning, fall, rules (center never falls, ≥ 2 remain).
 - [x] **1.12 Basic HUD** — HP + lives / Percent, timer, mode badge, kill feed, dash ring, held prop, Tab scoreboard,
       spectate view; mobile / PC / gamepad.
-- [ ] **1.13 Developer panel (minimal)** — *moved up from Phase 3* so testing is faster: force map/mode, start/end
+- [x] **1.13 Developer panel (minimal)** — *moved up from Phase 3* so testing is faster: force map/mode, start/end
       round, trigger crumble, spawn prop, set Percent/HP. Server-checked UserId allowlist. Extended in Phase 3.
 
 ### Phase 2 — Progression & content
@@ -200,6 +198,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 1.10 StructureService (structures on StructureSpots, damage from attack boxes / thrown props / blasts, darken with damage, break into drops, respawn 45 s, StructuresBroken stat), pure StructureRules, blockout sizes in Config, PropService.spawnLoose + Impact / Exploded signals | #11 |
 | 2026-10-16 | 1.11 CrumbleService (from 1:00 every 20 s a random outer platform flashes red + shakes 3 s, then falls 4 s with everyone on it; center never falls, 2 always remain), pure CrumbleRules, RoundStarted signal, spawn points / prop spots skip crumbling platforms, structures fall with their platform | #12 |
 | 2026-10-16 | 1.12 HUD (top bar: mode badge, timer, fighters left / score; kill feed; bottom bar: dash ring, HP + lives or Percent, held prop with key hints), hold-Tab scoreboard replacing Roblox's player list, KeyHint (key names / gamepad glyphs), pure HudFormat, KillFeed remote, prop names | #13 |
+| 2026-10-16 | 1.13 Developer panel (Studio): DevService + DevRules allowlist, DevAccess attribute, panel (start / end round, crumble, next map / mode, spawn prop, set Percent / HP, camera shake checks), RoundService force / startNow / endNow, CombatService setPercent / setHealth; K / L keys removed. Phase 1 complete | #14 |
 
 ## Decisions and interpretations
 
@@ -277,6 +276,12 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   (`GetStringForKeyCode`, "Click" / "Right-click" for mouse), glyph image on gamepad (`GetImageForKeyCode`), none on
   touch. The scoreboard is hold-to-show (Tab / D-pad Down, no touch button per the bible) and disables Roblox's
   player list; it orders fighters like the round (Classic lives → KOs → falls, Casual score → KOs).
+- **Developer panel (1.13):** `DevService` runs `DevCommand`s only for `DevRules.isAllowed` players (Studio:
+  everyone while `AllowInStudio`; live: `AllowedUserIds`, empty by the owner's choice) and marks them with the
+  `DevAccess` attribute, which makes the client build the panel. "Start now" lowers the players needed to 1 until
+  that round starts; forced map / mode apply to the next vote result only. Set HP never goes below 1 (no KO from the
+  panel); spawned props despawn like structure drops (30 s untouched). Spawning a prop for another player and the
+  other Phase 3 tools (Scrap, levels, unlocks) are step 3.9. The K / L Studio keys were replaced by panel buttons.
 
 ## Known bugs / open items
 
@@ -302,9 +307,12 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   delayed on high ping.
 - **Camera sensitivity** is saved and validated but not applied: Roblox does not let scripts change mouse/gamepad
   sensitivity. Needs a custom approach in 3.10.
-- **Studio input debug:** `Config.Dev.LogInput` prints every action and device change to Output in Studio playtests;
-  `Config.Dev.StudioKeys` adds K (test camera shake) and L (toggle the saved Camera Shake setting). Studio only; the
-  developer panel (1.13) replaces the keys. Test touch with Studio's Device Emulator (a phone in landscape).
+- **Studio input debug:** `Config.Dev.LogInput` prints every action and device change to Output in Studio playtests.
+  Test touch with Studio's Device Emulator (a phone in landscape).
+- **Developer panel (Studio):** press ` (Backquote, `Config.Dev.PanelKey`) or click DEV (top left). Round: start now
+  (starts the vote even alone, or closes it), end now, crumble a platform; next map / mode (or back to the vote);
+  spawn any prop in front of you; set your own Percent (0 / 100 / 200) or HP (100 / 50 / 10); test camera shake and
+  switch the Camera Shake setting. Output shows `[Dev]` lines.
 - **Data in Studio:** with "Studio Access to API Services" off, ProfileStore uses an in-memory store and prints
   "Roblox API services unavailable - data will not be saved". Turn it on to test real saving
   (`Config.Data.UseMockInStudio = true` forces the in-memory store even with access on).

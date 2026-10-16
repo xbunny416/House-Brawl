@@ -88,6 +88,9 @@ local statuses: { [Player]: Status } = {}
 local lastActive: { [Player]: number } = {}
 local joinAt: { [Player]: number } = {} -- Casual: players waiting to join the running round
 local rng = Random.new()
+-- Developer panel overrides (RoundService.forceNext / startNow).
+local forced: { Map: string?, Mode: string? } = { Map = nil, Mode = nil }
+local startRequested = false
 
 local function pick(count: number): number
 	return rng:NextInteger(1, count)
@@ -105,6 +108,11 @@ end
 
 local function minPlayers(): number
 	return if RunService:IsStudio() then Config.Dev.StudioMinPlayers else Config.Round.MinPlayers
+end
+
+-- Players needed right now: one after a developer "start now", until that round has started.
+local function needed(): number
+	return if startRequested then 1 else minPlayers()
 end
 
 local function setState(newState: State, endsAt: number?)
@@ -359,13 +367,15 @@ local function runVote(): (string?, string?)
 	broadcastVote()
 	while now() < voteEndsAt do
 		task.wait(TICK)
-		if #readyPlayers() < minPlayers() then
+		if #readyPlayers() < needed() then
 			mapVote, modeVote = nil, nil
 			return nil, nil
 		end
 	end
 	mapVote, modeVote = nil, nil
-	return Vote.winner(mv, pick), Vote.winner(dv, pick)
+	local mapId, modeId = forced.Map or Vote.winner(mv, pick), forced.Mode or Vote.winner(dv, pick)
+	forced.Map, forced.Mode = nil, nil
+	return mapId, modeId
 end
 
 ---------------------------------------------------------------------------------------------------------------------
@@ -379,10 +389,11 @@ local function startRound(mapId: string, modeId: string): boolean
 			table.insert(participants, player)
 		end
 	end
-	if #participants < minPlayers() then
+	if #participants < needed() then
 		log("not enough active players; back to waiting")
 		return false
 	end
+	startRequested = false
 
 	CombatService.setMode(modeId)
 	MapService.loadArena(mapId)
@@ -557,7 +568,7 @@ local function loop()
 	while true do
 		Workspace:SetAttribute("PlayersNeeded", minPlayers())
 		setState("Waiting")
-		while #readyPlayers() < minPlayers() do
+		while #readyPlayers() < needed() do
 			task.wait(1)
 		end
 		local mapId, modeId = runVote()
@@ -574,6 +585,39 @@ end
 
 function RoundService.getStatus(player: Player): Status
 	return statuses[player] or "Lobby"
+end
+
+-- Developer panel: the next round uses this map ("Map", an enabled map) or mode ("Mode") whatever the vote says;
+-- nil lets the vote decide again. Returns false for an unknown id.
+function RoundService.forceNext(kind: "Map" | "Mode", id: string?): boolean
+	if kind == "Map" then
+		if id and not table.find(MapService.getEnabledMaps(), id) then
+			return false
+		end
+		forced.Map = id
+	else
+		if id and Config.Modes.List[id] == nil then
+			return false
+		end
+		forced.Mode = id
+	end
+	return true
+end
+
+-- Developer panel: while waiting, starts the vote even with too few players; while voting, closes the vote now.
+function RoundService.startNow()
+	startRequested = true
+	if state == "Voting" then
+		voteEndsAt = now()
+	end
+end
+
+-- Developer panel: ends the running round now (standings and results as at a time-out).
+function RoundService.endNow()
+	local r = round
+	if r and state == "Playing" then
+		r.EndsAt = now()
+	end
 end
 
 function RoundService.Init(_self: any)
