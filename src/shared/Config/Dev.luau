@@ -14,6 +14,8 @@ return {
 	LogCombat = true,
 	-- Studio playtests only: flash every attack hitbox (red = hit something, grey = missed).
 	ShowHitboxes = true,
+	-- Studio playtests only: print every animation clip a client starts ("[Anim] Jab on Player1").
+	LogAnimations = true,
 	-- Key that opens / closes the developer panel (KeyCode name; only for players with panel access).
 	PanelKey = "Backquote",
 	-- Scrap the developer panel's "+Scrap" button gives (to test the Shop).

@@ -228,6 +228,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 2.5 Junkyard Isles (dusk: scrap-heap centre, container stack, car pile, crane barge, barge, tire-stack ledges, sludge) + Neon Motel (night: motel roofs, pool roof, MOTEL sign roof, water-tower and billboard ledges, flooded street) arenas from layout code, shared maps/lib/Arena builder (Broken Highway output unchanged), 4 new structure types, NeonFlickerController, both maps in the vote; arena rules checked for every map | #22 |
 | 2026-10-16 | Owner's look at 2.5 + lobby: Neon Motel brighter (Night preset: moonlight 2, purple ambient, less fog; neon parapets, MOTEL sign and billboard cast light; 4 roof lamps; flicker switches their light too); lobby TVs now dark casings with glowing CRT screens, bar lamps moved between the TVs with dim amber bulbs | #23 |
 | 2026-10-16 | 2.6 Animations (scripted R15, bible §4.2): clips for the punch chain, bat / wrench swings, shovel sweeps, overhead smash, Shove charge + push, Wrecker parry, dash lean, grab, carry loop, throw, hit recoil, launch tumble (backflips through the hitstun) and the 4 victory emotes; pure Pose sampler; AnimationController layers them over the default animations on every client (blend in / out, joints the Animator leaves alone go back to rest); Animate remote + server hooks (CombatService, PropService), ShoveCharging attribute, hitstun in CombatHit; winners emote in the lobby after a round, equipping an emote previews it; optional uploaded animations per clip | #24 |
+| 2026-10-16 | Animation fix ("no animation at all"): clips now turn joints through Motor6D.C0 every frame before rendering (the default animations overwrote the Transform writes); Studio `[Anim]` log (Config.Dev.LogAnimations) | #PR |
 
 ## Decisions and interpretations
 
@@ -345,9 +346,11 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   the Shop (gamepad: selects the first menu button). The developer panel's "+5000 Scrap" (`Config.Dev.GiveScrap`) is
   for testing purchases.
 - **Animations (2.6):** scripted, not uploaded assets (the bible allows "scripted"; nothing can be uploaded from a
-  code session and paid packs are out). Each frame, after Roblox's default walk / idle animations, the joints a clip
-  uses are blended toward its pose (`Motor6D.Transform` in `RunService.Stepped`); the legs keep walking unless the
-  clip moves them. Angles: X swings a limb forward / tilts the body back, Y turns left, Z swings a right limb out (a
+  code session and paid packs are out). Each frame before rendering, the joints a clip uses are turned through their
+  `Motor6D.C0` (rest offset × clip turn); Roblox's default walk / idle animations (which only write `Transform`)
+  keep playing on top, so the legs keep walking and arms still swing a little. The first version wrote `Transform`
+  in `RunService.Stepped` and showed nothing in the owner's Studio ("no animation at all": the default animations
+  won that race), hence C0. `Config.Dev.LogAnimations` prints every clip started in Studio. Angles: X swings a limb forward / tilts the body back, Y turns left, Z swings a right limb out (a
   left limb with −Z); Root offsets crouch or bob the whole body. Nothing replicates, so every client poses every
   character from the same signals. The attacker sees their own swing when the server's Animate event comes back
   (one round trip, like the hit itself); only the dash plays at once on the dasher's client. Punch chains: Brawler
