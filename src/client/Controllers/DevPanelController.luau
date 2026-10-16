@@ -3,8 +3,8 @@
 	DevPanelController — the minimal developer panel (step 1.13), for players with the DevAccess attribute (anyone in
 	Studio playtests; see Server/Dev/DevRules). Open / close it with Config.Dev.PanelKey (` by default) or the DEV
 	button in the top-left corner. Buttons send DevCommand (the server re-checks access): start / end the round,
-	crumble a platform, pick the next map / mode, spawn a prop, set your own Percent / HP. The camera buttons run
-	here: a test shake, and switching the saved Camera Shake setting.
+	crumble a platform, pick the next map / mode, spawn a prop, set your own Percent / HP, own + equip a style. The
+	camera buttons run here: a test shake, and switching the saved Camera Shake setting.
 ]]
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -116,6 +116,12 @@ local function buildSections()
 		table.insert(me, command(Localization.format("Combat.HP", { health }), "SetHealth", nil, health))
 	end
 	section("Dev.Me", me)
+
+	local styles: { Button } = {}
+	for _, styleId in Config.Styles.Order do
+		table.insert(styles, command(Localization.format(`Style.{styleId}.Name`), "SetStyle", styleId))
+	end
+	section("Dev.Style", styles)
 
 	section("Dev.Camera", {
 		{

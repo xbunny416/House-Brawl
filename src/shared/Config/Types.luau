@@ -48,6 +48,18 @@ export type StyleConfig = {
 	Shove: StyleAttack,
 }
 
+-- One block of a weapon's blockout model, welded to a hand (art pass replaces these with meshes).
+export type WeaponPart = {
+	Name: string,
+	Hand: "Right" | "Left", -- welded to RightHand / LeftHand
+	Size: Box,
+	Offset: { number }, -- studs from the hand (x, y, z in the hand's space; -z is forward)
+	Rotation: { number }, -- degrees (x, y, z)
+	Shape: string?, -- Enum.PartType name (default Block)
+	Material: string, -- Enum.Material name
+	Color: string, -- hex
+}
+
 export type ModeConfig = {
 	KnockbackMultiplier: number,
 	Scoring: "LastStanding" | "KOsMinusFalls",

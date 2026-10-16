@@ -10,6 +10,7 @@
 	  Crumble                        crumble the next platform now
 	  SpawnProp (typeId)             a prop in front of you
 	  SetPercent / SetHealth (n)     your own Percent / HP
+	  SetStyle (styleId)             own and equip a fighting style
 ]]
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -26,6 +27,7 @@ local CrumbleService = require(script.Parent:WaitForChild("CrumbleService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
 local PropService = require(script.Parent:WaitForChild("PropService"))
 local RoundService = require(script.Parent:WaitForChild("RoundService"))
+local StyleService = require(script.Parent:WaitForChild("StyleService"))
 
 local SPAWN_DISTANCE = 6 -- studs in front of the player
 
@@ -79,6 +81,11 @@ local commands: { [string]: Command } = {
 		local character = player.Character
 		if character and value then
 			CombatService.setHealth(character, value)
+		end
+	end,
+	SetStyle = function(player, text)
+		if text then
+			StyleService.equip(player, text, true)
 		end
 	end,
 }

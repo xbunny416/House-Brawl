@@ -6,11 +6,9 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 
 - **Build order approved** by the owner on 2026-10-15, with maps built from code (blockouts from layout data, art
   pass later) and data saving via ProfileStore.
-- **Phase 1 (core loop) is built** (1.1–1.13, 2026-10-16) but **not yet playtested in Studio**: the owner chose to
-  keep building first. **Waiting on:** the owner's Studio playtest of the whole loop (lobby + training dummy, input on
-  PC / gamepad / Device Emulator touch, camera, combat + knockback feel, dash, rounds and modes, props and barrels,
-  structures, crumbling, HUD, developer panel). Fix what it finds before going further. Phase 2 has started (2.1 Round
-  rewards is built). **Next step:** 2.2 Fighting styles.
+- **Phase 1 (core loop) is built and playtested** (1.1–1.13; two rounds of owner playtest fixes, "all clear" on
+  2026-10-16). **Phase 2 in progress:** 2.1 Round rewards and 2.2 Fighting styles are built (2.2 not yet playtested:
+  Wrecker parry needs two players). **Next step:** 2.3 Cosmetics system + Locker.
 
 ## How this repo works
 
@@ -95,6 +93,9 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
 - **Combat:** every hit goes through `Services/CombatService`, which owns one `Server/Combat/Fighter` per combatant
   (player characters register automatically; anything else, like the dummy, calls `CombatService.register`). UI
   reads the character attributes `HP` (modes with HP) and `Percent`; listen to `CombatService.KnockedOut` for KOs.
+- **Styles:** ownership and the equipped style go through `Services/StyleService` (`equip`, `equippedOf`); the rules
+  (`Shared/StyleRules`: owns, unlockedAt) are shared with UI. Combat reads the equipped style through
+  `Formulas.resolveAttack`.
 - **Rounds:** `Services/RoundService` owns the loop, the scoreboard (`Server/Round/Scoreboard`) and round stats.
   UI reads attributes: Workspace `RoundState`, `RoundEndsAt` (compare with `Workspace:GetServerTimeNow()`),
   `RoundMode`, `RoundMap`, `PlayersNeeded`; Player `RoundStatus`, `Lives`, `KOs`, `Falls`. Rewards and quests hook
@@ -158,7 +159,7 @@ any errors are fixed before the next item.
 ### Phase 2 — Progression & content
 
 - [x] 2.1 Round rewards (Scrap/XP, streaks, placement, anti-farm, bonuses) + levels and rank titles
-- [ ] 2.2 Fighting styles: Slugger, Scrapper, Wrecker (parry) + welded weapon models
+- [x] 2.2 Fighting styles: Slugger, Scrapper, Wrecker (parry) + welded weapon models
 - [ ] 2.3 Cosmetics system + Locker
 - [ ] 2.4 Shop (styles, cosmetics, 24 h UTC daily rotation)
 - [ ] 2.5 Junkyard Isles + Neon Motel maps (+ night lighting preset)
@@ -203,6 +204,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 2.1 RewardService (round payout: KO Scrap + streaks, Perfect Dodges, placement, completion, 60 s / AFK rules, VIP / Premium / friend bonuses, private-server scale; Scrap + XP + level-ups via DataService; rank attribute), pure Payout, RoundReward remote, results reward line, HUD profile chip | #15 |
 | 2026-10-16 | 1st playtest fixes: throws launch a server-owned copy, grab takes ownership + "[E] Grab" prompt + Studio logs, fighters pass through each other (collision group), windups 0.05 s, dash 12 studs, stronger drift-free camera shake with tilt, client-drawn crumble (flash, shake, sink + fade) | #16 |
 | 2026-10-16 | 2nd playtest fixes: throws aimed from the thrower's own view (facing + position, 8-stud tolerance), 25% gravity while flying, 15° aim assist; arena pillars belong to their platforms (crumble with them) | #17 |
+| 2026-10-16 | 2.2 Fighting styles: Wrecker parry (0.2 s, reflects knockback onto the attacker), StyleService (level unlocks, EquipStyle, welded blockout weapons: bat, shovel, wrench + hubcap), shared StyleRules, DataService.LeveledUp, dev panel Style buttons | 2.2 |
 
 ## Decisions and interpretations
 
@@ -288,7 +290,17 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   Punch (position used when within `Props.ThrowOriginTolerance` = 8 studs of the server's view), thrown props feel
   `ThrowGravityScale` = 25% gravity while flying (the server adds the rest back each frame), and `ThrowAimAssist`
   bends a throw toward a fighter within 15° / 80 studs of the facing (Angle 0 turns it off). Broken Highway's pillars
-  now belong to their platform models, so they sink with a crumbling platform instead of staying behind.
+  now belong to their platform models, so they sink with a crumbling platform instead of staying behind. The owner
+  re-tested and reported "all clear".
+- **Fighting styles (2.2):** the equipped style's numbers have applied since 1.6 (`Formulas.resolveAttack`). New: the
+  Wrecker parry — Shove Start opens a 0.2 s window (no charge; shares the Shove cooldown); a Punch / Shove landing in
+  it misses and its knockback (no damage) goes back onto the attacker from the parrier, credited to the parrier and
+  scaled by ReflectMultiplier (source "Parry", so it can't be parried back). Thrown props and blasts are not parried.
+  Order of defences: spawn shield, parry, dash. Styles unlock free at their UnlockLevel (on load and on
+  `DataService.LeveledUp`); buying with Scrap comes with the Shop (2.4). `EquipStyle` only switches to an owned style
+  and not while Playing / Respawning in a round. Weapons are welded blockout parts from `Config.Styles.Weapons`
+  (Massless, CanCollide / CanQuery / CanTouch off: visual only, attack boxes hit the body). The style picker UI is
+  part of the Locker (2.3); until then the developer panel's Style buttons own + equip any style.
 - **HUD (1.12):** `HudController` (top bar, kill feed, bottom bar) replaced the 1.8 status line. Kill feed sits top-right
   (bible said top-center, which already holds the timer and the vote panel); lines fade after 6 s, max 5, and name
   the prop when a prop made the KO. Top bar info: Classic = fighters with lives left, Casual = your score. Vitals
@@ -344,7 +356,8 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   Test touch with Studio's Device Emulator (a phone in landscape).
 - **Developer panel (Studio):** press ` (Backquote, `Config.Dev.PanelKey`) or click DEV (top left). Round: start now
   (starts the vote even alone, or closes it), end now, crumble a platform; next map / mode (or back to the vote);
-  spawn any prop in front of you; set your own Percent (0 / 100 / 200) or HP (100 / 50 / 10); test camera shake and
+  spawn any prop in front of you; set your own Percent (0 / 100 / 200) or HP (100 / 50 / 10); own + equip any
+  fighting style; test camera shake and
   switch the Camera Shake setting. Output shows `[Dev]` lines.
 - **Data in Studio:** with "Studio Access to API Services" off, ProfileStore uses an in-memory store and prints
   "Roblox API services unavailable - data will not be saved". Turn it on to test real saving

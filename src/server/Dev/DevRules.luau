@@ -20,6 +20,7 @@ DevRules.Commands = {
 	"SpawnProp",
 	"SetPercent",
 	"SetHealth",
+	"SetStyle",
 }
 
 function DevRules.isAllowed(userId: number, inStudio: boolean): boolean

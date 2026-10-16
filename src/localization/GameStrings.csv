@@ -103,3 +103,4 @@ Hud.Profile,{1}  ·  {2}  ·  {3},"Top-right profile chip: level, rank title, Sc
 Results.Reward,+{1} Scrap  ·  +{2} XP,What the local player earned in the round,+65 Scrap  ·  +140 XP
 Results.LevelUp,Level up! Level {1},Shown on the results panel after leveling up,Level up! Level 13
 Results.NewRank,New rank: {1},Shown on the results panel when the rank title changes,New rank: Raider
+Dev.Style,Style,Developer panel section: own and equip a fighting style,

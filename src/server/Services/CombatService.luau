@@ -111,6 +111,13 @@ local function rootOf(character: Model): BasePart?
 	return if root and root:IsA("BasePart") then root else nil
 end
 
+-- The player's equipped fighting style (the default until their data loads).
+local function styleOf(player: Player): string
+	local data = DataService.get(player)
+	local style = data and data.Styles.Equipped
+	return if style and Config.Styles.List[style] then style else Config.Styles.Default
+end
+
 local function isAlive(character: Model): boolean
 	local humanoid = character:FindFirstChildOfClass("Humanoid")
 	return humanoid ~= nil and humanoid.Health > 0
@@ -420,21 +427,57 @@ local function dodged(victim: Model, blow: Blow, evade: Fighter.Evade)
 		CombatService.PerfectDodged:Fire(victim, blow.Attacker)
 	end
 	if isStudioFlag(Config.Dev.LogCombat) then
-		local kind = if evade == "Perfect" then "PERFECT DODGE" elseif evade == "Shielded" then "shielded" else "dodged"
+		local kind = if evade == "Perfect"
+			then "PERFECT DODGE"
+			elseif evade == "Shielded" then "shielded"
+			elseif evade == "Parried" then "PARRIED"
+			else "dodged"
 		print(`[Combat] {victim.Name} {kind}: {blow.Attacker.Name} {blow.Label}`)
 	end
 end
 
+local land: (victim: Model, blow: Blow, away: Vector3) -> boolean
+
+-- A parried melee blow comes back: its attacker takes the knockback (not the damage), credited to the parrier and
+-- scaled by the parrier's style's ReflectMultiplier.
+local function reflect(parrier: Model, blow: Blow)
+	local parrierPlayer = Players:GetPlayerFromCharacter(parrier)
+	local attackerCharacter = blow.AttackerCharacter
+	local parrierRoot = rootOf(parrier)
+	local attackerRoot = if attackerCharacter then rootOf(attackerCharacter) else nil
+	if parrierPlayer == nil or attackerCharacter == nil or parrierRoot == nil or attackerRoot == nil then
+		return
+	end
+	local parry = Formulas.resolveAttack(styleOf(parrierPlayer), "Shove").Parry
+	land(attackerCharacter, {
+		Attacker = parrierPlayer,
+		AttackerCharacter = parrier,
+		Damage = 0,
+		Percent = 0,
+		KnockbackScale = blow.KnockbackScale,
+		Multiplier = blow.Multiplier * (if parry then parry.ReflectMultiplier else 1),
+		Source = "Parry", -- not "Punch" / "Shove", so a reflected blow can't be parried back
+		Label = "Parry",
+		Heavy = true,
+		Fallback = parrierRoot.CFrame.LookVector,
+	}, attackerRoot.Position - parrierRoot.Position)
+end
+
 -- Applies one blow to one victim, launching it along `away` (flat; blow.Fallback when ~zero).
--- Returns false when the victim dodged or was shielded.
-local function land(victim: Model, blow: Blow, away: Vector3): boolean
+-- Returns false when the victim dodged, was shielded or parried it.
+function land(victim: Model, blow: Blow, away: Vector3): boolean
 	local fighter = fighters[victim]
 	if fighter == nil or rootOf(victim) == nil then
 		return false
 	end
 	local now = os.clock()
-	local evade: Fighter.Evade = Fighter.evade(fighter, now)
-	if evade == "Perfect" or evade == "Dodged" or evade == "Shielded" then
+	local melee = blow.Source == "Punch" or blow.Source == "Shove"
+	local evade: Fighter.Evade = Fighter.evade(fighter, now, melee)
+	if evade == "Parried" then
+		dodged(victim, blow, evade)
+		reflect(victim, blow)
+		return false
+	elseif evade == "Perfect" or evade == "Dodged" or evade == "Shielded" then
 		dodged(victim, blow, evade)
 		return false
 	end
@@ -566,12 +609,6 @@ end
 -- Intents
 ---------------------------------------------------------------------------------------------------------------------
 
-local function styleOf(player: Player): string
-	local data = DataService.get(player)
-	local style = data and data.Styles.Equipped
-	return if style and Config.Styles.List[style] then style else Config.Styles.Default
-end
-
 local function fighterOf(player: Player): (Model?, Fighter?)
 	local character = player.Character
 	if character == nil or not isAlive(character) then
@@ -622,7 +659,17 @@ local function onShove(player: Player, phase: string)
 	end
 	local now = os.clock()
 	if phase == "Start" then
-		if not intercepted(player, "Shove") and Fighter.startShove(fighter, now) then
+		if intercepted(player, "Shove") then
+			return
+		end
+		local shove = Formulas.resolveAttack(styleOf(player), "Shove")
+		local parry = shove.Parry
+		if parry then
+			-- Parry styles (Wrecker): Shove is an instant parry instead of a charged push.
+			if Fighter.parry(fighter, now, parry.Window, shove.Cooldown) and isStudioFlag(Config.Dev.LogCombat) then
+				print(`[Combat] {player.Name} parries`)
+			end
+		elseif Fighter.startShove(fighter, now) then
 			setCharging(character, true)
 			removeShieldVisual(character) -- attacking ended the spawn shield
 		end

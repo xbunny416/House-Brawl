@@ -97,7 +97,7 @@ Not used. Long-term goals are levels/ranks, styles, cosmetics and leaderboards.
 | Brawler | Fists | Free default | Punch and Shove as above |
 | Slugger | Baseball bat | 1,500 Scrap or Level 5 | Damage ×1.15, +2 studs reach, attack speed ×0.8 |
 | Scrapper | Shovel | 3,000 Scrap or Level 12 | Wide sweep hitbox 7×4×5, Damage ×0.9, Shove KB ×1.1 |
-| Wrecker | Wrench + hubcap shield | 6,000 Scrap or Level 25 | Shove becomes a 0.2 s parry that reflects knockback; Punch Damage ×0.95 |
+| Wrecker | Wrench + hubcap shield | 6,000 Scrap or Level 25 | Shove becomes a 0.2 s parry: a punch or shove landing in it misses and its knockback (not damage) hits the attacker instead; Punch Damage ×0.95 |
 
 - **Cosmetics** (Scrap or Robux): skins, hats, back items, dash trails, KO effects, victory emotes, name-plate frames.
   Common 300–800 Scrap; Rare 1,200–2,500 Scrap; Premium = Robux only.
