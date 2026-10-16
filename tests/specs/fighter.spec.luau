@@ -205,4 +205,21 @@ return {
 		expect.equal(Fighter.koCredit(f, 1 + Config.Combat.KOCreditWindow), "second")
 		expect.equal(Fighter.koCredit(f, 1 + Config.Combat.KOCreditWindow + 0.01), nil)
 	end,
+	["KO credit names what the last hit was (chair KOs)"] = function()
+		local f = Fighter.new("Casual")
+		local chair = punchHit()
+		chair.Source = "Chair"
+		Fighter.takeHit(f, chair, "thrower", 0)
+		local killer, weapon = Fighter.koCredit(f, 1)
+		expect.equal(killer, "thrower")
+		expect.equal(weapon, "Chair")
+		local _, expired = Fighter.koCredit(f, 100)
+		expect.equal(expired, nil)
+	end,
+	["breaking the shield ends it at once"] = function()
+		local f = Fighter.new("Classic")
+		Fighter.shield(f, 0, 2)
+		Fighter.breakShield(f)
+		expect.equal(Fighter.isShielded(f, 0.1), false)
+	end,
 }

@@ -206,7 +206,7 @@ local function kill(character: Model)
 	end
 end
 
-local function onKnockOut(character: Model, killer: Player?, cause: CombatService.KOCause)
+local function onKnockOut(character: Model, killer: Player?, cause: CombatService.KOCause, weapon: string?)
 	local player = Players:GetPlayerFromCharacter(character)
 	if player == nil then
 		return
@@ -224,6 +224,12 @@ local function onKnockOut(character: Model, killer: Player?, cause: CombatServic
 		DataService.incrementStat(killer, "KOs")
 		if cause == "Fall" then
 			DataService.incrementStat(killer, "RingOuts")
+		end
+		if weapon and Config.Props.Types[weapon] then
+			DataService.incrementStat(killer, "PropKOs")
+			if weapon == "Chair" then
+				DataService.incrementStat(killer, "ChairKOs")
+			end
 		end
 		syncScore(killer)
 	end

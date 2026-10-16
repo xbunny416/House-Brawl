@@ -6,11 +6,11 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 
 - **Build order approved** by the owner on 2026-10-15, with maps built from code (blockouts from layout data, art
   pass later) and data saving via ProfileStore.
-- **Current phase:** Phase 1. **Waiting on:** the owner's Studio playtest of 1.1–1.8 (lobby + Broken Highway
+- **Current phase:** Phase 1. **Waiting on:** the owner's Studio playtest of 1.1–1.9 (lobby + Broken Highway
   blockouts, data saving, input on PC / gamepad / Device Emulator touch, camera, Shift Lock, camera shake; combat on
   the Training Yard dummy and 2-player PvP in the arena; dash, air dash across gaps, Perfect Dodge; the full round
-  loop: vote, Classic / Casual, respawn + shield, spectate, results). The owner chose to continue building before
-  playtesting. **Next step:** 1.9 Props.
+  loop: vote, Classic / Casual, respawn + shield, spectate, results; grabbing and throwing props, barrels). The owner
+  chose to continue building before playtesting. **Next step:** 1.10 Breakable structures.
 
 ## How this repo works
 
@@ -146,7 +146,7 @@ any errors are fixed before the next item.
 - [x] **1.7 Dash + Perfect Dodge** — server-timed i-frames, air dash once per jump, dodge bonus.
 - [x] **1.8 Rounds + modes** — vote (map + mode, 15 s) → teleport → Classic / Casual rules → results → lobby; respawn,
       spawn shield, spectate, late joiners, AFK + 60 s participation tracking.
-- [ ] **1.9 Props** — spawn spots, grab/carry/throw (server-checked range and rate), weight classes, explosive barrel,
+- [x] **1.9 Props** — spawn spots, grab/carry/throw (server-checked range and rate), weight classes, explosive barrel,
       40-prop cap, despawn.
 - [ ] **1.10 Breakable structures** — HP, prop drops, respawn.
 - [ ] **1.11 Crumbling platforms** — 3 s warning, fall, rules (center never falls, ≥ 2 remain).
@@ -195,6 +195,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 1.6 CombatService (Punch chain, charged Shove, server hitboxes, HP / Percent, knockback + hitstun, KO credit, trail flag) on a pure Fighter state machine; client knockback (Launch) + heavy-hit camera shake; right-drag cancels a Shove; Training Yard dummy; Studio hit log + hitbox flashes | #7 |
 | 2026-10-16 | 1.7 Dash (client-moved, server-timed invulnerability, cooldown tolerance, once per stay in the air, ends a launch) + Perfect Dodge (one per dash, +25% knockback on the next hit within 2 s, `PerfectDodged` signal) | #8 |
 | 2026-10-16 | 1.8 RoundService (Waiting → map + mode vote → Classic / Casual round → results), pure Vote + Scoreboard, respawn via Roblox respawn + spawn shield, spectate (ReplicationFocus), Casual late join + passive gain, AFK / active-time tracking, round stats + analytics; vote, results, spectate and status UI (Ui/Kit); Studio solo rounds | #9 |
+| 2026-10-16 | 1.9 PropService (spots + respawn, grab / carry / drop / throw, server-swept flights, class blows, explosive barrels with fuse + chain, 40-prop cap, despawn), pure Carrier rules, CombatService refactor (shared blow path, hitWith / explode, Swung / Hit signals, interceptor, speed modifiers), Throw / Drop touch labels, prop + chair KO stats; gamepad Menu / Scoreboard on the D-pad | #10 |
 
 ## Decisions and interpretations
 
@@ -244,6 +245,17 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   AFK-excluded) watch a fighter still in; the server streams that fighter's area to them (`ReplicationFocus`).
   Spectate cycles with Z / X, D-pad or the bar's arrows. The 1.4 Studio arena-preview pad was removed (rounds
   replace it).
+- **Owner's choices (2026-10-16):** thrown props fly the way the character faces (not the camera); an explosive
+  barrel's blast hurts everyone in range including its thrower; gamepad Menu = D-pad Up and Scoreboard = D-pad Down
+  (Roblox keeps Start / Select); the developer panel stays Studio-only for now (`Config.Dev.AllowedUserIds` empty).
+- **Props (1.9):** the server picks the nearest free prop within GrabRange (measured to the prop's edge) and welds it
+  above the head (massless, no collisions); grabbing again drops it in front. While holding, the Punch intent throws
+  (CombatService interceptor) and Shove is blocked; throws break the spawn shield. A spot's timer (20 s / 30 s for
+  barrels) starts when its prop is taken; dropped props despawn 8 s after the drop like thrown ones. Flights are
+  server-owned and swept every frame (sphere casts): the first fighter hit takes the class blow (thrower's Perfect
+  Dodge bonus applies), anything else ends the flight; the thrower is never hit by their own flying prop. Attack boxes
+  light barrels (3 s fuse, credited to the attacker); explosions light other barrels in range. Prop KOs count
+  `PropKOs` (and `ChairKOs` for chairs) from the last hit's source. Walk-speed modifiers multiply (charge, carry).
 
 ## Known bugs / open items
 
@@ -262,9 +274,10 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   RoundsPlayed, RoundsCompleted) are already counted in rounds.
 - **The vote, results, spectate bar and status line are plain first versions** (`src/client/Ui/Kit`); the round HUD
   (1.12) and the art/VFX passes restyle them. The lobby's CRT-TV vote screens from the bible are an art-pass item.
-- **Gamepad Start / Select** (Menu / Scoreboard in the bible) may be kept by Roblox (Start opens the Roblox menu,
-  Select toggles UI navigation). Check in the gamepad playtest (`[Input] Menu began` in Output); if they never
-  arrive, pick other buttons in `Config.Controls.Gamepad` (owner's call).
+- **Props are plain blocks** (size / material / color from `Config.Props.Types`) until the art pass; a lit barrel turns
+  Neon, explosions use Roblox's `Explosion` visual (no physics: `BlastPressure = 0`). Carry pose and throw animation
+  come with 2.6. Flights are simulated by the server (props are server-owned while flying), so throws look slightly
+  delayed on high ping.
 - **Tab** also toggles Roblox's player list until the scoreboard (1.12) turns the core player list off.
 - **Camera sensitivity** is saved and validated but not applied: Roblox does not let scripts change mouse/gamepad
   sensitivity. Needs a custom approach in 3.10.

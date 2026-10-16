@@ -98,6 +98,18 @@ function Formulas.launchVelocity(
 	return dx * ground, math.sin(angle) * speed, dz * ground
 end
 
+-- Velocity of a thrown prop (studs/s, x/y/z): ThrowSpeed along the thrower's facing (lookX, lookZ, flattened) plus
+-- ThrowUpwardSpeed up for a slight arc.
+function Formulas.throwVelocity(lookX: number, lookZ: number): (number, number, number)
+	local props = Config.Props
+	local length = math.sqrt(lookX * lookX + lookZ * lookZ)
+	if length < 1e-3 then
+		return 0, props.ThrowUpwardSpeed, 0
+	end
+	local scale = props.ThrowSpeed / length
+	return lookX * scale, props.ThrowUpwardSpeed, lookZ * scale
+end
+
 -- An attack hitbox grown by HitboxPadding on every side (absorbs network latency).
 function Formulas.paddedHitbox(box: Types.Box): Types.Box
 	local padding = Combat.HitboxPadding * 2

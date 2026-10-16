@@ -166,16 +166,17 @@ billboards, Codes jukebox, Training Yard ramp with a dummy and a small gap to pr
 **Props (grab & throw):**
 
 - Grab range 6 studs (server-checked). Hold 1 prop. Holding replaces Punch with Throw and blocks Shove.
-- Throw speed 90 studs/s, slight arc. Thrown props despawn 8 s after landing.
+- Throw speed 90 studs/s, slight arc, the way the character faces (owner's choice). Thrown and dropped props despawn 8 s
+  after landing. Max 40 props per arena.
 
 | Class | Examples | Damage / Percent | KB scale | Carrier slow |
 | --- | --- | --- | --- | --- |
 | Light | chair, bucket, tire | 10 HP / 8% | 1.0 | none |
 | Medium | crate, TV, barrel | 18 HP / 14% | 1.3 | 15% |
 | Heavy | fridge, car door, vending machine chunk | 28 HP / 22% | 1.7 | 30% |
-| Explosive barrel | — | 25 HP / 20% in 10-stud radius | 1.5 | — (explodes on impact or 3 s after being hit) |
+| Explosive barrel | — | 25 HP / 20% in 10-stud radius | 1.5 | 15% (explodes on impact or 3 s after being hit) |
 
-- Getting hit while carrying drops the prop.
+- Getting hit while carrying drops the prop. A barrel's blast also hits its thrower, and lights other barrels in range.
 - Breakable structures take damage from any attack or thrown prop and break into 2–4 random props.
 
 ## 4. Assets
@@ -233,8 +234,8 @@ AnchorPoint (0.5, 0.5), Scale coordinates (no fixed offsets), UIAspectRatioConst
 | Shove (hold to charge) | Right Click | Y | Shove |
 | Grab / Drop | E | B | Grab |
 | Dash | Q or Left Shift | RB | Dash |
-| Scoreboard | Tab | Select | — |
-| Menu | M | Start | — |
+| Scoreboard | Tab | D-pad Down | — |
+| Menu | M | D-pad Up | — |
 
 Third-person follow, zoom 8–30 studs (no first person), Shift Lock allowed on PC and toggled with Right Shift (Left
 Shift is Dash). Small camera shake on heavy hits (0.6 studs, 0.25 s; toggle in Settings). Spectate camera cycles alive

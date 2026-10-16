@@ -54,6 +54,7 @@ local playerGui: PlayerGui
 local screenGui: ScreenGui? = nil
 local container: Frame
 local buttons: { [string]: TextButton } = {}
+local labelKeys: { [string]: string? } = {} -- action -> GameStrings key, when not the default Controls.<Action>
 local jumpButton: GuiObject? = nil
 local jumpConnections: { RBXScriptConnection } = {}
 
@@ -72,6 +73,16 @@ end
 -- True while any input holds `action`.
 function InputController.isDown(action: string): boolean
 	return tracker.isDown(action)
+end
+
+-- Changes what an action's touch button says (a GameStrings key, e.g. "Controls.Throw" while holding a prop).
+-- nil restores the default Controls.<Action>.
+function InputController.setLabel(action: string, key: string?)
+	labelKeys[action] = key
+	local button = buttons[action]
+	if button then
+		button.Text = Localization.format(key or `Controls.{action}`)
+	end
 end
 
 -- "KeyboardAndMouse", "Gamepad" or "Touch": the player's current input device.
@@ -164,7 +175,7 @@ local function createButton(action: string): TextButton
 	button.BackgroundColor3 = BUTTON_COLOR
 	button.BackgroundTransparency = BUTTON_TRANSPARENCY
 	button.Font = Enum.Font.GothamBlack
-	button.Text = Localization.format(`Controls.{action}`)
+	button.Text = Localization.format(labelKeys[action] or `Controls.{action}`)
 	button.TextColor3 = TEXT_COLOR
 	button.TextScaled = true
 

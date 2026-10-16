@@ -33,6 +33,8 @@ local Definitions: { [string]: Definition } = {
 		Direction = "ToServer",
 		Args = { Guard.oneOf({ "Start", "Release", "Cancel" }) },
 	},
+	-- Client -> server: the Grab action. Grabs the nearest prop in reach, or drops the held one.
+	Grab = { Kind = "Event", Direction = "ToServer", Args = {} },
 	-- Client -> server: the local player dashed (the client already moved its character). The server checks the
 	-- cooldown and hitstun and starts the dash's invulnerability.
 	Dash = { Kind = "Event", Direction = "ToServer", Args = {} },

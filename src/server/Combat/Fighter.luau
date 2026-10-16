@@ -27,6 +27,7 @@ export type Fighter = {
 	StunnedUntil: number,
 	LastHitAt: number,
 	LastAttacker: any?, -- whoever hit last (a Player on the server)
+	LastHitWith: string?, -- what that last hit was: "Punch", "Shove" or a prop type
 	Defeated: boolean,
 	NextDashAt: number,
 	DashStartedAt: number?, -- server time of the last accepted dash (its invulnerability starts here)
@@ -45,6 +46,7 @@ export type Hit = {
 	Percent: number,
 	KnockbackScale: number,
 	Multiplier: number,
+	Source: string?, -- "Punch", "Shove" or a prop type (KO stats such as chair KOs)
 }
 
 export type HitResult = {
@@ -77,6 +79,7 @@ function Fighter.new(modeId: string): Fighter
 		StunnedUntil = 0,
 		LastHitAt = -math.huge,
 		LastAttacker = nil,
+		LastHitWith = nil,
 		Defeated = false,
 		NextDashAt = 0,
 		DashStartedAt = nil,
@@ -93,6 +96,11 @@ end
 
 function Fighter.isShielded(fighter: Fighter, now: number): boolean
 	return now < fighter.ShieldUntil
+end
+
+-- Ends the spawn shield early (the fighter attacked, e.g. threw a prop).
+function Fighter.breakShield(fighter: Fighter)
+	fighter.ShieldUntil = 0
 end
 
 -- Casual passive gain: adds Percent (capped). No effect in modes with HP, where Percent follows the HP.
@@ -216,6 +224,7 @@ function Fighter.takeHit(fighter: Fighter, hit: Hit, attacker: any, now: number)
 	fighter.StunnedUntil = math.max(fighter.StunnedUntil, now + hitstun)
 	fighter.LastHitAt = now
 	fighter.LastAttacker = attacker
+	fighter.LastHitWith = hit.Source
 	return {
 		Force = Formulas.knockbackForce(fighter.Percent, hit.KnockbackScale, fighter.ModeId, hit.Multiplier),
 		Hitstun = hitstun,
@@ -225,12 +234,13 @@ function Fighter.takeHit(fighter: Fighter, hit: Hit, attacker: any, now: number)
 	}
 end
 
--- Who gets the KO if this fighter is knocked out now: the last attacker within KOCreditWindow seconds, else nil.
-function Fighter.koCredit(fighter: Fighter, now: number): any?
+-- Who gets the KO if this fighter is knocked out now: the last attacker within KOCreditWindow seconds (else nil),
+-- and what that last hit was ("Punch", "Shove" or a prop type).
+function Fighter.koCredit(fighter: Fighter, now: number): (any?, string?)
 	if fighter.LastAttacker ~= nil and now - fighter.LastHitAt <= Config.Combat.KOCreditWindow then
-		return fighter.LastAttacker
+		return fighter.LastAttacker, fighter.LastHitWith
 	end
-	return nil
+	return nil, nil
 end
 
 return Fighter
