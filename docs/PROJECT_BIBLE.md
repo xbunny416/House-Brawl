@@ -220,9 +220,10 @@ AnchorPoint (0.5, 0.5), Scale coordinates (no fixed offsets), UIAspectRatioConst
   targets: 17% of the screen's shorter side, 64–104 px, Attack 1.15× larger; Settings > Button Layout picks the
   arrangement). Shown only while touch is the player's input. Bottom-center — own
   Percent (Casual) or HP bar + lives (Classic), held-prop icon, dash cooldown ring. Top-center — round timer, mode
-  badge, players alive / score, kill feed. Left edge (Lobby only) — Shop, Locker, Quests, Daily Reward, Leaderboard,
-  Settings. Default thumbstick bottom-left.
-- **PC:** same layout, touch buttons hidden, key hints next to HUD items, Tab = round scoreboard.
+  badge, players alive / score. Kill feed top-right (top-center is the timer and the vote panel). Left edge (Lobby
+  only) — Shop, Locker, Quests, Daily Reward, Leaderboard, Settings. Default thumbstick bottom-left.
+- **PC:** same layout, touch buttons hidden, key hints next to HUD items, Tab = round scoreboard (replaces Roblox's
+  player list).
 - **Console:** same layout, menus navigable with GuiService.SelectedObject highlights, gamepad glyphs auto-swap.
 
 ### 5.2 Controls & camera

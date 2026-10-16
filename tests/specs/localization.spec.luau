@@ -54,6 +54,9 @@ return {
 		for _, rank in Config.Progression.Ranks do
 			expect.truthy(keys[`Rank.{rank.Id}`], `Rank.{rank.Id}`)
 		end
+		for id in Config.Props.Types do
+			expect.truthy(keys[`Prop.{id}.Name`], `Prop.{id}.Name`)
+		end
 	end,
 	["every literal key used in code exists"] = function()
 		local files: { string } = {}

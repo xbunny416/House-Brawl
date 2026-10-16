@@ -1,0 +1,401 @@
+--!strict
+--[[
+	HudController — the in-game HUD (bible §5.1), the same layout on mobile, PC and gamepad:
+	  * Top bar: "Waiting for players (1/2)", or during a round the mode badge, time left, and fighters left
+	    (Classic) or your score (Casual). Hidden while the vote and results panels are up.
+	  * Kill feed (top right): who KO'd whom, newest first, each line fades after FEED_LIFETIME.
+	  * Bottom bar: the dash cooldown ring, your vitals while in a round (Classic: HP bar + lives; Casual: Percent in
+	    white → yellow → red), and the held prop with Throw / Drop key hints.
+	Key hints follow the input device (KeyHint). Hidden while spectating (the spectate bar takes the bottom).
+]]
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+local Localization = require(Shared:WaitForChild("Localization"))
+local Net = require(Shared:WaitForChild("Net"))
+
+local Client = script.Parent.Parent
+local HudFormat = require(Client:WaitForChild("Lib"):WaitForChild("HudFormat"))
+local KeyHint = require(Client:WaitForChild("Ui"):WaitForChild("KeyHint"))
+local Kit = require(Client:WaitForChild("Ui"):WaitForChild("Kit"))
+local DashController = require(script.Parent:WaitForChild("DashController"))
+
+local REFRESH_INTERVAL = 0.1
+local FEED_LIFETIME = 6
+local FEED_MAX = 5
+local HP_COLOR = Color3.fromHex("#6CCB5F")
+local HP_LOW_COLOR = Color3.fromHex("#E2463A")
+local EMPTY_COLOR = Color3.fromHex("#2A2420")
+
+local HudController = {}
+
+local player = Players.LocalPlayer
+local gui: ScreenGui
+local top = {} :: {
+	Panel: Frame,
+	Waiting: TextLabel,
+	Round: Frame,
+	Mode: TextLabel,
+	Timer: TextLabel,
+	Info: TextLabel,
+}
+local feed: Frame
+local feedCount = 0
+local bottom: Frame
+local dash = {} :: { Ring: Frame, Fill: UIGradient }
+local vitals = {} :: {
+	Frame: Frame,
+	Classic: Frame,
+	HpFill: Frame,
+	HpLabel: TextLabel,
+	Lives: { Frame },
+	Percent: TextLabel,
+}
+local held = {} :: { Frame: Frame, Name: TextLabel }
+
+local function rgb(color: HudFormat.Rgb): Color3
+	return Color3.new(color.R, color.G, color.B)
+end
+
+local function modeHasLives(modeId: unknown): boolean
+	local mode = if type(modeId) == "string" then Config.Modes.List[modeId] else nil
+	return mode ~= nil and mode.Lives ~= nil
+end
+
+---------------------------------------------------------------------------------------------------------------------
+-- Building
+---------------------------------------------------------------------------------------------------------------------
+
+local function buildTop()
+	local panel = Kit.panel(
+		gui,
+		UDim2.fromScale(0.4, 0.075),
+		UDim2.fromScale(0.5, 0.015),
+		Vector2.new(0.5, 0),
+		Vector2.new(520, 52)
+	)
+	top.Panel = panel
+	top.Waiting = Kit.label(panel, "", UDim2.fromScale(1, 1), 22)
+
+	local row = Instance.new("Frame")
+	row.BackgroundTransparency = 1
+	row.Size = UDim2.fromScale(1, 1)
+	row.Parent = panel
+	Kit.list(row, Enum.FillDirection.Horizontal, UDim.new(0.02, 0))
+	top.Round = row
+
+	local mode = Kit.label(row, "", UDim2.fromScale(0.34, 1), 20)
+	mode.Font = Kit.TitleFont
+	mode.BackgroundColor3 = Kit.Colors.Accent
+	mode.BackgroundTransparency = 0
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0.3, 0)
+	corner.Parent = mode
+	mode.LayoutOrder = 1
+	top.Mode = mode
+
+	local timer = Kit.label(row, "", UDim2.fromScale(0.26, 1), 24)
+	timer.Font = Kit.TitleFont
+	timer.LayoutOrder = 2
+	top.Timer = timer
+
+	local info = Kit.label(row, "", UDim2.fromScale(0.34, 1), 20)
+	info.LayoutOrder = 3
+	top.Info = info
+end
+
+local function buildFeed()
+	feed = Instance.new("Frame")
+	feed.Name = "KillFeed"
+	feed.BackgroundTransparency = 1
+	feed.AnchorPoint = Vector2.new(1, 0)
+	feed.Position = UDim2.fromScale(0.985, 0.12)
+	feed.Size = UDim2.fromScale(0.3, 0.3)
+	local limit = Instance.new("UISizeConstraint")
+	limit.MaxSize = Vector2.new(360, 220)
+	limit.Parent = feed
+	local layout = Kit.list(feed, Enum.FillDirection.Vertical, UDim.new(0.02, 0))
+	layout.VerticalAlignment = Enum.VerticalAlignment.Top
+	layout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+	feed.Parent = gui
+end
+
+local function buildDash(parent: Frame)
+	local ring = Instance.new("Frame")
+	ring.Name = "DashRing"
+	ring.Size = UDim2.fromScale(0.16, 1)
+	ring.BackgroundColor3 = Kit.Colors.Accent
+	ring.LayoutOrder = 1
+	local aspect = Instance.new("UIAspectRatioConstraint")
+	aspect.Parent = ring
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0.5, 0)
+	corner.Parent = ring
+	local outline = Instance.new("UIStroke")
+	outline.Color = Kit.Colors.Text
+	outline.Thickness = 2
+	outline.Parent = ring
+	-- Fills from the bottom as the cooldown runs out.
+	local fill = Instance.new("UIGradient")
+	fill.Rotation = -90
+	fill.Parent = ring
+	local hint = KeyHint.new(ring, "Dash", UDim2.fromScale(0.6, 0.6))
+	hint.AnchorPoint = Vector2.new(0.5, 0.5)
+	hint.Position = UDim2.fromScale(0.5, 0.5)
+	hint.BackgroundTransparency = 1
+	ring.Parent = parent
+	dash.Ring = ring
+	dash.Fill = fill
+end
+
+local function buildVitals(parent: Frame)
+	local frame = Instance.new("Frame")
+	frame.Name = "Vitals"
+	frame.BackgroundTransparency = 1
+	frame.Size = UDim2.fromScale(0.48, 1)
+	frame.LayoutOrder = 2
+	frame.Parent = parent
+	vitals.Frame = frame
+
+	-- Classic: HP bar with the number on it, lives as pips underneath.
+	local classic = Instance.new("Frame")
+	classic.BackgroundTransparency = 1
+	classic.Size = UDim2.fromScale(1, 1)
+	classic.Parent = frame
+	vitals.Classic = classic
+	local bar = Instance.new("Frame")
+	bar.Name = "HpBar"
+	bar.BackgroundColor3 = EMPTY_COLOR
+	bar.Size = UDim2.fromScale(1, 0.55)
+	bar.Parent = classic
+	local barCorner = Instance.new("UICorner")
+	barCorner.CornerRadius = UDim.new(0.3, 0)
+	barCorner.Parent = bar
+	local hpFill = Instance.new("Frame")
+	hpFill.BackgroundColor3 = HP_COLOR
+	hpFill.Size = UDim2.fromScale(1, 1)
+	hpFill.Parent = bar
+	local fillCorner = Instance.new("UICorner")
+	fillCorner.CornerRadius = UDim.new(0.3, 0)
+	fillCorner.Parent = hpFill
+	vitals.HpFill = hpFill
+	local hpLabel = Kit.label(bar, "", UDim2.fromScale(1, 1), 22)
+	hpLabel.Font = Kit.TitleFont
+	hpLabel.TextStrokeTransparency = 0.4
+	hpLabel.ZIndex = 2
+	vitals.HpLabel = hpLabel
+
+	local pips = Instance.new("Frame")
+	pips.BackgroundTransparency = 1
+	pips.Position = UDim2.fromScale(0, 0.65)
+	pips.Size = UDim2.fromScale(1, 0.35)
+	pips.Parent = classic
+	Kit.list(pips, Enum.FillDirection.Horizontal, UDim.new(0.02, 0))
+	vitals.Lives = {}
+	for index = 1, Config.Modes.List.Classic.Lives or 0 do
+		local pip = Instance.new("Frame")
+		pip.Size = UDim2.fromScale(1, 1)
+		pip.BackgroundColor3 = Kit.Colors.Accent
+		pip.LayoutOrder = index
+		local aspect = Instance.new("UIAspectRatioConstraint")
+		aspect.Parent = pip
+		local pipCorner = Instance.new("UICorner")
+		pipCorner.CornerRadius = UDim.new(0.5, 0)
+		pipCorner.Parent = pip
+		pip.Parent = pips
+		table.insert(vitals.Lives, pip)
+	end
+
+	-- Casual: the Percent, big.
+	local percent = Kit.label(frame, "", UDim2.fromScale(1, 1), 48)
+	percent.Font = Kit.TitleFont
+	percent.TextStrokeTransparency = 0.3
+	vitals.Percent = percent
+end
+
+local function buildHeld(parent: Frame)
+	local frame = Instance.new("Frame")
+	frame.Name = "HeldProp"
+	frame.BackgroundTransparency = 1
+	frame.Size = UDim2.fromScale(0.32, 1)
+	frame.LayoutOrder = 3
+	frame.Parent = parent
+	held.Frame = frame
+	local name = Kit.label(frame, "", UDim2.fromScale(1, 0.45), 20)
+	name.Font = Kit.TitleFont
+	held.Name = name
+
+	local hints = Instance.new("Frame")
+	hints.BackgroundTransparency = 1
+	hints.Position = UDim2.fromScale(0, 0.52)
+	hints.Size = UDim2.fromScale(1, 0.45)
+	hints.Parent = frame
+	Kit.list(hints, Enum.FillDirection.Horizontal, UDim.new(0.03, 0))
+	for order, pair in { { "Attack", "Controls.Throw" }, { "Grab", "Controls.Drop" } } do
+		local hint = KeyHint.new(hints, pair[1], UDim2.fromScale(0.24, 1))
+		hint.LayoutOrder = order * 2 - 1
+		local label = Kit.label(hints, Localization.format(pair[2]), UDim2.fromScale(0.24, 1), 16)
+		label.LayoutOrder = order * 2
+	end
+end
+
+local function buildBottom()
+	bottom = Instance.new("Frame")
+	bottom.Name = "Bottom"
+	bottom.BackgroundTransparency = 1
+	bottom.AnchorPoint = Vector2.new(0.5, 1)
+	bottom.Position = UDim2.fromScale(0.5, 0.975)
+	bottom.Size = UDim2.fromScale(0.46, 0.1)
+	local limit = Instance.new("UISizeConstraint")
+	limit.MaxSize = Vector2.new(620, 80)
+	limit.Parent = bottom
+	Kit.list(bottom, Enum.FillDirection.Horizontal, UDim.new(0.03, 0))
+	bottom.Parent = gui
+	buildDash(bottom)
+	buildVitals(bottom)
+	buildHeld(bottom)
+end
+
+---------------------------------------------------------------------------------------------------------------------
+-- Updating
+---------------------------------------------------------------------------------------------------------------------
+
+local function fighterCount(): number
+	local count = 0
+	for _, other in Players:GetPlayers() do
+		local lives = other:GetAttribute("Lives")
+		if type(lives) == "number" and lives > 0 then
+			count += 1
+		end
+	end
+	return count
+end
+
+local function refreshTop()
+	local state = Workspace:GetAttribute("RoundState")
+	top.Panel.Visible = state == "Waiting" or state == "Playing"
+	top.Waiting.Visible = state == "Waiting"
+	top.Round.Visible = state == "Playing"
+	if state == "Waiting" then
+		local needed = Workspace:GetAttribute("PlayersNeeded")
+		top.Waiting.Text = Localization.format("Round.Waiting", { #Players:GetPlayers(), needed or 2 })
+	elseif state == "Playing" then
+		local modeId = Workspace:GetAttribute("RoundMode")
+		local endsAt = Workspace:GetAttribute("RoundEndsAt")
+		top.Mode.Text = if type(modeId) == "string" then Localization.format(`Mode.{modeId}.Name`) else ""
+		top.Timer.Text = HudFormat.clock(if type(endsAt) == "number" then endsAt - Workspace:GetServerTimeNow() else 0)
+		if modeHasLives(modeId) then
+			top.Info.Text = Localization.format("Hud.Left", { fighterCount() })
+		else
+			local kos, falls = player:GetAttribute("KOs"), player:GetAttribute("Falls")
+			local score = (if type(kos) == "number" then kos else 0) - (if type(falls) == "number" then falls else 0)
+			top.Info.Text = Localization.format("Hud.Score", { score })
+		end
+	end
+end
+
+local function refreshBottom()
+	local status = player:GetAttribute("RoundStatus")
+	bottom.Visible = status ~= "Spectating"
+	local fill = HudFormat.dashFill(DashController.cooldownLeft(), Config.Combat.Dash.Cooldown)
+	if fill >= 1 then
+		dash.Fill.Transparency = NumberSequence.new(0)
+	elseif fill <= 0 then
+		dash.Fill.Transparency = NumberSequence.new(0.75)
+	else
+		dash.Fill.Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0),
+			NumberSequenceKeypoint.new(fill, 0),
+			NumberSequenceKeypoint.new(math.min(fill + 0.001, 1), 0.75),
+			NumberSequenceKeypoint.new(1, 0.75),
+		})
+	end
+
+	local character = player.Character
+	local inRound = status == "Playing" or status == "Respawning"
+	vitals.Frame.Visible = inRound
+	if inRound then
+		local hp = character and character:GetAttribute("HP")
+		local percent = character and character:GetAttribute("Percent")
+		local classic = type(hp) == "number"
+		vitals.Classic.Visible = classic
+		vitals.Percent.Visible = not classic
+		if type(hp) == "number" then
+			local maxHealth = Config.Modes.List.Classic.MaxHealth or 100
+			local share = math.clamp(hp / maxHealth, 0, 1)
+			vitals.HpFill.Size = UDim2.fromScale(share, 1)
+			vitals.HpFill.BackgroundColor3 = HP_LOW_COLOR:Lerp(HP_COLOR, share)
+			vitals.HpLabel.Text = Localization.format("Combat.HP", { math.ceil(hp) })
+			local lives = player:GetAttribute("Lives")
+			for index, pip in vitals.Lives do
+				pip.BackgroundTransparency = if type(lives) == "number" and index <= lives then 0 else 0.75
+			end
+		else
+			local value = if type(percent) == "number" then percent else 0
+			vitals.Percent.Text = Localization.format("Combat.Percent", { math.floor(value + 0.5) })
+			vitals.Percent.TextColor3 = rgb(HudFormat.percentColor(value))
+		end
+	end
+
+	local heldType = character and character:GetAttribute("HeldProp")
+	held.Frame.Visible = type(heldType) == "string"
+	if type(heldType) == "string" then
+		held.Name.Text = Localization.format(`Prop.{heldType}.Name`)
+	end
+end
+
+local function addFeedLine(killerName: string?, victimName: string, weapon: string?)
+	local text
+	if killerName == nil then
+		text = Localization.format("Feed.SelfKO", { victimName })
+	elseif weapon and Config.Props.Types[weapon] then
+		local args: { any } = { killerName, victimName, Localization.format(`Prop.{weapon}.Name`) }
+		text = Localization.format("Feed.KOWith", args)
+	else
+		text = Localization.format("Feed.KO", { killerName, victimName })
+	end
+	feedCount += 1
+	local label = Kit.label(feed, text, UDim2.fromScale(1, 0.18), 18)
+	label.TextXAlignment = Enum.TextXAlignment.Right
+	label.TextStrokeTransparency = 0.4
+	label.LayoutOrder = -feedCount -- newest on top
+	local lines = {}
+	for _, child in feed:GetChildren() do
+		if child:IsA("TextLabel") then
+			table.insert(lines, child)
+		end
+	end
+	table.sort(lines, function(a: TextLabel, b: TextLabel): boolean
+		return a.LayoutOrder < b.LayoutOrder
+	end)
+	for index = FEED_MAX + 1, #lines do
+		lines[index]:Destroy()
+	end
+	task.delay(FEED_LIFETIME, function()
+		label:Destroy()
+	end)
+end
+
+function HudController.Start(_self: any)
+	gui = Kit.screen("Hud", 2)
+	gui.Enabled = true
+	buildTop()
+	buildFeed()
+	buildBottom()
+	Net.on("KillFeed", addFeedLine)
+	local elapsed = 0
+	RunService.Heartbeat:Connect(function(deltaTime: number)
+		elapsed += deltaTime
+		if elapsed >= REFRESH_INTERVAL then
+			elapsed = 0
+			refreshTop()
+			refreshBottom()
+		end
+	end)
+end
+
+return HudController
