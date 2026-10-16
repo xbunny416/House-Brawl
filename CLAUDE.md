@@ -6,10 +6,11 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 
 - **Build order approved** by the owner on 2026-10-15, with maps built from code (blockouts from layout data, art
   pass later) and data saving via ProfileStore.
-- **Current phase:** Phase 1. **Waiting on:** the owner's Studio playtest of 1.1–1.7 (lobby + Broken Highway
+- **Current phase:** Phase 1. **Waiting on:** the owner's Studio playtest of 1.1–1.8 (lobby + Broken Highway
   blockouts, data saving, input on PC / gamepad / Device Emulator touch, camera, Shift Lock, camera shake; combat on
-  the Training Yard dummy and 2-player PvP in the arena; dash, air dash across gaps, Perfect Dodge). The owner chose
-  to continue building before playtesting. **Next step:** 1.8 Rounds + modes.
+  the Training Yard dummy and 2-player PvP in the arena; dash, air dash across gaps, Perfect Dodge; the full round
+  loop: vote, Classic / Casual, respawn + shield, spectate, results). The owner chose to continue building before
+  playtesting. **Next step:** 1.9 Props.
 
 ## How this repo works
 
@@ -33,9 +34,10 @@ Roblox Studio MCP server).
 | Path | Becomes in Studio | Contents |
 | --- | --- | --- |
 | `src/shared/` | `ReplicatedStorage.Shared` | Config, formulas, settings rules, types, networking, utilities |
-| `src/server/` | `ServerScriptService.Server` | `Main.server.luau` + `Services/` (one module per system) + `Combat/` (pure combat rules) |
+| `src/server/` | `ServerScriptService.Server` | `Main.server.luau` + `Services/` (one module per system) + `Combat/`, `Round/` (pure rules) |
 | `src/client/` | `StarterPlayer.StarterPlayerScripts.Client` | `Main.client.luau` + `Controllers/` (input, HUD, camera, VFX) |
-| `src/client/Lib/` | `...Client.Lib` | Pure client logic tested by specs (action map, touch layout, camera shake) |
+| `src/client/Lib/` | `...Client.Lib` | Pure client logic tested by specs (action map, touch layout, camera shake, dash rules) |
+| `src/client/Ui/` | `...Client.Ui` | `Kit`: shared look (colors, fonts) and builders for panels, labels, buttons |
 | `src/localization/GameStrings.csv` | `LocalizationService.GameStrings` | Every player-facing string (Key, Source, Context, Example) |
 | `src/server/Vendor/` | `ServerScriptService.Server.Vendor` | Third-party modules kept as published (see `licenses/`) |
 | `maps/layouts/` | — | Map layouts as code (platform sizes, spots, decor) — the source of truth for blockouts |
@@ -93,6 +95,10 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
 - **Combat:** every hit goes through `Services/CombatService`, which owns one `Server/Combat/Fighter` per combatant
   (player characters register automatically; anything else, like the dummy, calls `CombatService.register`). UI
   reads the character attributes `HP` (modes with HP) and `Percent`; listen to `CombatService.KnockedOut` for KOs.
+- **Rounds:** `Services/RoundService` owns the loop, the scoreboard (`Server/Round/Scoreboard`) and round stats.
+  UI reads attributes: Workspace `RoundState`, `RoundEndsAt` (compare with `Workspace:GetServerTimeNow()`),
+  `RoundMode`, `RoundMap`, `PlayersNeeded`; Player `RoundStatus`, `Lives`, `KOs`, `Falls`. Rewards and quests hook
+  `RoundService.RoundEnded`.
 - **Settings** (Settings menu values) are read and changed through `Controllers/SettingsController`; the server
   validates each change with `Shared/Settings` (`Services/SettingsService`). New numeric settings need a range in
   `Config.Data.SettingRanges`.
@@ -138,7 +144,7 @@ any errors are fixed before the next item.
 - [x] **1.6 Combat core** — Punch chain, charged Shove, server hitboxes, HP/Percent, knockback + hitstun, KO credit
       (6 s), launch trail flag.
 - [x] **1.7 Dash + Perfect Dodge** — server-timed i-frames, air dash once per jump, dodge bonus.
-- [ ] **1.8 Rounds + modes** — vote (map + mode, 15 s) → teleport → Classic / Casual rules → results → lobby; respawn,
+- [x] **1.8 Rounds + modes** — vote (map + mode, 15 s) → teleport → Classic / Casual rules → results → lobby; respawn,
       spawn shield, spectate, late joiners, AFK + 60 s participation tracking.
 - [ ] **1.9 Props** — spawn spots, grab/carry/throw (server-checked range and rate), weight classes, explosive barrel,
       40-prop cap, despawn.
@@ -188,6 +194,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 1.5 InputController (one action map: keyboard/mouse, gamepad, touch arc around the jump button), CameraController (zoom 8–30, Shift Lock on Right Shift, camera shake), validated settings changes (SettingsService/SettingsController), Studio input log + debug keys; LF line endings | #6 |
 | 2026-10-16 | 1.6 CombatService (Punch chain, charged Shove, server hitboxes, HP / Percent, knockback + hitstun, KO credit, trail flag) on a pure Fighter state machine; client knockback (Launch) + heavy-hit camera shake; right-drag cancels a Shove; Training Yard dummy; Studio hit log + hitbox flashes | #7 |
 | 2026-10-16 | 1.7 Dash (client-moved, server-timed invulnerability, cooldown tolerance, once per stay in the air, ends a launch) + Perfect Dodge (one per dash, +25% knockback on the next hit within 2 s, `PerfectDodged` signal) | #8 |
+| 2026-10-16 | 1.8 RoundService (Waiting → map + mode vote → Classic / Casual round → results), pure Vote + Scoreboard, respawn via Roblox respawn + spawn shield, spectate (ReplicationFocus), Casual late join + passive gain, AFK / active-time tracking, round stats + analytics; vote, results, spectate and status UI (Ui/Kit); Studio solo rounds | #9 |
 
 ## Decisions and interpretations
 
@@ -226,6 +233,17 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   to 0.15 s before the cooldown ends (`Dash.CooldownTolerance`, network jitter). A dash cancels a Shove charge, and a
   dash after hitstun ends a launch (recovery). One Perfect Dodge per dash; dodged hits give no KO credit. The bonus
   applies to every victim of the dodger's next landed swing, then is used up.
+- **Rounds (1.8):** a KO kills the character and Roblox respawns it after `Players.RespawnTime` (= RespawnDelay 3 s);
+  RoundService then moves it into the arena with a fresh fighter and a 2 s shield (ForceField look). Resetting your
+  character in the arena is a fall. Classic standings at time-out: fighters still in (most KOs, then fewest falls)
+  above the eliminated (later = higher); Casual: score, then KOs, then fewest falls; ties share a placement. Only
+  active (non-AFK) time counts toward the 60 s; AFK players (no input 45 s, reported by `Activity` pings) sit out the
+  next round. Casual: anyone not in the round (late joiner, AFK-excluded) joins 3 s after being ready and active.
+  "Completed" = still in the server at the end (eliminated Classic players included). The Wins stat counts only
+  wins that would earn placement rewards (60 s active, not AFK). Spectators (Classic: out of lives, late joiners,
+  AFK-excluded) watch a fighter still in; the server streams that fighter's area to them (`ReplicationFocus`).
+  Spectate cycles with Z / X, D-pad or the bar's arrows. The 1.4 Studio arena-preview pad was removed (rounds
+  replace it).
 
 ## Known bugs / open items
 
@@ -233,13 +251,17 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Knockback feel is untested in Studio** (PlatformStand + upright hold, landing check). Tune in the playtest:
   `Config.Combat.Knockback` (force), `Launch.MaxTime`, `Hitstun`. Exploiters can ignore knockback on their own
   character (clients simulate it — a Roblox limit); server-side movement checks are a later hardening task.
-- **Falls and KOs before rounds exist (1.8):** falling out of the arena or reaching 0 HP is a KO (credit logged) and
-  sends you back to the lobby with full HP / 0%. The round system replaces `CombatService.setKnockOutHandler` and
-  `MapService.setFallHandler` (and calls `CombatService.knockOut` itself). Outside rounds the mode is
-  `Config.Modes.Default` (set it to `"Casual"` to test Casual).
+- **Rounds in Studio:** `Config.Dev.StudioMinPlayers = 1` lets a round start with you alone (vote → arena → results
+  → vote ...); set it to 2 to stay in the lobby, e.g. for the training dummy. Output shows `[Round]` lines (state
+  changes, KOs, joins, winner). PvP needs two players: Test > Clients and Servers > 2 players. A solo Classic round
+  ends when you lose your 3 lives; a solo Casual round runs the full 3:00.
 - **Studio combat debug:** `Config.Dev.LogCombat` prints every hit and KO; `Config.Dev.ShowHitboxes` flashes each
-  attack box (red hit, grey miss). Studio only. PvP needs two players: Test > Clients and Servers > 2 players, then
-  both use the teal pad to the arena.
+  attack box (red hit, grey miss). Studio only.
+- **Round rewards** (Scrap / XP) are not paid yet: `RoundService.RoundEnded` hands the standings (placement, KO Scrap,
+  Perfect Dodges, active seconds, AFK) to step 2.1. Lifetime stats (KOs, Falls, RingOuts, PerfectDodges, Wins,
+  RoundsPlayed, RoundsCompleted) are already counted in rounds.
+- **The vote, results, spectate bar and status line are plain first versions** (`src/client/Ui/Kit`); the round HUD
+  (1.12) and the art/VFX passes restyle them. The lobby's CRT-TV vote screens from the bible are an art-pass item.
 - **Gamepad Start / Select** (Menu / Scoreboard in the bible) may be kept by Roblox (Start opens the Roblox menu,
   Select toggles UI navigation). Check in the gamepad playtest (`[Input] Menu began` in Output); if they never
   arrive, pick other buttons in `Config.Controls.Gamepad` (owner's call).
@@ -254,12 +276,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   (`Config.Data.UseMockInStudio = true` forces the in-memory store even with access on).
 - **Arena gaps** of 9–12 studs need a jump + air dash (1.7); worth confirming every gap in the playtest.
 - **Perfect Dodge feedback** (blue flash, chime, "+5") comes with VFX/SFX/HUD (2.7, 2.8, 1.12); for now Studio's
-  Output shows `PERFECT DODGE`. Its +5 Scrap and the `PerfectDodges` stat are paid/counted by the round system from
-  `CombatService.PerfectDodged` (1.8 / 2.1).
+  Output shows `PERFECT DODGE`. Rounds count them (stat + standings); the +5 Scrap is paid with round rewards (2.1).
 - **Dash movement is client-side** (clients simulate their character), so the once-per-jump air rule is enforced by
   the client; the server enforces the cooldown and hitstun, which gate the invulnerability and Perfect Dodge.
-- **Falling off the arena** currently returns you to the lobby (MapService default); the round system (1.8) will
-  take over with lives/respawns.
-- **Studio arena preview:** `Config.Dev.StudioArenaPreview` loads Broken Highway in Studio playtests and adds a
-  teal teleport pad in front of the lobby spawns. Set it to nil to turn it off. Never active in live servers.
 - **Owner's Roblox UserId** is needed for `Config.Dev.AllowedUserIds` before live testing of the developer panel.

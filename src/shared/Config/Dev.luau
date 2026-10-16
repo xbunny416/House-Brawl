@@ -5,8 +5,9 @@ return {
 	AllowedUserIds = {} :: { number },
 	-- Anyone can use the panel inside Roblox Studio playtests (never in live servers).
 	AllowInStudio = true,
-	-- Studio playtests only: load this arena at startup and add a teleport pad in the lobby. nil to disable.
-	StudioArenaPreview = "BrokenHighway" :: string?,
+	-- Studio playtests only: players needed to start a round (live servers use Config.Round.MinPlayers). 1 lets you
+	-- play rounds alone; set it to 2 to stay in the lobby (e.g. to practise on the training dummy).
+	StudioMinPlayers = 1,
 	-- Studio playtests only: print every input action and device change to Output.
 	LogInput = true,
 	-- Studio playtests only: print every hit (damage, Percent, knockback, hitstun) and KO to Output.

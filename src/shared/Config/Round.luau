@@ -12,7 +12,8 @@ return {
 
 	Participation = {
 		MinSeconds = 60, -- must be active in the round this long for placement + completion rewards
-		AFKTimeout = 45, -- no input for this long = AFK (no rewards)
+		AFKTimeout = 45, -- no input for this long = AFK (no rewards, not put into the next round)
+		ActivityPingInterval = 10, -- clients report "had input" at most this often
 	},
 
 	Crumble = {

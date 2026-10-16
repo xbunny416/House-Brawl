@@ -48,3 +48,18 @@ Controls.Menu,Menu,Key hint for opening the menu,
 Training.Dummy.Name,Training Dummy,Label above the punching dummy in the lobby's Training Yard,
 Combat.Percent,{1}%,"A fighter's Percent (higher = flies further when hit)",120%
 Combat.HP,{1} HP,A fighter's remaining health points (Classic mode),64 HP
+Controls.SpectatePrevious,<,Spectate bar button / key hint: watch the previous fighter,
+Controls.SpectateNext,>,Spectate bar button / key hint: watch the next fighter,
+Vote.Title,Vote for the next round,Title of the map and mode vote panel,
+Vote.TimeLeft,{1}s,Seconds left to vote,12s
+Vote.Votes,Votes: {1},Number of votes for a map or mode,Votes: 3
+Results.Title,Round over,Title of the round results panel,
+Results.Winner,{1} wins!,Winner line on the results panel (one or more names),Alex wins!
+Results.NoWinner,No winner this time,Results panel when nobody placed first,
+Results.RowClassic,{1}. {2}    KOs {3} · Falls {4},"Results row in Classic: placement, name, KOs, falls","1. Alex    KOs 4 · Falls 1"
+Results.RowCasual,{1}. {2}    Score {3} · KOs {4} · Falls {5},"Results row in Casual: placement, name, score, KOs, falls","1. Alex    Score 3 · KOs 4 · Falls 1"
+Spectate.Watching,Spectating {1},Spectate bar: the fighter being watched,Spectating Alex
+Spectate.Nobody,Waiting for the next round,Spectate bar when nobody is left to watch,
+Round.Waiting,Waiting for players ({1}/{2}),"Top status line before a round can start: players here, players needed",Waiting for players (1/2)
+Round.Timer,{1}  ·  {2},"Top status line during a round: mode name, time left",Casual  ·  2:31
+Round.TimerLives,{1}  ·  {2}  ·  Lives {3},"Top status line during a Classic round: mode name, time left, your lives",Classic  ·  2:31  ·  Lives 2

@@ -14,8 +14,9 @@
 	BonusWindow gets BonusKnockbackMultiplier). The Perfect Dodge Scrap is paid with the round rewards.
 
 	Every combatant has a Fighter and the character attributes HP (modes with HP) and Percent, which UI reads.
-	Round rules (lives, respawns, scoring) live elsewhere: the round system replaces the knock-out handler and the
-	MapService fall handler (step 1.8). Until then a knocked-out player returns to the lobby with full HP and 0%.
+	Round rules (lives, respawns, scoring) live in RoundService, which replaces the knock-out handler and the
+	MapService fall handler. The defaults here (KO = back to the lobby with full HP and 0%) only run without it.
+	The spawn shield (CombatService.shield) blocks hits until it runs out or the fighter attacks.
 ]]
 local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
@@ -49,6 +50,7 @@ type Swing = {
 }
 
 local DUMMY_TAG = "TrainingDummy"
+local SHIELD_NAME = "SpawnShield"
 local HITBOX_FLASH_TIME = 0.25
 local HITBOX_HIT_COLOR = Color3.fromHex("#FF3B30")
 local HITBOX_MISS_COLOR = Color3.fromHex("#B0B0B0")
@@ -130,6 +132,40 @@ end
 function CombatService.resetFighter(character: Model)
 	if fighters[character] then
 		CombatService.register(character)
+	end
+end
+
+local function removeShieldVisual(character: Model)
+	local visual = character:FindFirstChild(SHIELD_NAME)
+	if visual then
+		visual:Destroy()
+	end
+end
+
+-- Spawn shield: hits do nothing for `seconds` (ends early when the fighter attacks). Shown as a ForceField.
+function CombatService.shield(character: Model, seconds: number)
+	local fighter = fighters[character]
+	if fighter == nil then
+		return
+	end
+	Fighter.shield(fighter, os.clock(), seconds)
+	removeShieldVisual(character)
+	local visual = Instance.new("ForceField")
+	visual.Name = SHIELD_NAME
+	visual.Parent = character
+	task.delay(seconds, function()
+		if visual.Parent and not Fighter.isShielded(fighter, os.clock()) then
+			visual:Destroy()
+		end
+	end)
+end
+
+-- Adds Percent outside of hits (Casual passive gain).
+function CombatService.addPercent(character: Model, amount: number)
+	local fighter = fighters[character]
+	if fighter and not knockedOut[character] then
+		Fighter.addPercent(fighter, amount)
+		syncAttributes(character, fighter)
 	end
 end
 
@@ -249,13 +285,13 @@ local function showHitbox(box: CFrame, size: Vector3, hit: boolean)
 	Debris:AddItem(part, HITBOX_FLASH_TIME)
 end
 
--- A hit met a dashing victim: no damage or knockback. A Perfect Dodge is announced.
+-- A hit met a dashing or shielded victim: no damage or knockback. A Perfect Dodge is announced.
 local function dodged(attacker: Player, victim: Model, swing: Swing, evade: Fighter.Evade)
 	if evade == "Perfect" then
 		CombatService.PerfectDodged:Fire(victim, attacker)
 	end
 	if isStudioFlag(Config.Dev.LogCombat) then
-		local kind = if evade == "Perfect" then "PERFECT DODGE" else "dodged"
+		local kind = if evade == "Perfect" then "PERFECT DODGE" elseif evade == "Shielded" then "shielded" else "dodged"
 		print(`[Combat] {victim.Name} {kind}: {attacker.Name} {swing.Label}`)
 	end
 end
@@ -277,7 +313,7 @@ local function applyHit(
 	end
 	local now = os.clock()
 	local evade: Fighter.Evade = Fighter.evade(fighter, now)
-	if evade == "Perfect" or evade == "Dodged" then
+	if evade == "Perfect" or evade == "Dodged" or evade == "Shielded" then
 		dodged(attacker, victim, swing, evade)
 		return false
 	end
@@ -375,6 +411,7 @@ local function onPunch(player: Player)
 	if hitIndex == nil then
 		return
 	end
+	removeShieldVisual(character) -- attacking ended the spawn shield
 	local attack = Formulas.resolveAttack(styleId, "Punch")
 	task.delay(
 		attack.Windup,
@@ -402,6 +439,7 @@ local function onShove(player: Player, phase: string)
 	if phase == "Start" then
 		if Fighter.startShove(fighter, now) then
 			setCharging(character, true)
+			removeShieldVisual(character) -- attacking ended the spawn shield
 		end
 	elseif phase == "Cancel" then
 		if Fighter.cancelShove(fighter) then
