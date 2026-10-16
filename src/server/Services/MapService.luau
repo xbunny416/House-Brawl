@@ -4,7 +4,7 @@
 
 	Arena templates live in ServerStorage.Arenas (generated from maps/layouts, see maps/build.luau). Only one arena is
 	in Workspace at a time. Gameplay markers inside maps are tagged parts:
-	  SpawnPoint, PropSpot, ExplosiveSpot, StructureSpot (arena platforms) · LobbySpawn, Training* (lobby).
+	  SpawnPoint, PropSpot, ExplosiveSpot, StructureSpot (arena platforms) · LobbySpawn (lobby).
 	Markers are visible in Edit mode for level design and hidden here at runtime.
 ]]
 local CollectionService = game:GetService("CollectionService")

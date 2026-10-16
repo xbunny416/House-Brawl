@@ -13,8 +13,8 @@ type MapsConfig = {
 }
 
 local Maps: MapsConfig = {
-	Lobby = "RustDiner",
-	-- World positions (X, Y, Z) of the lobby roof centre and of every arena's centre platform. They are far apart so
+	Lobby = "Hideout",
+	-- World positions (X, Y, Z) of the lobby floor centre and of every arena's centre platform. They are far apart so
 	-- streaming only sends what is near the player (arena platforms stay Persistent).
 	LobbyOrigin = { 0, 100, 0 },
 	ArenaOrigin = { 0, 100, -800 },

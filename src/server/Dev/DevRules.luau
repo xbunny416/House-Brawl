@@ -18,6 +18,7 @@ DevRules.Commands = {
 	"ForceMode",
 	"Crumble",
 	"SpawnProp",
+	"SpawnDummy",
 	"SetPercent",
 	"SetHealth",
 	"SetStyle",

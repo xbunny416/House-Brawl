@@ -119,21 +119,25 @@ Not used. No pets, eggs, or paid random items.
   fog far below.
 - Lobby → (vote) → arena via server-side teleport of characters within the same place. After the round, everyone
   returns to the Lobby. Arenas live in ServerStorage; only the active one is in Workspace.
-- All maps free. Players enter the arena only when the server starts a round. Late joiners spectate until next round
-  (Casual: may join mid-round after the 3 s respawn).
+- All maps free. Players enter the arena only when the server starts a round, and only if they stand on the lobby's
+  **join pad** (in front of the ARENA door) when it starts; everyone else stays in the lobby (Shop, Locker ...).
+  Late joiners stay in the lobby too (Casual: stepping on the pad joins the running round after the 3 s respawn).
 
 | Zone | Description |
 | --- | --- |
-| Lobby — "Rust Diner" rooftop | Shop, Locker, Quest board, leaderboards, Training Yard |
+| Lobby — "The Hideout" (enclosed hideout bar) | Shop (bar counter), Locker, Quest board, leaderboards, join pad |
 | Map 1 — Broken Highway | Shattered overpass chunks, abandoned cars, road signs |
 | Map 2 — Junkyard Isles | Stacked car and container islands over toxic sludge |
 | Map 3 — Neon Motel | Sinking motel rooftops, flickering retro neon, pool on one roof |
 
 ### 3.2 Visual & spatial guidelines
 
-**Lobby (Rust Diner):** center — retro diner counter with the Shop NPC (scavenger mechanic), map/mode vote screens as
-old CRT TVs, big neon "JUNKYARD BRAWL" sign. Perimeter — Locker booth, Quest board (cork board), leaderboard
-billboards, Codes jukebox, Training Yard ramp with a dummy and a small gap to practise dashing.
+**Lobby (The Hideout):** an enclosed hideout bar (owner's change, 2026-10-16: a closed space, not the open Rust
+Diner rooftop; no Training Yard). North — the bar counter with the Shop NPC (the bartender), bottle shelves, map vote
+CRT TVs hanging over the bar and mode vote TVs on the counter ends, big neon "JUNKYARD BRAWL" sign. East — the steel
+ARENA door with the glowing join pad. West — Locker booth, Codes jukebox, Quest board (cork board). South —
+leaderboard screens and the spawns. Pool table, booths, high tables, crates and hanging lamps; brick walls, steel
+beams, neon trim.
 
 **Broken Highway arena:**
 
@@ -160,8 +164,8 @@ billboards, Codes jukebox, Training Yard ramp with a dummy and a small gap to pr
 
 ### 3.3 Combat rules
 
-- **No NPC enemies.** Only the Training Yard dummy (stands still, shows Percent, respawns 2 s after falling 4+ studs
-  below its spot or reaching 0 HP; anyone can hit it, also in the Lobby).
+- **No NPC enemies.** Only the practice dummy, a developer-panel test target (stands still, shows Percent, respawns
+  2 s after falling 4+ studs below its place or reaching 0 HP; anyone can hit it, also in the Lobby).
 - **Classic:** 100 HP, 3 lives, 3 s respawn with 2 s spawn shield. Out of lives = spectate until round end.
 - **Casual:** no HP, Percent shown above head and in HUD, unlimited respawns, Percent resets to 0% on respawn.
 - **KO credit:** last player who hit you within 6 s before you fell.
@@ -290,9 +294,10 @@ panel.
 
 ## 8. Retention & social
 
-- **Onboarding (first 2 min):** spawn in Training Yard: move → punch dummy → shove it off a ledge → grab a chair and
-  throw it → dash across a gap. Reward 200 Scrap + "Rookie" title, then auto-join next round. Returning players skip
-  (replay button in Settings). First round: tips for grabbing and dashing.
+- **Onboarding (first 2 min):** *to be redesigned* — the Training Yard it used (move → punch dummy → shove it off a
+  ledge → grab a chair and throw it → dash across a gap) was removed with the lobby rework (2026-10-16). Still
+  planned: reward 200 Scrap + "Rookie" title, returning players skip (replay button in Settings), first round: tips
+  for grabbing and dashing.
 - **Login streak (7 days):** 50 / 75 / 100 / 150 / 200 / 250 Scrap, Day 7 = weekly rotating cosmetic. Missing a day
   resets to Day 1.
 - **Playtime:** +25 Scrap every 10 minutes online, up to 6 times per day.
@@ -313,7 +318,7 @@ panel.
   Dash, knockback/Percent, Classic and Casual rules, round manager (vote → round → results), grab/throw props,
   breakable structures, crumbling platforms, basic HUD on mobile/PC/gamepad.
 - **Phase 2 — Progression & content:** Scrap/XP rewards, levels and ranks, 3 extra styles, cosmetics + Locker, Shop
-  with daily rotation, Junkyard Isles + Neon Motel, VFX/SFX pass, animations, Training Yard tutorial.
+  with daily rotation, Junkyard Isles + Neon Motel, VFX/SFX pass, animations, tutorial + first-round tips.
 - **Phase 3 — Monetization, retention & polish:** game passes, dev products, private server settings, Premium perks,
   daily rewards, quests, badges, leaderboards, party system, codes, analytics, developer panel, low-end performance
   pass, localization check.

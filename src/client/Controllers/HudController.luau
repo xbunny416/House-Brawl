@@ -1,8 +1,10 @@
 --!strict
 --[[
 	HudController — the in-game HUD (bible §5.1), the same layout on mobile, PC and gamepad:
-	  * Top bar: "Waiting for players (1/2)", or during a round the mode badge, time left, and fighters left
-	    (Classic) or your score (Casual). Hidden while the vote and results panels are up.
+	  * Top bar: before a round, how the lobby join pad stands ("Step on the ARENA pad to play (1/2)", "You're in!
+	    ..."; during the vote only for players off the pad); during a round the mode badge, time left, and fighters
+	    left (Classic) or your score (Casual; players in the lobby see how many are fighting), with a line under it
+	    for players in the lobby (join now / next round). Hidden while the results panel is up.
 	  * Kill feed (top right): who KO'd whom, newest first, each line fades after FEED_LIFETIME.
 	  * Bottom bar: the dash cooldown ring, your vitals while in a round (Classic: HP bar + lives; Casual: Percent in
 	    white → yellow → red), and the held prop with Throw / Drop key hints.
@@ -45,6 +47,7 @@ local top = {} :: {
 	Mode: TextLabel,
 	Timer: TextLabel,
 	Info: TextLabel,
+	Hint: TextLabel,
 }
 local feed: Frame
 local feedCount = 0
@@ -110,6 +113,15 @@ local function buildTop()
 	local info = Kit.label(row, "", UDim2.fromScale(0.34, 1), 20)
 	info.LayoutOrder = 3
 	top.Info = info
+
+	-- Under the top bar during a round, for players in the lobby: how the join pad works right now.
+	local hint = Kit.label(gui, "", UDim2.fromScale(0.4, 0.035), 18)
+	hint.AnchorPoint = Vector2.new(0.5, 0)
+	hint.Position = UDim2.fromScale(0.5, 0.1)
+	hint.TextColor3 = Kit.Colors.Accent
+	hint.TextStrokeTransparency = 0.3
+	hint.Visible = false
+	top.Hint = hint
 end
 
 local function buildFeed()
@@ -337,21 +349,56 @@ local function refreshProfile()
 	profileLabel.Text = Localization.format("Hud.Profile", args)
 end
 
+local function attribute(instance: Instance, name: string): string?
+	local value = instance:GetAttribute(name)
+	return if type(value) == "string" then value else nil
+end
+
+local function number(instance: Instance, name: string): number
+	local value = instance:GetAttribute(name)
+	return if type(value) == "number" then value else 0
+end
+
+-- Players fighting in the running round.
+local function inRoundCount(): number
+	local count = 0
+	for _, other in Players:GetPlayers() do
+		local status = other:GetAttribute("RoundStatus")
+		if status == "Playing" or status == "Respawning" then
+			count += 1
+		end
+	end
+	return count
+end
+
 local function refreshTop()
-	local state = Workspace:GetAttribute("RoundState")
-	top.Panel.Visible = state == "Waiting" or state == "Playing"
-	top.Waiting.Visible = state == "Waiting"
+	local state = attribute(Workspace, "RoundState")
+	local status = attribute(player, "RoundStatus")
+	local modeId = attribute(Workspace, "RoundMode")
+	local mode = if modeId then Config.Modes.List[modeId] else nil
+	local queueKey =
+		HudFormat.queueKey(state, status, attribute(player, "QueueStatus"), mode ~= nil and mode.JoinMidRound)
+	top.Panel.Visible = state == "Waiting" or state == "Playing" or (state == "Voting" and queueKey ~= nil)
+	top.Waiting.Visible = state ~= "Playing"
 	top.Round.Visible = state == "Playing"
-	if state == "Waiting" then
+	top.Hint.Visible = state == "Playing" and queueKey ~= nil
+	local endsAt = Workspace:GetAttribute("RoundEndsAt")
+	local left = if type(endsAt) == "number" then endsAt - Workspace:GetServerTimeNow() else 0
+	if state == "Waiting" and queueKey then
 		local needed = Workspace:GetAttribute("PlayersNeeded")
-		top.Waiting.Text = Localization.format("Round.Waiting", { #Players:GetPlayers(), needed or 2 })
+		top.Waiting.Text = Localization.format(queueKey, { number(Workspace, "PlayersQueued"), needed or 2 })
+	elseif state == "Voting" and queueKey then
+		top.Waiting.Text = Localization.format(queueKey, { math.max(math.ceil(left), 0) })
 	elseif state == "Playing" then
-		local modeId = Workspace:GetAttribute("RoundMode")
-		local endsAt = Workspace:GetAttribute("RoundEndsAt")
-		top.Mode.Text = if type(modeId) == "string" then Localization.format(`Mode.{modeId}.Name`) else ""
-		top.Timer.Text = HudFormat.clock(if type(endsAt) == "number" then endsAt - Workspace:GetServerTimeNow() else 0)
+		top.Mode.Text = if modeId then Localization.format(`Mode.{modeId}.Name`) else ""
+		top.Timer.Text = HudFormat.clock(left)
+		if queueKey then
+			top.Hint.Text = Localization.format(queueKey)
+		end
 		if modeHasLives(modeId) then
 			top.Info.Text = Localization.format("Hud.Left", { fighterCount() })
+		elseif status == "Lobby" then
+			top.Info.Text = Localization.format("Hud.Fighting", { inRoundCount() })
 		else
 			local kos, falls = player:GetAttribute("KOs"), player:GetAttribute("Falls")
 			local score = (if type(kos) == "number" then kos else 0) - (if type(falls) == "number" then falls else 0)

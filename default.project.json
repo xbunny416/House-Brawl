@@ -39,7 +39,7 @@
 				"StreamingTargetRadius": 256
 			},
 			"Lobby": {
-				"$path": "maps/generated/RustDiner.rbxmx"
+				"$path": "maps/generated/Hideout.rbxmx"
 			}
 		}
 	}

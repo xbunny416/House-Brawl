@@ -4,9 +4,9 @@
 	explosive barrels, the per-zone prop cap and despawning.
 
 	  * Spots: arena PropSpot (a random Config.Props.LooseSpotTypes type), ExplosiveSpot (ExplosiveBarrel) and the
-	    lobby's TrainingPropSpot (its PropType attribute). A spot gets a prop when its map is in Workspace, and a new
-	    one SpotRespawnTime (ExplosiveSpotRespawnTime) after its prop was taken, while the zone has fewer than
-	    MaxActive props.
+	    lobby's LobbyPropSpot (its PropType attribute; none at the moment). A spot gets a prop when its map is in
+	    Workspace, and a new one SpotRespawnTime (ExplosiveSpotRespawnTime) after its prop was taken, while the zone
+	    has fewer than MaxActive props.
 	  * Grab (Grab remote / Grab action): the server picks the nearest free prop within GrabRange and welds it above
 	    the player's head (massless, no collisions); carrying slows them by the class's CarrySlow. Grab again to drop
 	    it in front of you. Getting hit or knocked out drops it. Holding blocks Shove.
@@ -702,7 +702,7 @@ function PropService.Init(_self: any)
 end
 
 function PropService.Start(_self: any)
-	for _, marker in CollectionService:GetTagged("TrainingPropSpot") do
+	for _, marker in CollectionService:GetTagged("LobbyPropSpot") do
 		if marker:IsA("BasePart") and marker:IsDescendantOf(Workspace) then
 			local typeId = marker:GetAttribute("PropType")
 			addSpot(marker, if type(typeId) == "string" then typeId else nil, "Lobby")

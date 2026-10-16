@@ -108,7 +108,7 @@ local Combat: CombatConfig = {
 	-- Camera shake intensity (0-1, scales Config.Controls.Camera.ShakeMagnitude) on heavy hits (Shove, punch finisher).
 	Feedback = { VictimShake = 1, AttackerShake = 0.6 },
 
-	-- Training Yard dummy (lobby): respawns this long after it is knocked out or falls this many studs below its spot.
+	-- Practice dummy (developer panel): back this long after a KO or a fall of this many studs below its place.
 	Dummy = { RespawnTime = 2, FallDistance = 4 },
 }
 

@@ -6,7 +6,7 @@ Mode.Classic.Name,Classic,Game mode name,
 Mode.Classic.Desc,100 HP and 3 lives. Last fighter standing wins.,Game mode description,
 Mode.Casual.Name,Casual,Game mode name,
 Mode.Casual.Desc,No HP. Knock rivals off for points. Unlimited respawns.,Game mode description,
-Map.RustDiner.Name,Rust Diner,Lobby name,
+Map.Hideout.Name,The Hideout,Lobby name (an enclosed hideout bar),
 Map.BrokenHighway.Name,Broken Highway,Arena name,
 Map.JunkyardIsles.Name,Junkyard Isles,Arena name,
 Map.NeonMotel.Name,Neon Motel,Arena name,
@@ -29,12 +29,13 @@ Rank.ApexScrapper,Apex Scrapper,Rank title (level 100),
 Data.LoadFailed,Your progress could not be loaded. Please rejoin in a moment.,Kick message when player data fails to load,
 Data.SessionEnded,Your progress was opened in another server. Please rejoin.,Kick message when another server takes over the player's data,
 Data.ServerOutdated,This server is running an older version. Please rejoin to play on the latest one.,Kick message when the player's data was saved by a newer game version,
-Lobby.Sign.Title,JUNKYARD BRAWL,Big neon sign above the lobby diner,
-Lobby.Sign.Shop,SHOP,Sign above the diner counter,
+Lobby.Sign.Title,JUNKYARD BRAWL,Big neon sign behind the lobby bar,
+Lobby.Sign.Shop,SHOP,Sign on the lobby bar counter,
 Lobby.Sign.Locker,LOCKER,Sign above the locker booth,
 Lobby.Sign.Codes,CODES,Sign above the codes jukebox,
+Lobby.Sign.Arena,ARENA,Sign above the lobby door to the arena,
+Lobby.Sign.Join,STAND HERE TO FIGHT,Signs at the lobby join pad (players on it join the next round),
 Lobby.Sign.Quests,QUESTS,Sign above the quest board,
-Lobby.Sign.TrainingYard,TRAINING YARD,Sign at the training area,
 Lobby.Sign.Leaderboard.Wins,TOP WINS,Leaderboard billboard title,
 Lobby.Sign.Leaderboard.KOs,TOP KOs,Leaderboard billboard title,
 Lobby.Sign.Leaderboard.Level,TOP LEVELS,Leaderboard billboard title,
@@ -45,7 +46,7 @@ Controls.Grab,Grab,Mobile button and key hint for grabbing or dropping a prop,
 Controls.Dash,Dash,Mobile button and key hint for the Dash action,
 Controls.Scoreboard,Scoreboard,Key hint for showing the round scoreboard,
 Controls.Menu,Menu,Key hint for opening the menu,
-Training.Dummy.Name,Training Dummy,Label above the punching dummy in the lobby's Training Yard,
+Training.Dummy.Name,Practice Dummy,Label above the practice dummy (spawned from the developer panel),
 Combat.Percent,{1}%,"A fighter's Percent (higher = flies further when hit)",120%
 Combat.HP,{1} HP,A fighter's remaining health points (Classic mode),64 HP
 Controls.SpectatePrevious,<,Spectate bar button / key hint: watch the previous fighter,
@@ -60,13 +61,21 @@ Results.RowClassic,{1}. {2}    KOs {3} · Falls {4},"Results row in Classic: pla
 Results.RowCasual,{1}. {2}    Score {3} · KOs {4} · Falls {5},"Results row in Casual: placement, name, score, KOs, falls","1. Alex    Score 3 · KOs 4 · Falls 1"
 Spectate.Watching,Spectating {1},Spectate bar: the fighter being watched,Spectating Alex
 Spectate.Nobody,Waiting for the next round,Spectate bar when nobody is left to watch,
-Round.Waiting,Waiting for players ({1}/{2}),"Top status line before a round can start: players here, players needed",Waiting for players (1/2)
+Round.Waiting,Step on the ARENA pad to play ({1}/{2}),"Top status line before a round, for players off the lobby join pad: players on the pad, players needed",Step on the ARENA pad to play (1/2)
+Round.WaitingIn,You're in! Waiting for players ({1}/{2}),"Top status line before a round, for players on the join pad: players on the pad, players needed",You're in! Waiting for players (1/2)
+Round.QueueAFK,You're on the pad: move to show you're here,Status line for a player standing on the join pad who has been idle too long (not counted),
+Round.Starting,Round starting in {1}s: step on the ARENA pad to join,"Top status line during the map vote, for players off the join pad (seconds left)",Round starting in 12s: step on the ARENA pad to join
+Round.JoinNow,Step on the ARENA pad to join the fight,Line under the top bar during a Casual round for players in the lobby,
+Round.Joining,Joining the fight...,Line under the top bar: the player is on the join pad and about to join the running round,
+Round.JoinNext,Step on the ARENA pad to play the next round,Line under the top bar during a Classic round for players in the lobby,
+Round.InNext,You're in the next round,Line under the top bar during a Classic round for players on the join pad,
 Controls.Throw,Throw,Mobile Attack button while holding a prop,
 Controls.Drop,Drop,Mobile Grab button while holding a prop,
 Hint.LeftClick,Click,Key hint for the left mouse button,
 Hint.RightClick,Right-click,Key hint for the right mouse button,
 Hud.Left,{1} left,"Top bar in Classic: fighters with lives left",4 left
 Hud.Score,Score {1},Top bar in Casual: your score (KOs minus falls),Score 3
+Hud.Fighting,{1} fighting,Top bar in Casual for players in the lobby: players in the round,6 fighting
 Feed.KO,{1} KO'd {2},"Kill feed: attacker, victim",Alex KO'd Sam
 Feed.KOWith,{1} KO'd {2} ({3}),"Kill feed: attacker, victim, prop used",Alex KO'd Sam (Chair)
 Feed.SelfKO,{1} fell,Kill feed: a fighter fell with nobody to credit,Sam fell
@@ -94,7 +103,8 @@ Dev.Crumble,Crumble,Developer panel button: crumble a platform now,
 Dev.NextMap,Next map,Developer panel section: force the next round's map,
 Dev.NextMode,Next mode,Developer panel section: force the next round's mode,
 Dev.ByVote,By vote,Developer panel button: let the vote decide again,
-Dev.SpawnProp,Spawn prop,Developer panel section: spawn a prop in front of you,
+Dev.SpawnProp,Spawn,Developer panel section: spawn a prop or the practice dummy in front of you,
+Dev.SpawnDummy,Dummy,Developer panel button: spawn the practice dummy in front of you,
 Dev.Me,Me,Developer panel section: set your own Percent / HP,
 Dev.Camera,Camera,Developer panel section: camera checks,
 Dev.TestShake,Test shake,Developer panel button: play a camera shake,

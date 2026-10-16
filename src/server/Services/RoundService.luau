@@ -3,21 +3,27 @@
 	RoundService — the round loop (bible §2.1 "Modes and round rules", §3.1, §3.3):
 	Waiting → Voting (map + mode, VoteTime) → Playing (RoundTime) → Results (ResultsTime) → Voting ...
 
-	  * Waiting: fewer than Config.Round.MinPlayers players are ready (Config.Dev.StudioMinPlayers in Studio).
-	  * Voting: up to Maps.VoteChoices enabled maps and every mode are on the ballot (Vote remote); ties are random.
-	  * Playing: the voted arena is loaded and every ready, non-AFK player is moved to a spawn point with a spawn
-	    shield. A KO (CombatService) costs the player their character: Roblox respawns it after RespawnDelay and it is
-	    moved back into the arena with a fresh fighter and a new shield. Classic: 3 lives, out of lives = spectate,
-	    last fighter standing wins. Casual: unlimited respawns, score = KOs − falls, passive Percent gain, and players
-	    not in the round join after RespawnDelay. Classic late joiners spectate.
+	  * Join pad: only players standing on the lobby's join pad (QueueZone tag, Server/Round/Queue) and not AFK are
+	    queued; everyone else stays in the lobby (Shop, Locker ...) through the round. Player attribute QueueStatus
+	    ("In" | "AFK" | "Off"), Workspace attribute PlayersQueued.
+	  * Waiting: fewer than Config.Round.MinPlayers players are queued (Config.Dev.StudioMinPlayers in Studio).
+	  * Voting: up to Maps.VoteChoices enabled maps and every mode are on the ballot (Vote remote; only players on the
+	    pad vote, and stepping off drops your vote); ties are random. Too few on the pad = back to Waiting.
+	  * Playing: the voted arena is loaded and every queued player is moved to a spawn point with a spawn shield. A KO
+	    (CombatService) costs the player their character: Roblox respawns it after RespawnDelay and it is moved back
+	    into the arena with a fresh fighter and a new shield. Classic: 3 lives, out of lives = spectate, last fighter
+	    standing wins. Casual: unlimited respawns, score = KOs − falls, passive Percent gain, and players who step on
+	    the pad join after RespawnDelay. In Classic the pad queues for the next round.
 	  * Results: everyone returns to the lobby; standings go to clients (RoundResults) and to RoundEnded, which the
 	    round rewards (step 2.1) pay from. Lifetime stats are counted here.
 	Participation: clients report input (Activity); AFK = no input for AFKTimeout. Only active time counts toward
 	the MinSeconds needed for placement rewards, and AFK players are left out of the next round.
 
-	UI reads attributes: Workspace RoundState / RoundEndsAt (server time) / RoundMode / RoundMap / PlayersNeeded;
-	Player RoundStatus ("Lobby" | "Playing" | "Respawning" | "Spectating") / Lives / KOs / Falls.
+	UI reads attributes: Workspace RoundState / RoundEndsAt (server time) / RoundMode / RoundMap / PlayersNeeded /
+	PlayersQueued; Player RoundStatus ("Lobby" | "Playing" | "Respawning" | "Spectating") / QueueStatus / Lives /
+	KOs / Falls.
 ]]
+local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -29,6 +35,7 @@ local Net = require(Shared:WaitForChild("Net"))
 local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
 
 local Server = script.Parent.Parent
+local Queue = require(Server:WaitForChild("Round"):WaitForChild("Queue"))
 local Scoreboard = require(Server:WaitForChild("Round"):WaitForChild("Scoreboard"))
 local Vote = require(Server:WaitForChild("Round"):WaitForChild("Vote"))
 local Analytics = require(script.Parent:WaitForChild("Analytics"))
@@ -70,6 +77,7 @@ type Round = {
 
 local TICK = 0.25
 local SPAWN_WAIT = 10
+local QUEUE_TAG = "QueueZone"
 
 local RoundService = {
 	Priority = 0, -- after CombatService, whose knock-out and fall handlers this replaces
@@ -87,6 +95,7 @@ local voteEndsAt = 0
 local statuses: { [Player]: Status } = {}
 local lastActive: { [Player]: number } = {}
 local joinAt: { [Player]: number } = {} -- Casual: players waiting to join the running round
+local queueStatuses: { [Player]: Queue.Status } = {}
 local rng = Random.new()
 -- Developer panel overrides (RoundService.forceNext / startNow).
 local forced: { Map: string?, Mode: string? } = { Map = nil, Mode = nil }
@@ -150,14 +159,40 @@ local function isAFK(player: Player): boolean
 	return now() - (lastActive[player] or now()) >= Config.Round.Participation.AFKTimeout
 end
 
-local function readyPlayers(): { Player }
-	local ready: { Player } = {}
-	for _, player in Players:GetPlayers() do
-		if isReady(player) then
-			table.insert(ready, player)
+local function onPad(player: Player): boolean
+	local character = aliveCharacter(player)
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	if root == nil or not root:IsA("BasePart") then
+		return false
+	end
+	for _, pad in CollectionService:GetTagged(QUEUE_TAG) do
+		if pad:IsA("BasePart") and Queue.contains(pad.CFrame, pad.Size, root.Position, Config.Round.Queue.Height) then
+			return true
 		end
 	end
-	return ready
+	return false
+end
+
+-- Updates every player's queue status (and the attributes the UI reads). Returns the queued players.
+local function refreshQueue(): { Player }
+	local queued: { Player } = {}
+	for _, player in Players:GetPlayers() do
+		local ready = DataService.get(player) ~= nil and onPad(player)
+		local status: Queue.Status = Queue.status(statuses[player] or "Lobby", ready, isAFK(player))
+		queueStatuses[player] = status
+		if player:GetAttribute("QueueStatus") ~= status then
+			player:SetAttribute("QueueStatus", status)
+		end
+		if status == "In" then
+			table.insert(queued, player)
+		end
+	end
+	Workspace:SetAttribute("PlayersQueued", #queued)
+	return queued
+end
+
+local function isQueued(player: Player): boolean
+	return queueStatuses[player] == "In"
 end
 
 local function markActive(player: Player)
@@ -298,7 +333,7 @@ end
 
 local function onPlayerAdded(player: Player)
 	lastActive[player] = now()
-	setStatus(player, if round then "Spectating" else "Lobby")
+	setStatus(player, "Lobby") -- late joiners stay in the lobby; the join pad takes them into a round
 	player.CharacterAdded:Connect(function(character: Model)
 		onCharacterAdded(player, character)
 	end)
@@ -324,6 +359,7 @@ local function onPlayerRemoving(player: Player)
 	statuses[player] = nil
 	lastActive[player] = nil
 	joinAt[player] = nil
+	queueStatuses[player] = nil
 end
 
 ---------------------------------------------------------------------------------------------------------------------
@@ -337,8 +373,26 @@ local function broadcastVote()
 	end
 end
 
+-- Drops the votes of players who are no longer queued (stepped off the pad, left). True if any was dropped.
+local function dropUnqueuedVotes(): boolean
+	local dropped = false
+	for _, vote in { mapVote, modeVote } do
+		if vote then
+			for userId in vote.Choices do
+				local player = Players:GetPlayerByUserId(userId)
+				if player == nil or queueStatuses[player] == "Off" then
+					Vote.remove(vote, userId)
+					dropped = true
+				end
+			end
+		end
+	end
+	return dropped
+end
+
 local function onVote(player: Player, kind: string, option: string)
-	if state ~= "Voting" then
+	-- Only players on the pad vote (an AFK one too: voting is input, so they count again).
+	if state ~= "Voting" or (queueStatuses[player] or "Off") == "Off" then
 		return
 	end
 	local vote = if kind == "Map" then mapVote else modeVote
@@ -367,9 +421,13 @@ local function runVote(): (string?, string?)
 	broadcastVote()
 	while now() < voteEndsAt do
 		task.wait(TICK)
-		if #readyPlayers() < needed() then
+		if #refreshQueue() < needed() then
+			log("too few players on the join pad; back to waiting")
 			mapVote, modeVote = nil, nil
 			return nil, nil
+		end
+		if dropUnqueuedVotes() then
+			broadcastVote()
 		end
 	end
 	mapVote, modeVote = nil, nil
@@ -383,14 +441,9 @@ end
 ---------------------------------------------------------------------------------------------------------------------
 
 local function startRound(mapId: string, modeId: string): boolean
-	local participants: { Player } = {}
-	for _, player in readyPlayers() do
-		if not isAFK(player) then
-			table.insert(participants, player)
-		end
-	end
+	local participants = refreshQueue()
 	if #participants < needed() then
-		log("not enough active players; back to waiting")
+		log("not enough active players on the join pad; back to waiting")
 		return false
 	end
 	startRequested = false
@@ -414,11 +467,7 @@ local function startRound(mapId: string, modeId: string): boolean
 	log(`{modeId} on {mapId} with {#participants} player(s)`)
 	RoundService.RoundStarted:Fire(modeId, mapId)
 
-	for _, player in Players:GetPlayers() do
-		if not table.find(participants, player) then
-			setStatus(player, "Spectating")
-		end
-	end
+	-- Everyone not on the pad stays in the lobby (status "Lobby").
 	local spawns = shuffled(MapService.getArenaMarkers("SpawnPoint"))
 	for index, player in participants do
 		Scoreboard.add(r.Board, player.UserId, player.Name, startedAt)
@@ -449,8 +498,9 @@ local function tickRound(r: Round, dt: number)
 	if mode.JoinMidRound then
 		for player, status in statuses do
 			local entry = Scoreboard.get(r.Board, player.UserId)
+			-- Players who step on the join pad join after RespawnDelay (stepping off cancels).
 			local waiting = status ~= "Playing" and status ~= "Respawning" and (entry == nil or Scoreboard.isIn(entry))
-			if not waiting or isAFK(player) or not isReady(player) then
+			if not waiting or not isQueued(player) or not isReady(player) then
 				joinAt[player] = nil
 			elseif joinAt[player] == nil then
 				joinAt[player] = t + Config.Round.RespawnDelay
@@ -568,8 +618,8 @@ local function loop()
 	while true do
 		Workspace:SetAttribute("PlayersNeeded", minPlayers())
 		setState("Waiting")
-		while #readyPlayers() < needed() do
-			task.wait(1)
+		while #refreshQueue() < needed() do
+			task.wait(TICK)
 		end
 		local mapId, modeId = runVote()
 		if mapId and modeId and startRound(mapId, modeId) then
@@ -638,6 +688,13 @@ function RoundService.Init(_self: any)
 end
 
 function RoundService.Start(_self: any)
+	-- Keeps QueueStatus / PlayersQueued current in every state (the loop below also refreshes when it decides).
+	task.spawn(function()
+		while true do
+			refreshQueue()
+			task.wait(TICK)
+		end
+	end)
 	loop()
 end
 

@@ -6,7 +6,7 @@ return {
 	-- Anyone can use the panel inside Roblox Studio playtests (never in live servers).
 	AllowInStudio = true,
 	-- Studio playtests only: players needed to start a round (live servers use Config.Round.MinPlayers). 1 lets you
-	-- play rounds alone; set it to 2 to stay in the lobby (e.g. to practise on the training dummy).
+	-- play rounds alone: stand on the lobby's join pad.
 	StudioMinPlayers = 1,
 	-- Studio playtests only: print every input action and device change to Output.
 	LogInput = true,

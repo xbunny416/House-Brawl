@@ -28,6 +28,40 @@ function HudFormat.clock(seconds: number): string
 	return string.format("%d:%02d", whole // 60, whole % 60)
 end
 
+-- Every GameStrings key queueKey can return.
+HudFormat.QueueKeys = {
+	"Round.Waiting",
+	"Round.WaitingIn",
+	"Round.QueueAFK",
+	"Round.Starting",
+	"Round.JoinNow",
+	"Round.Joining",
+	"Round.JoinNext",
+	"Round.InNext",
+}
+
+--[[
+	The line the HUD shows about the lobby join pad (a GameStrings key), or nil for none. `state` is the RoundState,
+	`roundStatus` / `queueStatus` the local player's RoundStatus / QueueStatus attributes, `joinMidRound` whether the
+	running mode lets players join mid-round (Casual). On the pad during the vote the vote panel shows instead.
+]]
+function HudFormat.queueKey(state: string?, roundStatus: string?, queueStatus: string?, joinMidRound: boolean): string?
+	local queue = queueStatus or "Off"
+	if state == "Waiting" then
+		return if queue == "In" then "Round.WaitingIn" elseif queue == "AFK" then "Round.QueueAFK" else "Round.Waiting"
+	elseif state == "Voting" then
+		return if queue == "Off" then "Round.Starting" else nil
+	elseif state == "Playing" and roundStatus == "Lobby" then
+		if queue == "AFK" then
+			return "Round.QueueAFK"
+		elseif joinMidRound then
+			return if queue == "In" then "Round.Joining" else "Round.JoinNow"
+		end
+		return if queue == "In" then "Round.InNext" else "Round.JoinNext"
+	end
+	return nil
+end
+
 -- "h:mm:ss" for a number of seconds (rounded up, never negative).
 function HudFormat.longClock(seconds: number): string
 	local whole = math.max(math.ceil(seconds), 0)
