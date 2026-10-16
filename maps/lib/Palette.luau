@@ -32,4 +32,5 @@ return {
 	WarmLight = "#FFC98A",
 	Bottle = "#3E7A4A",
 	Amber = "#C8781E",
+	CrtGlow = "#4A8C96", -- a lit old TV screen
 }

@@ -219,6 +219,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 2.4 Shop: ShopService (Buy remote: checks, spendScrap, grant; analytics), shared ShopRules (what is for sale, daily rotation of 4 cosmetics seeded by the UTC day at 20% off, purchase checks incl. price-changed), Shop UI (Daily deals with countdown, Styles, one tab per slot, purchase confirmation + Equip), MenuController screens (one open at a time, Menu action), dev "+5000 Scrap" | #20 |
 | 2026-10-16 | Owner's lobby rework: enclosed hideout bar lobby "The Hideout" (bar counter = Shop, vote TVs over the bar, ARENA door, lockers, jukebox, quest board, leaderboard screens, pool table, booths, lamps) replacing the Rust Diner rooftop; Training Yard removed (practice dummy is now a dev panel "Dummy" button); join pad: only players standing on it (not AFK) start the vote, vote and are taken into a round (Casual: stepping on joins mid-round), everyone else stays in the lobby; QueueStatus / PlayersQueued attributes, pad status lines on the HUD, vote panel only on the pad | #21 |
 | 2026-10-16 | 2.5 Junkyard Isles (dusk: scrap-heap centre, container stack, car pile, crane barge, barge, tire-stack ledges, sludge) + Neon Motel (night: motel roofs, pool roof, MOTEL sign roof, water-tower and billboard ledges, flooded street) arenas from layout code, shared maps/lib/Arena builder (Broken Highway output unchanged), 4 new structure types, NeonFlickerController, both maps in the vote; arena rules checked for every map | #22 |
+| 2026-10-16 | Owner's look at 2.5 + lobby: Neon Motel brighter (Night preset: moonlight 2, purple ambient, less fog; neon parapets, MOTEL sign and billboard cast light; 4 roof lamps; flicker switches their light too); lobby TVs now dark casings with glowing CRT screens, bar lamps moved between the TVs with dim amber bulbs | #23 |
 
 ## Decisions and interpretations
 
@@ -344,7 +345,9 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   IceMachine 80, LawnChairStack 60 (Motel). Tall decor is at platform corners (crane mast) or walk-through
   (crane arm, MOTEL sign tubes, buildings and scenery under the platforms); the pool water and rim are
   walk-through. `NeonFlicker`-tagged parts blink on the client (`NeonFlickerController`; candidates for the Low
-  Graphics setting in 2.7). All three maps are enabled, so every vote offers all of them.
+  Graphics setting in 2.7). All three maps are enabled, so every vote offers all of them. After the owner's first
+  look ("Neon Motel a bit too dark") the Night preset is brighter and the motel's neon parts and roof lamps carry
+  PointLights.
 - **Lobby rework (owner, 2026-10-16):** "I need an area for players to be in to start the round — right now every
   player has to play, no time to shop", "delete the Training Yard too", and "a closed-space lobby, hideout mixed with
   bar style, not open like this". So:
@@ -354,7 +357,9 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     (`ArenaDoor`) with the join pad. West: lockers, jukebox, quest board. South: leaderboard screens, spawns, street
     door. Pool table, booths, high tables, crates, barrels, warm hanging lamps (PointLights) under a shadow-casting
     ceiling. Same KillY rule (40 below the floor). The lighting preset is still Dusk (global): the inside is lit by
-    its lamps and Ambient — check the brightness in Studio.
+    its lamps and Ambient — check the brightness in Studio. The vote TVs are dark casings with glowing CRT screens
+    (Neon `CrtGlow` + a soft light); the first version's off-white casings glared under the bar lamps, which now
+    hang between the TVs with dim amber bulbs (owner: "the TV panel should light instead").
   * **Join pad** (`QueueZone`, 14 × 18 studs, `Server/Round/Queue`): only players standing on it (root over the
     footprint, up to `Round.Queue.Height` = 10 studs above, for jumps) and not AFK are queued. `MinPlayers` now counts
     queued players; the vote opens when enough are on the pad and goes back to Waiting if they step off. Only players

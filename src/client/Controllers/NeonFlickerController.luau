@@ -2,7 +2,8 @@
 --[[
 	NeonFlickerController — neon that flickers now and then (Neon Motel's "flickering retro neon", bible §3.1). Parts
 	tagged NeonFlicker (map layouts) blink off a few times at random intervals: a Neon part fades, a sign's text
-	fades. Stops on a platform that is falling (CrumbleController fades it out). Local and visual only.
+	fades, and the light they cast goes out with them. Stops on a platform that is falling (CrumbleController fades
+	it out). Local and visual only.
 ]]
 local CollectionService = game:GetService("CollectionService")
 
@@ -33,6 +34,8 @@ local function setOff(part: BasePart, off: boolean, base: number)
 	for _, descendant in part:GetDescendants() do
 		if descendant:IsA("TextLabel") then
 			descendant.TextTransparency = if off then DIM else 0
+		elseif descendant:IsA("Light") then
+			descendant.Enabled = not off
 		end
 	end
 end
