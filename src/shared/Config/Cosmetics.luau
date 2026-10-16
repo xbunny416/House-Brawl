@@ -9,7 +9,7 @@ local Types = require(script.Parent.Types)
 type CosmeticsConfig = {
 	Slots: { string },
 	Rarities: { [string]: { MinPrice: number, MaxPrice: number, RobuxOnly: boolean } },
-	DailyRotation: { Count: number, ResetHourUTC: number },
+	DailyRotation: { Count: number, ResetHourUTC: number, Discount: number },
 	TrailLifetime: number,
 	KOEffectParticles: number,
 	Items: { [string]: Types.CosmeticItem },
@@ -46,7 +46,8 @@ local Cosmetics: CosmeticsConfig = {
 		Rare = { MinPrice = 1200, MaxPrice = 2500, RobuxOnly = false },
 		Premium = { MinPrice = 0, MaxPrice = 0, RobuxOnly = true },
 	},
-	DailyRotation = { Count = 4, ResetHourUTC = 0 },
+	-- The Shop's Daily tab: Count cosmetics picked every day (UTC, at ResetHourUTC), sold at Discount off.
+	DailyRotation = { Count = 4, ResetHourUTC = 0, Discount = 0.2 },
 	TrailLifetime = 0.3, -- seconds a dash trail lingers
 	KOEffectParticles = 40, -- particles in one KO burst
 

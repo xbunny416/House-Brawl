@@ -1,9 +1,9 @@
 --!strict
 --[[
 	LockerController — the Locker (bible §5.3): pick your fighting style and equip cosmetics you own. Opened from the
-	left-edge Locker button or the Menu action (M / D-pad Up), only outside a fight. Tabs: Styles, then every
-	cosmetic slot that has items. A card shows the name, its rarity and what tapping it does: equip, take off (an
-	equipped cosmetic), or what unlocks it (level / Scrap price; buying comes with the Shop, step 2.4).
+	left-edge Locker button (MenuController), only outside a fight. Tabs: Styles, then every cosmetic slot that has
+	items. A card shows the name, its rarity and what tapping it does: equip, take off (an equipped cosmetic), or
+	what unlocks it (level / Scrap price: bought in the Shop).
 	The server checks every change (EquipStyle / EquipCosmetic).
 ]]
 local GuiService = game:GetService("GuiService")
@@ -34,10 +34,6 @@ local tabs: Frame
 local grid: ScrollingFrame
 local tabButtons: { [string]: TextButton } = {}
 local currentTab = STYLES_TAB
-
-local function close()
-	gui.Enabled = false
-end
 
 local function styleCards(): { Card }
 	local data = DataController.get()
@@ -133,22 +129,10 @@ local function render()
 	end
 end
 
-local function open()
-	if MenuController.isFighting() then
-		return
-	end
-	gui.Enabled = true
+local function onOpen()
 	render()
 	if InputController.getDevice() == "Gamepad" then
 		GuiService.SelectedObject = tabButtons[currentTab]
-	end
-end
-
-local function toggle()
-	if gui.Enabled then
-		close()
-	else
-		open()
 	end
 end
 
@@ -182,7 +166,7 @@ local function build()
 	local closeButton = Kit.button(header, Localization.format("Common.Close"), UDim2.fromScale(0.18, 0.9))
 	closeButton.AnchorPoint = Vector2.new(1, 0)
 	closeButton.Position = UDim2.fromScale(1, 0)
-	closeButton.Activated:Connect(close)
+	closeButton.Activated:Connect(MenuController.close)
 
 	tabs = Instance.new("Frame")
 	tabs.BackgroundTransparency = 1
@@ -214,12 +198,7 @@ end
 
 function LockerController.Start(_self: any)
 	build()
-	MenuController.addButton(Localization.format("Menu.Locker"), 2, toggle)
-	InputController.ActionBegan:Connect(function(action: string)
-		if action == "Menu" then
-			toggle()
-		end
-	end)
+	MenuController.addScreen(Localization.format("Menu.Locker"), 2, gui, onOpen)
 	DataController.Changed:Connect(function(key: string)
 		if gui.Enabled and (key == "Styles" or key == "Cosmetics" or key == "Level") then
 			render()

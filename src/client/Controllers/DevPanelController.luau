@@ -122,6 +122,7 @@ local function buildSections()
 		table.insert(styles, command(Localization.format(`Style.{styleId}.Name`), "SetStyle", styleId))
 	end
 	table.insert(styles, command(Localization.format("Dev.UnlockCosmetics"), "UnlockCosmetics"))
+	table.insert(styles, command(Localization.format("Dev.GiveScrap", { Config.Dev.GiveScrap }), "GiveScrap"))
 	section("Dev.Style", styles)
 
 	section("Dev.Camera", {

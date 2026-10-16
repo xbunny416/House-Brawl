@@ -2,7 +2,7 @@
 --[[
 	StyleService — fighting styles (bible §2.3). Players own styles (saved Styles.Owned) and have one equipped
 	(Styles.Equipped); CombatService uses the equipped style's numbers (damage, reach, speed, hitbox, parry).
-	Styles unlock for free at their UnlockLevel (buying them with Scrap comes with the Shop, step 2.4). The
+	Styles unlock for free at their UnlockLevel or are bought with Scrap in the Shop (ShopService → grant). The
 	EquipStyle remote switches to an owned style, but not while the player is fighting in a round.
 	The weapon is a welded blockout model on the character (Config.Styles.Weapons): visual only — no collisions,
 	not hit by attack boxes. Weapons are accessories, not Tools, so the mobile buttons never change.
@@ -70,6 +70,17 @@ local function grantLevelUnlocks(player: Player, level: number)
 		end
 	end)
 	log(`{player.Name} unlocked {table.concat(new, ", ")}`)
+end
+
+-- Gives the player a style without equipping it (Shop purchases). Returns false for an unknown style or before
+-- their data has loaded.
+function StyleService.grant(player: Player, styleId: string): boolean
+	if Config.Styles.List[styleId] == nil then
+		return false
+	end
+	return DataService.update(player, "Styles", function(changed)
+		changed.Styles.Owned[styleId] = true
+	end)
 end
 
 --[[

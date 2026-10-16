@@ -28,6 +28,12 @@ function HudFormat.clock(seconds: number): string
 	return string.format("%d:%02d", whole // 60, whole % 60)
 end
 
+-- "h:mm:ss" for a number of seconds (rounded up, never negative).
+function HudFormat.longClock(seconds: number): string
+	local whole = math.max(math.ceil(seconds), 0)
+	return string.format("%d:%02d:%02d", whole // 3600, whole // 60 % 60, whole % 60)
+end
+
 -- The color a Percent is shown in.
 function HudFormat.percentColor(percent: number): Rgb
 	if percent <= STOPS[1].at then

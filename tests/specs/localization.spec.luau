@@ -6,6 +6,7 @@ local Roblox = require("../roblox")
 local expect = require("../expect")
 
 local Config = Roblox.require(Roblox.game.ReplicatedStorage.Shared.Config)
+local ShopRules = Roblox.require(Roblox.game.ReplicatedStorage.Shared.ShopRules)
 
 local CSV_PATH = "src/localization/GameStrings.csv"
 
@@ -61,7 +62,10 @@ return {
 			expect.truthy(keys[`Cosmetic.{id}.Name`], `Cosmetic.{id}.Name`)
 		end
 		for _, slot in Config.Cosmetics.Slots do
-			expect.truthy(keys[`Slot.{slot}`], `Slot.{slot}`)
+			expect.truthy(keys[`Slot.{slot}`] and keys[`Slot.{slot}.One`], `Slot.{slot}`)
+		end
+		for _, reason in ShopRules.Reasons do
+			expect.truthy(keys[`Shop.Error.{reason}`], `Shop.Error.{reason}`)
 		end
 		for rarity in Config.Cosmetics.Rarities do
 			expect.truthy(keys[`Rarity.{rarity}`], `Rarity.{rarity}`)

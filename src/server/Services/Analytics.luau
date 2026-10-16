@@ -105,6 +105,11 @@ function Analytics.styleUsed(player: Player, styleId: string, modeId: string)
 	Analytics.custom(player, "StyleUsed", 1, { styleId, modeId })
 end
 
+-- A Shop purchase (the Scrap itself is logged by DataService.spendScrap). `kind` is "Style" or "Cosmetic".
+function Analytics.shopPurchase(player: Player, kind: string, itemId: string, price: number, daily: boolean)
+	Analytics.custom(player, "ShopPurchase", price, { kind, itemId, if daily then "Daily" else "Regular" })
+end
+
 function Analytics.roundFinished(player: Player, seconds: number, kos: number, modeId: string, mapId: string)
 	Analytics.custom(player, "RoundLength", seconds, { modeId, mapId })
 	Analytics.custom(player, "KOsPerRound", kos, { modeId, mapId })
