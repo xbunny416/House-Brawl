@@ -25,4 +25,11 @@ return {
 	NeonOrange = "#FF8A3D",
 	ToxicGreen = "#39FF88",
 	Glass = "#9FD6E0",
+	Brick = "#6B3A2E",
+	Brass = "#C9A227",
+	Felt = "#24684A",
+	Leather = "#7A2E2A",
+	WarmLight = "#FFC98A",
+	Bottle = "#3E7A4A",
+	Amber = "#C8781E",
 }

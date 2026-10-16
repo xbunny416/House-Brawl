@@ -1,7 +1,7 @@
 --!strict
 -- Round flow, respawning, participation rules and the crumbling-platform event. Bible §2.1 and §3.2.
 return {
-	MinPlayers = 2, -- players needed in the server to start a round
+	MinPlayers = 2, -- players on the lobby join pad needed to start a round
 	VoteTime = 15, -- intermission: map + mode vote
 	RoundTime = 180,
 	ResultsTime = 8, -- results / MVP screen before returning to the Lobby
@@ -9,6 +9,12 @@ return {
 	SpawnShieldTime = 2, -- breaks early if the player attacks
 	TensionTime = 30, -- the last N seconds use the tension music layer
 	PlacementsRewarded = 3, -- top N finishers get placement rewards
+
+	-- Lobby join pad (QueueZone-tagged part): only active players standing on it are taken into the next round
+	-- (Casual: into the running round). Everyone else stays in the lobby (Shop, Locker ...).
+	Queue = {
+		Height = 10, -- studs above the pad that still count as standing on it (jumping)
+	},
 
 	Participation = {
 		MinSeconds = 60, -- must be active in the round this long for placement + completion rewards

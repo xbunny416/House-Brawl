@@ -1,10 +1,11 @@
 --!strict
 --[[
-	VoteController — the map + mode vote panel (top of the screen) shown while RoundState is "Voting".
-	One button per map and per mode with its vote count; the player's own choices are highlighted. With a gamepad
-	the first button is selected when the panel opens.
+	VoteController — the map + mode vote panel (top of the screen) shown while RoundState is "Voting", to players
+	standing on the lobby join pad (QueueStatus In / AFK). One button per map and per mode with its vote count; the
+	player's own choices are highlighted. With a gamepad the first button is selected when the panel opens.
 ]]
 local GuiService = game:GetService("GuiService")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
@@ -17,6 +18,9 @@ local Kit = require(script.Parent.Parent:WaitForChild("Ui"):WaitForChild("Kit"))
 local InputController = require(script.Parent:WaitForChild("InputController"))
 
 local REFRESH_INTERVAL = 0.25
+
+local player = Players.LocalPlayer
+local wasVoting = false
 
 -- One row of the ballot (maps or modes).
 type Section = {
@@ -102,7 +106,15 @@ local function onVoteState(
 end
 
 local function refresh()
-	local voting = Workspace:GetAttribute("RoundState") == "Voting" and #maps.Options > 0
+	local inVote = Workspace:GetAttribute("RoundState") == "Voting"
+	if wasVoting and not inVote then
+		-- The next vote brings a new ballot.
+		maps.Options, modes.Options = {}, {}
+	end
+	wasVoting = inVote
+	-- Only players on the join pad vote (RoundService drops the vote of anyone who steps off).
+	local queue = player:GetAttribute("QueueStatus")
+	local voting = inVote and #maps.Options > 0 and (queue == "In" or queue == "AFK")
 	if voting ~= gui.Enabled then
 		gui.Enabled = voting
 		if voting and InputController.getDevice() == "Gamepad" then
@@ -110,9 +122,6 @@ local function refresh()
 			if first then
 				GuiService.SelectedObject = first
 			end
-		elseif not voting then
-			-- The next vote brings a new ballot.
-			maps.Options, modes.Options = {}, {}
 		end
 	end
 	if voting then

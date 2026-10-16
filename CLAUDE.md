@@ -8,8 +8,9 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   pass later) and data saving via ProfileStore.
 - **Phase 1 (core loop) is built and playtested** (1.1–1.13; two rounds of owner playtest fixes, "all clear" on
   2026-10-16). **Phase 2 in progress:** 2.1 Round rewards, 2.2 Fighting styles, 2.3 Cosmetics + Locker and 2.4 Shop
-  are built (2.2–2.4 not yet playtested; the Wrecker parry needs two players). **Next step:** 2.5 Junkyard Isles +
-  Neon Motel maps.
+  are built (2.2–2.4 not yet playtested; the Wrecker parry needs two players). Owner's lobby rework (2026-10-16):
+  enclosed hideout bar lobby, join pad to enter rounds, no Training Yard (not yet playtested). **Next step:** 2.5
+  Junkyard Isles + Neon Motel maps.
 
 ## How this repo works
 
@@ -82,9 +83,9 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
   `VERSION` in `src/shared/Data/Template.luau`). Clients read their copy via `Controllers/DataController`.
 - **Maps:** blockouts are generated from `maps/layouts/*.luau` by `lune run maps/build`; never hand-edit
   `maps/generated/`. Gameplay markers are tagged parts (`SpawnPoint`, `PropSpot`, `ExplosiveSpot`,
-  `StructureSpot` with a `StructureType` attribute, `LobbySpawn`, `Training*`), visible in Edit mode and hidden by
-  `Services/MapService` at runtime. Each arena platform is a `Platform`-tagged Model (Persistent streaming,
-  `CanFall` attribute). Sign text comes from GameStrings keys (`LocKey` attribute on the label). For a final art
+  `StructureSpot` with a `StructureType` attribute, `LobbySpawn`), visible in Edit mode and hidden by
+  `Services/MapService` at runtime. The lobby's join pad is a visible `QueueZone`-tagged part (not a marker).
+  Each arena platform is a `Platform`-tagged Model (Persistent streaming, `CanFall` attribute). Sign text comes from GameStrings keys (`LocKey` attribute on the label). For a final art
   pass a map can switch to a hand-built model: export it from Studio to `maps/<Name>.rbxmx`, point
   `default.project.json` at it, and remove it from `maps/build.luau`.
 - **Input:** gameplay code never reads raw keys. It listens to `Controllers/InputController` (`ActionBegan` /
@@ -103,10 +104,11 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
 - **Lobby menu screens** (Shop, Locker, later Quests, Daily Reward, Settings ...) register with
   `Controllers/MenuController.addScreen(text, order, gui, onOpen)`: a left-edge button, one screen open at a time,
   closed while fighting; the Menu action (M / D-pad Up) closes the open screen or opens the first one.
-- **Rounds:** `Services/RoundService` owns the loop, the scoreboard (`Server/Round/Scoreboard`) and round stats.
-  UI reads attributes: Workspace `RoundState`, `RoundEndsAt` (compare with `Workspace:GetServerTimeNow()`),
-  `RoundMode`, `RoundMap`, `PlayersNeeded`; Player `RoundStatus`, `Lives`, `KOs`, `Falls`. Rewards and quests hook
-  `RoundService.RoundEnded`.
+- **Rounds:** `Services/RoundService` owns the loop, the scoreboard (`Server/Round/Scoreboard`), the lobby join pad
+  (`Server/Round/Queue`: only players on it are taken into a round) and round stats. UI reads attributes: Workspace
+  `RoundState`, `RoundEndsAt` (compare with `Workspace:GetServerTimeNow()`), `RoundMode`, `RoundMap`,
+  `PlayersNeeded`, `PlayersQueued`; Player `RoundStatus`, `QueueStatus` (`In` / `AFK` / `Off`), `Lives`, `KOs`,
+  `Falls`. Rewards and quests hook `RoundService.RoundEnded`.
 - **Settings** (Settings menu values) are read and changed through `Controllers/SettingsController`; the server
   validates each change with `Shared/Settings` (`Services/SettingsService`). New numeric settings need a range in
   `Config.Data.SettingRanges`.
@@ -173,7 +175,8 @@ any errors are fixed before the next item.
 - [ ] 2.6 Animations (R15)
 - [ ] 2.7 VFX pass + Low Graphics setting
 - [ ] 2.8 Music + SFX (per-map tracks, last-30 s tension layer)
-- [ ] 2.9 Training Yard tutorial + first-round tips
+- [ ] 2.9 Tutorial + first-round tips (the Training Yard it was planned in was removed with the lobby rework on
+      2026-10-16: agree a new onboarding plan with the owner first)
 
 ### Phase 3 — Monetization, retention & polish
 
@@ -214,6 +217,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 2.2 Fighting styles: Wrecker parry (0.2 s, reflects knockback onto the attacker), StyleService (level unlocks, EquipStyle, welded blockout weapons: bat, shovel, wrench + hubcap), shared StyleRules, DataService.LeveledUp, dev panel Style buttons | #18 |
 | 2026-10-16 | 2.3 Cosmetics + Locker: launch catalog (skins, hats, dash trails, KO effects, victory emotes) with blockout visuals, CosmeticService (EquipCosmetic, skins / hats / trails / KO bursts), shared CosmeticRules, Visuals/Attached (shared with weapons), CombatService.Dashed, left-edge MenuController, Locker UI (styles + cosmetics), dev "All cosmetics" | #19 |
 | 2026-10-16 | 2.4 Shop: ShopService (Buy remote: checks, spendScrap, grant; analytics), shared ShopRules (what is for sale, daily rotation of 4 cosmetics seeded by the UTC day at 20% off, purchase checks incl. price-changed), Shop UI (Daily deals with countdown, Styles, one tab per slot, purchase confirmation + Equip), MenuController screens (one open at a time, Menu action), dev "+5000 Scrap" | #20 |
+| 2026-10-16 | Owner's lobby rework: enclosed hideout bar lobby "The Hideout" (bar counter = Shop, vote TVs over the bar, ARENA door, lockers, jukebox, quest board, leaderboard screens, pool table, booths, lamps) replacing the Rust Diner rooftop; Training Yard removed (practice dummy is now a dev panel "Dummy" button); join pad: only players standing on it (not AFK) start the vote, vote and are taken into a round (Casual: stepping on joins mid-round), everyone else stays in the lobby; QueueStatus / PlayersQueued attributes, pad status lines on the HUD, vote panel only on the pad | #PR |
 
 ## Decisions and interpretations
 
@@ -246,7 +250,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   and a cancelled charge has none. Heavy hits (Shove, punch finisher) shake the victim's camera (1.0) and the
   attacker's (0.4). Right-dragging the mouse 12 px while charging a right-click Shove cancels it (camera turn).
   The equipped style's multipliers already apply; the Wrecker parry comes with styles (2.2). PvP only between two
-  players in the arena; the dummy can always be hit. Training dummy respawns 2 s after a KO or falling 4 studs.
+  players in the arena; the dummy can always be hit. The dummy respawns 2 s after a KO or falling 4 studs.
 - **Dash (1.7):** the client moves at once (LinearVelocity, 48 studs/s for 0.25 s = 12 studs, level, along the move
   direction or else the facing) and sends `Dash`; the server grants invulnerability from when the intent arrives, accepting it up
   to 0.15 s before the cooldown ends (`Dash.CooldownTolerance`, network jitter). A dash cancels a Shove charge, and a
@@ -257,10 +261,10 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   character in the arena is a fall. Classic standings at time-out: fighters still in (most KOs, then fewest falls)
   above the eliminated (later = higher); Casual: score, then KOs, then fewest falls; ties share a placement. Only
   active (non-AFK) time counts toward the 60 s; AFK players (no input 45 s, reported by `Activity` pings) sit out the
-  next round. Casual: anyone not in the round (late joiner, AFK-excluded) joins 3 s after being ready and active.
+  next round. Casual: a lobby player who stands on the join pad joins 3 s later (see the lobby rework below).
   "Completed" = still in the server at the end (eliminated Classic players included). The Wins stat counts only
-  wins that would earn placement rewards (60 s active, not AFK). Spectators (Classic: out of lives, late joiners,
-  AFK-excluded) watch a fighter still in; the server streams that fighter's area to them (`ReplicationFocus`).
+  wins that would earn placement rewards (60 s active, not AFK). Spectators (Classic: out of lives) watch a fighter
+  still in; the server streams that fighter's area to them (`ReplicationFocus`).
   Spectate cycles with Z / X, D-pad or the bar's arrows. The 1.4 Studio arena-preview pad was removed (rounds
   replace it).
 - **Owner's choices (2026-10-16):** thrown props fly the way the character faces (not the camera); an explosive
@@ -330,6 +334,28 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   cosmetics) comes with 3.1. The Menu action now belongs to `MenuController`: it closes the open screen, or opens
   the Shop (gamepad: selects the first menu button). The developer panel's "+5000 Scrap" (`Config.Dev.GiveScrap`) is
   for testing purchases.
+- **Lobby rework (owner, 2026-10-16):** "I need an area for players to be in to start the round — right now every
+  player has to play, no time to shop", "delete the Training Yard too", and "a closed-space lobby, hideout mixed with
+  bar style, not open like this". So:
+  * **The Hideout** (`maps/layouts/Hideout.luau`, map id `Hideout`) replaces the Rust Diner rooftop: an enclosed
+    92 × 68-stud room with a 22-stud ceiling. North: bar counter (Shop, `ShopCounter`), bartender (`ShopNPC`), bottle
+    shelves, map vote TVs hanging over the bar, mode TVs on the counter ends, neon title sign. East: steel ARENA door
+    (`ArenaDoor`) with the join pad. West: lockers, jukebox, quest board. South: leaderboard screens, spawns, street
+    door. Pool table, booths, high tables, crates, barrels, warm hanging lamps (PointLights) under a shadow-casting
+    ceiling. Same KillY rule (40 below the floor). The lighting preset is still Dusk (global): the inside is lit by
+    its lamps and Ambient — check the brightness in Studio.
+  * **Join pad** (`QueueZone`, 14 × 18 studs, `Server/Round/Queue`): only players standing on it (root over the
+    footprint, up to `Round.Queue.Height` = 10 studs above, for jumps) and not AFK are queued. `MinPlayers` now counts
+    queued players; the vote opens when enough are on the pad and goes back to Waiting if they step off. Only players
+    on the pad see the vote panel and vote; stepping off drops your vote. Everyone queued when the vote ends goes in;
+    everyone else stays in the lobby (status `Lobby`, not spectating) and can shop. Casual: stepping on the pad during
+    a round joins it after 3 s; Classic: the pad queues you for the next one. Returning fighters land on the normal
+    spawns (walk back to the pad to play again). AFK players on the pad show `QueueStatus = AFK` and a "move to show
+    you're here" line. Developer "Start now" still needs someone on the pad.
+  * **Training Yard removed** (its markers, sign and lobby chair spot). The practice dummy is now a developer-panel
+    tool ("Dummy" under Spawn: one dummy in front of you, replacing the previous; it respawns at its place unless the
+    ground there is gone). The lobby prop-spot tag is `LobbyPropSpot` (none placed). The tutorial (2.9) needs a new
+    plan.
 - **HUD (1.12):** `HudController` (top bar, kill feed, bottom bar) replaced the 1.8 status line. Kill feed sits top-right
   (bible said top-center, which already holds the timer and the vote panel); lines fade after 6 s, max 5, and name
   the prop when a prop made the KO. Top bar info: Classic = fighters with lives left, Casual = your score. Vitals
@@ -364,10 +390,10 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Knockback tuning:** `Config.Combat.Knockback` (force), `Launch.MaxTime`, `Hitstun`. Exploiters can ignore
   knockback on their own character (clients simulate it — a Roblox limit); server-side movement checks are a later
   hardening task.
-- **Rounds in Studio:** `Config.Dev.StudioMinPlayers = 1` lets a round start with you alone (vote → arena → results
-  → vote ...); set it to 2 to stay in the lobby, e.g. for the training dummy. Output shows `[Round]` lines (state
-  changes, KOs, joins, winner). PvP needs two players: Test > Clients and Servers > 2 players. A solo Classic round
-  ends when you lose your 3 lives; a solo Casual round runs the full 3:00.
+- **Rounds in Studio:** `Config.Dev.StudioMinPlayers = 1` lets a round start with you alone: stand on the join pad by
+  the ARENA door (vote → arena → results → walk back to the pad ...); stay off it to remain in the lobby. Output
+  shows `[Round]` lines (state changes, KOs, joins, winner). PvP needs two players: Test > Clients and Servers >
+  2 players. A solo Classic round ends when you lose your 3 lives; a solo Casual round runs the full 3:00.
 - **Studio combat debug:** `Config.Dev.LogCombat` prints every hit and KO; `Config.Dev.ShowHitboxes` flashes each
   attack box (red hit, grey miss). Studio only.
 - **VIP bonus** stays off until the VIP game pass exists (`Config.Monetization.GamePasses.VIP.Id` is 0; step 3.1).
@@ -384,10 +410,10 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Studio input debug:** `Config.Dev.LogInput` prints every action and device change to Output in Studio playtests.
   Test touch with Studio's Device Emulator (a phone in landscape).
 - **Developer panel (Studio):** press ` (Backquote, `Config.Dev.PanelKey`) or click DEV (top left). Round: start now
-  (starts the vote even alone, or closes it), end now, crumble a platform; next map / mode (or back to the vote);
-  spawn any prop in front of you; set your own Percent (0 / 100 / 200) or HP (100 / 50 / 10); own + equip any
-  fighting style; own every cosmetic; +5000 Scrap; test camera shake and switch the Camera Shake setting. Output
-  shows `[Dev]` lines.
+  (starts the vote with one player on the join pad, or closes it), end now, crumble a platform; next map / mode (or
+  back to the vote); spawn any prop or the practice dummy in front of you; set your own Percent (0 / 100 / 200) or
+  HP (100 / 50 / 10); own + equip any fighting style; own every cosmetic; +5000 Scrap; test camera shake and switch
+  the Camera Shake setting. Output shows `[Dev]` lines.
 - **Data in Studio:** with "Studio Access to API Services" off, ProfileStore uses an in-memory store and prints
   "Roblox API services unavailable - data will not be saved". Turn it on to test real saving
   (`Config.Data.UseMockInStudio = true` forces the in-memory store even with access on).

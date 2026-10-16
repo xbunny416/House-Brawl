@@ -6,7 +6,7 @@ local Roblox = require("../roblox")
 local expect = require("../expect")
 
 local BrokenHighway = require("../../maps/layouts/BrokenHighway")
-local RustDiner = require("../../maps/layouts/RustDiner")
+local Hideout = require("../../maps/layouts/Hideout")
 
 local Config = Roblox.require(Roblox.game.ReplicatedStorage.Shared.Config)
 
@@ -30,13 +30,13 @@ local function gap(a: any, b: any): number
 end
 
 local arena = BrokenHighway.build(ORIGIN)
-local lobby = RustDiner.build(Config.Maps.LobbyOrigin)
+local lobby = Hideout.build(Config.Maps.LobbyOrigin)
 
 return {
 	["generated .rbxmx files are up to date (run: lune run maps/build)"] = function()
 		local expected = {
 			["maps/generated/BrokenHighway.rbxmx"] = BrokenHighway.build(Config.Maps.ArenaOrigin),
-			["maps/generated/RustDiner.rbxmx"] = lobby,
+			["maps/generated/Hideout.rbxmx"] = lobby,
 		}
 		for path, model in expected do
 			expect.truthy(fs.isFile(path), `{path} exists`)
@@ -137,14 +137,35 @@ return {
 			expect.truthy(platform.PrimaryPart, `{platform.Name} PrimaryPart`)
 		end
 	end,
-	["lobby: interactive objects and markers exist"] = function()
-		for _, tag in { "ShopNPC", "ShopCounter", "Locker", "CodesJukebox", "QuestBoard", "TrainingYard" } do
+	["lobby: interactive objects and spawns exist; no Training Yard"] = function()
+		for _, tag in { "ShopNPC", "ShopCounter", "Locker", "CodesJukebox", "QuestBoard", "ArenaDoor" } do
 			expect.equal(#tagged(lobby, tag), 1, tag)
 		end
-		for _, tag in { "TrainingDummySpot", "TrainingPropSpot", "TrainingStart", "TrainingDashGoal" } do
-			expect.equal(#tagged(lobby, tag), 1, tag)
+		for _, tag in { "TrainingYard", "TrainingDummySpot", "TrainingPropSpot", "TrainingStart", "TrainingDashGoal" } do
+			expect.equal(#tagged(lobby, tag), 0, tag)
 		end
 		expect.truthy(#tagged(lobby, "LobbySpawn") >= 1, "lobby spawns")
+	end,
+	["lobby: one visible, walk-through join pad, away from the spawns"] = function()
+		local pads = tagged(lobby, "QueueZone")
+		expect.equal(#pads, 1, "join pads")
+		local pad = pads[1]
+		expect.equal(pad:HasTag("Marker"), false, "not hidden at runtime")
+		expect.equal(pad.CanCollide, false, "walk-through")
+		expect.truthy(pad.Transparency < 1, "visible")
+		expect.equal(pad.Size.X, Hideout.JoinPad.Size[1])
+		expect.equal(pad.Size.Z, Hideout.JoinPad.Size[2])
+		for _, spawn in tagged(lobby, "LobbySpawn") do
+			local offset = spawn.CFrame.Position - pad.CFrame.Position
+			local outside = math.abs(offset.X) > (pad.Size.X + spawn.Size.X) / 2
+				or math.abs(offset.Z) > (pad.Size.Z + spawn.Size.Z) / 2
+			expect.truthy(outside, `{spawn.Name} is on the join pad`)
+		end
+	end,
+	["lobby: enclosed (four walls and a ceiling)"] = function()
+		for _, name in { "NorthWall", "SouthWall", "EastWall", "WestWall", "Ceiling" } do
+			expect.truthy(lobby:FindFirstChild(name, true), name)
+		end
 	end,
 	["lobby: 3 map and 2 mode vote screens"] = function()
 		local counts = { Map = 0, Mode = 0 }
@@ -163,7 +184,7 @@ return {
 			expect.truthy(stats[stat], `leaderboard {stat}`)
 		end
 	end,
-	["lobby: KillY sits below the roof"] = function()
+	["lobby: KillY sits below the floor"] = function()
 		expect.equal(lobby:GetAttribute("KillY"), Config.Maps.LobbyOrigin[2] - 40)
 	end,
 }

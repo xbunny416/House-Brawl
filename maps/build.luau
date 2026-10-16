@@ -10,7 +10,7 @@ local roblox = require("@lune/roblox")
 
 local Shim = require("../tests/roblox")
 local BrokenHighway = require("./layouts/BrokenHighway")
-local RustDiner = require("./layouts/RustDiner")
+local Hideout = require("./layouts/Hideout")
 
 local Config = Shim.require(Shim.game.ReplicatedStorage.Shared.Config)
 
@@ -18,7 +18,7 @@ local OUTPUT_DIR = "maps/generated"
 
 local function outputs(): { { file: string, model: any } }
 	return {
-		{ file = "RustDiner.rbxmx", model = RustDiner.build(Config.Maps.LobbyOrigin) },
+		{ file = "Hideout.rbxmx", model = Hideout.build(Config.Maps.LobbyOrigin) },
 		{ file = "BrokenHighway.rbxmx", model = BrokenHighway.build(Config.Maps.ArenaOrigin) },
 	}
 end

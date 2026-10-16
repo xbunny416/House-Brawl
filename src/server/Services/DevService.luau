@@ -5,10 +5,12 @@
 	playtests, Config.Dev.AllowedUserIds in live servers). Allowed players get the DevAccess attribute, which makes
 	their client show the panel. Every command is printed to Output.
 
-	  StartRound / EndRound          start the vote now (even alone) or close it; end the running round now
+	  StartRound / EndRound          start the vote now (one player on the join pad is enough) or close it; end the
+	                                 running round now
 	  ForceMap / ForceMode (id?)     the next round uses this map / mode whatever the vote says (no id = the vote)
 	  Crumble                        crumble the next platform now
 	  SpawnProp (typeId)             a prop in front of you
+	  SpawnDummy                     the practice dummy in front of you (replaces the last one)
 	  SetPercent / SetHealth (n)     your own Percent / HP
 	  SetStyle (styleId)             own and equip a fighting style
 	  UnlockCosmetics                own every cosmetic (equip them in the Locker)
@@ -29,6 +31,7 @@ local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local CosmeticService = require(script.Parent:WaitForChild("CosmeticService"))
 local CrumbleService = require(script.Parent:WaitForChild("CrumbleService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
+local DummyService = require(script.Parent:WaitForChild("DummyService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
 local PropService = require(script.Parent:WaitForChild("PropService"))
 local RoundService = require(script.Parent:WaitForChild("RoundService"))
@@ -75,6 +78,14 @@ local commands: { [string]: Command } = {
 		-- On the floor under a point in front of the player (the root is about 3 studs above the floor).
 		local floor = root.CFrame * CFrame.new(0, -3, -SPAWN_DISTANCE)
 		PropService.spawnLoose(text, floor, zone, Config.Structures.DropDespawnTime)
+	end,
+	SpawnDummy = function(player)
+		local root = rootOf(player)
+		if root then
+			-- Facing you, at your height, in front of you.
+			local front = (root.CFrame * CFrame.new(0, 0, -SPAWN_DISTANCE)).Position
+			DummyService.spawnAt(CFrame.lookAt(front, Vector3.new(root.Position.X, front.Y, root.Position.Z)))
+		end
 	end,
 	SetPercent = function(player, _text, value)
 		local character = player.Character

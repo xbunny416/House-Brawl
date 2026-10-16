@@ -106,6 +106,7 @@ local function buildSections()
 	for _, typeId in propIds do
 		table.insert(props, command(Localization.format(`Prop.{typeId}.Name`), "SpawnProp", typeId))
 	end
+	table.insert(props, command(Localization.format("Dev.SpawnDummy"), "SpawnDummy"))
 	section("Dev.SpawnProp", props)
 
 	local me: { Button } = {}
