@@ -53,6 +53,9 @@ local Definitions: { [string]: Definition } = {
 	-- Server -> client: the ballot and vote counts (sent when voting opens and after every vote).
 	-- (maps: { string }, modes: { string }, mapCounts: { [string]: number }, modeCounts: { [string]: number })
 	VoteState = { Kind = "Event", Direction = "ToClient" },
+	-- Server -> all clients: a KO in the round, for the kill feed.
+	-- (killerName: string?, victimName: string, weapon: string? — "Punch", "Shove" or a prop type)
+	KillFeed = { Kind = "UnreliableEvent", Direction = "ToClient" },
 	-- Server -> all clients: final standings when a round ends.
 	-- (rows: { { UserId, Name, Placement, KOs, Falls, Score, Lives? } }, modeId: string, mapId: string)
 	RoundResults = { Kind = "Event", Direction = "ToClient" },

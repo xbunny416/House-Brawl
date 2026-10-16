@@ -241,6 +241,7 @@ local function onKnockOut(character: Model, killer: Player?, cause: CombatServic
 	log(
 		`{player.Name} KO'd ({cause}) by {if killer then killer.Name else "nobody"}{if eliminated then ", out" else ""}`
 	)
+	Net.fireAll("KillFeed", if killer then killer.DisplayName else nil, player.DisplayName, weapon)
 	kill(character)
 end
 

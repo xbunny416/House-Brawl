@@ -6,12 +6,12 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 
 - **Build order approved** by the owner on 2026-10-15, with maps built from code (blockouts from layout data, art
   pass later) and data saving via ProfileStore.
-- **Current phase:** Phase 1. **Waiting on:** the owner's Studio playtest of 1.1–1.11 (lobby + Broken Highway
+- **Current phase:** Phase 1. **Waiting on:** the owner's Studio playtest of 1.1–1.12 (lobby + Broken Highway
   blockouts, data saving, input on PC / gamepad / Device Emulator touch, camera, Shift Lock, camera shake; combat on
   the Training Yard dummy and 2-player PvP in the arena; dash, air dash across gaps, Perfect Dodge; the full round
   loop: vote, Classic / Casual, respawn + shield, spectate, results; grabbing and throwing props, barrels; breaking
-  structures; crumbling platforms). The owner chose to continue building before playtesting. **Next step:** 1.12
-  Basic HUD.
+  structures; crumbling platforms; HUD + scoreboard). The owner chose to continue building before playtesting.
+  **Next step:** 1.13 Developer panel (minimal).
 
 ## How this repo works
 
@@ -151,7 +151,7 @@ any errors are fixed before the next item.
       40-prop cap, despawn.
 - [x] **1.10 Breakable structures** — HP, prop drops, respawn.
 - [x] **1.11 Crumbling platforms** — 3 s warning, fall, rules (center never falls, ≥ 2 remain).
-- [ ] **1.12 Basic HUD** — HP + lives / Percent, timer, mode badge, kill feed, dash ring, held prop, Tab scoreboard,
+- [x] **1.12 Basic HUD** — HP + lives / Percent, timer, mode badge, kill feed, dash ring, held prop, Tab scoreboard,
       spectate view; mobile / PC / gamepad.
 - [ ] **1.13 Developer panel (minimal)** — *moved up from Phase 3* so testing is faster: force map/mode, start/end
       round, trigger crumble, spawn prop, set Percent/HP. Server-checked UserId allowlist. Extended in Phase 3.
@@ -199,6 +199,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 1.9 PropService (spots + respawn, grab / carry / drop / throw, server-swept flights, class blows, explosive barrels with fuse + chain, 40-prop cap, despawn), pure Carrier rules, CombatService refactor (shared blow path, hitWith / explode, Swung / Hit signals, interceptor, speed modifiers), Throw / Drop touch labels, prop + chair KO stats; gamepad Menu / Scoreboard on the D-pad | #10 |
 | 2026-10-16 | 1.10 StructureService (structures on StructureSpots, damage from attack boxes / thrown props / blasts, darken with damage, break into drops, respawn 45 s, StructuresBroken stat), pure StructureRules, blockout sizes in Config, PropService.spawnLoose + Impact / Exploded signals | #11 |
 | 2026-10-16 | 1.11 CrumbleService (from 1:00 every 20 s a random outer platform flashes red + shakes 3 s, then falls 4 s with everyone on it; center never falls, 2 always remain), pure CrumbleRules, RoundStarted signal, spawn points / prop spots skip crumbling platforms, structures fall with their platform | #12 |
+| 2026-10-16 | 1.12 HUD (top bar: mode badge, timer, fighters left / score; kill feed; bottom bar: dash ring, HP + lives or Percent, held prop with key hints), hold-Tab scoreboard replacing Roblox's player list, KeyHint (key names / gamepad glyphs), pure HudFormat, KillFeed remote, prop names | 1.12 |
 
 ## Decisions and interpretations
 
@@ -269,6 +270,13 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   and unanchored, so it really falls (players on it fall with it and are KO'd at KillY, credited to their last
   attacker within 6 s); it is removed after FallTime. The schedule counts from the round start (os.clock); a round
   ending stops it. `CrumbleService.crumbleNext()` crumbles one at once (for the developer panel, 1.13).
+- **HUD (1.12):** `HudController` (top bar, kill feed, bottom bar) replaced the 1.8 status line. Kill feed sits top-right
+  (bible said top-center, which already holds the timer and the vote panel); lines fade after 6 s, max 5, and name
+  the prop when a prop made the KO. Top bar info: Classic = fighters with lives left, Casual = your score. Vitals
+  show only while you are in the round; the bottom bar hides while spectating. Key hints: key name on keyboard
+  (`GetStringForKeyCode`, "Click" / "Right-click" for mouse), glyph image on gamepad (`GetImageForKeyCode`), none on
+  touch. The scoreboard is hold-to-show (Tab / D-pad Down, no touch button per the bible) and disables Roblox's
+  player list; it orders fighters like the round (Classic lives → KOs → falls, Casual score → KOs).
 
 ## Known bugs / open items
 
@@ -285,13 +293,13 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Round rewards** (Scrap / XP) are not paid yet: `RoundService.RoundEnded` hands the standings (placement, KO Scrap,
   Perfect Dodges, active seconds, AFK) to step 2.1. Lifetime stats (KOs, Falls, RingOuts, PerfectDodges, Wins,
   RoundsPlayed, RoundsCompleted) are already counted in rounds.
-- **The vote, results, spectate bar and status line are plain first versions** (`src/client/Ui/Kit`); the round HUD
-  (1.12) and the art/VFX passes restyle them. The lobby's CRT-TV vote screens from the bible are an art-pass item.
+- **All screens are plain first versions** (`src/client/Ui/Kit`: HUD, vote, results, spectate bar, scoreboard); the
+  art / VFX passes restyle them. The lobby's CRT-TV vote screens from the bible are an art-pass item. The dash ring
+  fills bottom-to-top (a true radial ring needs an image asset).
 - **Props are plain blocks** (size / material / color from `Config.Props.Types`) until the art pass; a lit barrel turns
   Neon, explosions use Roblox's `Explosion` visual (no physics: `BlastPressure = 0`). Carry pose and throw animation
   come with 2.6. Flights are simulated by the server (props are server-owned while flying), so throws look slightly
   delayed on high ping.
-- **Tab** also toggles Roblox's player list until the scoreboard (1.12) turns the core player list off.
 - **Camera sensitivity** is saved and validated but not applied: Roblox does not let scripts change mouse/gamepad
   sensitivity. Needs a custom approach in 3.10.
 - **Studio input debug:** `Config.Dev.LogInput` prints every action and device change to Output in Studio playtests;
