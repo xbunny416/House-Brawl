@@ -8,7 +8,9 @@
 	    ("In" | "AFK" | "Off"), Workspace attribute PlayersQueued.
 	  * Waiting: fewer than Config.Round.MinPlayers players are queued (Config.Dev.StudioMinPlayers in Studio).
 	  * Voting: up to Maps.VoteChoices enabled maps and every mode are on the ballot (Vote remote; only players on the
-	    pad vote, and stepping off drops your vote); ties are random. Too few on the pad = back to Waiting.
+	    pad vote, and stepping off drops your vote); ties are random. Too few on the pad = back to Waiting. In a
+	    private server the owner's locked mode / picked map is the only option, and the owner sets the round length
+	    (PrivateServerService).
 	  * Playing: the voted arena is loaded and every queued player is moved to a spawn point with a spawn shield. A KO
 	    (CombatService) costs the player their character: Roblox respawns it after RespawnDelay and it is moved back
 	    into the arena with a fresh fighter and a new shield. Classic: 3 lives, out of lives = spectate, last fighter
@@ -42,6 +44,7 @@ local Analytics = require(script.Parent:WaitForChild("Analytics"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
+local PrivateServerService = require(script.Parent:WaitForChild("PrivateServerService"))
 
 export type State = "Waiting" | "Voting" | "Playing" | "Results"
 export type Status = "Lobby" | "Playing" | "Respawning" | "Spectating"
@@ -407,14 +410,15 @@ end
 
 -- Runs the vote. Returns the winning map and mode, or nil if too few players stayed.
 local function runVote(): (string?, string?)
-	local maps = Vote.pickOptions(MapService.getEnabledMaps(), Config.Maps.VoteChoices, pick)
+	local maps =
+		PrivateServerService.ballot("Map", Vote.pickOptions(MapService.getEnabledMaps(), Config.Maps.VoteChoices, pick))
 	if #maps == 0 then
 		warn("[RoundService] no enabled arena to vote for")
 		task.wait(Config.Round.VoteTime)
 		return nil, nil
 	end
 	local mv = Vote.new(maps)
-	local dv = Vote.new(Config.Modes.Order)
+	local dv = Vote.new(PrivateServerService.ballot("Mode", Config.Modes.Order))
 	mapVote, modeVote = mv, dv
 	voteEndsAt = now() + Config.Round.VoteTime
 	setState("Voting", voteEndsAt)
@@ -455,7 +459,7 @@ local function startRound(mapId: string, modeId: string): boolean
 		ModeId = modeId,
 		MapId = mapId,
 		StartedAt = startedAt,
-		EndsAt = startedAt + Config.Round.RoundTime,
+		EndsAt = startedAt + PrivateServerService.roundTime(),
 		StartedWith = #participants,
 		Board = Scoreboard.new(modeId),
 		NextPassiveGainAt = startedAt + (Config.Modes.List[modeId].PassiveGainInterval or math.huge),

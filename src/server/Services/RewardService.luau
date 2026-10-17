@@ -4,7 +4,7 @@
 	the server: Server/Round/Payout (Formulas.roundPayout: KO Scrap with streaks, Perfect Dodge Scrap, placement and
 	completion rewards — 60 s of active play, nothing when AFK — VIP / Premium / friend bonuses capped at +60%, the
 	event multiplier and the private-server scale), then Scrap and XP through DataService (level-ups included). VIP
-	and Premium come from MonetizationService.has.
+	and Premium come from MonetizationService.has, the private-server scale from PrivateServerService.isPrivate.
 	Each player gets a RoundReward message for the results screen. The rank title follows the level (Player
 	attribute Rank, a Config.Progression rank id).
 ]]
@@ -21,6 +21,7 @@ local Payout = require(Server:WaitForChild("Round"):WaitForChild("Payout"))
 local Analytics = require(script.Parent:WaitForChild("Analytics"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
+local PrivateServerService = require(script.Parent:WaitForChild("PrivateServerService"))
 local RoundService = require(script.Parent:WaitForChild("RoundService"))
 
 local RewardService = {}
@@ -44,10 +45,6 @@ local function friendsInServer(player: Player): number
 	return count
 end
 
-local function isPrivateServer(): boolean
-	return game.PrivateServerId ~= "" and game.PrivateServerOwnerId ~= 0
-end
-
 local function pay(result: RoundService.Result)
 	local player = result.Player
 	if player.Parent ~= Players or DataService.get(player) == nil then
@@ -57,7 +54,7 @@ local function pay(result: RoundService.Result)
 		IsVIP = MonetizationService.has(player, "VIP"),
 		IsPremium = MonetizationService.has(player, "Premium"),
 		FriendsInServer = friendsInServer(player),
-		IsPrivateServer = isPrivateServer(),
+		IsPrivateServer = PrivateServerService.isPrivate(),
 	})
 	local data = DataService.get(player)
 	local oldRank = data and Formulas.rankForLevel(data.Level)

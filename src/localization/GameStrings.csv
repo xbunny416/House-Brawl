@@ -239,3 +239,12 @@ Prompt.Shop,Shop,Walk-up prompt at the lobby bartender: opens the Shop,
 Prompt.Shop.Object,Bartender,Walk-up prompt at the lobby bartender: who it is,
 Prompt.Locker,Locker,Walk-up prompt in the lobby locker booth: opens the Locker,
 Prompt.Locker.Object,Locker booth,Walk-up prompt in the lobby locker booth: what it is,
+Menu.Server,Server,Lobby menu button that opens the private server settings (only the private server's owner sees it),
+PrivateServer.Title,Private server,Title of the private server settings screen,
+PrivateServer.Mode,Mode,Private server settings row: lock the game mode,
+PrivateServer.Map,Map,Private server settings row: pick the arena,
+PrivateServer.RoundTime,Round length,Private server settings row: how long a round lasts,
+PrivateServer.Vote,By vote,Private server settings option: the players vote (no lock),
+PrivateServer.Info,Rewards are {1}% in private servers. Changes apply from the next round.,Private server settings note (reward percent),Rewards are 50% in private servers. Changes apply from the next round.
+PrivateServer.Welcome,Private server: round rewards are {1}% here.,Notice when joining a private server (reward percent),Private server: round rewards are 50% here.
+Dev.TogglePrivate,Private on/off,Developer panel button: act as a private server you own (Studio),

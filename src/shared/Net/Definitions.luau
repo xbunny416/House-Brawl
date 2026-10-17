@@ -116,6 +116,18 @@ local Definitions: { [string]: Definition } = {
 		RateLimit = { Rate = 5, Burst = 10 },
 	},
 
+	-- Client -> server: the private server's owner changes a setting (Shared/PrivateServerRules; the server checks the
+	-- owner). (key: "Mode" | "Map" | "RoundTime", text: string? — "Vote" or a mode / map id, seconds: number? — RoundTime)
+	PrivateServerSetting = {
+		Kind = "Event",
+		Direction = "ToServer",
+		Args = {
+			Guard.oneOf({ "Mode", "Map", "RoundTime" }),
+			Guard.optional(Guard.string(32)),
+			Guard.optional(Guard.integer(0, 3600)),
+		},
+	},
+
 	-- Client -> server: change one Settings-menu value. (key: string, value: boolean | number | string)
 	-- Shared/Settings checks the value for that key before it is saved.
 	ChangeSetting = {
