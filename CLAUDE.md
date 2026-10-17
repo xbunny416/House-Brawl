@@ -105,8 +105,9 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
 - **Animations** are scripted R15 poses: clips in `Shared/Animation/Clips` (sampled by the pure `Shared/Animation/Pose`),
   played on every client by `Controllers/AnimationController`. Server code triggers a one-shot with
   `Server/Visuals/Animate.play(character, clip, except?)` when an action really happens; looping states come from
-  replicated attributes (`Charging`, `HeldProp`); hits come from `CombatHit` (with the hitstun). A style's clips
-  are `Config.Styles.List[id].Animations`; an uploaded animation can replace any clip via
+  replicated attributes (`Charging`, `HeldProp`); hits come from `CombatHit` (with the hitstun, and hit-stop); the
+  always-on Motion layer (lean, air pose) and the in-round Stance come from each character's movement. A style's
+  clips are `Config.Styles.List[id].Animations`; an uploaded animation can replace any clip via
   `Config.Animations.AssetIds`.
 - **Lobby menu screens** (Shop, Locker, later Quests, Daily Reward, Settings ...) register with
   `Controllers/MenuController.addScreen(text, order, gui, onOpen)`: a left-edge button, one screen open at a time,
@@ -232,6 +233,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | Animation fix 2: the owner's characters had no R15 Motor6Ds (Studio log: "no R15 joints found"); joints are now found as R15 or R6 Motor6Ds (R6 names mapped, turns applied in the parent part's axes) or AnimationConstraints (turned through Attachment0), and Studio logs which joints a character has (or what it has instead) | #26 |
 | 2026-10-17 | Charged punch replaces the Shove (owner): tap Attack to punch, keep holding to charge, let go for the charged punch (Charge remote, Charging attribute, own cooldown); right-click is camera only; new Ability action (F / Y / touch "Parry" for Wrecker only) runs the style's move (Wrecker parry, own cooldown); "Shove" renamed "Charged" through Config, Formulas, Fighter, CombatService, remotes, clips (Charge loop, PowerPunch, PowerSwing), strings, specs and bible | #27 |
 | 2026-10-17 | Stamina (owner): running (Left Shift held; gamepad left-stick press and a touch Run button run until you stop) at ×1.5 speed costs 20/s while moving, a dash costs 25 (dash cooldown 2.5 s → 0.6 s), refill 30/s after 0.8 s; stamina in the pure Fighter (spec-tested), CombatService ticks it, Run remote + speed modifier, Stamina attribute, HUD stamina bar; Dash moved to Q only | #28 |
+| 2026-10-17 | Dynamic animation pass (owner: "look not good and no dynamic"): per-key easing (Out / Back overshoot), every attack reworked as wind-up → snappy strike → hold → recovery with hips, lunges, head and footwork; hit-stop on landed hits; always-on Motion layer (lean into movement and strafes, air tuck); in-round fighting Stance; directional hit recoils; tucked tumble; rig lookup throttled; Config.Animations HitStop / Motion; specs | #29 |
 
 ## Decisions and interpretations
 
@@ -385,6 +387,16 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   round's winners (placement 1, not AFK) play their equipped victory emote 1 s after the round (they are back in
   the lobby, under the results panel); equipping an emote in the Locker plays it once as a preview. A real
   animation made later in Studio can replace any clip: put its id in `Config.Animations.AssetIds`.
+  **Dynamic pass (owner, 2026-10-17: "animation work but still look not good and no dynamic"):** per-key easing
+  (`Pose.ease`: Smooth, Linear, In, Out, Back) — every attack is a short wind-up ("Out"), a strike that overshoots
+  ~10% and settles ("Back"), a hold, a smooth recovery, with the hips, root (lunge / dip), head and a stepping foot
+  joining in; hit-stop freezes the attacker's and victim's clips 0.05 s (0.09 s heavy) on every landed hit; an
+  always-on Motion layer (`Shared/Animation/Motion`) leans bodies into their movement (12° forward at running speed,
+  8° roll into strafes, smoothed) and tucks legs / spreads arms in the air; a `Stance` loop raises the guard while
+  standing still in a round (fades out with speed); hits recoil away from the attacker (`Hit` front, `HitBack`,
+  `HitLeft`, `HitRight`); the tumble tucks into a ball. Numbers in `Config.Animations` (HitStop, Motion). Rigs are
+  found once per character (retry every 1 s while not streamed in); the Studio log says whether constraint joints
+  are kinematic.
 - **Arenas (2.5):** the bible only names Junkyard Isles ("stacked car and container islands over toxic sludge") and
   Neon Motel ("sinking motel rooftops, flickering retro neon, pool on one roof"), so both follow Broken Highway's
   numbers (see the bible §3.2 "Every arena"): 1 centre + 4 sides + 2 ledges, gaps 8–14, ledges ≤ 6 above the

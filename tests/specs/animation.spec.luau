@@ -8,6 +8,7 @@ local Shared = Roblox.game.ReplicatedStorage.Shared
 local Config = Roblox.require(Shared.Config)
 local Clips = Roblox.require(Shared.Animation.Clips)
 local Pose = Roblox.require(Shared.Animation.Pose)
+local Motion = Roblox.require(Shared.Animation.Motion)
 
 local function near(actual: number, wanted: number, label: string)
 	expect.truthy(math.abs(actual - wanted) < 1e-6, `{label}: {actual} ~= {wanted}`)
@@ -56,6 +57,9 @@ return {
 			Grab = 0.3,
 			Throw = 0.4,
 			Hit = 0.6,
+			HitBack = 0.6,
+			HitLeft = 0.6,
+			HitRight = 0.6,
 			Tumble = 0.6,
 			Flex = 2,
 			JunkDance = 2,
@@ -66,7 +70,7 @@ return {
 			expect.truthy(Clips[name], `{name} exists`)
 			expect.equal(Clips[name].Duration, length, name)
 		end
-		for _, name in { "Tumble", "Carry", "Charge" } do
+		for _, name in { "Tumble", "Carry", "Charge", "Stance" } do
 			expect.equal(Clips[name].Loop, true, `{name} loops`)
 		end
 	end,
@@ -130,5 +134,64 @@ return {
 		near(Pose.weight(tumble, 1.0, blend, 1.2), 1, "held loop, inside its length")
 		near(Pose.weight(tumble, 1.15, blend, 1.2), 0.5, "held loop, blending out")
 		expect.equal(Pose.isOver(tumble, 1.2, 1.2), true)
+	end,
+	["easing: every curve starts at 0 and ends at 1; Out is fast early, In slow, Back overshoots"] = function()
+		for _, kind in { "Smooth", "Linear", "In", "Out", "Back" } do
+			near(Pose.ease(kind :: any, 0), 0, `{kind} at 0`)
+			near(Pose.ease(kind :: any, 1), 1, `{kind} at 1`)
+		end
+		expect.truthy(Pose.ease("Out", 0.3) > 0.3, "Out starts fast")
+		expect.truthy(Pose.ease("In", 0.3) < 0.3, "In starts slow")
+		local peak = 0
+		for step = 1, 99 do
+			peak = math.max(peak, Pose.ease("Back", step / 100))
+		end
+		expect.truthy(peak > 1 and peak < 1.2, `Back overshoots a little ({peak})`)
+	end,
+	["a key's own easing wins over the clip's"] = function()
+		local clip = {
+			Duration = 1,
+			Ease = "Linear",
+			Keys = {
+				{ T = 0, Pose = { Neck = { 0, 0, 0 } } },
+				{ T = 1, Pose = { Neck = { 100, 0, 0 } }, Ease = "Out" },
+			},
+		}
+		expect.truthy(Pose.sample(clip :: any, 0.3).Neck[1] > 30, "Out on the key, not the clip's Linear")
+	end,
+	["attacks wind up, then strike with an overshoot"] = function()
+		for _, name in { "Jab", "Cross", "Uppercut", "SwingRight", "Smash", "PowerPunch", "PowerSwing", "Throw" } do
+			local struck = false
+			for _, key in Clips[name].Keys do
+				if key.Ease == "Back" then
+					struck = true
+				end
+			end
+			expect.truthy(struck, `{name} has a snappy ("Back") strike`)
+		end
+	end,
+	["motion: lean forward when running forward, roll into a strafe, more at full speed"] = function()
+		local settings = Config.Animations.Motion
+		local pitch, roll = Motion.lean(settings.FullSpeed, 0)
+		near(pitch, -settings.LeanDegrees, "full forward lean")
+		near(roll, 0, "no roll going straight")
+		local walkPitch = Motion.lean(settings.FullSpeed / 2, 0)
+		near(walkPitch, -settings.LeanDegrees / 2, "half at half speed")
+		local _, strafeRoll = Motion.lean(0, settings.FullSpeed * 3)
+		near(strafeRoll, -settings.RollDegrees, "capped roll strafing right")
+		local backPitch = Motion.lean(-settings.FullSpeed, 0)
+		near(backPitch, settings.LeanDegrees, "leans back walking backwards")
+	end,
+	["motion: the air pose shows off the ground with speed; stance fades out as the fighter moves"] = function()
+		local settings = Config.Animations.Motion
+		near(Motion.airWeight(50, false), 0, "on the ground")
+		near(Motion.airWeight(settings.AirSpeed / 2, true), 0.5, "half")
+		near(Motion.airWeight(-settings.AirSpeed * 3, true), 1, "falling fast")
+		near(Motion.stanceWeight(0), 1, "standing still")
+		near(Motion.stanceWeight(settings.StanceSpeed), 0, "moving")
+		local sample = Motion.sample(-5, 3, 0)
+		near(sample.Root[1], -5, "lean on the root")
+		expect.equal(sample.RightKnee, nil, "no air pose on the ground")
+		expect.truthy(Motion.sample(0, 0, 1).RightKnee ~= nil, "knees tuck in the air")
 	end,
 }

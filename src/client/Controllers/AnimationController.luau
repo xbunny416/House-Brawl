@@ -1,17 +1,20 @@
 --!strict
 --[[
 	AnimationController — plays the scripted R15 animations (Shared/Animation) on every character this client sees.
-	A clip turns each joint it uses through the joint's C0 (its rest offset), every frame before rendering. Roblox's
-	default walk / idle animations never touch C0, so they keep playing on top of the clip (arms still swing a little
-	while walking) and nothing has to win a race with them. Nothing replicates: every client poses every character
-	from the same signals.
-	  * One-shots: the server's Animate event (punch chain / weapon swings, charged punch, parry, grab, throw, victory
-	    emotes, other players' dashes); the local dash (DashController.Dashed, no round trip); hits from CombatHit (a
-	    short recoil, or a tumble looping through a long hitstun).
-	  * Loops from replicated attributes: Charge while Charging is set, Carry while HeldProp is set. They
-	    blend in when the state starts and out when it ends; a one-shot plays on top of a loop.
-	When a clip lets go of a joint, its C0 goes back to the rest offset it had before. A clip with an uploaded
-	animation in Config.Animations.AssetIds plays that animation instead. Studio: Config.Dev.LogAnimations prints
+	Each frame before rendering, every joint a layer uses is turned through its rest offset (Motor6D.C0, or an
+	AnimationConstraint's Attachment0). Roblox's default walk / idle animations never touch those, so they keep
+	playing on top and nothing races them. Nothing replicates: every client poses every character from the same
+	signals. Layers, bottom to top:
+	  1. Motion (always, Shared/Animation/Motion): the body leans into its movement and tucks up in the air.
+	  2. Stance: fists up while standing still in a round (fades out as the fighter moves).
+	  3. A state loop from replicated attributes: Charge while Charging is set, Carry while HeldProp is set (blends in
+	     and out).
+	  4. One-shots: the server's Animate event (punch chain / weapon swings, charged punch, parry, grab, throw, victory
+	     emotes, other players' dashes); the local dash (DashController.Dashed, no round trip); hits from CombatHit (a
+	     recoil away from the attacker, or a tumble looping through a long hitstun).
+	Hit-stop: a landed hit freezes the attacker's and the victim's clips for Config.Animations.HitStop seconds.
+	When a layer lets go of a joint, the joint goes back to its rest offset. A clip with an uploaded animation in
+	Config.Animations.AssetIds plays that animation instead. Studio: Config.Dev.LogAnimations prints each rig found and
 	every clip started.
 ]]
 local CollectionService = game:GetService("CollectionService")
@@ -23,11 +26,13 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local Net = require(Shared:WaitForChild("Net"))
 local Clips = require(Shared:WaitForChild("Animation"):WaitForChild("Clips"))
+local Motion = require(Shared:WaitForChild("Animation"):WaitForChild("Motion"))
 local Pose = require(Shared:WaitForChild("Animation"):WaitForChild("Pose"))
 
 local DashController = require(script.Parent:WaitForChild("DashController"))
 
 local DUMMY_TAG = "TrainingDummy"
+local RIG_RETRY = 1 -- seconds between looks for the joints of a character that is not (fully) streamed in yet
 
 -- R6 joint names → the R15 names the clips use (R6 has no waist, elbows, wrists, knees or ankles).
 local R6_JOINTS: { [string]: string } = {
@@ -40,13 +45,20 @@ local R6_JOINTS: { [string]: string } = {
 }
 
 -- One joint a clip can turn: a Motor6D (through C0) or an AnimationConstraint (through its parent-side
--- Attachment0); `Rest` is that offset before any clip turned it.
-type Joint = { Motor: Motor6D?, Attachment: Attachment?, Rest: CFrame }
+-- Attachment0); `Rest` is that offset before anything turned it.
+type Joint = { Motor: Motor6D?, Attachment: Attachment?, Constraint: AnimationConstraint?, Rest: CFrame }
 
 type Playing = { Clip: Pose.Clip, Name: string, StartedAt: number, Length: number? }
+type Layer = { Sample: Pose.Sample, Weight: number }
 type Rig = {
 	Joints: { [string]: Joint },
-	Posed: { [string]: boolean }, -- joints a clip turned last frame
+	Posed: { [string]: boolean }, -- joints a layer turned last frame
+	Clock: number, -- this character's animation time: stands still during hit-stop
+	LastFrame: number,
+	FrozenUntil: number,
+	Pitch: number, -- smoothed Motion lean
+	Roll: number,
+	StanceWeight: number, -- smoothed
 	OneShot: Playing?,
 	Loop: Playing?,
 	Fading: Playing?, -- the loop that just ended, blending out
@@ -57,6 +69,7 @@ type Rig = {
 local AnimationController = {}
 
 local rigs: { [Model]: Rig } = {}
+local retryAt: { [Model]: number } = {}
 
 local function now(): number
 	return os.clock()
@@ -86,7 +99,7 @@ local function findJoints(character: Model): { [string]: Joint }
 				joints[name] = { Motor = descendant, Rest = descendant.C0 }
 			elseif current == nil and descendant:IsA("AnimationConstraint") and descendant.Attachment0 then
 				local attachment = descendant.Attachment0 :: Attachment
-				joints[name] = { Attachment = attachment, Rest = attachment.CFrame }
+				joints[name] = { Attachment = attachment, Constraint = descendant, Rest = attachment.CFrame }
 			end
 		end
 	end
@@ -109,25 +122,46 @@ local function reportMissingJoints(character: Model)
 	log(`no joints to animate on {character.Name}; it has: {if #found > 0 then table.concat(found, ", ") else "none"}`)
 end
 
+local function describe(joints: { [string]: Joint }): string
+	local kinds: { string } = {}
+	for name, joint in joints do
+		local kind = "Motor6D"
+		local constraint = joint.Constraint
+		if constraint then
+			kind = if constraint.IsKinematic then "AnimationConstraint(kinematic)" else "AnimationConstraint(physical)"
+		end
+		table.insert(kinds, `{name}:{kind}`)
+	end
+	table.sort(kinds)
+	return table.concat(kinds, " ")
+end
+
 local function rigOf(character: Model): Rig?
 	local existing = rigs[character]
 	if existing then
 		return existing
 	end
+	local t = now()
+	if (retryAt[character] or 0) > t then
+		return nil
+	end
 	local joints = findJoints(character)
 	if next(joints) == nil then
+		retryAt[character] = t + RIG_RETRY
 		reportMissingJoints(character)
 		return nil -- not streamed in yet, or a rig we do not know
 	end
-	local kinds: { string } = {}
-	for name, joint in joints do
-		table.insert(kinds, `{name}:{if joint.Motor then "Motor6D" else "AnimationConstraint"}`)
-	end
-	table.sort(kinds)
-	log(`{character.Name}: {table.concat(kinds, " ")}`)
+	retryAt[character] = nil
+	log(`{character.Name}: {describe(joints)}`)
 	local rig: Rig = {
 		Joints = joints,
 		Posed = {},
+		Clock = 0,
+		LastFrame = t,
+		FrozenUntil = 0,
+		Pitch = 0,
+		Roll = 0,
+		StanceWeight = 0,
 		OneShot = nil,
 		Loop = nil,
 		Fading = nil,
@@ -137,6 +171,7 @@ local function rigOf(character: Model): Rig?
 	rigs[character] = rig
 	character.Destroying:Connect(function()
 		rigs[character] = nil
+		retryAt[character] = nil
 	end)
 	return rig
 end
@@ -184,7 +219,7 @@ function AnimationController.play(character: Model, clipName: string, length: nu
 	if playAsset(character, rig, clipName) then
 		return
 	end
-	rig.OneShot = { Clip = clip, Name = clipName, StartedAt = now(), Length = length }
+	rig.OneShot = { Clip = clip, Name = clipName, StartedAt = rig.Clock, Length = length }
 end
 
 -- The loop a character's replicated state asks for (charging a punch beats carrying).
@@ -218,42 +253,82 @@ local function setTurn(joint: Joint, turn: CFrame?)
 	end
 end
 
-local function update(character: Model, rig: Rig, t: number)
+-- The Motion layer's input from the character's movement, with the lean smoothed toward its target.
+local function motionLayer(character: Model, rig: Rig, dt: number): (Layer?, number)
+	local root = character:FindFirstChild("HumanoidRootPart")
+	if root == nil or not root:IsA("BasePart") then
+		return nil, 0
+	end
+	local velocity = root.CFrame:VectorToObjectSpace(root.AssemblyLinearVelocity)
+	local forward, side = -velocity.Z, velocity.X
+	local pitch, roll = Motion.lean(forward, side)
+	local follow = 1 - math.exp(-Config.Animations.Motion.Smoothing * dt)
+	rig.Pitch += (pitch - rig.Pitch) * follow
+	rig.Roll += (roll - rig.Roll) * follow
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	local airborne = humanoid == nil or humanoid.FloorMaterial == Enum.Material.Air
+	local air = Motion.airWeight(velocity.Y, airborne)
+	local speed = Vector3.new(velocity.X, 0, velocity.Z).Magnitude
+	return { Sample = Motion.sample(rig.Pitch, rig.Roll, air), Weight = 1 }, speed
+end
+
+-- Fists up while standing still in a round (players only).
+local function inRound(character: Model): boolean
+	local player = Players:GetPlayerFromCharacter(character)
+	return player ~= nil and player:GetAttribute("RoundStatus") == "Playing"
+end
+
+local function update(character: Model, rig: Rig)
+	local t = now()
+	local dt = math.min(t - rig.LastFrame, 0.1)
+	rig.LastFrame = t
+	if t >= rig.FrozenUntil then
+		rig.Clock += dt -- hit-stop holds every clip still
+	end
+	local clock = rig.Clock
 	local blend = Config.Animations.BlendTime
 
-	-- Loop from state: (re)start it when it changes; an ended loop blends out.
+	-- State loop: (re)start it when it changes; an ended loop blends out.
 	local loopName = loopFor(character)
 	local loop = rig.Loop
 	if loop and loop.Name ~= loopName then
-		rig.Fading, rig.FadeStartedAt = loop, t
+		rig.Fading, rig.FadeStartedAt = loop, clock
 		rig.Loop = nil
 	end
 	if loopName and rig.Loop == nil then
-		rig.Loop = { Clip = Clips[loopName], Name = loopName, StartedAt = t }
+		rig.Loop = { Clip = Clips[loopName], Name = loopName, StartedAt = clock }
 	end
-	if rig.Fading and t - rig.FadeStartedAt >= blend then
+	if rig.Fading and clock - rig.FadeStartedAt >= blend then
 		rig.Fading = nil
 	end
 	local oneShot = rig.OneShot
-	if oneShot and Pose.isOver(oneShot.Clip, t - oneShot.StartedAt, oneShot.Length) then
+	if oneShot and Pose.isOver(oneShot.Clip, clock - oneShot.StartedAt, oneShot.Length) then
 		rig.OneShot = nil
 		oneShot = nil
 	end
 
-	-- Layers, bottom to top: the fading loop, the current loop, the one-shot.
-	local layers: { { Sample: Pose.Sample, Weight: number } } = {}
+	local layers: { Layer } = {}
+	local motion, speed = motionLayer(character, rig, dt)
+	if motion then
+		table.insert(layers, motion)
+	end
+	local stanceTarget = if inRound(character) and rig.Loop == nil then Motion.stanceWeight(speed) else 0
+	rig.StanceWeight += (stanceTarget - rig.StanceWeight) * (1 - math.exp(-dt / math.max(blend * 2, 0.01)))
+	if rig.StanceWeight > 0.01 then
+		table.insert(layers, { Sample = Pose.sample(Clips.Stance, clock), Weight = rig.StanceWeight })
+	end
 	local fading = rig.Fading
 	if fading then
-		local weight = 1 - (t - rig.FadeStartedAt) / blend
-		table.insert(layers, { Sample = Pose.sample(fading.Clip, t - fading.StartedAt), Weight = weight })
+		local weight = 1 - (clock - rig.FadeStartedAt) / blend
+		table.insert(layers, { Sample = Pose.sample(fading.Clip, clock - fading.StartedAt), Weight = weight })
 	end
 	local current = rig.Loop
 	if current then
-		local elapsed = t - current.StartedAt
+		local elapsed = clock - current.StartedAt
 		table.insert(layers, { Sample = Pose.sample(current.Clip, elapsed), Weight = math.min(elapsed / blend, 1) })
 	end
 	if oneShot then
-		local elapsed = t - oneShot.StartedAt
+		local elapsed = clock - oneShot.StartedAt
 		local weight = Pose.weight(oneShot.Clip, elapsed, blend, oneShot.Length)
 		table.insert(layers, { Sample = Pose.sample(oneShot.Clip, elapsed), Weight = weight })
 	end
@@ -271,17 +346,43 @@ local function update(character: Model, rig: Rig, t: number)
 			setTurn(joint, turn)
 			posed[name] = true
 		elseif rig.Posed[name] then
-			setTurn(joint, nil) -- the clip let go: back to rest
+			setTurn(joint, nil) -- every layer let go: back to rest
 		end
 	end
 	rig.Posed = posed
 end
 
+-- The recoil clip for a hit, from where the attacker stands relative to the victim.
+local function recoilClip(attacker: Model?, victim: Model): string
+	local victimRoot = victim:FindFirstChild("HumanoidRootPart")
+	local attackerRoot = attacker and attacker:FindFirstChild("HumanoidRootPart")
+	if
+		victimRoot == nil
+		or attackerRoot == nil
+		or not victimRoot:IsA("BasePart")
+		or not attackerRoot:IsA("BasePart")
+	then
+		return "Hit"
+	end
+	local from = victimRoot.CFrame:PointToObjectSpace(attackerRoot.Position)
+	if math.abs(from.X) > math.abs(from.Z) then
+		return if from.X > 0 then "HitRight" else "HitLeft"
+	end
+	return if from.Z < 0 then "Hit" else "HitBack"
+end
+
+local function freeze(character: Model?, seconds: number)
+	local rig = character and rigs[character]
+	if rig then
+		rig.FrozenUntil = math.max(rig.FrozenUntil, now() + seconds)
+	end
+end
+
 local function onCombatHit(
-	_attacker: Model?,
+	attacker: Model?,
 	victim: Model?,
 	_attack: string,
-	_heavy: boolean,
+	heavy: boolean,
 	_trail: boolean,
 	hitstun: number?
 )
@@ -292,8 +393,11 @@ local function onCombatHit(
 	if stun >= Clips.Tumble.Duration then
 		AnimationController.play(victim, "Tumble", stun)
 	else
-		AnimationController.play(victim, "Hit")
+		AnimationController.play(victim, recoilClip(attacker, victim))
 	end
+	local stop = if heavy then Config.Animations.HitStop.Heavy else Config.Animations.HitStop.Light
+	freeze(victim, stop)
+	freeze(attacker, stop)
 end
 
 function AnimationController.Start(_self: any)
@@ -310,23 +414,19 @@ function AnimationController.Start(_self: any)
 			AnimationController.play(character, "Dash")
 		end
 	end)
-	-- Right before each frame is drawn.
+	-- Right before each frame is drawn: every character this client sees.
 	RunService.RenderStepped:Connect(function()
-		local t = now()
-		-- Characters with something to show: a one-shot, or a state loop (players only; dummies never carry).
 		for _, player in Players:GetPlayers() do
 			local character = player.Character
-			if character and (rigs[character] or loopFor(character)) then
-				local rig = rigOf(character)
-				if rig then
-					update(character, rig, t)
-				end
+			local rig = character and rigOf(character)
+			if character and rig then
+				update(character, rig)
 			end
 		end
 		for _, dummy in CollectionService:GetTagged(DUMMY_TAG) do
-			local rig = if dummy:IsA("Model") then rigs[dummy] else nil
+			local rig = if dummy:IsA("Model") then rigOf(dummy) else nil
 			if rig and dummy:IsA("Model") then
-				update(dummy, rig, t)
+				update(dummy, rig)
 			end
 		end
 	end)

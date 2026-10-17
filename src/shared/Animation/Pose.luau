@@ -3,15 +3,19 @@
 	Pose — samples scripted animation clips (pure numbers, so Lune specs test it). A clip is a list of keys; each key
 	gives some R15 joints an angle in degrees, applied Y·X·Z on the joint (X: a limb swings forward / the body tilts
 	back; Y: turns left; Z: a right limb swings out to the right, a left limb with −Z to the left) and optionally an
-	offset in studs (on Root it moves the whole body, e.g. a crouch). Values ease smoothly between keys (linearly
-	with Ease = "Linear"); a joint the clip uses but a key leaves out is at rest (0) at that key.
+	offset in studs (on Root it moves the whole body, e.g. a crouch). A joint the clip uses but a key leaves out is
+	at rest (0) at that key.
+	Easing: the curve used to reach a key from the one before — the key's Ease, else the clip's, else "Smooth".
+	"Out" starts fast (strikes), "In" starts slow, "Back" overshoots a little and settles (snappy impacts), "Linear"
+	keeps a constant speed (spins).
 ]]
+export type Ease = "Smooth" | "Linear" | "In" | "Out" | "Back"
 export type JointPose = { number } -- { x, y, z } degrees, then optionally { px, py, pz } studs
-export type Key = { T: number, Pose: { [string]: JointPose } }
+export type Key = { T: number, Pose: { [string]: JointPose }, Ease: Ease? }
 export type Clip = {
 	Duration: number,
 	Loop: boolean?,
-	Ease: ("Smooth" | "Linear")?,
+	Ease: Ease?,
 	Keys: { Key },
 }
 export type Sample = { [string]: { number } } -- joint -> { x, y, z, px, py, pz }
@@ -36,6 +40,24 @@ Pose.Joints = {
 	"LeftKnee",
 	"LeftAnkle",
 }
+
+local BACK = 1.70158 -- easeOutBack's overshoot constant (~10%)
+
+-- Eases `alpha` (0..1) along a curve; 0 stays 0 and 1 stays 1.
+function Pose.ease(kind: Ease, alpha: number): number
+	if kind == "Linear" then
+		return alpha
+	elseif kind == "In" then
+		return alpha * alpha * alpha
+	elseif kind == "Out" then
+		local rest = 1 - alpha
+		return 1 - rest * rest * rest
+	elseif kind == "Back" then
+		local rest = alpha - 1
+		return 1 + (BACK + 1) * rest * rest * rest + BACK * rest * rest
+	end
+	return alpha * alpha * (3 - 2 * alpha)
+end
 
 -- When the clip stops: `length` (a loop held for a while, e.g. a hitstun), else its Duration; loops never stop.
 local function finishOf(clip: Clip, length: number?): number
@@ -80,9 +102,7 @@ function Pose.sample(clip: Clip, elapsed: number): Sample
 	end
 	local span = to.T - from.T
 	local alpha = if span > 0 then (t - from.T) / span else 0
-	if clip.Ease ~= "Linear" then
-		alpha = alpha * alpha * (3 - 2 * alpha)
-	end
+	alpha = Pose.ease(to.Ease or clip.Ease or "Smooth", alpha)
 	local result: Sample = {}
 	for joint in Pose.jointsOf(clip) do
 		local a, b = from.Pose[joint], to.Pose[joint]
