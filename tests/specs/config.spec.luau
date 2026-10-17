@@ -38,7 +38,7 @@ return {
 	["styles are side-grades with positive multipliers"] = function()
 		for id, style in Config.Styles.List do
 			expect.truthy(style.AttackSpeed > 0, `{id} AttackSpeed`)
-			for _, attack in { style.Punch, style.Shove } do
+			for _, attack in { style.Punch, style.Charged } do
 				expect.truthy(attack.DamageMultiplier > 0 and attack.DamageMultiplier <= 1.25, `{id} damage`)
 				expect.truthy(attack.KnockbackMultiplier > 0 and attack.KnockbackMultiplier <= 1.25, `{id} KB`)
 			end

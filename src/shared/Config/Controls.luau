@@ -17,7 +17,6 @@ type ControlsConfig = {
 	Actions: { string },
 	Keyboard: Bindings,
 	Gamepad: Bindings,
-	ShoveDragCancel: number?,
 	Touch: {
 		MinButtonSize: number,
 		ButtonSize: number,
@@ -39,10 +38,11 @@ type ControlsConfig = {
 
 local Controls: ControlsConfig = {
 	-- Every action the game listens for. Each one needs a keyboard and a gamepad binding.
-	Actions = { "Attack", "Shove", "Grab", "Dash", "Scoreboard", "Menu", "SpectatePrevious", "SpectateNext" },
+	Actions = { "Attack", "Ability", "Grab", "Dash", "Scoreboard", "Menu", "SpectatePrevious", "SpectateNext" },
 	Keyboard = {
 		Attack = { "MouseButton1" },
-		Shove = { "MouseButton2" },
+		-- Hold Attack to charge a punch. Right-click is left to Roblox's camera turn (owner, 2026-10-17: no Shove).
+		Ability = { "F" }, -- the equipped style's move (Wrecker: parry)
 		Grab = { "E" },
 		Dash = { "Q", "LeftShift" },
 		Scoreboard = { "Tab" },
@@ -52,7 +52,7 @@ local Controls: ControlsConfig = {
 	},
 	Gamepad = {
 		Attack = { "ButtonX" },
-		Shove = { "ButtonY" },
+		Ability = { "ButtonY" },
 		Grab = { "ButtonB" },
 		Dash = { "ButtonR1" },
 		-- Not Select / Start: Roblox keeps those for its own menu and UI navigation (owner's choice, 2026-10-16).
@@ -61,9 +61,6 @@ local Controls: ControlsConfig = {
 		SpectatePrevious = { "DPadLeft" },
 		SpectateNext = { "DPadRight" },
 	},
-	-- Right-click is also Roblox's drag-to-turn-the-camera button: dragging the mouse this many pixels while a
-	-- right-click Shove is charging cancels the Shove (it was a camera turn). nil keeps the Shove.
-	ShoveDragCancel = 12,
 	Touch = {
 		MinButtonSize = 64, -- pixels; no touch button is ever smaller
 		ButtonSize = 0.17, -- base button size as a fraction of the screen's shorter side...
@@ -74,7 +71,7 @@ local Controls: ControlsConfig = {
 			Default = {
 				{ Action = "Attack", Angle = 180, Distance = 0.2, Scale = 1.15 },
 				{ Action = "Dash", Angle = 90, Distance = 0.2, Scale = 1 },
-				{ Action = "Shove", Angle = 155, Distance = 1.35, Scale = 1 },
+				{ Action = "Ability", Angle = 155, Distance = 1.35, Scale = 1 }, -- only shown for styles with one
 				{ Action = "Grab", Angle = 115, Distance = 1.35, Scale = 1 },
 			},
 		},

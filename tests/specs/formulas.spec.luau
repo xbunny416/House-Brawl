@@ -5,6 +5,7 @@ local expect = require("../expect")
 
 local Shared = Roblox.game.ReplicatedStorage.Shared
 local F = Roblox.require(Shared.Formulas)
+local Config = Roblox.require(Shared.Config)
 
 local function payout(overrides: { [string]: any }): any
 	local input = {
@@ -36,7 +37,7 @@ return {
 	["knockback: Casual multiplies by 1.15"] = function()
 		expect.near(F.knockbackForce(100, 1, "Casual"), 115)
 	end,
-	["knockback: shove scale 1.6 at 50%"] = function()
+	["knockback: charged punch scale 1.6 at 50%"] = function()
 		expect.near(F.knockbackForce(50, 1.6, "Classic"), 86)
 	end,
 	["knockback: extra multiplier applies last"] = function()
@@ -96,22 +97,28 @@ return {
 		expect.near(punch.Damage, 9.2)
 		expect.equal(punch.Hitbox.Z, 7)
 		expect.near(punch.Cooldown, 0.4375)
-		local shove = F.resolveAttack("Slugger", "Shove")
-		expect.near(shove.Damage, 16.1)
-		expect.equal(shove.Hitbox.Z, 8)
+		local charged = F.resolveAttack("Slugger", "Charged")
+		expect.near(charged.Damage, 16.1)
+		expect.equal(charged.Hitbox.Z, 8)
 	end,
-	["scrapper: wide sweep, x0.9 damage, shove KB x1.1"] = function()
+	["scrapper: wide sweep, x0.9 damage, charged KB x1.1"] = function()
 		local punch = F.resolveAttack("Scrapper", "Punch")
 		expect.equal(punch.Hitbox.X, 7)
 		expect.equal(punch.Hitbox.Y, 4)
 		expect.near(punch.Damage, 7.2)
-		expect.near(F.resolveAttack("Scrapper", "Shove").KnockbackScale, 1.76)
+		expect.near(F.resolveAttack("Scrapper", "Charged").KnockbackScale, 1.76)
 	end,
-	["wrecker: punch x0.95, shove is a 0.2 s parry"] = function()
+	["wrecker: punch x0.95, a normal charged punch, a 0.2 s parry on the Ability key"] = function()
 		expect.near(F.resolveAttack("Wrecker", "Punch").Damage, 7.6)
-		local shove = F.resolveAttack("Wrecker", "Shove")
-		expect.truthy(shove.Parry, "parry")
-		expect.near((shove.Parry :: any).Window, 0.2)
+		expect.near(F.resolveAttack("Wrecker", "Charged").Damage, 14)
+		local ability = Config.Styles.List.Wrecker.Ability
+		expect.truthy(ability, "ability")
+		expect.near((ability :: any).Parry.Window, 0.2)
+	end,
+	["only the Wrecker has an Ability move"] = function()
+		for styleId, style in Config.Styles.List do
+			expect.equal(style.Ability ~= nil, styleId == "Wrecker", styleId)
+		end
 	end,
 	["punch chain: 3rd hit x1.5 KB and 0.8 s cooldown"] = function()
 		expect.equal(F.punchChainMultiplier(1), 1)
@@ -120,11 +127,11 @@ return {
 		expect.near(F.punchCooldown(3, 1), 0.8)
 		expect.near(F.punchCooldown(3, 0.8), 1)
 	end,
-	["shove charge scales to x1.5 at 0.8 s"] = function()
-		expect.equal(F.shoveChargeMultiplier(0), 1)
-		expect.near(F.shoveChargeMultiplier(0.4), 1.25)
-		expect.near(F.shoveChargeMultiplier(0.8), 1.5)
-		expect.near(F.shoveChargeMultiplier(5), 1.5)
+	["charge scales to x1.5 at 0.8 s"] = function()
+		expect.equal(F.chargeMultiplier(0), 1)
+		expect.near(F.chargeMultiplier(0.4), 1.25)
+		expect.near(F.chargeMultiplier(0.8), 1.5)
+		expect.near(F.chargeMultiplier(5), 1.5)
 	end,
 	["perfect dodge window is the last 0.15 s"] = function()
 		expect.equal(F.isPerfectDodge(10, 10.1), true)

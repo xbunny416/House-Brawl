@@ -1,6 +1,6 @@
 --!strict
 --[[
-	Fighter — one combatant's combat state and rules: punch chain, Shove charge, cooldowns, hitstun, HP / Percent and
+	Fighter — one combatant's combat state and rules: punch chain, charged punch, parry, cooldowns, hitstun, HP / Percent and
 	KO credit. Pure logic (no instances; the current time is passed in), so Lune specs test every rule.
 	CombatService keeps one Fighter per character and turns the results into hit checks, launches and KOs.
 ]]
@@ -11,7 +11,7 @@ local Config = require(Shared:WaitForChild("Config"))
 local Formulas = require(Shared:WaitForChild("Formulas"))
 
 local Punch = Config.Combat.Attacks.Punch
-local Shove = Config.Combat.Attacks.Shove
+local Charged = Config.Combat.Attacks.Charged
 local Dash = Config.Combat.Dash
 local PerfectDodge = Config.Combat.PerfectDodge
 
@@ -22,12 +22,13 @@ export type Fighter = {
 	PunchChain: number, -- punches thrown in the current chain
 	LastPunchAt: number,
 	NextPunchAt: number,
-	NextShoveAt: number,
-	ChargeStartedAt: number?, -- set while a Shove is charging
+	NextChargeAt: number,
+	NextAbilityAt: number, -- the Ability move (parry) cooldown
+	ChargeStartedAt: number?, -- set while a punch is charging
 	StunnedUntil: number,
 	LastHitAt: number,
 	LastAttacker: any?, -- whoever hit last (a Player on the server)
-	LastHitWith: string?, -- what that last hit was: "Punch", "Shove" or a prop type
+	LastHitWith: string?, -- what that last hit was: "Punch", "Charged" or a prop type
 	Defeated: boolean,
 	NextDashAt: number,
 	DashStartedAt: number?, -- server time of the last accepted dash (its invulnerability starts here)
@@ -47,7 +48,7 @@ export type Hit = {
 	Percent: number,
 	KnockbackScale: number,
 	Multiplier: number,
-	Source: string?, -- "Punch", "Shove" or a prop type (KO stats such as chair KOs)
+	Source: string?, -- "Punch", "Charged" or a prop type (KO stats such as chair KOs)
 }
 
 export type HitResult = {
@@ -55,7 +56,7 @@ export type HitResult = {
 	Hitstun: number,
 	Trail: boolean, -- launched above TrailPercent: leaves a smoke trail
 	Defeated: boolean, -- Classic: HP reached 0
-	InterruptedCharge: boolean, -- the hit cancelled the victim's Shove charge
+	InterruptedCharge: boolean, -- the hit cancelled the victim's charge
 }
 
 local Fighter = {}
@@ -75,7 +76,8 @@ function Fighter.new(modeId: string): Fighter
 		PunchChain = 0,
 		LastPunchAt = -math.huge,
 		NextPunchAt = 0,
-		NextShoveAt = 0,
+		NextChargeAt = 0,
+		NextAbilityAt = 0,
 		ChargeStartedAt = nil,
 		StunnedUntil = 0,
 		LastHitAt = -math.huge,
@@ -143,7 +145,7 @@ function Fighter.wasHitSince(fighter: Fighter, time: number): boolean
 end
 
 -- Throws a punch if allowed. Returns its place in the chain (1 to ChainLength), or nil if not allowed now
--- (cooldown, hitstun, charging a Shove).
+-- (cooldown, hitstun, charging).
 function Fighter.punch(fighter: Fighter, attackSpeed: number, now: number): number?
 	if not Fighter.canAct(fighter, now) or now < fighter.NextPunchAt or fighter.ChargeStartedAt ~= nil then
 		return nil
@@ -158,9 +160,10 @@ function Fighter.punch(fighter: Fighter, attackSpeed: number, now: number): numb
 	return fighter.PunchChain
 end
 
--- Starts charging a Shove. False if not allowed now (cooldown, hitstun, already charging).
-function Fighter.startShove(fighter: Fighter, now: number): boolean
-	if not Fighter.canAct(fighter, now) or now < fighter.NextShoveAt or fighter.ChargeStartedAt ~= nil then
+-- Starts charging a punch (the attack is being held). False if not allowed now (cooldown, hitstun, already
+-- charging). A punch thrown just before does not block it: the charge has its own cooldown.
+function Fighter.startCharge(fighter: Fighter, now: number): boolean
+	if not Fighter.canAct(fighter, now) or now < fighter.NextChargeAt or fighter.ChargeStartedAt ~= nil then
 		return false
 	end
 	fighter.ChargeStartedAt = now
@@ -168,20 +171,20 @@ function Fighter.startShove(fighter: Fighter, now: number): boolean
 	return true
 end
 
--- Releases the charge and starts the Shove cooldown. Returns the charge time (capped at MaxChargeTime), or nil when
--- the fighter was not charging.
-function Fighter.releaseShove(fighter: Fighter, cooldown: number, now: number): number?
+-- Releases the charge and starts its cooldown. Returns the charge time (capped at MaxChargeTime), or nil when the
+-- fighter was not charging.
+function Fighter.releaseCharge(fighter: Fighter, cooldown: number, now: number): number?
 	local started = fighter.ChargeStartedAt
 	if started == nil then
 		return nil
 	end
 	fighter.ChargeStartedAt = nil
-	fighter.NextShoveAt = now + cooldown
-	return math.min(now - started, Shove.MaxChargeTime)
+	fighter.NextChargeAt = now + cooldown
+	return math.min(now - started, Charged.MaxChargeTime)
 end
 
--- Stops charging without shoving (no cooldown). True if a charge was cancelled.
-function Fighter.cancelShove(fighter: Fighter): boolean
+-- Stops charging without punching (no cooldown). True if a charge was cancelled.
+function Fighter.cancelCharge(fighter: Fighter): boolean
 	if fighter.ChargeStartedAt == nil then
 		return false
 	end
@@ -190,25 +193,25 @@ function Fighter.cancelShove(fighter: Fighter): boolean
 end
 
 -- Starts a dash's invulnerability (the client already moved the character). False if not allowed now: hitstun, or
--- the cooldown is not over (minus CooldownTolerance for network jitter). A dash cancels a Shove charge.
+-- the cooldown is not over (minus CooldownTolerance for network jitter). A dash cancels a charge.
 function Fighter.dash(fighter: Fighter, now: number): boolean
 	if not Fighter.canAct(fighter, now) or now < fighter.NextDashAt then
 		return false
 	end
 	fighter.DashStartedAt = now
 	fighter.NextDashAt = now + Dash.Cooldown - Dash.CooldownTolerance
-	Fighter.cancelShove(fighter)
+	Fighter.cancelCharge(fighter)
 	return true
 end
 
--- Parry (styles whose Shove is a parry): for `window` seconds melee hits are turned back on their attacker. Shares
--- the Shove cooldown. False if not allowed now (cooldown, hitstun, charging).
+-- Parry (the Ability move of styles that have one, e.g. Wrecker): for `window` seconds melee hits are turned back on
+-- their attacker. False if not allowed now (its cooldown, hitstun, charging).
 function Fighter.parry(fighter: Fighter, now: number, window: number, cooldown: number): boolean
-	if not Fighter.canAct(fighter, now) or now < fighter.NextShoveAt or fighter.ChargeStartedAt ~= nil then
+	if not Fighter.canAct(fighter, now) or now < fighter.NextAbilityAt or fighter.ChargeStartedAt ~= nil then
 		return false
 	end
 	fighter.ParryUntil = now + window
-	fighter.NextShoveAt = now + cooldown
+	fighter.NextAbilityAt = now + cooldown
 	return true
 end
 
@@ -256,7 +259,7 @@ function Fighter.takeHit(fighter: Fighter, hit: Hit, attacker: any, now: number)
 		fighter.Percent = Formulas.addCasualPercent(fighter.Percent, hit.Percent)
 	end
 	local hitstun = Formulas.hitstun(fighter.Percent)
-	local interrupted = Fighter.cancelShove(fighter)
+	local interrupted = Fighter.cancelCharge(fighter)
 	fighter.StunnedUntil = math.max(fighter.StunnedUntil, now + hitstun)
 	fighter.LastHitAt = now
 	fighter.LastAttacker = attacker
@@ -271,7 +274,7 @@ function Fighter.takeHit(fighter: Fighter, hit: Hit, attacker: any, now: number)
 end
 
 -- Who gets the KO if this fighter is knocked out now: the last attacker within KOCreditWindow seconds (else nil),
--- and what that last hit was ("Punch", "Shove" or a prop type).
+-- and what that last hit was ("Punch", "Charged" or a prop type).
 function Fighter.koCredit(fighter: Fighter, now: number): (any?, string?)
 	if fighter.LastAttacker ~= nil and now - fighter.LastHitAt <= Config.Combat.KOCreditWindow then
 		return fighter.LastAttacker, fighter.LastHitWith

@@ -2,8 +2,8 @@
 --[[
 	Clips — the scripted R15 animations (bible §4.2), as pose keys for Shared/Animation/Pose (degrees: X forward /
 	back, Y turn left, Z out to the side; Root offsets in studs). Lengths follow the bible: punch-chain hits 0.3 s,
-	weapon swings 0.45 s, Shove 0.5 s, Dash 0.25 s, Grab 0.3 s, Throw 0.4 s, hit reaction / tumble 0.6 s (the tumble
-	loops through a hitstun), victory emotes 2 s. Carry and ShoveCharge loop while their state lasts.
+	weapon swings 0.45 s, charged punch / swing 0.5 s, Dash 0.25 s, Grab 0.3 s, Throw 0.4 s, hit reaction / tumble
+	0.6 s (the tumble loops through a hitstun), victory emotes 2 s. Carry and Charge loop while their state lasts.
 	Which clips a style uses: Config.Styles.List[id].Animations. Victory emotes: the cosmetic's Emote field.
 ]]
 local Pose = require(script.Parent.Pose)
@@ -47,16 +47,20 @@ local CARRY: PoseMap = {
 	Waist = { 4, 0, 0 },
 }
 
--- Arms pulled back, leaning back, knees bent: winding up a Shove.
+-- Winding up a charged punch: body coiled to the right, right fist (or weapon) cocked back by the shoulder, left
+-- hand guarding, knees bent low.
 local CHARGE: PoseMap = {
-	RightShoulder = { 25, 0, 25 },
-	RightElbow = { 125, 0, 0 },
-	LeftShoulder = { 25, 0, -25 },
-	LeftElbow = { 125, 0, 0 },
-	Waist = { 12, 0, 0 },
-	Root = { 0, 0, 0, 0, -0.3, 0 },
-	RightKnee = { -20, 0, 0 },
-	LeftKnee = { -20, 0, 0 },
+	RightShoulder = { -25, -20, 35 },
+	RightElbow = { 110, 0, 0 },
+	LeftShoulder = { 70, 0, -20 },
+	LeftElbow = { 100, 0, 0 },
+	Waist = { 8, -35, 0 },
+	Neck = { 0, 25, 0 },
+	Root = { -6, 0, 0, 0, -0.6, 0.3 },
+	RightHip = { 30, 0, 0 },
+	RightKnee = { -45, 0, 0 },
+	LeftHip = { -10, 0, 0 },
+	LeftKnee = { -25, 0, 0 },
 }
 
 -- A horizontal swing with the right hand: wind up on `fromSide` (+1 right, −1 left), sweep across at `height`
@@ -191,43 +195,89 @@ local Clips: { [string]: Clip } = {
 		},
 	},
 
-	-- Shove: the charge loop while the button is held, then a two-hand push.
-	ShoveCharge = {
-		Duration = 0.6,
+	-- Charged punch: the wind-up loop while the attack is held (it trembles as power builds), then the hit.
+	Charge = {
+		Duration = 0.24,
 		Loop = true,
 		Keys = {
 			{ T = 0, Pose = CHARGE },
-			{ T = 0.3, Pose = with(CHARGE, { Waist = { 16, 0, 0 } }) },
-			{ T = 0.6, Pose = CHARGE },
+			{ T = 0.12, Pose = with(CHARGE, { Waist = { 10, -40, 0 }, Root = { -6, 0, 0, 0, -0.68, 0.32 } }) },
+			{ T = 0.24, Pose = CHARGE },
 		},
 	},
-	Shove = {
+	-- Fists: the body uncoils into a lunging straight right.
+	PowerPunch = {
 		Duration = 0.5,
 		Keys = {
 			{ T = 0, Pose = CHARGE },
 			{
-				T = 0.1,
+				T = 0.07,
 				Pose = {
-					RightShoulder = { 95, 0, 8 },
+					RightShoulder = { 95, 10, 0 },
 					RightElbow = { 0, 0, 0 },
-					LeftShoulder = { 95, 0, -8 },
-					LeftElbow = { 0, 0, 0 },
-					Waist = { -15, 0, 0 },
-					Root = { -8, 0, 0 },
+					LeftShoulder = { 20, 0, -30 },
+					LeftElbow = { 110, 0, 0 },
+					Waist = { -18, 45, 0 },
+					Neck = { 5, -20, 0 },
+					Root = { -14, 0, 0, 0, -0.3, -1.2 },
+					RightHip = { -25, 0, 0 },
+					RightKnee = { -10, 0, 0 },
+					LeftHip = { 45, 0, 0 },
+					LeftKnee = { -40, 0, 0 },
 				},
 			},
 			{
-				T = 0.28,
+				T = 0.24,
 				Pose = {
-					RightShoulder = { 95, 0, 8 },
-					RightElbow = { 0, 0, 0 },
-					LeftShoulder = { 95, 0, -8 },
-					LeftElbow = { 0, 0, 0 },
-					Waist = { -15, 0, 0 },
-					Root = { -8, 0, 0 },
+					RightShoulder = { 92, 8, 0 },
+					RightElbow = { 5, 0, 0 },
+					LeftShoulder = { 25, 0, -30 },
+					LeftElbow = { 105, 0, 0 },
+					Waist = { -15, 40, 0 },
+					Neck = { 5, -18, 0 },
+					Root = { -12, 0, 0, 0, -0.3, -1 },
+					RightHip = { -20, 0, 0 },
+					LeftHip = { 40, 0, 0 },
+					LeftKnee = { -35, 0, 0 },
 				},
 			},
 			{ T = 0.5, Pose = GUARD },
+		},
+	},
+	-- Weapons: a full two-hand swing from the cocked-back wind-up across the body.
+	PowerSwing = {
+		Duration = 0.5,
+		Keys = {
+			{ T = 0, Pose = CHARGE },
+			{
+				T = 0.09,
+				Pose = {
+					RightShoulder = { 85, 70, 0 },
+					RightElbow = { 10, 0, 0 },
+					LeftShoulder = { 80, 75, 0 },
+					LeftElbow = { 25, 0, 0 },
+					Waist = { -12, 55, 0 },
+					Neck = { 0, -25, 0 },
+					Root = { -10, 0, 0, 0, -0.4, -0.8 },
+					LeftHip = { 35, 0, 0 },
+					LeftKnee = { -35, 0, 0 },
+				},
+			},
+			{
+				T = 0.26,
+				Pose = {
+					RightShoulder = { 80, 75, 0 },
+					RightElbow = { 15, 0, 0 },
+					LeftShoulder = { 75, 80, 0 },
+					LeftElbow = { 30, 0, 0 },
+					Waist = { -10, 50, 0 },
+					Neck = { 0, -22, 0 },
+					Root = { -8, 0, 0, 0, -0.35, -0.7 },
+					LeftHip = { 30, 0, 0 },
+					LeftKnee = { -30, 0, 0 },
+				},
+			},
+			{ T = 0.5, Pose = READY },
 		},
 	},
 	-- Wrecker: the hubcap shield (left hand) snaps up in front of the chest.

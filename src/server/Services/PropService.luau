@@ -9,7 +9,7 @@
 	    has fewer than MaxActive props.
 	  * Grab (Grab remote / Grab action): the server picks the nearest free prop within GrabRange and welds it above
 	    the player's head (massless, no collisions); carrying slows them by the class's CarrySlow. Grab again to drop
-	    it in front of you. Getting hit or knocked out drops it. Holding blocks Shove.
+	    it in front of you. Getting hit or knocked out drops it. Holding blocks a charge.
 	  * Throw: while holding, Attack (Punch remote) throws the prop the way the character faces at ThrowSpeed with a
 	    slight arc (ThrowCooldown). The server simulates the flight and sweeps it every frame: the first fighter in
 	    the way takes the class's damage / Percent / knockback, credited to the thrower; anything else ends the
@@ -664,7 +664,7 @@ function PropService.Init(_self: any)
 		end
 	end)
 
-	-- Holding a prop: Punch throws it and Shove is blocked.
+	-- Holding a prop: Punch throws it and a charge is blocked.
 	CombatService.setInterceptor(function(player: Player, attack: string, facing: Vector3?, position: Vector3?): boolean
 		if heldBy(player) == nil then
 			return false

@@ -105,7 +105,7 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
 - **Animations** are scripted R15 poses: clips in `Shared/Animation/Clips` (sampled by the pure `Shared/Animation/Pose`),
   played on every client by `Controllers/AnimationController`. Server code triggers a one-shot with
   `Server/Visuals/Animate.play(character, clip, except?)` when an action really happens; looping states come from
-  replicated attributes (`ShoveCharging`, `HeldProp`); hits come from `CombatHit` (with the hitstun). A style's clips
+  replicated attributes (`Charging`, `HeldProp`); hits come from `CombatHit` (with the hitstun). A style's clips
   are `Config.Styles.List[id].Animations`; an uploaded animation can replace any clip via
   `Config.Animations.AssetIds`.
 - **Lobby menu screens** (Shop, Locker, later Quests, Daily Reward, Settings ...) register with
@@ -230,6 +230,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | 2.6 Animations (scripted R15, bible §4.2): clips for the punch chain, bat / wrench swings, shovel sweeps, overhead smash, Shove charge + push, Wrecker parry, dash lean, grab, carry loop, throw, hit recoil, launch tumble (backflips through the hitstun) and the 4 victory emotes; pure Pose sampler; AnimationController layers them over the default animations on every client (blend in / out, joints the Animator leaves alone go back to rest); Animate remote + server hooks (CombatService, PropService), ShoveCharging attribute, hitstun in CombatHit; winners emote in the lobby after a round, equipping an emote previews it; optional uploaded animations per clip | #24 |
 | 2026-10-16 | Animation fix ("no animation at all"): clips now turn joints through Motor6D.C0 every frame before rendering (the default animations overwrote the Transform writes); Studio `[Anim]` log (Config.Dev.LogAnimations) | #25 |
 | 2026-10-16 | Animation fix 2: the owner's characters had no R15 Motor6Ds (Studio log: "no R15 joints found"); joints are now found as R15 or R6 Motor6Ds (R6 names mapped, turns applied in the parent part's axes) or AnimationConstraints (turned through Attachment0), and Studio logs which joints a character has (or what it has instead) | #26 |
+| 2026-10-17 | Charged punch replaces the Shove (owner): tap Attack to punch, keep holding to charge, let go for the charged punch (Charge remote, Charging attribute, own cooldown); right-click is camera only; new Ability action (F / Y / touch "Parry" for Wrecker only) runs the style's move (Wrecker parry, own cooldown); "Shove" renamed "Charged" through Config, Formulas, Fighter, CombatService, remotes, clips (Charge loop, PowerPunch, PowerSwing), strings, specs and bible | #27 |
 
 ## Decisions and interpretations
 
@@ -243,7 +244,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Codes** live in the server-only `ServerScriptService.Server.ServerConfig` (not the shared Config) so clients
   cannot read unreleased codes. `LAUNCH` is a placeholder.
 - **Structures** take each attack's Classic HP damage in every mode.
-- New tunables not in the bible: attack windups (Punch and Shove 0.05 s since the 1st playtest, needed for "dodge
+- New tunables not in the bible: attack windups (Punch and charged punch 0.05 s since the 1st playtest, needed for "dodge
   before the hit lands"), punch chain reset 1 s, hitbox latency padding 0.5 studs, launch angle 30°, throw arc +14 studs/s, throw
   cooldown 0.5 s, grab cooldown 0.3 s, results screen 8 s, minimum 2 players to start a round, platform fall 4 s.
 - Robux prices in Config are reference only; live prices come from the Creator Dashboard. Pass/product/badge/group
@@ -258,14 +259,14 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   victim on the ground plane, 30° up. Whoever simulates the victim runs the launch (`Shared/Combat/Launch`): the
   victim's own client for players, the server for dummies; the Humanoid is PlatformStand (no steering) and held
   upright facing the attacker until hitstun is over and it has landed (max 3 s). An attack is lost if its attacker
-  is hit during the windup; no punching while charging; a hit cancels a charge; the Shove cooldown starts on release
-  and a cancelled charge has none. Heavy hits (Shove, punch finisher) shake the victim's camera (1.0) and the
-  attacker's (0.4). Right-dragging the mouse 12 px while charging a right-click Shove cancels it (camera turn).
+  is hit during the windup; no punching while charging; a hit cancels a charge; the charge cooldown starts on release
+  and a cancelled charge has none. Heavy hits (charged punch, punch finisher) shake the victim's camera (1.0) and the
+  attacker's (0.4). (The 1.6 Shove on right-click and its drag-cancel were replaced by the charged punch, 2026-10-17.)
   The equipped style's multipliers already apply; the Wrecker parry comes with styles (2.2). PvP only between two
   players in the arena; the dummy can always be hit. The dummy respawns 2 s after a KO or falling 4 studs.
 - **Dash (1.7):** the client moves at once (LinearVelocity, 48 studs/s for 0.25 s = 12 studs, level, along the move
   direction or else the facing) and sends `Dash`; the server grants invulnerability from when the intent arrives, accepting it up
-  to 0.15 s before the cooldown ends (`Dash.CooldownTolerance`, network jitter). A dash cancels a Shove charge, and a
+  to 0.15 s before the cooldown ends (`Dash.CooldownTolerance`, network jitter). A dash cancels a charge, and a
   dash after hitstun ends a launch (recovery). One Perfect Dodge per dash; dodged hits give no KO credit. The bonus
   applies to every victim of the dodger's next landed swing, then is used up.
 - **Rounds (1.8):** a KO kills the character and Roblox respawns it after `Players.RespawnTime` (= RespawnDelay 3 s);
@@ -284,7 +285,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   (Roblox keeps Start / Select); the developer panel stays Studio-only for now (`Config.Dev.AllowedUserIds` empty).
 - **Props (1.9):** the server picks the nearest free prop within GrabRange (measured to the prop's edge) and welds it
   above the head (massless, no collisions); grabbing again drops it in front. While holding, the Punch intent throws
-  (CombatService interceptor) and Shove is blocked; throws break the spawn shield. A spot's timer (20 s / 30 s for
+  (CombatService interceptor) and charging is blocked; throws break the spawn shield. A spot's timer (20 s / 30 s for
   barrels) starts when its prop is taken; dropped props despawn 8 s after the drop like thrown ones. Flights are
   server-owned and swept every frame (sphere casts): the first fighter hit takes the class blow (thrower's Perfect
   Dodge bonus applies), anything else ends the flight; the thrower is never hit by their own flying prop. Attack boxes
@@ -318,8 +319,8 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   now belong to their platform models, so they sink with a crumbling platform instead of staying behind. The owner
   re-tested and reported "all clear".
 - **Fighting styles (2.2):** the equipped style's numbers have applied since 1.6 (`Formulas.resolveAttack`). New: the
-  Wrecker parry — Shove Start opens a 0.2 s window (no charge; shares the Shove cooldown); a Punch / Shove landing in
-  it misses and its knockback (no damage) goes back onto the attacker from the parrier, credited to the parrier and
+  Wrecker parry — the Ability key opens a 0.2 s window (its own 1.2 s cooldown; it was on Shove until 2026-10-17); a
+  punch or charged punch landing in it misses and its knockback (no damage) goes back onto the attacker from the parrier, credited to the parrier and
   scaled by ReflectMultiplier (source "Parry", so it can't be parried back). Thrown props and blasts are not parried.
   Order of defences: spawn shield, parry, dash. Styles unlock free at their UnlockLevel (on load and on
   `DataService.LeveledUp`); buying with Scrap comes with the Shop (2.4). `EquipStyle` only switches to an owned style
@@ -346,6 +347,16 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   cosmetics) comes with 3.1. The Menu action now belongs to `MenuController`: it closes the open screen, or opens
   the Shop (gamepad: selects the first menu button). The developer panel's "+5000 Scrap" (`Config.Dev.GiveScrap`) is
   for testing purchases.
+- **Charged punch + Ability key (owner, 2026-10-17):** "remove push right click action, just only punch and charge
+  punch"; the Wrecker parry goes on "other key". So the Shove is gone: right-click is left to Roblox's camera turn.
+  Pressing Attack punches at once (the chain, unchanged); still holding it `Charged.HoldTime` = 0.25 s later starts a
+  charge (`Charge` remote "Start", `Charging` attribute, wind-up pose, 40% slower), and letting go throws the charged
+  punch (the old Shove's numbers: 14 HP / 11%, KB scale 1.6, up to ×1.5 for 0.8 s of charge, 1.2 s cooldown; weapon
+  styles swing). The charge has its own cooldown, so it can follow a punch at once; a press that throws a held prop
+  never charges. Internally the attack is "Charged" everywhere (Config, Formulas, Fighter, kill-feed source). New
+  `Ability` action — F, gamepad Y, a touch button shown only for styles with an ability (labelled Parry) — runs the
+  equipped style's move: `Config.Styles.List[id].Ability` (Wrecker: `Parry` 0.2 s, `Cooldown` 1.2 s; others none).
+  Casual already had unlimited lives (no HP, endless respawns, nobody is eliminated) — confirmed to the owner.
 - **Animations (2.6):** scripted, not uploaded assets (the bible allows "scripted"; nothing can be uploaded from a
   code session and paid packs are out). Each frame before rendering, the joints a clip uses are turned through their
   rest offset — `Motor6D.C0`, or an `AnimationConstraint`'s `Attachment0` — never `Transform`, which Roblox's default

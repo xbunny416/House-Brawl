@@ -28,8 +28,8 @@ return {
 		expect.near(slugger.Cooldown, Config.Combat.Attacks.Punch.Cooldown / 0.8)
 		expect.equal(slugger.Hitbox.Z, Config.Combat.Attacks.Punch.Hitbox.Z + 2)
 		expect.equal(Formulas.resolveAttack("Scrapper", "Punch").Hitbox.X, 7)
-		local parry = Formulas.resolveAttack("Wrecker", "Shove").Parry
-		expect.truthy(parry and parry.Window == 0.2, "Wrecker parry window")
+		local ability = styles.Wrecker.Ability
+		expect.truthy(ability and ability.Parry.Window == 0.2, "Wrecker parry window")
 	end,
 	["styles unlock by level; the default is always owned"] = function()
 		expect.equal(table.concat(StyleRules.unlockedAt(1), ","), "Brawler")
@@ -39,9 +39,13 @@ return {
 		expect.equal(StyleRules.owns({}, "Wrecker"), false)
 		expect.equal(StyleRules.owns({ Wrecker = true }, "Wrecker"), true)
 	end,
-	["parry: a 0.2 s window turns melee hits back; shares the Shove cooldown"] = function()
+	["parry: a 0.2 s window turns melee hits back; it has its own cooldown"] = function()
 		local f = Fighter.new("Classic")
-		local cooldown = Config.Combat.Attacks.Shove.Cooldown
+		local cooldown = (Config.Styles.List.Wrecker.Ability :: any).Cooldown
+		local charged = Fighter.new("Classic")
+		Fighter.startCharge(charged, 0)
+		Fighter.releaseCharge(charged, Config.Combat.Attacks.Charged.Cooldown, 0.1)
+		expect.equal(Fighter.parry(charged, 0.2, 0.2, cooldown), true, "a charged punch's cooldown does not block it")
 		expect.equal(Fighter.parry(f, 0, 0.2, cooldown), true)
 		expect.equal(Fighter.evade(f, 0.1, true), "Parried")
 		expect.equal(Fighter.evade(f, 0.1, false), "None", "props and blasts are not parried")
