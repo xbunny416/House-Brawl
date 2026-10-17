@@ -31,7 +31,8 @@ return {
 			expect.equal(clip.Keys[1].T, 0, `{name} starts at 0`)
 			local last = -1
 			for index, key in clip.Keys do
-				expect.truthy(key.T > last, `{name} key {index} out of order`)
+				-- Equal times are allowed: the clip snaps from one key to the next (Backflip: 180° → −180°).
+				expect.truthy(key.T >= last, `{name} key {index} out of order`)
 				expect.truthy(key.T <= clip.Duration, `{name} key {index} after the end`)
 				last = key.T
 				for joint, values in key.Pose do
@@ -99,6 +100,13 @@ return {
 		for clipName in Config.Animations.AssetIds do
 			expect.truthy(Clips[clipName], `asset id for unknown clip {clipName}`)
 		end
+	end,
+	["two keys at the same time snap: the backflip turns 0 → 180, −180 → 0 and ends upright"] = function()
+		local flip = Clips.Backflip
+		expect.near(Pose.sample(flip, 0.7499).Root[1], 180, 1, "just before the top")
+		expect.near(Pose.sample(flip, 0.75).Root[1], -180, 0.001, "at the top")
+		expect.near(Pose.sample(flip, 0.9).Root[1], -108, 0.001, "on the way down")
+		expect.near(Pose.sample(flip, flip.Duration).Root[1], 0, 0.001, "upright at the end")
 	end,
 	["sample: key values at key times, eased in between, missing joints at rest"] = function()
 		local atKey = Pose.sample(TEST_CLIP, 0.5)

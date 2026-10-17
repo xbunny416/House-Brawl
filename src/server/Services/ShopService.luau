@@ -4,7 +4,7 @@
 	is checked with Shared/ShopRules against the player's saved data and today's daily rotation (os.time, UTC); then
 	the Scrap is spent (DataService.spendScrap: analytics sink, sku "Style.<id>" / "Cosmetic.<id>") and the item is
 	granted through StyleService / CosmeticService. Buying never equips: the Shop offers Equip after a purchase.
-	Robux items (game passes, Scrap packs, premium cosmetics) come with step 3.1.
+	Robux items (game passes, Scrap packs, Robux cosmetics) are bought through Roblox prompts (MonetizationService).
 ]]
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")

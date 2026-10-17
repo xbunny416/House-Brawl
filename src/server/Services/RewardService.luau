@@ -3,17 +3,16 @@
 	RewardService — pays the round rewards (bible §2.1) when RoundService.RoundEnded fires. For every player still in
 	the server: Server/Round/Payout (Formulas.roundPayout: KO Scrap with streaks, Perfect Dodge Scrap, placement and
 	completion rewards — 60 s of active play, nothing when AFK — VIP / Premium / friend bonuses capped at +60%, the
-	event multiplier and the private-server scale), then Scrap and XP through DataService (level-ups included).
+	event multiplier and the private-server scale), then Scrap and XP through DataService (level-ups included). VIP
+	and Premium come from MonetizationService.has.
 	Each player gets a RoundReward message for the results screen. The rank title follows the level (Player
 	attribute Rank, a Config.Progression rank id).
 ]]
-local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
-local Config = require(Shared:WaitForChild("Config"))
 local Formulas = require(Shared:WaitForChild("Formulas"))
 local Net = require(Shared:WaitForChild("Net"))
 
@@ -21,32 +20,13 @@ local Server = script.Parent.Parent
 local Payout = require(Server:WaitForChild("Round"):WaitForChild("Payout"))
 local Analytics = require(script.Parent:WaitForChild("Analytics"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
+local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
 local RoundService = require(script.Parent:WaitForChild("RoundService"))
 
 local RewardService = {}
 
-local vipCache: { [Player]: boolean } = {}
-
 local function setRank(player: Player, level: number)
 	player:SetAttribute("Rank", Formulas.rankForLevel(level))
-end
-
--- VIP game pass ownership (cached per session; false until the pass exists, step 3.1).
-local function isVIP(player: Player): boolean
-	local cached = vipCache[player]
-	if cached ~= nil then
-		return cached
-	end
-	local passId = Config.Monetization.GamePasses.VIP.Id
-	local owns = false
-	if passId ~= 0 then
-		local ok, result = pcall(function()
-			return MarketplaceService:UserOwnsGamePassAsync(player.UserId, passId)
-		end)
-		owns = ok and result == true
-	end
-	vipCache[player] = owns
-	return owns
 end
 
 local function friendsInServer(player: Player): number
@@ -74,8 +54,8 @@ local function pay(result: RoundService.Result)
 		return
 	end
 	local payout = Payout.forResult(result, {
-		IsVIP = isVIP(player),
-		IsPremium = player.MembershipType == Enum.MembershipType.Premium,
+		IsVIP = MonetizationService.has(player, "VIP"),
+		IsPremium = MonetizationService.has(player, "Premium"),
 		FriendsInServer = friendsInServer(player),
 		IsPrivateServer = isPrivateServer(),
 	})
@@ -108,9 +88,6 @@ function RewardService.Init(_self: any)
 	end)
 	DataService.Loaded:Connect(function(player: Player, data)
 		setRank(player, data.Level)
-	end)
-	Players.PlayerRemoving:Connect(function(player: Player)
-		vipCache[player] = nil
 	end)
 end
 

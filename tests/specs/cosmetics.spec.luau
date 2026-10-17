@@ -21,12 +21,23 @@ local function isEnumItem(enum: any, name: string): boolean
 end
 
 return {
-	["launch catalog: 6 skins, 6 hats, 4 dash trails, 4 KO effects, 4 victory emotes"] = function()
-		expect.equal(#CosmeticRules.itemsIn("Skin"), 6)
-		expect.equal(#CosmeticRules.itemsIn("Hat"), 6)
-		expect.equal(#CosmeticRules.itemsIn("DashTrail"), 4)
-		expect.equal(#CosmeticRules.itemsIn("KOEffect"), 4)
-		expect.equal(#CosmeticRules.itemsIn("VictoryEmote"), 4)
+	["launch catalog: 6 skins, 6 hats, 4 dash trails, 4 KO effects, 4 victory emotes (plus Robux / Emote Pack items)"] = function()
+		-- Robux cosmetics and the Emote Pack's emotes (bible §7) come on top of the launch catalog (§4.1).
+		local function launchItems(slot: string): number
+			local total = 0
+			for _, id in CosmeticRules.itemsIn(slot) do
+				local source = Cosmetics.Items[id].Exclusive
+				if source ~= "Robux" and source ~= "EmotePack" then
+					total += 1
+				end
+			end
+			return total
+		end
+		expect.equal(launchItems("Skin"), 6)
+		expect.equal(launchItems("Hat"), 6)
+		expect.equal(launchItems("DashTrail"), 4)
+		expect.equal(launchItems("KOEffect"), 4)
+		expect.equal(launchItems("VictoryEmote"), 4)
 	end,
 	["every item has a known slot and rarity; Scrap prices sit inside their rarity's range"] = function()
 		for id, item in Cosmetics.Items do
@@ -34,7 +45,7 @@ return {
 			local rarity = Cosmetics.Rarities[item.Rarity]
 			expect.truthy(rarity, `{id} rarity`)
 			if item.Exclusive then
-				expect.truthy(item.Exclusive == "VIP" or item.Exclusive == "Premium", `{id} exclusive`)
+				expect.truthy(rarity.RobuxOnly, `{id}: exclusive items have a Robux-only rarity`)
 				expect.equal(item.Price, 0, `{id} is never sold for Scrap`)
 			else
 				expect.truthy(not rarity.RobuxOnly, `{id} Scrap item with a Robux rarity`)

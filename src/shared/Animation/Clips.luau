@@ -200,6 +200,33 @@ local TUCK: PoseMap = {
 	Neck = { -20, 0, 0 },
 }
 
+-- Right hand to the brow, chest out, chin up (Salute emote).
+local SALUTE: PoseMap = {
+	RightShoulder = { 95, 0, 50 },
+	RightElbow = { 140, 0, 0 },
+	LeftShoulder = { 0, 0, -5 },
+	Waist = { 6, 0, 0 },
+	Neck = { 8, 0, 0 },
+}
+
+-- Leaning back on bent knees, left hand out on an invisible guitar neck (AirGuitar emote; the right hand strums).
+local AIR_GUITAR: PoseMap = {
+	LeftShoulder = { 75, 0, -35 },
+	LeftElbow = { 30, 0, 0 },
+	Waist = { 12, 0, 0 },
+	Neck = { 15, 0, 0 },
+	RightKnee = { -30, 0, 0 },
+	LeftKnee = { -30, 0, 0 },
+	Root = { 0, 0, 0, 0, -0.4, 0 },
+}
+
+-- Arms up after a landing (Backflip emote).
+local TA_DA: PoseMap = {
+	RightShoulder = { 160, 0, 45 },
+	LeftShoulder = { 160, 0, -45 },
+	Neck = { 12, 0, 0 },
+}
+
 local Clips: { [string]: Clip } = {
 	-- Punch chain (Brawler).
 	Jab = straight(1),
@@ -628,6 +655,112 @@ local Clips: { [string]: Clip } = {
 			LeftKnee = { -35, 0, 0 },
 		},
 	}, 0.3, 2),
+
+	-- Emote Pack victory emotes (2 s each).
+	Robot = beats({
+		{
+			RightShoulder = { 90, 0, 0 },
+			RightElbow = { 90, 0, 0 },
+			LeftShoulder = { 0, 0, -10 },
+			LeftElbow = { 90, 0, 0 },
+			Waist = { 0, 20, 0 },
+			Neck = { 0, 35, 0 },
+		},
+		{
+			RightShoulder = { 0, 0, 10 },
+			RightElbow = { 90, 0, 0 },
+			LeftShoulder = { 90, 0, 0 },
+			LeftElbow = { 90, 0, 0 },
+			Waist = { 0, -20, 0 },
+			Neck = { 0, -35, 0 },
+		},
+		{
+			RightShoulder = { 0, 0, 90 },
+			RightElbow = { 90, 0, 0 },
+			LeftShoulder = { 0, 0, -90 },
+			LeftElbow = { 90, 0, 0 },
+			Root = { 0, 0, 0, 0, -0.25, 0 },
+		},
+	}, 0.33, 2),
+	Salute = {
+		Duration = 2,
+		Keys = {
+			{ T = 0, Pose = {} },
+			{ T = 0.3, Pose = SALUTE, Ease = "Back" },
+			{ T = 1.6, Pose = SALUTE },
+			{ T = 2, Pose = {} },
+		},
+	},
+	AirGuitar = beats({
+		with(AIR_GUITAR, { RightShoulder = { 45, 0, 20 }, RightElbow = { 75, 0, 0 } }),
+		with(AIR_GUITAR, {
+			RightShoulder = { 20, 0, 20 },
+			RightElbow = { 100, 0, 0 },
+			Neck = { 22, 0, 0 },
+			Root = { 0, 0, 0, 0, -0.3, 0 },
+		}),
+	}, 0.15, 2),
+	-- A standing backflip: the root turns 0 → 180, snaps to the same angle as −180 at the top (so the clip ends at 0
+	-- and blends out without spinning back), then −180 → 0 by the landing.
+	Backflip = {
+		Duration = 2,
+		Keys = {
+			{ T = 0, Pose = {} },
+			{
+				T = 0.3,
+				Ease = "Out",
+				Pose = {
+					RightShoulder = { -35, 0, 15 },
+					LeftShoulder = { -35, 0, -15 },
+					RightHip = { 45, 0, 0 },
+					LeftHip = { 45, 0, 0 },
+					RightKnee = { -70, 0, 0 },
+					LeftKnee = { -70, 0, 0 },
+					Root = { -12, 0, 0, 0, -0.9, 0 },
+				},
+			},
+			{
+				T = 0.5,
+				Ease = "Out",
+				Pose = {
+					RightShoulder = { 170, 0, 20 },
+					LeftShoulder = { 170, 0, -20 },
+					Root = { 70, 0, 0, 0, 1.6, 0 },
+				},
+			},
+			{ T = 0.75, Ease = "Linear", Pose = with(TUCK, { Root = { 180, 0, 0, 0, 2.6, 0 } }) },
+			{ T = 0.75, Pose = with(TUCK, { Root = { -180, 0, 0, 0, 2.6, 0 } }) },
+			{
+				T = 1,
+				Ease = "Linear",
+				Pose = {
+					RightShoulder = { 120, 0, 40 },
+					LeftShoulder = { 120, 0, -40 },
+					RightHip = { 30, 0, 0 },
+					LeftHip = { 30, 0, 0 },
+					RightKnee = { -30, 0, 0 },
+					LeftKnee = { -30, 0, 0 },
+					Root = { -60, 0, 0, 0, 1.2, 0 },
+				},
+			},
+			{
+				T = 1.15,
+				Ease = "Out",
+				Pose = {
+					RightShoulder = { 60, 0, 40 },
+					LeftShoulder = { 60, 0, -40 },
+					RightHip = { 45, 0, 0 },
+					LeftHip = { 45, 0, 0 },
+					RightKnee = { -60, 0, 0 },
+					LeftKnee = { -60, 0, 0 },
+					Root = { -10, 0, 0, 0, -0.8, 0 },
+				},
+			},
+			{ T = 1.5, Ease = "Back", Pose = TA_DA },
+			{ T = 1.8, Pose = TA_DA },
+			{ T = 2, Pose = {} },
+		},
+	},
 }
 
 return Clips

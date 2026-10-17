@@ -5,9 +5,14 @@
 	(today's cosmetics at a discount and the time until they change), Styles, then every cosmetic slot. Tapping an
 	item you can buy opens a confirmation with the price and your Scrap; Buy asks the server (Buy remote), which
 	checks everything again (Shared/ShopRules). After a purchase, Equip puts the item on at once.
-	Robux items (Scrap packs, passes, premium cosmetics) come with step 3.1.
+	The Robux tab (bible §7, Shared/MonetizationRules) lists the game passes, Scrap packs and Robux cosmetics with their
+	live price, and a Roblox Premium card: tapping one opens Roblox's own purchase prompt (the server grants what Roblox
+	confirms: MonetizationService). An item whose id is still 0 shows "Coming soon". Exclusive items in the slot tabs
+	open the prompt for the pass / product / Premium they come with.
 ]]
 local GuiService = game:GetService("GuiService")
+local MarketplaceService = game:GetService("MarketplaceService")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
@@ -17,6 +22,7 @@ local Config = require(Shared:WaitForChild("Config"))
 local CosmeticRules = require(Shared:WaitForChild("CosmeticRules"))
 local Formulas = require(Shared:WaitForChild("Formulas"))
 local Localization = require(Shared:WaitForChild("Localization"))
+local MonetizationRules = require(Shared:WaitForChild("MonetizationRules"))
 local Net = require(Shared:WaitForChild("Net"))
 local ShopRules = require(Shared:WaitForChild("ShopRules"))
 local StyleRules = require(Shared:WaitForChild("StyleRules"))
@@ -30,15 +36,19 @@ local MenuController = require(script.Parent:WaitForChild("MenuController"))
 
 local DAILY_TAB = "Daily"
 local STYLES_TAB = "Styles"
+local ROBUX_TAB = "Robux"
+local ROBUX_TAB_ORDER = 100 -- after every cosmetic slot
 local CARD_HEIGHT = 74 -- pixels
 local DIMMED_TRANSPARENCY = 0.45
 local TICK_INTERVAL = 1 -- seconds between countdown updates
 
 type Offer = { Kind: string, Id: string, Price: number, Name: string }
-type Card = { Title: string, Detail: string, Status: string, Dimmed: boolean, Offer: Offer? }
+-- Offer: a Scrap purchase (confirmation first); Prompt: opens a Roblox purchase prompt.
+type Card = { Title: string, Detail: string, Status: string, Dimmed: boolean, Offer: Offer?, Prompt: (() -> ())? }
 
 local ShopController = {}
 
+local player = Players.LocalPlayer
 local gui: ScreenGui
 local tabs: Frame
 local grid: ScrollingFrame
@@ -54,6 +64,9 @@ local primary: TextButton
 local secondary: TextButton
 local primaryAction: (() -> ())? = nil
 local pending: Offer? = nil
+local livePrices: { [string]: number } = {} -- Robux prices from MarketplaceService, by offer key
+local pricesRequested = false
+local pricesChanged = false -- a live price arrived: render again
 
 local function now(): number
 	return Workspace:GetServerTimeNow()
@@ -75,6 +88,105 @@ local function dailyInfo(): string
 	return Localization.format("Shop.DailyInfo", args)
 end
 
+---------------------------------------------------------------------------------------------------------------------
+-- Robux
+---------------------------------------------------------------------------------------------------------------------
+
+local function hasPerk(perk: string): boolean
+	return player:GetAttribute(perk) == true
+end
+
+local function robuxPrice(offer: MonetizationRules.Offer): string
+	return Localization.format("Shop.RobuxPrice", { livePrices[offer.Key] or offer.PriceRobux })
+end
+
+-- Opens Roblox's purchase prompt for `offer`; nil while the offer has no id yet.
+local function promptFor(offer: MonetizationRules.Offer?): (() -> ())?
+	if offer == nil or not MonetizationRules.isAvailable(offer) then
+		return nil
+	end
+	local entry: MonetizationRules.Offer = offer
+	return function()
+		if entry.Kind == "Pass" then
+			MarketplaceService:PromptGamePassPurchase(player, entry.Id)
+		else
+			MarketplaceService:PromptProductPurchase(player, entry.Id)
+		end
+	end
+end
+
+local function promptPremium()
+	MarketplaceService:PromptPremiumPurchase(player)
+end
+
+-- Asks Roblox for the live prices once; the cards show Config's reference price until they arrive.
+local function requestPrices()
+	if pricesRequested then
+		return
+	end
+	pricesRequested = true
+	for _, offer in MonetizationRules.offers() do
+		if MonetizationRules.isAvailable(offer) then
+			task.spawn(function()
+				local infoType = if offer.Kind == "Pass" then Enum.InfoType.GamePass else Enum.InfoType.Product
+				local ok, productInfo = pcall(function()
+					return MarketplaceService:GetProductInfo(offer.Id, infoType)
+				end)
+				local price = if ok and type(productInfo) == "table" then productInfo.PriceInRobux else nil
+				if type(price) == "number" then
+					livePrices[offer.Key] = price
+					pricesChanged = true
+				end
+			end)
+		end
+	end
+end
+
+local function robuxCards(owned: { [string]: boolean }): { Card }
+	local cards: { Card } = {}
+	for _, offer in MonetizationRules.offers() do
+		local available = MonetizationRules.isAvailable(offer)
+		local isOwned = if offer.Kind == "Pass"
+			then hasPerk(offer.Key)
+			elseif offer.Cosmetic then CosmeticRules.owns(owned, offer.Cosmetic)
+			else false
+		local detail
+		if offer.Kind == "Pass" then
+			detail = Localization.format(`Perk.{offer.Key}.Desc`)
+		elseif offer.Cosmetic then
+			local item = Config.Cosmetics.Items[offer.Cosmetic]
+			local args: { any } =
+				{ Localization.format(`Slot.{item.Slot}.One`), Localization.format(`Rarity.{item.Rarity}`) }
+			detail = Localization.format("Shop.ItemDetail", args)
+		else
+			detail = Localization.format("Currency.Scrap", { offer.Scrap or 0 })
+		end
+		table.insert(cards, {
+			Title = Localization.format(MonetizationRules.nameKey(offer)),
+			Detail = detail,
+			Status = if isOwned
+				then Localization.format("Shop.Owned")
+				elseif available then robuxPrice(offer)
+				else Localization.format("Shop.ComingSoon"),
+			Dimmed = isOwned or not available,
+			Prompt = if isOwned then nil else promptFor(offer),
+		})
+	end
+	local premium = hasPerk("Premium")
+	table.insert(cards, {
+		Title = Localization.format("Perk.Premium"),
+		Detail = Localization.format("Perk.Premium.Desc"),
+		Status = Localization.format(if premium then "Shop.PremiumActive" else "Shop.GetPremium"),
+		Dimmed = premium,
+		Prompt = if premium then nil else promptPremium,
+	})
+	return cards
+end
+
+---------------------------------------------------------------------------------------------------------------------
+-- Cards
+---------------------------------------------------------------------------------------------------------------------
+
 local function cosmeticCard(itemId: string, owned: { [string]: boolean }, day: number, withSlot: boolean): Card
 	local item = Config.Cosmetics.Items[itemId]
 	local name = Localization.format(`Cosmetic.{itemId}.Name`)
@@ -82,12 +194,19 @@ local function cosmeticCard(itemId: string, owned: { [string]: boolean }, day: n
 	local price = ShopRules.priceOf("Cosmetic", itemId, day)
 	local isOwned = CosmeticRules.owns(owned, itemId)
 	local status
+	local prompt: (() -> ())? = nil
 	if isOwned then
 		status = Localization.format("Shop.Owned")
-	elseif item.Exclusive == "VIP" then
-		status = Localization.format("Locker.VIPOnly")
+	elseif item.Exclusive == "Robux" then
+		local offer = MonetizationRules.offer(MonetizationRules.productFor(itemId) or "")
+		prompt = promptFor(offer)
+		status = if offer and prompt then robuxPrice(offer) else Localization.format("Shop.ComingSoon")
 	elseif item.Exclusive == "Premium" then
 		status = Localization.format("Locker.PremiumOnly")
+		prompt = promptPremium
+	elseif item.Exclusive then
+		status = Localization.format(`Locker.{item.Exclusive}Only`) -- comes with a game pass
+		prompt = promptFor(MonetizationRules.offer(item.Exclusive))
 	elseif price and base and price < base then
 		status = Localization.format("Shop.DealPrice", { price, base })
 	elseif price then
@@ -102,8 +221,9 @@ local function cosmeticCard(itemId: string, owned: { [string]: boolean }, day: n
 			then Localization.format("Shop.ItemDetail", { Localization.format(`Slot.{item.Slot}.One`), rarity })
 			else rarity,
 		Status = status,
-		Dimmed = isOwned or price == nil,
+		Dimmed = isOwned or (price == nil and prompt == nil),
 		Offer = if price and not isOwned then { Kind = "Cosmetic", Id = itemId, Price = price, Name = name } else nil,
+		Prompt = prompt,
 	}
 end
 
@@ -138,6 +258,8 @@ local function cardsFor(tab: string, day: number): { Card }
 		for _, styleId in Config.Styles.Order do
 			table.insert(cards, styleCard(styleId, data.Styles.Owned, day))
 		end
+	elseif tab == ROBUX_TAB then
+		return robuxCards(data.Cosmetics.Owned)
 	else
 		for _, itemId in CosmeticRules.itemsIn(tab) do
 			table.insert(cards, cosmeticCard(itemId, data.Cosmetics.Owned, day, false))
@@ -151,6 +273,8 @@ local function infoText(): string
 		return dailyInfo()
 	elseif currentTab == STYLES_TAB then
 		return Localization.format("Shop.StylesInfo")
+	elseif currentTab == ROBUX_TAB then
+		return Localization.format("Shop.RobuxInfo")
 	end
 	return Localization.format("Shop.CosmeticsInfo")
 end
@@ -258,11 +382,13 @@ local function render()
 			button.TextTransparency = DIMMED_TRANSPARENCY
 			button.AutoButtonColor = false
 		end
-		local offer = card.Offer
+		local offer, prompt = card.Offer, card.Prompt
 		if offer then
 			button.Activated:Connect(function()
 				confirm(offer)
 			end)
+		elseif prompt then
+			button.Activated:Connect(prompt)
 		end
 	end
 end
@@ -270,6 +396,7 @@ end
 local function onOpen()
 	pending = nil
 	dialog.Visible = false
+	requestPrices()
 	render()
 	focus(tabButtons[currentTab])
 end
@@ -359,6 +486,7 @@ local function build()
 	for order, slot in CosmeticRules.usedSlots() do
 		addTab(slot, Localization.format(`Slot.{slot}`), order + 1)
 	end
+	addTab(ROBUX_TAB, Localization.format("Shop.Robux"), ROBUX_TAB_ORDER)
 
 	info = Kit.label(panel, "", UDim2.fromScale(0.73, 0.06), 20)
 	info.Position = UDim2.fromScale(0.27, 0.13)
@@ -391,6 +519,13 @@ function ShopController.Start(_self: any)
 			render()
 		end
 	end)
+	for _, perk in MonetizationRules.Perks do
+		player:GetAttributeChangedSignal(perk):Connect(function()
+			if gui.Enabled then
+				render() -- a pass was bought, or Premium changed
+			end
+		end)
+	end
 	local elapsed = 0
 	RunService.Heartbeat:Connect(function(deltaTime: number)
 		elapsed += deltaTime
@@ -398,8 +533,9 @@ function ShopController.Start(_self: any)
 			return
 		end
 		elapsed = 0
-		if today() ~= renderedDay then
-			render() -- the daily deals just changed
+		if today() ~= renderedDay or pricesChanged then
+			pricesChanged = false
+			render() -- the daily deals changed, or live Robux prices arrived
 		elseif currentTab == DAILY_TAB then
 			info.Text = dailyInfo()
 		end

@@ -13,7 +13,9 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   (owner looked: Motel brightened, lobby TVs fixed). 2.6 Animations (scripted R15) work in the owner's Studio (dynamic
   pass, charged punch, stamina added 2026-10-17). 2.7 VFX + Low Graphics and 2.8 Music + SFX (silent until the
   owner picks audio ids) are built, not yet playtested.
-  2.9 Tutorial skipped for now (owner). **Next step:** Phase 3 — 3.1 Game passes, dev products, Premium perks.
+  2.9 Tutorial skipped for now (owner). **Phase 3 in progress:** 3.1 Game passes, dev products, Premium perks and
+  PolicyService are built and switched off until the owner creates the passes / products and sends their ids (test
+  with the dev panel's Robux buttons meanwhile). **Next step:** 3.2 Private server settings.
 
 ## How this repo works
 
@@ -104,6 +106,15 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
 - **Shop:** purchases go through `Services/ShopService` (`Buy` remote → `StyleService.grant` /
   `CosmeticService.grant`); what is for sale, prices and the daily rotation are `Shared/ShopRules`, shared with the
   Shop UI so both show the same price.
+- **Robux:** Robux purchases go through `Services/MonetizationService`, the only place that sets
+  `MarketplaceService.ProcessReceipt` (products are granted with `DataService.processReceipt`, once per PurchaseId).
+  Clients prompt (`PromptGamePassPurchase` / `PromptProductPurchase` / `PromptPremiumPurchase`); the server grants
+  what Roblox confirms. Ids, prices and the Robux tab order are `Config.Monetization`; the rules (offers, perk
+  cosmetics, receipts → product) are `Shared/MonetizationRules`. Ask `MonetizationService.has(player, perk)` for VIP /
+  EmotePack / Premium (clients: the Player attributes of the same names). A cosmetic's `Exclusive` names where it
+  comes from: a perk, or "Robux" (a product whose `Cosmetic` is that item). Region rules: ask
+  `Services/PlayerPolicyService.allows(player, feature)` (`Shared/PolicyRules`) before adding paid random items,
+  paid trading or external links.
 - **Animations** are scripted R15 poses: clips in `Shared/Animation/Clips` (sampled by the pure `Shared/Animation/Pose`),
   played on every client by `Controllers/AnimationController`. Server code triggers a one-shot with
   `Server/Visuals/Animate.play(character, clip, except?)` when an action really happens; looping states come from
@@ -124,7 +135,7 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
   `Config.Data.SettingRanges`.
 - **Vendored code** (`src/server/Vendor/`) is never edited and is excluded from StyLua/Selene/luau-lsp.
 - **Analytics:** log through `Services/Analytics` helpers (`scrapEarned`, `scrapSpent`, `onboardingStep`,
-  `mapVoted`, `roundModePicked`, `styleUsed`, `roundFinished`, `custom`).
+  `mapVoted`, `roundModePicked`, `styleUsed`, `roundFinished`, `robuxPurchase`, `custom`).
 - Pure logic (formulas, reward math, validation) goes in modules with no Roblox-instance dependencies so Lune specs can
   test it. Add specs for every formula. Specs load game modules through `tests/roblox.luau`, a fake DataModel built
   from `default.project.json`, so modules keep normal `require(script.Parent.X)` requires.
@@ -190,7 +201,7 @@ any errors are fixed before the next item.
 
 ### Phase 3 — Monetization, retention & polish
 
-- [ ] 3.1 Game passes, dev products (idempotent receipts), Premium perks, PolicyService
+- [x] 3.1 Game passes, dev products (idempotent receipts), Premium perks, PolicyService
 - [ ] 3.2 Private server settings (owner controls, 50% rewards)
 - [ ] 3.3 Daily login streak + playtime rewards
 - [ ] 3.4 Daily + weekly quests
@@ -239,6 +250,7 @@ any errors are fixed before the next item.
 | 2026-10-17 | 2.7 VFX + Low Graphics: client VfxController (hit sparks + impact flash in Percent colors, launch smoke, POW / K.O.! starburst + red / gold screen-edge flash, client KO-effect cosmetic, cartoon explosion with ring shockwave, structure break chunks + dust, blue Perfect Dodge flash, dash streak), crumble cracks / dust / debris, Effect remote + Server/Visuals/Effects, Config.Vfx, Low Graphics (particles, debris, post-effects, shadows off; dev panel toggle), pure VfxRules + specs | #30 |
 | 2026-10-17 | 2.8 Music + SFX: Config.Audio slots (all silent until the owner picks Creator Store audio ids), SoundController (lobby / per-arena music with crossfade, last-30 s tension layer, victory sting; 3D hit sounds by weapon, charged / prop / parry hits, dash, grab, throw, KO boom + cheer, explosion, wood / metal / glass smash, Perfect Dodge chime, crumble rumble / collapse; UI click, coin, level-up), weapon in CombatHit, pure AudioRules + specs | #31 |
 | 2026-10-17 | Bottom-right key panel (owner): Run / Dash / Ability slots with keys or gamepad glyphs and cooldown fills (stamina, dash cooldown, server AbilityReadyAt), on keyboard and gamepad (touch keeps its buttons and the dash ring); tutorial 2.9 skipped for now by the owner | #32 |
+| 2026-10-17 | 3.1 Monetization: MonetizationService (ProcessReceipt → idempotent DataService.processReceipt: Scrap packs, Robux cosmetics; VIP / Emote Pack passes checked on load + bought in-server; Premium + membership changes; perk attributes; perk cosmetics granted / taken back), Shop Robux tab (live prices, Roblox prompts, Premium card, "Coming soon" while ids are 0), VIP gold name tag + [VIP] chat tag, Emote Pack emotes (Robot, Salute, Air Guitar, Backflip), 3 Robux cosmetics, Notify notices, PlayerPolicyService + PolicyRules, dev panel perk toggles + product grants, RewardService bonuses from MonetizationService; specs | #PR |
 
 ## Decisions and interpretations
 
@@ -489,6 +501,25 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   private server = `PrivateServerId` with an owner (reserved servers do not count). The rank title is the player
   attribute `Rank` (a rank id, set on load and after rewards). The results panel shows "+Scrap · +XP", level-ups and
   a new rank; the HUD's top-right chip shows level · rank · Scrap. Lifetime stats were already counted in 1.8.
+- **Monetization (3.1):** everything is built switched off: every pass / product id in `Config.Monetization` is 0
+  until the owner creates them (Creator Dashboard → Monetization), and an item with id 0 shows "Coming soon" in the
+  Shop. Perks (VIP, EmotePack, Premium) are what a player has right now: passes are checked with
+  `UserOwnsGamePassAsync` when the data loads (3 tries, 2 s apart: `WebRetries`) and set at once by
+  `PromptGamePassPurchaseFinished`; Premium is `MembershipType` (re-read on `PlayerMembershipChanged`). Perk
+  cosmetics are saved into `Cosmetics.Owned` while the perk is there and taken back (and unequipped) once it is known
+  to be gone (a refund, Premium ending); a failed check changes nothing. Robux cosmetics (new, bible "Premium
+  cosmetics 99–399 R$": Inferno skin 149, Lightning Trail 99, Galaxy Burst KO effect 199) are products granted for
+  good. The Emote Pack's 4 emotes (bible gave no names): Robot, Salute, Air Guitar, Backflip (the backflip snaps
+  180° → −180° at the top so it ends upright; equal key times are now allowed in clips). VIP name tag: other VIP
+  players' overhead name turns gold ("[VIP] name", `VIPColor`); chat: a gold "[VIP]" prefix (TextChatService
+  `OnIncomingMessage`, owned by `PlayerTagController`; party / group tags join it in 3.7). The Robux tab (last tab)
+  lists `RobuxOrder` plus a Roblox Premium card (`PromptPremiumPurchase`); exclusive items in the slot tabs open the
+  prompt for what they come with. After a purchase the server sends a `Notify` thank-you (`NoticeController`, the
+  first user of that remote; args can carry `{ Key = ... }` to localize names on the client). Analytics:
+  `robuxPurchase` (kind, key, Robux) plus `scrapEarned` with the IAP transaction for Scrap packs. PolicyService is
+  read once per player (`PlayerPolicyService`, attributes `PolicyPaidRandomItems` / `PolicyPaidTrading`); nothing
+  at launch needs it. Developer panel "Robux" section: switch VIP / Emote Pack / Premium on or off for the session
+  and get what any product gives (no receipt), to test while the ids are 0.
 
 ## Known bugs / open items
 
@@ -509,8 +540,14 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   2 players. A solo Classic round ends when you lose your 3 lives; a solo Casual round runs the full 3:00.
 - **Studio combat debug:** `Config.Dev.LogCombat` prints every hit and KO; `Config.Dev.ShowHitboxes` flashes each
   attack box (red hit, grey miss). Studio only.
-- **VIP bonus** stays off until the VIP game pass exists (`Config.Monetization.GamePasses.VIP.Id` is 0; step 3.1).
-  Premium and friend bonuses already apply. In Studio, rewards are paid from solo rounds too (Output: `[Rewards]`).
+- **Robux items need the owner:** create the VIP (299 R$) and Emote Pack (149 R$) game passes and the 6 developer
+  products (Scrap Pack S / M / L 49 / 149 / 399 R$; Inferno 149, Lightning Trail 99, Galaxy Burst 199) on the Creator
+  Dashboard, then put their ids in `Config.Monetization`. Until then the Shop shows "Coming soon" and the VIP bonus
+  is off (Premium and friend bonuses already apply). Studio test: dev panel → Robux → "VIP on/off" (Gold Trail in
+  the Locker, +25% Scrap; the gold name tag shows to *other* players: 2-player test), product buttons (Scrap or the
+  item, and a notice). Output shows `[Monetization]`. Switching a perk off — or joining without it — takes its items
+  back, including ones the dev "All cosmetics" button granted. In Studio, rewards are paid from solo rounds too
+  (Output: `[Rewards]`).
 - **All screens are plain first versions** (`src/client/Ui/Kit`: HUD, vote, results, spectate bar, scoreboard); the
   art / VFX passes restyle them. The lobby's CRT-TV vote screens from the bible are an art-pass item. The dash ring
   fills bottom-to-top (a true radial ring needs an image asset).
@@ -525,8 +562,9 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Developer panel (Studio):** press ` (Backquote, `Config.Dev.PanelKey`) or click DEV (top left). Round: start now
   (starts the vote with one player on the join pad, or closes it), end now, crumble a platform; next map / mode (or
   back to the vote); spawn any prop or the practice dummy in front of you; set your own Percent (0 / 100 / 200) or
-  HP (100 / 50 / 10); own + equip any fighting style; own every cosmetic; +5000 Scrap; test camera shake and switch
-  the Camera Shake setting. Output shows `[Dev]` lines.
+  HP (100 / 50 / 10); own + equip any fighting style; own every cosmetic; +5000 Scrap; switch VIP / Emote Pack /
+  Premium on or off and get any Robux product; test camera shake and switch the Camera Shake setting. Output shows
+  `[Dev]` lines.
 - **Data in Studio:** with "Studio Access to API Services" off, ProfileStore uses an in-memory store and prints
   "Roblox API services unavailable - data will not be saved". Turn it on to test real saving
   (`Config.Data.UseMockInStudio = true` forces the in-memory store even with access on).

@@ -7,6 +7,7 @@ local expect = require("../expect")
 
 local Config = Roblox.require(Roblox.game.ReplicatedStorage.Shared.Config)
 local ShopRules = Roblox.require(Roblox.game.ReplicatedStorage.Shared.ShopRules)
+local MonetizationRules = Roblox.require(Roblox.game.ReplicatedStorage.Shared.MonetizationRules)
 local HudFormat = Roblox.require(Roblox.game.StarterPlayer.StarterPlayerScripts.Client.Lib.HudFormat)
 
 local CSV_PATH = "src/localization/GameStrings.csv"
@@ -74,6 +75,21 @@ return {
 		for rarity in Config.Cosmetics.Rarities do
 			expect.truthy(keys[`Rarity.{rarity}`], `Rarity.{rarity}`)
 		end
+		for _, item in Config.Cosmetics.Items do
+			local source = item.Exclusive
+			if source then
+				expect.truthy(keys[`Locker.{source}Only`], `Locker.{source}Only`)
+			end
+		end
+		for _, perk in MonetizationRules.Perks do
+			expect.truthy(keys[`Perk.{perk}`] and keys[`Perk.{perk}.Desc`], `Perk.{perk}`)
+		end
+		for _, offer in MonetizationRules.offers() do
+			expect.truthy(keys[MonetizationRules.nameKey(offer)], MonetizationRules.nameKey(offer))
+		end
+		for key in Config.Monetization.GamePasses do
+			expect.truthy(keys[`Purchase.Done.{key}`], `Purchase.Done.{key}`)
+		end
 	end,
 	["every literal key used in code exists"] = function()
 		local files: { string } = {}
@@ -83,7 +99,7 @@ return {
 			for key in string.gmatch(source, 'Localization%.format%(%s*"([^"]+)"') do
 				expect.truthy(keys[key], `{path} uses missing key {key}`)
 			end
-			for key in string.gmatch(source, 'Net%.fire%w*%(%s*"Notify"[^"]*"([^"]+)"') do
+			for key in string.gmatch(source, 'Net%.fire%w*%(%s*"Notify"[^"\n]*"([^"]+)"') do
 				expect.truthy(keys[key], `{path} notifies with missing key {key}`)
 			end
 		end

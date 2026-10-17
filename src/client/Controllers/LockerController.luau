@@ -80,10 +80,8 @@ local function cosmeticCards(slot: string): { Card }
 			status = Localization.format("Locker.EquippedRemovable")
 		elseif owned then
 			status = Localization.format("Locker.Equip")
-		elseif item.Exclusive == "VIP" then
-			status = Localization.format("Locker.VIPOnly")
-		elseif item.Exclusive == "Premium" then
-			status = Localization.format("Locker.PremiumOnly")
+		elseif item.Exclusive then
+			status = Localization.format(`Locker.{item.Exclusive}Only`) -- a pass, Premium or Robux item (Shop)
 		else
 			status = Localization.format("Locker.Price", { item.Price })
 		end

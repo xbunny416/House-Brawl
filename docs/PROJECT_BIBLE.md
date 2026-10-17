@@ -102,7 +102,8 @@ Not used. Long-term goals are levels/ranks, styles, cosmetics and leaderboards.
 - **Cosmetics** (Scrap or Robux): skins, hats, back items, dash trails, KO effects, victory emotes, name-plate frames.
   Catalog in `Config.Cosmetics.Items` (blockout visuals until the art pass). KO effects burst at the victim for HP KOs
   and around the scorer for ring-outs. Victory emotes play once animations exist (2.6). Equipped in the Locker.
-  Common 300–800 Scrap; Rare 1,200–2,500 Scrap; Premium = Robux only.
+  Common 300–800 Scrap; Rare 1,200–2,500 Scrap; Premium = Robux only (sold as developer products, or coming with the
+  VIP / Emote Pack passes or Roblox Premium: §7).
 - **Daily rotating shop:** 4 cosmetics rotate every 24 h (UTC) and sell at 20% off (`DailyRotation.Discount`); the
   picks are the same for everyone (seeded by the day). Every Scrap item is always buyable in its own tab; exclusive
   VIP / Premium items never sell for Scrap.
@@ -316,16 +317,22 @@ panel.
 | Item | Type | Price | Contents |
 | --- | --- | --- | --- |
 | VIP | Game pass | 299 R$ | +25% Scrap, gold name tag + chat tag, exclusive gold dash trail |
-| Emote Pack | Game pass | 149 R$ | 4 extra victory emotes |
+| Emote Pack | Game pass | 149 R$ | 4 extra victory emotes: Robot, Salute, Air Guitar, Backflip |
 | Scrap Pack S | Dev product | 49 R$ | 500 Scrap |
 | Scrap Pack M | Dev product | 149 R$ | 2,000 Scrap |
 | Scrap Pack L | Dev product | 399 R$ | 6,000 Scrap |
-| Premium cosmetics / bundles | Dev product | 99–399 R$ | Skins, KO effects, trails |
+| Premium cosmetics / bundles | Dev product | 99–399 R$ | Skins, KO effects, trails. Launch: Inferno skin 149 R$, Lightning Trail 99 R$, Galaxy Burst KO effect 199 R$ |
 
 - **Premium perks:** +10% Scrap, one exclusive Premium skin, Premium Payouts via engagement.
+- **How it works (3.1):** the Shop's Robux tab lists the passes, Scrap packs and Robux cosmetics with their live price
+  and a Roblox Premium card; each opens Roblox's purchase prompt, and the server grants what Roblox confirms
+  (developer products once per purchase, confirmed only after the save). Pass and Premium items are owned while the
+  player has the pass / Premium. VIP's gold name tag reads "[VIP] name" over the head and its chat tag is a gold
+  "[VIP]" prefix. Ids live in `Config.Monetization` (0 = not created yet: "Coming soon").
 - **Private servers:** 100 R$/month. Owner can lock mode, pick map, set round length. Rewards at 50%.
 - Nothing sold for Robux gives a combat advantage. Paid random items must show all outcomes and odds (none at launch).
-  PolicyService hides paid random items / paid trading where not allowed and respects other policy flags.
+  PolicyService hides paid random items / paid trading where not allowed and respects other policy flags (read once
+  per player; unknown = not allowed; external links only where `AllowedExternalLinkReferences` lists the site).
 
 ## 8. Retention & social
 

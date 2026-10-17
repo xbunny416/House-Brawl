@@ -1,8 +1,9 @@
 --!strict
 --[[
 	Cosmetic slots, rarity pricing, the daily rotating shop and the item catalog. Bible §2.3 / §4.1 (launch: 6 skins,
-	6 hats, 4 dash trails, 4 KO effects, 4 victory emotes). Visuals are blockout data until the art pass: skins are
-	body colors, hats are welded parts, trails / KO effects are colors. Names come from "Cosmetic.<Id>.Name".
+	6 hats, 4 dash trails, 4 KO effects, 4 victory emotes) plus §7 (Robux-only items, the Emote Pack's 4 emotes).
+	Visuals are blockout data until the art pass: skins are body colors, hats are welded parts, trails / KO effects are
+	colors. Names come from "Cosmetic.<Id>.Name".
 ]]
 local Types = require(script.Parent.Types)
 
@@ -90,6 +91,13 @@ local Cosmetics: CosmeticsConfig = {
 			Exclusive = "Premium", -- bible §7: one exclusive Premium skin
 			Colors = { "#F2C14E", "#D9A21B", "#F2C14E", "#8C6A12" },
 		},
+		Inferno = {
+			Slot = "Skin",
+			Rarity = "Premium",
+			Price = 0,
+			Exclusive = "Robux", -- Monetization.Products.InfernoSkin
+			Colors = { "#FF7043", "#D84315", "#FFAB00", "#3E1F14" },
+		},
 
 		-- Hats: welded to the head (offsets from the head's center).
 		ConeHat = {
@@ -151,6 +159,13 @@ local Cosmetics: CosmeticsConfig = {
 			Exclusive = "VIP", -- bible §7: exclusive gold dash trail for VIP
 			Colors = { "#FFE082", "#F2C14E" },
 		},
+		LightningTrail = {
+			Slot = "DashTrail",
+			Rarity = "Premium",
+			Price = 0,
+			Exclusive = "Robux", -- Monetization.Products.LightningTrail
+			Colors = { "#E3F2FD", "#40C4FF" },
+		},
 
 		-- KO effects: particle colors of the burst on every KO you score.
 		ScrapBurst = { Slot = "KOEffect", Rarity = "Common", Price = 500, Colors = { "#9AA0A6", "#B5652B" } },
@@ -162,12 +177,36 @@ local Cosmetics: CosmeticsConfig = {
 		},
 		ToxicSplash = { Slot = "KOEffect", Rarity = "Rare", Price = 1600, Colors = { "#B2FF59", "#64DD17" } },
 		NeonStars = { Slot = "KOEffect", Rarity = "Rare", Price = 2400, Colors = { "#3FF2E0", "#E040FB" } },
+		GalaxyBurst = {
+			Slot = "KOEffect",
+			Rarity = "Premium",
+			Price = 0,
+			Exclusive = "Robux", -- Monetization.Products.GalaxyBurst
+			Colors = { "#7C4DFF", "#E040FB", "#FFFFFF" },
+		},
 
-		-- Victory emotes: played by the round winner on the results screen (animations arrive in step 2.6).
+		-- Victory emotes: the round winner plays one back in the lobby (Shared/Animation/Clips).
 		Flex = { Slot = "VictoryEmote", Rarity = "Common", Price = 500, Emote = "Flex" },
 		JunkDance = { Slot = "VictoryEmote", Rarity = "Common", Price = 800, Emote = "JunkDance" },
 		Taunt = { Slot = "VictoryEmote", Rarity = "Rare", Price = 1500, Emote = "Taunt" },
 		Champion = { Slot = "VictoryEmote", Rarity = "Rare", Price = 2000, Emote = "Champion" },
+		-- The Emote Pack game pass (bible §7: 4 extra victory emotes).
+		Robot = { Slot = "VictoryEmote", Rarity = "Premium", Price = 0, Exclusive = "EmotePack", Emote = "Robot" },
+		Salute = { Slot = "VictoryEmote", Rarity = "Premium", Price = 0, Exclusive = "EmotePack", Emote = "Salute" },
+		AirGuitar = {
+			Slot = "VictoryEmote",
+			Rarity = "Premium",
+			Price = 0,
+			Exclusive = "EmotePack",
+			Emote = "AirGuitar",
+		},
+		Backflip = {
+			Slot = "VictoryEmote",
+			Rarity = "Premium",
+			Price = 0,
+			Exclusive = "EmotePack",
+			Emote = "Backflip",
+		},
 	},
 }
 
