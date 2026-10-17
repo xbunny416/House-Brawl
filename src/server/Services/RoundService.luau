@@ -644,6 +644,11 @@ function RoundService.getState(): State
 	return state
 end
 
+-- True when the player has sent no input for Round.Participation.AFKTimeout (playtime rewards skip AFK time).
+function RoundService.isAFK(player: Player): boolean
+	return isAFK(player)
+end
+
 function RoundService.getStatus(player: Player): Status
 	return statuses[player] or "Lobby"
 end

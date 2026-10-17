@@ -8,6 +8,7 @@ local expect = require("../expect")
 local Config = Roblox.require(Roblox.game.ReplicatedStorage.Shared.Config)
 local ShopRules = Roblox.require(Roblox.game.ReplicatedStorage.Shared.ShopRules)
 local MonetizationRules = Roblox.require(Roblox.game.ReplicatedStorage.Shared.MonetizationRules)
+local DailyRules = Roblox.require(Roblox.game.ReplicatedStorage.Shared.DailyRules)
 local HudFormat = Roblox.require(Roblox.game.StarterPlayer.StarterPlayerScripts.Client.Lib.HudFormat)
 
 local CSV_PATH = "src/localization/GameStrings.csv"
@@ -68,6 +69,9 @@ return {
 		end
 		for _, reason in ShopRules.Reasons do
 			expect.truthy(keys[`Shop.Error.{reason}`], `Shop.Error.{reason}`)
+		end
+		for _, reason in DailyRules.Reasons do
+			expect.truthy(keys[`Daily.Error.{reason}`], `Daily.Error.{reason}`)
 		end
 		for _, key in HudFormat.QueueKeys do
 			expect.truthy(keys[key], key)

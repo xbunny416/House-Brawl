@@ -31,6 +31,16 @@ export type Stats = {
 -- A private server owner's choices (Shared/PrivateServerRules): "Vote" or a mode / map id, and the round length.
 export type PrivateServerSettings = { Mode: string, Map: string, RoundTime: number }
 
+-- Daily login streak and playtime rewards (Shared/DailyRules). Day numbers count days since 1970 (UTC, from
+-- Config.Retention.LoginStreak.ResetHourUTC); -1 = never.
+export type DailyData = {
+	LastClaimDay: number,
+	Streak: number, -- streak day of the last claim (1-7)
+	PlaytimeDay: number,
+	PlaytimeSeconds: number, -- active seconds online on PlaytimeDay
+	PlaytimeClaims: number, -- playtime rewards paid on PlaytimeDay
+}
+
 export type PlayerData = {
 	Version: number,
 	Scrap: number,
@@ -44,6 +54,7 @@ export type PlayerData = {
 	Settings: Settings,
 	PurchaseIds: { string }, -- recent developer-product purchases already granted
 	PrivateServer: PrivateServerSettings, -- applied in private servers this player owns
+	Daily: DailyData,
 }
 
 local VERSION = 1
@@ -74,6 +85,7 @@ local Template: PlayerData = {
 	Settings = table.clone(Config.Data.DefaultSettings),
 	PurchaseIds = {},
 	PrivateServer = { Mode = "Vote", Map = "Vote", RoundTime = Config.Round.RoundTime },
+	Daily = { LastClaimDay = -1, Streak = 0, PlaytimeDay = -1, PlaytimeSeconds = 0, PlaytimeClaims = 0 },
 }
 
 return {

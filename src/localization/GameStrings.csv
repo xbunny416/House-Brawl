@@ -251,3 +251,23 @@ PrivateServer.Welcome,"Private server: just for play and testing. No Scrap, XP o
 PrivateServer.WelcomeScaled,Private server: round rewards are {1}% here.,Notice when joining a private server that pays part of the rewards (percent),Private server: round rewards are 50% here.
 Results.PrivateServer,Private server: nothing is earned here.,Results screen reward line in a private server (no rewards),
 Dev.TogglePrivate,Private on/off,Developer panel button: act as a private server you own (Studio),
+Menu.Daily,Daily,Lobby menu button that opens the Daily reward screen,
+Daily.Title,Daily reward,Title of the daily login reward screen,
+Daily.Day,Day {1},Daily reward card: day of the 7-day login streak,Day 3
+Daily.Today,Today,Daily reward card: today's reward,
+Daily.Claimed,Claimed,Daily reward card: already claimed,
+Daily.Claim,Claim,Button: claim today's login reward,
+Daily.Claiming,Claiming...,Claim button while the claim is on its way,
+Daily.Got,You got {1}!,Message after claiming the daily reward (Scrap amount or item name),You got 100 Scrap!
+Daily.Info,Log in every day for bigger rewards: miss a day and you start again at Day 1.,Daily reward screen note,
+Daily.ComeBack,Next reward in {1},Daily reward screen: time until the next reward (hours:minutes:seconds),Next reward in 5:12:09
+Daily.Playtime,"Playtime: +{1} Scrap every {2} minutes you play ({3}/{4} today)","Daily reward screen: playtime rewards (Scrap, minutes, paid today, max per day)",Playtime: +25 Scrap every 10 minutes you play (2/6 today)
+Daily.PlaytimeDone,All {1} playtime rewards collected today. Come back tomorrow!,Daily reward screen: every playtime reward was paid today (count),
+Daily.PlaytimeReward,+{1} Scrap for playing {2} minutes today!,Notice: a playtime reward was paid (Scrap and minutes played today),+25 Scrap for playing 20 minutes today!
+Daily.Error.Claimed,You already claimed today's reward.,Daily reward claim refused,
+Daily.Error.NotLoaded,Your data is still loading. Try again in a moment.,Daily reward claim refused,
+Daily.Error.PrivateServer,Daily and playtime rewards are paid in public servers.,Daily reward screen in a private server (no rewards there),
+Daily.Error.TryAgain,Something went wrong. Try again.,Daily reward claim failed (no answer from the server),
+Dev.Daily,Daily,Developer panel section: daily reward and playtime tests,
+Dev.DailyNextDay,Next day,Developer panel button: act as if a day has passed (daily reward and playtime),
+Dev.DailyPlaytime,+{1} min,Developer panel button: add playtime (minutes),+10 min

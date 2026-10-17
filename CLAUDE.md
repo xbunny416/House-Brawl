@@ -16,7 +16,9 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   2.9 Tutorial skipped for now (owner). **Phase 3 in progress:** 3.1 Game passes, dev products, Premium perks and
   PolicyService are built and switched off until the owner creates the passes / products and sends their ids (test
   with the dev panel's Robux buttons meanwhile). Walk-up Shop / Locker prompts added (owner's pick). 3.2 Private
-  server settings are built (not yet playtested). Arenas doubled in size with four layers and rounds are 4:00 (owner, 2026-10-17). **Next step:** 3.3 Daily login streak + playtime rewards.
+  server settings are built (not yet playtested). Arenas doubled in size with four layers and rounds are 4:00 (owner,
+  2026-10-17). 3.3 Daily login streak + playtime rewards are built (not yet playtested). **Next step:** 3.4 Daily +
+  weekly quests.
 
 ## How this repo works
 
@@ -208,7 +210,7 @@ any errors are fixed before the next item.
 
 - [x] 3.1 Game passes, dev products (idempotent receipts), Premium perks, PolicyService
 - [x] 3.2 Private server settings (owner controls, 50% rewards)
-- [ ] 3.3 Daily login streak + playtime rewards
+- [x] 3.3 Daily login streak + playtime rewards
 - [ ] 3.4 Daily + weekly quests
 - [ ] 3.5 Badges
 - [ ] 3.6 Leaderboards (all-time + weekly) + lobby billboards
@@ -261,6 +263,7 @@ any errors are fixed before the next item.
 | 2026-10-17 | 3.2 Private servers: PrivateServerService (owner check, settings saved in the owner's data, Workspace attributes, 50% reward notice; Studio simulation), owner-only Server menu (mode: vote / Classic / Casual, map: vote / any arena, round length 2:00 / 3:00 / 5:00), PrivateServerSetting remote, RoundService ballot + round length from it, RewardService scale from it, dev "Private on/off", pure PrivateServerRules + specs | #36 |
 | 2026-10-17 | Private servers for play and testing only (owner): no Scrap / XP (`PrivateServerRewardScale` 0) and no lifetime stats (`PrivateServerProgress` false, `PrivateServerService.countsProgress`), join notice / Server menu / results line say so | #37 |
 | 2026-10-17 | Bigger arenas + 4:00 rounds (owner): all three arenas twice the size with four layers (low platforms, base, corner ledges + a raised centre deck with ramps, peaks): 13 platforms, 16 spawns, 24 prop spots, 8 structures, 6 barrels each; Arena `Deck` + Builder `spread` (decor laid out for the first size spreads without stretching); maps spec checks layers, climbs ≤ 6 and reachability; RoundTime 240, private round lengths 2 / 3 / 4 / 5 min | #38 |
+| 2026-10-17 | 3.3 Daily rewards: DailyService (ClaimDaily remote: 7-day login streak, day 7 = the week's cosmetic or 300 Scrap; playtime +25 Scrap per 10 active minutes, 6 a day, saved across rejoins; nothing in private servers), Daily reward screen (day cards, claim, countdown, playtime line; opens itself when a reward waits), Daily data field, RoundService.isAFK, PrivateServerService.paysRewards, dev "Next day" / "+10 min", pure DailyRules + specs | #39 |
 
 ## Decisions and interpretations
 
@@ -534,6 +537,17 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   first; touch taps the prompt. The prompts are made on the client (opening a screen needs no server) and re-made
   when a streamed-out part comes back; they hide while a menu screen is open or the player is fighting. They use
   Roblox's default prompt look until the art pass. The left-edge menu still opens both screens anywhere in the lobby.
+- **Daily rewards (3.3):** the bible's numbers (`Config.Retention.LoginStreak`, `Playtime`). Saved per player in
+  `Daily` (last claim day, streak day, today's playtime seconds and paid rewards; day numbers from
+  `LoginStreak.ResetHourUTC`). The streak is claimed with a button (`ClaimDaily`), not paid on join, so the player
+  sees the calendar; the screen opens by itself 3 s after the data loads when a reward is waiting (once a session,
+  not while fighting). Day 7's "weekly rotating cosmetic" is a deterministic pick from the cosmetics sold for Scrap
+  by week number (same for everyone, no saving); if the player owns it they get `FinalDayFallbackScrap` = 300 (new).
+  After day 7 the streak starts again at day 1. Playtime counts only non-AFK time (`RoundService.isAFK`, the same
+  45 s rule as rounds), ticks every 15 s and is saved, so leaving and rejoining the same day keeps it; each reward
+  sends a notice. Neither is paid in private servers (`PrivateServerService.paysRewards`); the screen says so. Scrap
+  is logged as `TimedReward` (skus `LoginStreak.Day<n>`, `Playtime`). The Server menu moved to the end of the
+  left-edge menu (order 9) so Quests / Daily / Leaderboard / Settings come first.
 - **Private servers (3.2):** the bible's three controls only (the owner skipped the extras question; no solo start,
   so a private server can't be used to farm rewards alone: rounds still need `MinPlayers` on the pad). The owner's
   choices live in their saved data (`PrivateServer`: Mode, Map, RoundTime), so they follow the owner to every private
@@ -635,6 +649,10 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Dash movement is client-side** (clients simulate their character), so the once-per-jump air rule is enforced by
   the client; the server enforces the cooldown and hitstun, which gate the invulnerability and Perfect Dodge.
 - **Owner's Roblox UserId** is needed for `Config.Dev.AllowedUserIds` before live testing of the developer panel.
+- **Daily rewards test (Studio):** on join the Daily reward screen opens with Day 1 waiting: Claim → +50 Scrap.
+  Dev panel → Daily → "Next day" then Claim again for Day 2 ... (Day 7 gives this week's cosmetic); press "Next day"
+  twice before claiming to see the streak reset. "+10 min" pays a playtime reward (notice) up to 6 a day; real
+  playtime pays every 10 active minutes. Output shows `[Daily]`.
 - **Private server test (Studio):** dev panel → Round → "Private on/off": a notice says rewards are 50%, and a
   **Server** button appears on the left. Lock the mode / pick the map / pick 2:00, then stand on the join pad: the
   vote offers only your choices and the round timer starts at 2:00; `[Rewards]` in Output pays nothing and stats don't change. Rejoin and turn

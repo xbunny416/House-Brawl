@@ -60,6 +60,12 @@ function PrivateServerService.countsProgress(): boolean
 	return Config.Economy.PrivateServerProgress or not PrivateServerService.isPrivate()
 end
 
+-- Whether rewards (round Scrap / XP, daily and playtime rewards) are paid here: not in a private server while
+-- Economy.PrivateServerRewardScale is 0.
+function PrivateServerService.paysRewards(): boolean
+	return Config.Economy.PrivateServerRewardScale > 0 or not PrivateServerService.isPrivate()
+end
+
 -- The settings in force: the owner's (once their data has loaded) in a private server, otherwise the defaults.
 function PrivateServerService.settings(): PrivateServerRules.Settings
 	return if PrivateServerService.isPrivate() then current else PrivateServerRules.defaults()

@@ -23,7 +23,7 @@ local Kit = require(Client:WaitForChild("Ui"):WaitForChild("Kit"))
 local InputController = require(script.Parent:WaitForChild("InputController"))
 local MenuController = require(script.Parent:WaitForChild("MenuController"))
 
-local MENU_ORDER = 3 -- after the Shop and the Locker
+local MENU_ORDER = 9 -- after the other lobby screens (Shop, Locker, Quests, Daily ...)
 local ROW_HEIGHT = 0.2 -- of the panel's body
 
 type Choice = { Label: string, Text: string?, Seconds: number? }
