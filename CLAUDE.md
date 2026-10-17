@@ -13,7 +13,7 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   (owner looked: Motel brightened, lobby TVs fixed). 2.6 Animations (scripted R15) work in the owner's Studio (dynamic
   pass, charged punch, stamina added 2026-10-17). 2.7 VFX + Low Graphics and 2.8 Music + SFX (silent until the
   owner picks audio ids) are built, not yet playtested.
-  **Next step:** 2.9 Tutorial + first-round tips (agree the onboarding plan with the owner first), then Phase 3.
+  2.9 Tutorial skipped for now (owner). **Next step:** Phase 3 — 3.1 Game passes, dev products, Premium perks.
 
 ## How this repo works
 
@@ -185,8 +185,8 @@ any errors are fixed before the next item.
 - [x] 2.6 Animations (R15)
 - [x] 2.7 VFX pass + Low Graphics setting
 - [x] 2.8 Music + SFX (per-map tracks, last-30 s tension layer)
-- [ ] 2.9 Tutorial + first-round tips (the Training Yard it was planned in was removed with the lobby rework on
-      2026-10-16: agree a new onboarding plan with the owner first)
+- [ ] 2.9 Tutorial + first-round tips — **skipped for now (owner, 2026-10-17)**; the Training Yard it was planned in
+      was removed with the lobby rework. Ideas offered: contextual tips, or a practice room in the bar.
 
 ### Phase 3 — Monetization, retention & polish
 
@@ -238,6 +238,7 @@ any errors are fixed before the next item.
 | 2026-10-17 | Dynamic animation pass (owner: "look not good and no dynamic"): per-key easing (Out / Back overshoot), every attack reworked as wind-up → snappy strike → hold → recovery with hips, lunges, head and footwork; hit-stop on landed hits; always-on Motion layer (lean into movement and strafes, air tuck); in-round fighting Stance; directional hit recoils; tucked tumble; rig lookup throttled; Config.Animations HitStop / Motion; specs | #29 |
 | 2026-10-17 | 2.7 VFX + Low Graphics: client VfxController (hit sparks + impact flash in Percent colors, launch smoke, POW / K.O.! starburst + red / gold screen-edge flash, client KO-effect cosmetic, cartoon explosion with ring shockwave, structure break chunks + dust, blue Perfect Dodge flash, dash streak), crumble cracks / dust / debris, Effect remote + Server/Visuals/Effects, Config.Vfx, Low Graphics (particles, debris, post-effects, shadows off; dev panel toggle), pure VfxRules + specs | #30 |
 | 2026-10-17 | 2.8 Music + SFX: Config.Audio slots (all silent until the owner picks Creator Store audio ids), SoundController (lobby / per-arena music with crossfade, last-30 s tension layer, victory sting; 3D hit sounds by weapon, charged / prop / parry hits, dash, grab, throw, KO boom + cheer, explosion, wood / metal / glass smash, Perfect Dodge chime, crumble rumble / collapse; UI click, coin, level-up), weapon in CombatHit, pure AudioRules + specs | #31 |
+| 2026-10-17 | Bottom-right key panel (owner): Run / Dash / Ability slots with keys or gamepad glyphs and cooldown fills (stamina, dash cooldown, server AbilityReadyAt), on keyboard and gamepad (touch keeps its buttons and the dash ring); tutorial 2.9 skipped for now by the owner | #PR |
 
 ## Decisions and interpretations
 
@@ -364,6 +365,13 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   `Ability` action — F, gamepad Y, a touch button shown only for styles with an ability (labelled Parry) — runs the
   equipped style's move: `Config.Styles.List[id].Ability` (Wrecker: `Parry` 0.2 s, `Cooldown` 1.2 s; others none).
   Casual already had unlimited lives (no HP, endless respawns, nobody is eliminated) — confirmed to the owner.
+- **Key panel (owner, 2026-10-17):** "about keys like dash, unique skill, can you shift these into bottom right";
+  bindings stay (owner: keep Q dash, Shift run). `ActionPanelController`: bottom-right slots for Run (lit while
+  running, fill = stamina, dimmed below RunResume), Dash (fill = cooldown, dimmed below a dash's stamina cost) and the
+  style's Ability (only when it has one; fill from the server's `AbilityReadyAt` character attribute), each with its
+  key / gamepad glyph (KeyHint). Shown on keyboard / mouse and gamepad, hidden on touch (the touch buttons are in that
+  corner; touch keeps the dash ring in the bottom bar, which now hides it otherwise) and while spectating.
+  `MovementController.isRunning()` tells the panel whether Run is held / toggled.
 - **Music + SFX (2.8):** every sound is a slot in `Config.Audio` holding a Roblox audio asset id; all are 0 (silent)
   until the owner picks free Creator Store audio (a code session can't browse or upload audio). `SoundController`
   (client) plays: the lobby track, or the arena's track (by map id) while the player is in the running round

@@ -6,9 +6,9 @@
 	    left (Classic) or your score (Casual; players in the lobby see how many are fighting), with a line under it
 	    for players in the lobby (join now / next round). Hidden while the results panel is up.
 	  * Kill feed (top right): who KO'd whom, newest first, each line fades after FEED_LIFETIME.
-	  * Bottom bar: the dash cooldown ring, your vitals while in a round (Classic: HP bar + lives; Casual: Percent in
-	    white → yellow → red), and the held prop with Throw / Drop key hints. Above it, the stamina bar (orange when
-	    there is too little left for a dash).
+	  * Bottom bar: the dash cooldown ring (touch only: keyboard and gamepad see the bottom-right action panel), your
+	    vitals while in a round (Classic: HP bar + lives; Casual: Percent in white → yellow → red), and the held prop
+	    with Throw / Drop key hints. Above it, the stamina bar (orange when there is too little left for a dash).
 	Key hints follow the input device (KeyHint). Hidden while spectating (the spectate bar takes the bottom).
 ]]
 local CollectionService = game:GetService("CollectionService")
@@ -29,6 +29,7 @@ local KeyHint = require(Client:WaitForChild("Ui"):WaitForChild("KeyHint"))
 local Kit = require(Client:WaitForChild("Ui"):WaitForChild("Kit"))
 local DashController = require(script.Parent:WaitForChild("DashController"))
 local DataController = require(script.Parent:WaitForChild("DataController"))
+local InputController = require(script.Parent:WaitForChild("InputController"))
 
 local REFRESH_INTERVAL = 0.1
 local FEED_LIFETIME = 6
@@ -441,6 +442,8 @@ end
 local function refreshBottom()
 	local status = player:GetAttribute("RoundStatus")
 	bottom.Visible = status ~= "Spectating"
+	-- With keyboard or gamepad the bottom-right action panel shows the dash; touch players keep the ring here.
+	dash.Ring.Visible = InputController.getDevice() == "Touch"
 
 	local staminaLeft = if player.Character then player.Character:GetAttribute("Stamina") else nil
 	local staminaConfig = Config.Combat.Stamina

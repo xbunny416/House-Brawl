@@ -749,6 +749,8 @@ local function onAbility(player: Player)
 		return
 	end
 	if Fighter.parry(fighter, os.clock(), ability.Parry.Window, ability.Cooldown) then
+		-- When it can be used again (server time), for the HUD's Ability slot.
+		character:SetAttribute("AbilityReadyAt", Workspace:GetServerTimeNow() + ability.Cooldown)
 		Animate.play(character, style.Animations.Ability or "Parry")
 		if isStudioFlag(Config.Dev.LogCombat) then
 			print(`[Combat] {player.Name} parries`)
