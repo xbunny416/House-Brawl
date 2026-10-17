@@ -70,6 +70,11 @@ local function watchStillness(deltaTime: number)
 	end
 end
 
+-- True while the player asks to run (held or toggled on); the server still needs stamina for it.
+function MovementController.isRunning(): boolean
+	return held or toggled
+end
+
 function MovementController.Start(_self: any)
 	InputController.ActionBegan:Connect(onActionBegan)
 	InputController.ActionEnded:Connect(onActionEnded)
