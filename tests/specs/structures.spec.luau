@@ -66,7 +66,7 @@ return {
 					expect.truthy(typeConfig.Size.X > 0 and typeConfig.Size.Y > 0 and typeConfig.Size.Z > 0, "size")
 				end
 			end
-			expect.equal(count, 4, `{layout.Id}: 4 breakable structures (as on Broken Highway, bible)`)
+			expect.equal(count, 8, `{layout.Id}: 8 breakable structures (bible, since the arenas doubled)`)
 		end
 	end,
 	["new structure types keep the bible's HP tiers (100 / 80 / 60)"] = function()

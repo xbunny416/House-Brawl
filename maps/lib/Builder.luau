@@ -3,6 +3,9 @@
 	Builder — tiny DSL for blockout maps, run by Lune (maps/build.luau) to produce .rbxmx models that Rojo puts into
 	the place. Positions are in studs relative to the current origin (see `within`); rotations are degrees.
 
+	`spread(factor, fill)` multiplies the horizontal (X / Z) positions of everything built inside it, keeping sizes:
+	decor laid out for a smaller platform spreads over a bigger one without stretching the objects.
+
 	Gameplay markers (spawn points, prop/structure spots) are tagged parts. They are semi-transparent so they can be
 	seen and moved in Studio's Edit mode; MapService hides them at runtime.
 ]]
@@ -38,6 +41,7 @@ local Builder = {}
 local strings = csv.readStrings()
 local parentStack: { any } = {}
 local originStack: { Vec } = { { 0, 0, 0 } }
+local spreadStack: { number } = { 1 }
 
 local function current(): any
 	return parentStack[#parentStack]
@@ -52,9 +56,13 @@ local function color(value: string): any
 	return Color3.fromHex(hex)
 end
 
+local function spread(): number
+	return spreadStack[#spreadStack]
+end
+
 local function cframe(position: Vec, rotation: Vec?): any
-	local o = origin()
-	local cf = CFrame.new(position[1] + o[1], position[2] + o[2], position[3] + o[3])
+	local o, s = origin(), spread()
+	local cf = CFrame.new(position[1] * s + o[1], position[2] + o[2], position[3] * s + o[3])
 	if rotation then
 		cf = cf * CFrame.Angles(math.rad(rotation[1]), math.rad(rotation[2]), math.rad(rotation[3]))
 	end
@@ -125,10 +133,17 @@ function Builder.folder(name: string, fill: () -> ()): any
 	return folder
 end
 
+-- Runs `fill` with every horizontal position (X / Z, from the current origin) multiplied by `factor`; sizes stay.
+function Builder.spread(factor: number, fill: () -> ())
+	table.insert(spreadStack, spread() * factor)
+	fill()
+	table.remove(spreadStack)
+end
+
 -- Runs `fill` with positions measured from `offset` (added to the current origin).
 function Builder.within(offset: Vec, fill: () -> ())
-	local o = origin()
-	table.insert(originStack, { o[1] + offset[1], o[2] + offset[2], o[3] + offset[3] })
+	local o, s = origin(), spread()
+	table.insert(originStack, { o[1] + offset[1] * s, o[2] + offset[2], o[3] + offset[3] * s })
 	fill()
 	table.remove(originStack)
 end
@@ -226,6 +241,7 @@ end
 function Builder.root(name: string, fill: () -> (), attributes: { [string]: any }?): any
 	parentStack = {}
 	originStack = { { 0, 0, 0 } }
+	spreadStack = { 1 }
 	local root = Instance.new("Model")
 	root.Name = name
 	for key, value in attributes or {} do

@@ -1,15 +1,17 @@
 --!strict
 --[[
 	Map 3: Neon Motel — sinking motel rooftops over a flooded street at night, flickering retro neon, a pool on one
-	roof (bible §3.1–3.2; Night lighting).
+	roof (bible §3.1–3.2; Night lighting); twice the first size with four layers (owner, 2026-10-17).
 
 	Platforms (studs; X/Z footprint, top height):
-	  Center 56x36 main roof (never falls) · East 24x26 pool roof (+1) · West 22x22 sign roof (−1) ·
-	  North 26x20 roof (−3) · South 24x20 roof (−2) · NE 10x10 water tower and SW 12x8 billboard ledges (+6).
-	  Gaps to the nearest platform: East 10, West 12, North 12, South 11, ledges 8.6 / 8.9 (diagonal) — all within
-	  8-14, crossable with jump + dash.
-	Same rules as Broken Highway: 12 spawns, 14 loose prop spots, 4 breakable structures, 1 explosive barrel per side
-	platform, KillY 60 studs below the lowest platform. Edge decor stays low so knockback carries over.
+	  Center 112x72 main roof (never falls) with a raised 28x18 roof-access deck (+6, a ramp on each end) ·
+	  East 48x52 pool roof (+1) · West 44x44 sign roof (−1) · North 52x40 roof (−3) · South 48x40 roof (−2) ·
+	  ledges (+6): NE 20x20 water tower, SW 24x16 billboard, NW / SE 20x20 vent roofs · two 18x18 antenna roofs (+12)
+	  beyond the NE / SW ledges · two 28x28 low roofs beyond East (−5) and West (−7).
+	  Gaps to the nearest platform: East 10, West 12, North 12, South 11, ledges 8.5 (diagonal), antenna roofs 9.9,
+	  low roofs 10 — all within 8-14, crossable with jump + dash; every climb is at most 6 studs.
+	Same rules as Broken Highway: 16 spawns, 24 loose prop spots, 8 breakable structures, 1 explosive barrel per side
+	and low platform, KillY 60 studs below the lowest platform. Edge decor stays low so knockback carries over.
 	Neon parts and signs tagged NeonFlicker flicker now and then (client: NeonFlickerController).
 ]]
 local Arena = require("../lib/Arena")
@@ -24,110 +26,107 @@ Layout.Id = "NeonMotel"
 Layout.Lighting = "Night"
 
 local FLICKER = { "NeonFlicker" }
+local POOL = { 20, 24 } -- pool water on the East roof (X, Z)
+
+-- One platform entry (keeps the list short).
+local function platform(
+	id: string,
+	kind: string,
+	center: { number },
+	size: { number },
+	top: number,
+	thickness: number,
+	color: string,
+	material: string
+): Platform
+	return {
+		Id = id,
+		Kind = kind :: any,
+		Center = center,
+		Size = size,
+		Top = top,
+		Thickness = thickness,
+		Color = color,
+		Material = material,
+	}
+end
+
+local center = platform("Center", "Center", { 0, 0 }, { 112, 72 }, 0, 5, "ConcreteDark", "Slate")
+center.Deck = { Size = { 28, 18 }, Height = 6, Ramp = 12, RampWidth = 12 }
 
 Layout.Platforms = {
-	{
-		Id = "Center",
-		Kind = "Center",
-		Center = { 0, 0 },
-		Size = { 56, 36 },
-		Top = 0,
-		Thickness = 5,
-		Color = "ConcreteDark",
-		Material = "Slate",
-	},
-	{
-		Id = "East",
-		Kind = "Side",
-		Center = { 50, -2 },
-		Size = { 24, 26 },
-		Top = 1,
-		Thickness = 4,
-		Color = "OffWhite",
-		Material = "Concrete",
-	},
-	{
-		Id = "West",
-		Kind = "Side",
-		Center = { -51, 3 },
-		Size = { 22, 22 },
-		Top = -1,
-		Thickness = 4,
-		Color = "DustyPink",
-		Material = "Concrete",
-	},
-	{
-		Id = "North",
-		Kind = "Side",
-		Center = { 4, 40 },
-		Size = { 26, 20 },
-		Top = -3,
-		Thickness = 4,
-		Color = "PinkDark",
-		Material = "Slate",
-	},
-	{
-		Id = "South",
-		Kind = "Side",
-		Center = { -4, -39 },
-		Size = { 24, 20 },
-		Top = -2,
-		Thickness = 4,
-		Color = "TealDark",
-		Material = "Slate",
-	},
-	{
-		Id = "LedgeNE",
-		Kind = "Ledge",
-		Center = { 38, 30 },
-		Size = { 10, 10 },
-		Top = 6,
-		Thickness = 2,
-		Color = "Wood",
-		Material = "WoodPlanks",
-	},
-	{
-		Id = "LedgeSW",
-		Kind = "Ledge",
-		Center = { -38, -30 },
-		Size = { 12, 8 },
-		Top = 6,
-		Thickness = 1.5,
-		Color = "MetalDark",
-		Material = "DiamondPlate",
-	},
-} :: { Platform }
+	center,
+	platform("East", "Side", { 90, -4 }, { 48, 52 }, 1, 4, "OffWhite", "Concrete"),
+	platform("West", "Side", { -90, 6 }, { 44, 44 }, -1, 4, "DustyPink", "Concrete"),
+	platform("North", "Side", { 8, 68 }, { 52, 40 }, -3, 4, "PinkDark", "Slate"),
+	platform("South", "Side", { -8, -67 }, { 48, 40 }, -2, 4, "TealDark", "Slate"),
+	platform("LedgeNE", "Ledge", { 72, 52 }, { 20, 20 }, 6, 2, "Wood", "WoodPlanks"),
+	platform("LedgeSW", "Ledge", { -74, -50 }, { 24, 16 }, 6, 1.5, "MetalDark", "DiamondPlate"),
+	platform("LedgeNW", "Ledge", { -72, 52 }, { 20, 20 }, 6, 2, "ConcreteDark", "Slate"),
+	platform("LedgeSE", "Ledge", { 72, -52 }, { 20, 20 }, 6, 2, "ConcreteDark", "Slate"),
+	platform("PeakNE", "Peak", { 98, 78 }, { 18, 18 }, 12, 3, "PinkDark", "Slate"),
+	platform("PeakSW", "Peak", { -102, -74 }, { 18, 18 }, 12, 3, "TealDark", "Slate"),
+	platform("LowEast", "Low", { 138, -4 }, { 28, 28 }, -5, 4, "DustyPink", "Concrete"),
+	platform("LowWest", "Low", { -136, 6 }, { 28, 28 }, -7, 4, "OffWhite", "Concrete"),
+}
 
 Layout.Contents = {
 	Center = {
-		Spawns = { { -22, -12 }, { 22, -12 }, { -22, 12 }, { 22, 12 } },
-		Props = { { -14, -4 }, { -5, -11 }, { 9, -6 }, { -7, 7 }, { 5, 12 }, { 17, 2 } },
+		Spawns = { { -44, -24 }, { 44, -24 }, { -44, 24 }, { 44, 24 }, { 0, -26 }, { 0, 26 } },
+		Props = {
+			{ -28, -14 },
+			{ -10, -22 },
+			{ 18, -14 },
+			{ 32, 4 },
+			{ -32, 4 },
+			{ -14, 16 },
+			{ 10, 24 },
+			{ 34, 14 },
+		},
 		Structures = {
-			{ Type = "VendingMachine", At = { -14, 9 }, Yaw = 180 },
-			{ Type = "IceMachine", At = { 14, -12 }, Yaw = 0 },
+			{ Type = "VendingMachine", At = { -28, 18 }, Yaw = 180 },
+			{ Type = "IceMachine", At = { 28, -24 }, Yaw = 0 },
+			{ Type = "LawnChairStack", At = { -44, -12 }, Yaw = 90 },
 		},
 	},
 	East = {
-		Spawns = { { -8, -9 }, { 8, 9 } },
-		Props = { { -8, 6 }, { 8, -8 } },
-		Explosive = { 0, -10 },
-		Structures = { { Type = "LawnChairStack", At = { 0, 9.5 }, Yaw = 0 } },
+		Spawns = { { -16, -18 }, { 16, 18 } },
+		Props = { { -16, 12 }, { 16, -16 }, { 18, 2 } },
+		Explosive = { 0, -20 },
+		Structures = { { Type = "LawnChairStack", At = { 0, 19 }, Yaw = 0 } },
 	},
 	West = {
-		Spawns = { { -5, -7 }, { 7, 6 } },
-		Props = { { 6, -6 }, { -6, 5 } },
-		Explosive = { 1, 0 },
-		Structures = { { Type = "IceMachine", At = { -6, -1 }, Yaw = 90 } },
+		Spawns = { { -10, -14 }, { 14, 12 } },
+		Props = { { 12, -12 }, { -12, 10 }, { 0, 18 } },
+		Explosive = { 2, 0 },
+		Structures = { { Type = "IceMachine", At = { -12, -2 }, Yaw = 90 } },
 	},
 	North = {
-		Spawns = { { -9, -5 }, { 9, 5 } },
-		Props = { { 7, -5 }, { -7, 5 } },
+		Spawns = { { -18, -10 }, { 18, 10 } },
+		Props = { { 14, -10 }, { -14, 10 } },
 		Explosive = { 0, 0 },
+		Structures = { { Type = "VendingMachine", At = { -20, 4 }, Yaw = 90 } },
 	},
 	South = {
-		Spawns = { { 9, -5 }, { -9, 5 } },
-		Props = { { -6, -5 }, { 6, 5 } },
+		Spawns = { { 18, -10 }, { -18, 10 } },
+		Props = { { -12, -10 }, { 12, 10 } },
 		Explosive = { 0, 0 },
+	},
+	LedgeNE = { Props = { { -5, -5 } } },
+	LedgeSW = { Props = { { 3, 3 } } },
+	LedgeNW = { Props = { { -4, -5 } } },
+	LedgeSE = { Props = { { 4, 5 } } },
+	LowEast = {
+		Spawns = { { -6, -6 } },
+		Props = { { 6, 6 } },
+		Explosive = { 8, -8 },
+		Structures = { { Type = "IceMachine", At = { -7, 8 }, Yaw = 0 } },
+	},
+	LowWest = {
+		Spawns = { { 6, 6 } },
+		Props = { { -6, -6 } },
+		Explosive = { -8, 8 },
+		Structures = { { Type = "LawnChairStack", At = { 7, -8 }, Yaw = 0 } },
 	},
 } :: { [string]: Contents }
 
@@ -233,23 +232,21 @@ local function acUnit(at: { number })
 end
 
 local function centerDecor()
-	acUnit({ 1, 1 })
-	acUnit({ -24, 0 })
-	roofLamp({ 27, 17 })
-	roofLamp({ -27, -17 })
-	B.part({
-		Name = "RoofHatch",
-		Size = { 3, 0.6, 3 },
-		Position = { -2, 0.3, -3 },
-		Color = "MetalDark",
-		Material = "Metal",
-	})
-	parapet({ -10, 17.7 }, { 14, 17.7 }, "NeonPink")
-	parapet({ -16, -17.7 }, { 6, -17.7 }, "NeonTeal")
+	-- Laid out for the first, half-size roof: spread over the bigger one (sizes stay).
+	B.spread(2, function()
+		acUnit({ 20, -8 })
+		acUnit({ -24, 0 })
+		roofLamp({ 27, 17 })
+		roofLamp({ -27, -17 })
+		roofLamp({ 27, -17 })
+		roofLamp({ -27, 17 })
+	end)
+	parapet({ -20, 35.4 }, { 28, 35.4 }, "NeonPink")
+	parapet({ -32, -35.4 }, { 12, -35.4 }, "NeonTeal")
 end
 
 local function poolDecor()
-	local poolX, poolZ = 10, 12 -- water size
+	local poolX, poolZ = POOL[1], POOL[2] -- water size
 	B.part({
 		Name = "PoolWater",
 		Size = { poolX, 0.12, poolZ },
@@ -376,23 +373,26 @@ local function northDecor()
 end
 
 local function southDecor()
-	roofLamp({ -11, -9 })
-	B.part({
-		Name = "Skylight",
-		Size = { 4, 0.2, 3 },
-		Position = { -1, 0.1, -6 },
-		Color = "Glass",
-		Material = "Glass",
-		Transparency = 0.3,
-		CanCollide = false,
-	})
-	parapet({ -4, -9.7 }, { 10, -9.7 }, "NeonOrange")
+	B.spread(2, function()
+		roofLamp({ -11, -9 })
+		B.part({
+			Name = "Skylight",
+			Size = { 4, 0.2, 3 },
+			Position = { -1, 0.1, -6 },
+			Color = "Glass",
+			Material = "Glass",
+			Transparency = 0.3,
+			CanCollide = false,
+		})
+	end)
+	parapet({ -8, -19.4 }, { 20, -19.4 }, "NeonOrange")
 end
 
 local function waterTower(platform: Platform)
+	local diameter = platform.Size[1] * 0.9
 	B.part({
 		Name = "Tank",
-		Size = { 8, 9, 9 },
+		Size = { 8, diameter, diameter },
 		Position = { 0, -platform.Thickness - 4, 0 },
 		Rotation = { 0, 0, 90 },
 		Shape = "Cylinder",
@@ -400,7 +400,8 @@ local function waterTower(platform: Platform)
 		Material = "WoodPlanks",
 		CanCollide = false,
 	})
-	for _, corner in { { -3.5, -3.5 }, { -3.5, 3.5 }, { 3.5, -3.5 }, { 3.5, 3.5 } } do
+	local leg = platform.Size[1] * 0.35
+	for _, corner in { { -leg, -leg }, { -leg, leg }, { leg, -leg }, { leg, leg } } do
 		B.part({
 			Name = "TowerLeg",
 			Size = { 0.6, 22, 0.6 },
@@ -414,9 +415,10 @@ end
 
 local function billboard(platform: Platform)
 	local backZ = -platform.Size[2] / 2 + 0.3
+	local width = platform.Size[1] - 1
 	B.sign({
 		Name = "Billboard",
-		Size = { 11, 5, 0.4 },
+		Size = { width, 5, 0.4 },
 		Position = { 0, 2.5, backZ },
 		Rotation = B.yaw("North"),
 		Color = "DustyPink",
@@ -426,7 +428,7 @@ local function billboard(platform: Platform)
 	})
 	local strip = B.part({
 		Name = "BillboardLight",
-		Size = { 11, 0.3, 0.3 },
+		Size = { width, 0.3, 0.3 },
 		Position = { 0, 5.3, backZ + 0.6 },
 		Color = "WarmLight",
 		Material = "Neon",
@@ -434,7 +436,7 @@ local function billboard(platform: Platform)
 		Tags = FLICKER,
 	})
 	B.light(strip, "WarmLight", 16, 1.5)
-	for _, x in { -4, 4 } do
+	for _, x in { -width / 3, width / 3 } do
 		B.part({
 			Name = "BillboardLeg",
 			Size = { 0.6, 20, 0.6 },
@@ -444,6 +446,35 @@ local function billboard(platform: Platform)
 			CanCollide = false,
 		})
 	end
+end
+
+-- A small roof with an AC unit and a lamp (the NW / SE ledges). `side` mirrors it.
+local function ventRoof(side: number)
+	acUnit({ 4 * side, -4 * side })
+	roofLamp({ -7 * side, 7 * side })
+end
+
+-- A radio antenna on a high roof corner, its red light blinking (the antenna roofs).
+local function antenna(platform: Platform)
+	local corner = { platform.Size[1] / 2 - 2, platform.Size[2] / 2 - 2 }
+	B.part({
+		Name = "AntennaMast",
+		Size = { 0.6, 16, 0.6 },
+		Position = { corner[1], 8, corner[2] },
+		Color = "MetalDark",
+		Material = "Metal",
+	})
+	local beacon = B.part({
+		Name = "AntennaBeacon",
+		Size = { 1, 1, 1 },
+		Position = { corner[1], 16.4, corner[2] },
+		Shape = "Ball",
+		Color = "NeonPink",
+		Material = "Neon",
+		CanCollide = false,
+		Tags = FLICKER,
+	})
+	B.light(beacon, "NeonPink", 24, 1.6)
 end
 
 local function decorate(platform: Platform)
@@ -457,13 +488,21 @@ local function decorate(platform: Platform)
 	elseif platform.Id == "West" then
 		signDecor(platform)
 	elseif platform.Id == "North" then
-		northDecor()
+		B.spread(2, northDecor) -- laid out for the first, half-size roof
 	elseif platform.Id == "South" then
 		southDecor()
 	elseif platform.Id == "LedgeNE" then
 		waterTower(platform)
-	else
+	elseif platform.Id == "LedgeSW" then
 		billboard(platform)
+	elseif platform.Id == "LedgeNW" then
+		ventRoof(1)
+	elseif platform.Id == "LedgeSE" then
+		ventRoof(-1)
+	elseif platform.Kind == "Peak" then
+		antenna(platform)
+	elseif platform.Kind == "Low" then
+		roofLamp({ 11 * math.sign(platform.Center[1]), 11 })
 	end
 end
 
@@ -471,7 +510,7 @@ local function scenery(killY: number)
 	-- The flooded street far below.
 	B.part({
 		Name = "FloodWater",
-		Size = { 700, 1, 700 },
+		Size = { 1400, 1, 1400 },
 		Position = { 0, killY - 25, 0 },
 		Color = "TealDark",
 		Material = "Glass",
@@ -479,7 +518,8 @@ local function scenery(killY: number)
 		CanCollide = false,
 		CastShadow = false,
 	})
-	-- Dark buildings around the motel, half sunk, each with a neon sign on the side facing the arena.
+	-- Dark buildings around the motel, half sunk, each with a neon sign on the side facing the arena (positions laid
+	-- out for the first, half-size arena, so doubled).
 	for index, block in
 		{
 			{ -130, 40, 40, 70, 30 },
@@ -490,12 +530,12 @@ local function scenery(killY: number)
 			{ -140, -90, 34, 64, 28 },
 		}
 	do
-		local height = block[4]
-		local faceZ = if block[2] > 0 then -block[5] / 2 - 0.3 else block[5] / 2 + 0.3
+		local x, z, height = block[1] * 2, block[2] * 2, block[4]
+		local faceZ = if z > 0 then -block[5] / 2 - 0.3 else block[5] / 2 + 0.3
 		B.part({
 			Name = `Tower{index}`,
 			Size = { block[3], height, block[5] },
-			Position = { block[1], killY - 25 + height / 2 - 10, block[2] },
+			Position = { x, killY - 25 + height / 2 - 10, z },
 			Color = "Black",
 			Material = "Concrete",
 			CanCollide = false,
@@ -504,7 +544,7 @@ local function scenery(killY: number)
 		B.part({
 			Name = `TowerSign{index}`,
 			Size = { block[3] * 0.5, 3, 0.4 },
-			Position = { block[1], killY - 25 + height - 18, block[2] + faceZ },
+			Position = { x, killY - 25 + height - 18, z + faceZ },
 			Color = if index % 2 == 0 then "NeonPink" else "NeonTeal",
 			Material = "Neon",
 			CanCollide = false,

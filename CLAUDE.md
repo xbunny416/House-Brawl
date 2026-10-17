@@ -16,7 +16,7 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   2.9 Tutorial skipped for now (owner). **Phase 3 in progress:** 3.1 Game passes, dev products, Premium perks and
   PolicyService are built and switched off until the owner creates the passes / products and sends their ids (test
   with the dev panel's Robux buttons meanwhile). Walk-up Shop / Locker prompts added (owner's pick). 3.2 Private
-  server settings are built (not yet playtested). **Next step:** 3.3 Daily login streak + playtime rewards.
+  server settings are built (not yet playtested). Arenas doubled in size with four layers and rounds are 4:00 (owner, 2026-10-17). **Next step:** 3.3 Daily login streak + playtime rewards.
 
 ## How this repo works
 
@@ -260,6 +260,7 @@ any errors are fixed before the next item.
 | 2026-10-17 | Walk-up Shop and Locker (owner): ProximityPrompts on the bartender (Shop) and in the locker booth (Locker), client-made from the lobby tags, E / gamepad B / tap (`Config.Controls.Prompts`), hidden while a menu is open or fighting; MenuController `openNamed` / `isOpen`; input spec | #35 |
 | 2026-10-17 | 3.2 Private servers: PrivateServerService (owner check, settings saved in the owner's data, Workspace attributes, 50% reward notice; Studio simulation), owner-only Server menu (mode: vote / Classic / Casual, map: vote / any arena, round length 2:00 / 3:00 / 5:00), PrivateServerSetting remote, RoundService ballot + round length from it, RewardService scale from it, dev "Private on/off", pure PrivateServerRules + specs | #36 |
 | 2026-10-17 | Private servers for play and testing only (owner): no Scrap / XP (`PrivateServerRewardScale` 0) and no lifetime stats (`PrivateServerProgress` false, `PrivateServerService.countsProgress`), join notice / Server menu / results line say so | #37 |
+| 2026-10-17 | Bigger arenas + 4:00 rounds (owner): all three arenas twice the size with four layers (low platforms, base, corner ledges + a raised centre deck with ramps, peaks): 13 platforms, 16 spawns, 24 prop spots, 8 structures, 6 barrels each; Arena `Deck` + Builder `spread` (decor laid out for the first size spreads without stretching); maps spec checks layers, climbs ≤ 6 and reachability; RoundTime 240, private round lengths 2 / 3 / 4 / 5 min | #PR |
 
 ## Decisions and interpretations
 
@@ -468,6 +469,20 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   Graphics setting in 2.7). All three maps are enabled, so every vote offers all of them. After the owner's first
   look ("Neon Motel a bit too dark") the Night preset is brighter and the motel's neon parts and roof lamps carry
   PointLights.
+- **Bigger arenas (owner, 2026-10-17: "make map twice bigger, more layers too, round time 4 min"):** every arena's
+  platforms are twice the size, and the gaps stay 8–14 (a jump + dash; doubling them would make them uncrossable).
+  Four layers per arena (`Arena` kinds): 2 **Low** platforms (28×28, about 6 below a side, beyond it), the base
+  (Center + 4 Sides), 4 corner **Ledges** (+6) plus a raised **Deck** on the centre (+6, 28–36 × 18–20, a 12-stud ramp on
+  each end; `Arena.Deck`) and 2 **Peaks** (18–20 square, +12) beyond the NE / SW ledges. Every climb is ≤ 6 studs
+  (the default jump reaches ~7), so the maps spec checks height bands per kind and that every platform is reachable
+  from the centre and back. Counts grew with the area: 13 platforms, 16 spawns (≥ `World.MaxPlayers`), 24 prop spots,
+  8 structures, 6 explosive barrels (one per Side and Low). Decor written for the first size is placed with
+  `Builder.spread(2, ...)` (positions doubled, objects not stretched); parapets, the pool (now 20×24), the water tower
+  and the billboard are sized from their platform. New decor: exit signs on the highway peaks, tire towers and junk
+  rafts in the junkyard, antenna roofs (blinking red beacon), vent roofs and lamp-lit low roofs at the motel. Crumbling
+  is unchanged (from 1:00, every 20 s), so a 4:00 round drops 9 of the 12 outer platforms. `Round.RoundTime` = 240;
+  private servers choose 2 / 3 / 4 / 5 min (`PrivateRoundTimes`). Not playtested yet: check the ramps (they should
+  rise toward the deck), every jump, and whether 16 spawns over the bigger area feel too empty for small servers.
 - **Lobby rework (owner, 2026-10-16):** "I need an area for players to be in to start the round — right now every
   player has to play, no time to shop", "delete the Training Yard too", and "a closed-space lobby, hideout mixed with
   bar style, not open like this". So:
@@ -573,7 +588,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Rounds in Studio:** `Config.Dev.StudioMinPlayers = 1` lets a round start with you alone: stand on the join pad by
   the ARENA door (vote → arena → results → walk back to the pad ...); stay off it to remain in the lobby. Output
   shows `[Round]` lines (state changes, KOs, joins, winner). PvP needs two players: Test > Clients and Servers >
-  2 players. A solo Classic round ends when you lose your 3 lives; a solo Casual round runs the full 3:00.
+  2 players. A solo Classic round ends when you lose your 3 lives; a solo Casual round runs the full 4:00.
 - **Studio combat debug:** `Config.Dev.LogCombat` prints every hit and KO; `Config.Dev.ShowHitboxes` flashes each
   attack box (red hit, grey miss). Studio only.
 - **3.1 playtest (2026-10-17, Studio logs):** every perk toggle granted and took back its items, products gave Scrap /
@@ -613,7 +628,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   "Roblox API services unavailable - data will not be saved". Turn it on to test real saving
   (`Config.Data.UseMockInStudio = true` forces the in-memory store even with access on).
 - **Arena gaps** of 8.5–12 studs (all three arenas) need a jump + air dash (1.7); worth confirming every gap in the
-  playtest, and the 6-stud-high ledges (diagonal gaps 8.5–10). Neon Motel is the first night map: check it is not
+  playtest, and the 6-stud climbs: base → ledges, ledges → peaks (diagonal gaps 8.5–10) and lows → sides. Neon Motel is the first night map: check it is not
   too dark (Night preset + neon).
 - **Perfect Dodge feedback:** the blue flash and "PERFECT!" pop-up came with 2.7; the chime comes with 2.8. Studio's
   Output shows `PERFECT DODGE`. Rounds count them (stat + standings); the +5 Scrap is paid with round rewards (2.1).
