@@ -13,7 +13,14 @@ type RetentionConfig = {
 		Weekly: { Types.QuestConfig },
 	},
 	Badges: { [string]: Types.BadgeConfig },
-	Leaderboards: { Stats: { string }, TopCount: number, RefreshInterval: number },
+	Leaderboards: {
+		Stats: { string },
+		TopCount: number,
+		RefreshInterval: number,
+		BoardRows: number,
+		BoardCycle: number,
+		StorePrefix: string,
+	},
 	Group: { GroupId: number, Scrap: number },
 }
 
@@ -65,8 +72,17 @@ local Retention: RetentionConfig = {
 		Level100 = { BadgeId = 0, Stat = "Level", Goal = 100 },
 	},
 
-	-- Global all-time and weekly boards (OrderedDataStore).
-	Leaderboards = { Stats = { "Wins", "KOs", "Level" }, TopCount = 50, RefreshInterval = 120 },
+	-- Global all-time and weekly boards (OrderedDataStore; weeks start on Monday, like the weekly quests). The weekly
+	-- Level board counts levels gained that week. RefreshInterval: seconds between saving scores and reading the tops.
+	-- The lobby screens show BoardRows rows and switch between all-time and this week every BoardCycle seconds.
+	Leaderboards = {
+		Stats = { "Wins", "KOs", "Level" },
+		TopCount = 50,
+		RefreshInterval = 120,
+		BoardRows = 10,
+		BoardCycle = 10,
+		StorePrefix = "Leaderboard_", -- changing it starts every board from scratch
+	},
 
 	-- GroupId 0 = no group yet (reward disabled).
 	Group = { GroupId = 0, Scrap = 150 },

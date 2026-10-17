@@ -73,6 +73,12 @@ return {
 		for _, reason in DailyRules.Reasons do
 			expect.truthy(keys[`Daily.Error.{reason}`], `Daily.Error.{reason}`)
 		end
+		for _, stat in Config.Retention.Leaderboards.Stats do
+			expect.truthy(keys[`Leaderboard.Stat.{stat}`], `Leaderboard.Stat.{stat}`)
+		end
+		for _, period in { "AllTime", "Weekly" } do
+			expect.truthy(keys[`Leaderboard.{period}`], `Leaderboard.{period}`)
+		end
 		for _, list in { Config.Retention.Quests.Daily, Config.Retention.Quests.Weekly } do
 			for _, quest in list do
 				expect.truthy(keys[`Quest.{quest.Id}.Title`] and keys[`Quest.{quest.Id}.Desc`], `Quest.{quest.Id}`)

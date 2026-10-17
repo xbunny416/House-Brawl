@@ -17,8 +17,9 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   PolicyService are built and switched off until the owner creates the passes / products and sends their ids (test
   with the dev panel's Robux buttons meanwhile). Walk-up Shop / Locker prompts added (owner's pick). 3.2 Private
   server settings are built (not yet playtested). Arenas doubled in size with four layers and rounds are 4:00 (owner,
-  2026-10-17). 3.3 Daily login streak + playtime rewards and 3.4 Daily + weekly quests are built (not yet
-  playtested). **Next step:** 3.5 Badges.
+  2026-10-17). 3.3 Daily login streak + playtime rewards, 3.4 Daily + weekly quests and 3.6 Leaderboards are built
+  (not yet playtested); 3.5 Badges skipped for now (owner). **Next step:** 3.7 Party system + friend XP bonus + group
+  reward + chat tags.
 
 ## How this repo works
 
@@ -212,8 +213,9 @@ any errors are fixed before the next item.
 - [x] 3.2 Private server settings (owner controls, 50% rewards)
 - [x] 3.3 Daily login streak + playtime rewards
 - [x] 3.4 Daily + weekly quests
-- [ ] 3.5 Badges
-- [ ] 3.6 Leaderboards (all-time + weekly) + lobby billboards
+- [ ] 3.5 Badges — **skipped for now (owner, 2026-10-17: "not necessary right now")**; the Config entries stay
+      (BadgeId 0 = skipped)
+- [x] 3.6 Leaderboards (all-time + weekly) + lobby billboards
 - [ ] 3.7 Party system + friend XP bonus + group reward + chat tags
 - [ ] 3.8 Codes
 - [ ] 3.9 Full developer panel
@@ -265,6 +267,7 @@ any errors are fixed before the next item.
 | 2026-10-17 | Bigger arenas + 4:00 rounds (owner): all three arenas twice the size with four layers (low platforms, base, corner ledges + a raised centre deck with ramps, peaks): 13 platforms, 16 spawns, 24 prop spots, 8 structures, 6 barrels each; Arena `Deck` + Builder `spread` (decor laid out for the first size spreads without stretching); maps spec checks layers, climbs ≤ 6 and reachability; RoundTime 240, private round lengths 2 / 3 / 4 / 5 min | #38 |
 | 2026-10-17 | 3.3 Daily rewards: DailyService (ClaimDaily remote: 7-day login streak, day 7 = the week's cosmetic or 300 Scrap; playtime +25 Scrap per 10 active minutes, 6 a day, saved across rejoins; nothing in private servers), Daily reward screen (day cards, claim, countdown, playtime line; opens itself when a reward waits), Daily data field, RoundService.isAFK, PrivateServerService.paysRewards, dev "Next day" / "+10 min", pure DailyRules + specs | #39 |
 | 2026-10-17 | 3.4 Quests: QuestService (every lifetime stat counts toward today's 3 daily quests — a per-player pick of the 7 — and the weekly one, in the round's mode; done = Scrap at once + notice), Quests screen (progress bars, rewards, reset countdowns) from the menu and the lobby quest board (walk-up prompt), Quests data field, DataService.StatIncremented, RoundService.currentMode, dev "Finish quest" (+ "Next day" restarts daily quests), pure QuestRules + specs | #40 |
+| 2026-10-17 | 3.6 Leaderboards (3.5 Badges skipped by the owner): LeaderboardService (all-time + weekly Wins / KOs / Level in OrderedDataStores, changed scores saved every 2 min and on leave / close, tops read + names looked up, Leaderboards remote; this-server fallback offline; nothing saved from private servers), LeaderboardWeek data, lobby screens (top 10, all-time / this week every 10 s), Leaderboard menu screen (top 50), pure LeaderboardRules + specs | #41 |
 
 ## Decisions and interpretations
 
@@ -538,6 +541,21 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   first; touch taps the prompt. The prompts are made on the client (opening a screen needs no server) and re-made
   when a streamed-out part comes back; they hide while a menu screen is open or the player is fighting. They use
   Roblox's default prompt look until the art pass. The left-edge menu still opens both screens anywhere in the lobby.
+- **Leaderboards (3.6):** six OrderedDataStores — `Leaderboard_<Stat>` (all-time) and `Leaderboard_<Stat>_W<week>`
+  (weekly, a fresh store each Monday; `StorePrefix` in Config) for Wins, KOs and Level. All-time scores are the
+  lifetime stats / level; weekly Wins / KOs are counted from `DataService.StatIncremented` into the player's
+  `LeaderboardWeek`, and weekly Level = levels gained since the level they had when they first played that week (the
+  bible says "weekly Level" without defining it). Every `RefreshInterval` (120 s) each player's changed scores are
+  saved (also on leave and server close), then each board's top 50 is read (`GetSortedAsync`), display names come from
+  `UserService:GetUserInfosByUserIdsAsync` (cached) and the boards go to every client in one `Leaderboards` event
+  (well inside the DataStore budgets: at most 6 writes per player and 6 reads per 2 min). Nothing is saved from
+  private servers. When DataStores fail (Studio without API access, or `UseMockInStudio`) the boards show the players
+  in the server and say so. The lobby's three screens (tag `LeaderboardScreen`, attribute `Stat`) show the top 10,
+  switching between all-time and this week every 10 s; the Leaderboard menu screen (5th) shows the top 50 with tabs.
+  The player's own rank outside the top 50 isn't shown (an OrderedDataStore can't look it up cheaply).
+- **Badges (3.5): skipped for now** (owner, 2026-10-17: "isn't badge have to pay first, and it not necessary rn").
+  For later: Roblox lets each experience create a few badges a day for free (more cost Robux); the Config entries
+  (`Retention.Badges`, BadgeId 0 = skipped) are ready for when they are made.
 - **Quests (3.4):** the bible's numbers (`Config.Retention.Quests`: a pool of 7 daily quests, 3 a day; 1 weekly).
   Quests count lifetime stats: `DataService.incrementStat` fires `StatIncremented` and `QuestService` adds it to the
   player's active quests (a quest with a `Mode` counts only while a round of that mode runs: `RoundService
@@ -660,6 +678,9 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Dash movement is client-side** (clients simulate their character), so the once-per-jump air rule is enforced by
   the client; the server enforces the cooldown and hitstun, which gate the invulnerability and Perfect Dodge.
 - **Owner's Roblox UserId** is needed for `Config.Dev.AllowedUserIds` before live testing of the developer panel.
+- **Leaderboards test (Studio):** with API access off the boards say "this server only" and list you from your stats
+  (lobby screens on the south wall, and the Leaderboard menu); play a round and they update within 2 min. With
+  "Studio Access to API Services" on, scores are saved to the real boards. Output shows `[Leaderboards]`.
 - **Quests test (Studio):** open Quests (menu or walk up to the quest board, west wall): 3 daily quests and the weekly
   one at 0. Play a solo round — KOs, falls and rounds finished count (`[Quests]` in Output when one completes, with a
   notice and the Scrap). Dev panel → Daily → "Finish quest" completes the next one; "Next day" starts the daily ones
