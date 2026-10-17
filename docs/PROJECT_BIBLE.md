@@ -361,10 +361,11 @@ panel.
   times", "Break 8 structures"), 1 weekly (600 Scrap). Reset 00:00 UTC (weekly: Mondays). Each player gets their own
   3 of the 7 daily quests (the same all day); progress counts by itself and the Scrap is paid the moment a quest is
   done. Quests screen in the left-edge menu and at the lobby's quest board. Nothing counts in private servers.
-- **Badges:** Welcome, First KO, First Win, Ring-Out Rookie (100 ring-outs), Chair Master (50 chair KOs), Demolition
+- **Badges:** *(skipped for now by the owner, 2026-10-17)* Welcome, First KO, First Win, Ring-Out Rookie (100 ring-outs), Chair Master (50 chair KOs), Demolition
   (500 structures), Survivor (win Classic without losing a life), Level 10 / 25 / 50 / 100.
-- **Leaderboards:** global all-time and weekly Wins, KOs, Level (OrderedDataStore); in-server scoreboard; lobby
-  billboards.
+- **Leaderboards:** global all-time and weekly Wins, KOs, Level (OrderedDataStore; weekly Level = levels gained that
+  week; weeks start on Monday); in-server scoreboard; lobby billboards (top 10, switching between all-time and this
+  week) and a Leaderboard screen (top 50). Scores from private servers are not saved.
 - **Social:** party system (up to 4), friend bonus +10% XP per friend in server (max +30%), group join reward
   150 Scrap + group chat tag.
 - **Codes & events:** one-use codes validated on the server (stored in Config); seasonal map remixes, double-Scrap

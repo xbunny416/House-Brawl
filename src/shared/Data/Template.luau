@@ -45,6 +45,10 @@ export type DailyData = {
 export type QuestProgress = { Progress: { [string]: number }, Done: { [string]: boolean } }
 export type QuestData = { Day: number, Week: number, Daily: QuestProgress, Weekly: QuestProgress }
 
+-- This week's leaderboard scores (Shared/LeaderboardRules): Wins and KOs earned since Week began, and the level
+-- the player had when they first played that week.
+export type LeaderboardWeek = { Week: number, Wins: number, KOs: number, StartLevel: number }
+
 export type PlayerData = {
 	Version: number,
 	Scrap: number,
@@ -60,6 +64,7 @@ export type PlayerData = {
 	PrivateServer: PrivateServerSettings, -- applied in private servers this player owns
 	Daily: DailyData,
 	Quests: QuestData,
+	LeaderboardWeek: LeaderboardWeek,
 }
 
 local VERSION = 1
@@ -92,6 +97,7 @@ local Template: PlayerData = {
 	PrivateServer = { Mode = "Vote", Map = "Vote", RoundTime = Config.Round.RoundTime },
 	Daily = { LastClaimDay = -1, Streak = 0, PlaytimeDay = -1, PlaytimeSeconds = 0, PlaytimeClaims = 0 },
 	Quests = { Day = -1, Week = -1, Daily = { Progress = {}, Done = {} }, Weekly = { Progress = {}, Done = {} } },
+	LeaderboardWeek = { Week = -1, Wins = 0, KOs = 0, StartLevel = 1 },
 }
 
 return {

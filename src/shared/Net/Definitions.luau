@@ -107,6 +107,9 @@ local Definitions: { [string]: Definition } = {
 		Args = { Guard.oneOf({ "Style", "Cosmetic" }), Guard.string(32), Guard.integer(0, 1000000) },
 		RateLimit = { Rate = 2, Burst = 4 },
 	},
+	-- Server -> client: the global leaderboards (Shared/LeaderboardRules). (boards: { [key]: { { UserId, Name, Value } } }
+	-- — key "<Stat>.<Period>", best first; online: boolean — false = this server's players only)
+	Leaderboards = { Kind = "Event", Direction = "ToClient" },
 	-- Client -> server: claim today's login-streak reward (Shared/DailyRules). Returns (claimed: boolean, reward or
 	-- reason: { Day, Scrap, Cosmetic? } | "Claimed" | "NotLoaded" | "PrivateServer").
 	ClaimDaily = {
