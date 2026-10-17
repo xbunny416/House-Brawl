@@ -1,11 +1,12 @@
 --!strict
 --[[
-	DashController — Dash (Q / Left Shift / RB / the touch Dash button).
+	DashController — Dash (Q / RB / the touch Dash button).
 	The local character moves at once, because clients simulate their own character: Config.Combat.Dash.Distance
 	studs in Duration seconds along the move direction (or the facing), level even in the air. The server is told at
-	the same moment and grants the invulnerability after checking the cooldown and hitstun.
-	Rules (Lib/DashRules): cooldown, one dash per stay in the air, none during hitstun. An air dash after hitstun ends
-	a knockback launch, which is how a launched player recovers.
+	the same moment and grants the invulnerability after checking the cooldown, hitstun and stamina.
+	Rules (Lib/DashRules): cooldown, one dash per stay in the air, none during hitstun, and Stamina.DashCost stamina
+	(the Stamina attribute; the server spends it). An air dash after hitstun ends a knockback launch, which is how a
+	launched player recovers.
 ]]
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -77,6 +78,11 @@ local function onActionBegan(action: string)
 		return
 	end
 	if Launch.inHitstun(character) then
+		return
+	end
+	-- Not enough stamina (the server checks again and spends it).
+	local stamina = character:GetAttribute("Stamina")
+	if type(stamina) == "number" and stamina < Config.Combat.Stamina.DashCost then
 		return
 	end
 	local airborne = humanoid.FloorMaterial == Enum.Material.Air or Launch.isLaunched(character)

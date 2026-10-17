@@ -51,7 +51,7 @@ return {
 	["lookup merges keyboard and gamepad bindings"] = function()
 		local lookup = ActionMap.lookup(Controls.Keyboard, Controls.Gamepad)
 		expect.equal(lookup.Q[1], "Dash")
-		expect.equal(lookup.LeftShift[1], "Dash")
+		expect.equal(lookup.LeftShift[1], "Run")
 		expect.equal(lookup.ButtonR1[1], "Dash")
 		expect.equal(lookup.MouseButton1[1], "Attack")
 		expect.equal(lookup.ButtonX[1], "Attack")
@@ -121,14 +121,14 @@ return {
 			end
 		end
 	end,
-	["shift lock keys are real keys and never steal an action key (Left Shift is Dash)"] = function()
+	["shift lock keys are real keys and never steal an action key (Left Shift is Run)"] = function()
 		local lookup = ActionMap.lookup(Controls.Keyboard)
 		expect.truthy(#Controls.Camera.ShiftLockKeys > 0, "at least one Shift Lock key")
 		for _, key in Controls.Camera.ShiftLockKeys do
 			expect.truthy(isEnumItem(roblox.Enum.KeyCode, key), `Shift Lock key {key}`)
 			expect.equal(lookup[key], nil, `{key} is both Shift Lock and an action`)
 		end
-		expect.equal(lookup.LeftShift[1], "Dash")
+		expect.equal(lookup.LeftShift[1], "Run")
 	end,
 	["the developer panel key is a real key and never steals an action key"] = function()
 		local lookup = ActionMap.lookup(Controls.Keyboard)
@@ -162,7 +162,7 @@ return {
 				expect.truthy(button.Distance >= Controls.Touch.Gap, `{name}: {button.Action} touches the jump button`)
 				expect.truthy(button.Scale >= 1, `{name}: {button.Action} smaller than the base size`)
 			end
-			for _, action in { "Attack", "Ability", "Grab", "Dash" } do
+			for _, action in { "Attack", "Ability", "Grab", "Dash", "Run" } do
 				expect.truthy(seen[action], `{name}: no {action} button (bible §5.1 arc)`)
 			end
 		end
@@ -261,7 +261,7 @@ return {
 		local state = DashRules.new()
 		expect.equal(DashRules.tryDash(state, 0, false, dash), true)
 		expect.equal(DashRules.tryDash(state, dash.Cooldown - 0.01, false, dash), false, "cooldown")
-		expect.near(DashRules.cooldownLeft(state, 1), dash.Cooldown - 1)
+		expect.near(DashRules.cooldownLeft(state, dash.Cooldown / 2), dash.Cooldown / 2)
 		expect.equal(DashRules.tryDash(state, dash.Cooldown, true, dash), true, "air dash still available")
 		expect.equal(DashRules.cooldownLeft(state, 100), 0)
 	end,

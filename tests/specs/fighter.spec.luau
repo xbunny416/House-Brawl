@@ -149,6 +149,61 @@ return {
 		Fighter.dash(f, 0.1)
 		expect.equal(f.ChargeStartedAt, nil)
 	end,
+
+	-- Stamina ---------------------------------------------------------------------------------------------------------
+	["dashes cost stamina: four from full, then none until it refills"] = function()
+		local Stamina = Config.Combat.Stamina
+		local gap = Config.Combat.Dash.Cooldown
+		local f = Fighter.new("Classic")
+		expect.equal(f.Stamina, Stamina.Max)
+		local dashes, t = 0, 0
+		for index = 0, 5 do
+			if Fighter.dash(f, index * gap) then
+				dashes += 1
+				t = index * gap
+			end
+		end
+		expect.equal(dashes, math.floor(Stamina.Max / Stamina.DashCost), "dashes from full")
+		Fighter.tickStamina(f, Stamina.RegenDelay / 2, t + Stamina.RegenDelay / 2, false)
+		expect.equal(f.Stamina, 0, "no refill before RegenDelay")
+		Fighter.tickStamina(f, 1, t + Stamina.RegenDelay + 1, false)
+		expect.near(f.Stamina, Stamina.RegenPerSecond, nil, "refills after the pause")
+		expect.equal(Fighter.dash(f, t + Stamina.RegenDelay + 1), true, "enough for a dash again")
+	end,
+	["running drains stamina only while moving, stops at 0 and resumes at RunResume"] = function()
+		local Stamina = Config.Combat.Stamina
+		local f = Fighter.new("Classic")
+		expect.equal(Fighter.tickStamina(f, 0.1, 0, true), false, "Run not held")
+		Fighter.setRunHeld(f, true)
+		expect.equal(Fighter.tickStamina(f, 1, 1, false), true, "running")
+		expect.equal(f.Stamina, Stamina.Max, "standing still costs nothing")
+		Fighter.tickStamina(f, 1, 2, true)
+		expect.near(f.Stamina, Stamina.Max - Stamina.RunCostPerSecond, nil, "a second of running")
+		local t = 2
+		while f.Stamina > 0 and t < 100 do
+			t += 0.5
+			Fighter.tickStamina(f, 0.5, t, true)
+		end
+		expect.equal(f.Running, false, "out of stamina: walking")
+		-- Still holding Run: it refills while walking (nothing spent) and running resumes at RunResume.
+		local resumedAt = nil
+		while resumedAt == nil and t < 200 do
+			t += 0.1
+			if Fighter.tickStamina(f, 0.1, t, true) then
+				resumedAt = f.Stamina
+			end
+		end
+		expect.truthy(resumedAt ~= nil and resumedAt >= Stamina.RunResume - Stamina.RunCostPerSecond * 0.1, "resumes")
+		Fighter.setRunHeld(f, false)
+		expect.equal(Fighter.tickStamina(f, 0.1, t + 0.1, true), false, "let go: walking")
+	end,
+	["a reset fighter starts with full stamina"] = function()
+		local f = Fighter.new("Casual")
+		Fighter.spendStamina(f, 60, 0)
+		expect.equal(Fighter.new("Casual").Stamina, Config.Combat.Stamina.Max)
+		expect.equal(Fighter.spendStamina(f, 50, 1), false, "not enough")
+		expect.equal(f.Stamina, Config.Combat.Stamina.Max - 60, "nothing spent")
+	end,
 	["hits inside the dash's invulnerability miss; the first 0.15 s is a Perfect Dodge (once per dash)"] = function()
 		local Dash = Config.Combat.Dash
 		local window = Config.Combat.PerfectDodge.Window

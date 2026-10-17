@@ -7,7 +7,8 @@
 	    for players in the lobby (join now / next round). Hidden while the results panel is up.
 	  * Kill feed (top right): who KO'd whom, newest first, each line fades after FEED_LIFETIME.
 	  * Bottom bar: the dash cooldown ring, your vitals while in a round (Classic: HP bar + lives; Casual: Percent in
-	    white → yellow → red), and the held prop with Throw / Drop key hints.
+	    white → yellow → red), and the held prop with Throw / Drop key hints. Above it, the stamina bar (orange when
+	    there is too little left for a dash).
 	Key hints follow the input device (KeyHint). Hidden while spectating (the spectate bar takes the bottom).
 ]]
 local CollectionService = game:GetService("CollectionService")
@@ -35,6 +36,8 @@ local FEED_MAX = 5
 local HP_COLOR = Color3.fromHex("#6CCB5F")
 local HP_LOW_COLOR = Color3.fromHex("#E2463A")
 local EMPTY_COLOR = Color3.fromHex("#2A2420")
+local STAMINA_COLOR = Color3.fromHex("#F2C14E")
+local STAMINA_LOW_COLOR = Color3.fromHex("#E8742A") -- not enough left for a dash
 
 local HudController = {}
 
@@ -53,6 +56,7 @@ local feed: Frame
 local feedCount = 0
 local bottom: Frame
 local dash = {} :: { Ring: Frame, Fill: UIGradient }
+local stamina = {} :: { Bar: Frame, Fill: Frame }
 local vitals = {} :: {
 	Frame: Frame,
 	Classic: Frame,
@@ -306,6 +310,33 @@ local function buildBottom()
 	buildDash(bottom)
 	buildVitals(bottom)
 	buildHeld(bottom)
+
+	-- Stamina: a thin bar just above the bottom bar (running and dashing use it).
+	local bar = Instance.new("Frame")
+	bar.Name = "Stamina"
+	bar.AnchorPoint = Vector2.new(0.5, 1)
+	bar.Position = UDim2.fromScale(0.5, 0.865)
+	bar.Size = UDim2.fromScale(0.3, 0.012)
+	bar.BackgroundColor3 = EMPTY_COLOR
+	bar.BackgroundTransparency = 0.2
+	local barLimit = Instance.new("UISizeConstraint")
+	barLimit.MaxSize = Vector2.new(420, 10)
+	barLimit.MinSize = Vector2.new(120, 6)
+	barLimit.Parent = bar
+	local barCorner = Instance.new("UICorner")
+	barCorner.CornerRadius = UDim.new(0.5, 0)
+	barCorner.Parent = bar
+	local fill = Instance.new("Frame")
+	fill.Name = "Fill"
+	fill.BackgroundColor3 = STAMINA_COLOR
+	fill.Size = UDim2.fromScale(1, 1)
+	local fillCorner = Instance.new("UICorner")
+	fillCorner.CornerRadius = UDim.new(0.5, 0)
+	fillCorner.Parent = fill
+	fill.Parent = bar
+	bar.Parent = gui
+	stamina.Bar = bar
+	stamina.Fill = fill
 end
 
 ---------------------------------------------------------------------------------------------------------------------
@@ -410,6 +441,18 @@ end
 local function refreshBottom()
 	local status = player:GetAttribute("RoundStatus")
 	bottom.Visible = status ~= "Spectating"
+
+	local staminaLeft = if player.Character then player.Character:GetAttribute("Stamina") else nil
+	local staminaConfig = Config.Combat.Stamina
+	stamina.Bar.Visible = bottom.Visible and type(staminaLeft) == "number"
+	if type(staminaLeft) == "number" then
+		stamina.Fill.Size = UDim2.fromScale(math.clamp(staminaLeft / staminaConfig.Max, 0, 1), 1)
+		stamina.Fill.BackgroundColor3 = if staminaLeft < staminaConfig.DashCost
+			then STAMINA_LOW_COLOR
+			else STAMINA_COLOR
+		stamina.Bar.BackgroundTransparency = if staminaLeft >= staminaConfig.Max then 0.5 else 0.2
+	end
+
 	local fill = HudFormat.dashFill(DashController.cooldownLeft(), Config.Combat.Dash.Cooldown)
 	if fill >= 1 then
 		dash.Fill.Transparency = NumberSequence.new(0)

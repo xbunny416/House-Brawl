@@ -42,6 +42,9 @@ local Definitions: { [string]: Definition } = {
 	},
 	-- Client -> server: the Ability key (the equipped style's move, e.g. the Wrecker parry).
 	Ability = { Kind = "Event", Direction = "ToServer", Args = {} },
+	-- Client -> server: Run held (true) or let go (false); a toggle on gamepad / touch sends the same. (held: boolean)
+	-- Stamina decides whether the fighter really runs.
+	Run = { Kind = "Event", Direction = "ToServer", Args = { Guard.boolean } },
 	-- Client -> server: the Grab action. Grabs the nearest prop in reach, or drops the held one.
 	Grab = { Kind = "Event", Direction = "ToServer", Args = {} },
 	-- Client -> server: the local player dashed (the client already moved its character). The server checks the

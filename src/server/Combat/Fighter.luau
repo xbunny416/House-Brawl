@@ -1,7 +1,8 @@
 --!strict
 --[[
-	Fighter — one combatant's combat state and rules: punch chain, charged punch, parry, cooldowns, hitstun, HP / Percent and
-	KO credit. Pure logic (no instances; the current time is passed in), so Lune specs test every rule.
+	Fighter — one combatant's combat state and rules: punch chain, charged punch, parry, cooldowns, stamina (running,
+	dashing), hitstun, HP / Percent and KO credit. Pure logic (no instances; the current time is passed in), so Lune
+	specs test every rule.
 	CombatService keeps one Fighter per character and turns the results into hit checks, launches and KOs.
 ]]
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -14,6 +15,7 @@ local Punch = Config.Combat.Attacks.Punch
 local Charged = Config.Combat.Attacks.Charged
 local Dash = Config.Combat.Dash
 local PerfectDodge = Config.Combat.PerfectDodge
+local Stamina = Config.Combat.Stamina
 
 export type Fighter = {
 	ModeId: string,
@@ -36,6 +38,10 @@ export type Fighter = {
 	DodgeBonusUntil: number?, -- the next hit before this time gets the Perfect Dodge knockback bonus
 	ShieldUntil: number, -- spawn shield: hits do nothing before this time (attacking ends it early)
 	ParryUntil: number, -- parry styles: melee hits before this time are turned back on the attacker
+	Stamina: number,
+	StaminaSpentAt: number, -- last time stamina was spent (it refills RegenDelay later)
+	RunHeld: boolean, -- the player holds Run (or toggled it on)
+	Running: boolean, -- running right now (Run held and stamina left)
 }
 
 -- How a hit meets the fighter: it lands, is dodged (dash invulnerability), Perfect-Dodged, blocked by the spawn
@@ -90,6 +96,10 @@ function Fighter.new(modeId: string): Fighter
 		DodgeBonusUntil = nil,
 		ShieldUntil = 0,
 		ParryUntil = 0,
+		Stamina = Stamina.Max,
+		StaminaSpentAt = -math.huge,
+		RunHeld = false,
+		Running = false,
 	}
 end
 
@@ -192,10 +202,52 @@ function Fighter.cancelCharge(fighter: Fighter): boolean
 	return true
 end
 
--- Starts a dash's invulnerability (the client already moved the character). False if not allowed now: hitstun, or
--- the cooldown is not over (minus CooldownTolerance for network jitter). A dash cancels a charge.
+-- Spends stamina if there is enough. False (nothing spent) otherwise.
+function Fighter.spendStamina(fighter: Fighter, amount: number, now: number): boolean
+	if fighter.Stamina < amount then
+		return false
+	end
+	fighter.Stamina -= amount
+	fighter.StaminaSpentAt = now
+	return true
+end
+
+-- The player holds (or toggled) Run, or let go of it.
+function Fighter.setRunHeld(fighter: Fighter, held: boolean)
+	fighter.RunHeld = held
+end
+
+--[[
+	Advances stamina by `dt` seconds. Running needs Run held and stamina: it stops at 0 and starts again (Run still
+	held) once stamina is back to RunResume. A running fighter that is `moving` pays RunCostPerSecond; stamina
+	refills at RegenPerSecond once nothing was spent for RegenDelay. Returns whether the fighter is running now.
+]]
+function Fighter.tickStamina(fighter: Fighter, dt: number, now: number, moving: boolean): boolean
+	if not fighter.RunHeld then
+		fighter.Running = false
+	elseif not fighter.Running and fighter.Stamina >= Stamina.RunResume then
+		fighter.Running = true
+	end
+	if fighter.Running and moving then
+		fighter.Stamina = math.max(fighter.Stamina - Stamina.RunCostPerSecond * dt, 0)
+		fighter.StaminaSpentAt = now
+		if fighter.Stamina <= 0 then
+			fighter.Running = false
+		end
+	elseif now - fighter.StaminaSpentAt >= Stamina.RegenDelay then
+		fighter.Stamina = math.min(fighter.Stamina + Stamina.RegenPerSecond * dt, Stamina.Max)
+	end
+	return fighter.Running
+end
+
+-- Starts a dash's invulnerability (the client already moved the character) and spends its stamina. False if not
+-- allowed now: hitstun, the cooldown is not over (minus CooldownTolerance for network jitter), or too little stamina.
+-- A dash cancels a charge.
 function Fighter.dash(fighter: Fighter, now: number): boolean
 	if not Fighter.canAct(fighter, now) or now < fighter.NextDashAt then
+		return false
+	end
+	if not Fighter.spendStamina(fighter, Stamina.DashCost, now) then
 		return false
 	end
 	fighter.DashStartedAt = now

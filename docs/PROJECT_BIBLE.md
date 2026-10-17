@@ -79,7 +79,7 @@ this file in the same PR as the Config change.
 | --- | --- | --- | --- | --- |
 | Punch (3-hit chain) | 8 HP / 6% per hit | 3rd hit ×1.5 KB | 4×4×5 | 0.35 s between hits, 0.8 s after 3rd |
 | Charged punch (heavy; hold Punch) | 14 HP / 11% (×1.75 base) | AttackKBScale 1.6; keep holding Punch 0.25 s after a punch to charge, up to 0.8 s for up to ×1.5 KB; 40% slow while charging | 5×5×6 | 1.2 s |
-| Dash | — | 12 studs in 0.25 s (owner playtest; was 18), level (no gravity), 0.25 s invulnerability, once in the air per jump; ends a launch after hitstun (recovery) | — | 2.5 s |
+| Dash | — | 12 studs in 0.25 s (owner playtest; was 18), level (no gravity), 0.25 s invulnerability, once in the air per jump; ends a launch after hitstun (recovery); costs 25 stamina | — | 0.6 s |
 
 ### Reward distribution
 
@@ -184,7 +184,11 @@ machine (HP 80) ×2, lawn chair stack (HP 60).
 - **No NPC enemies.** Only the practice dummy, a developer-panel test target (stands still, shows Percent, respawns
   2 s after falling 4+ studs below its place or reaching 0 HP; anyone can hit it, also in the Lobby).
 - **Classic:** 100 HP, 3 lives, 3 s respawn with 2 s spawn shield. Out of lives = spectate until round end.
-- **Casual:** no HP, Percent shown above head and in HUD, unlimited respawns, Percent resets to 0% on respawn.
+- **Casual:** no HP, Percent shown above head and in HUD, unlimited respawns (unlimited lives), Percent resets to 0% on
+  respawn.
+- **Stamina** (everyone, every mode): 100. Running (×1.5 speed) costs 20/s while moving, a dash 25; it refills at
+  30/s after 0.8 s without spending. Running stops at 0 and starts again at 20 if Run is still held. HUD bar above
+  the bottom bar (orange below a dash's cost).
 - **KO credit:** last player who hit you within 6 s before you fell.
 - PvP always on in arenas, off in the Lobby. No friendly-fire exceptions (parties fight each other too). Fighters pass
   through each other (no body-pushing; dashes go through players).
@@ -269,7 +273,8 @@ AnchorPoint (0.5, 0.5), Scale coordinates (no fixed offsets), UIAspectRatioConst
 | Charged punch | Hold Left Click | Hold X | Hold Attack |
 | Ability (Wrecker parry) | F | Y | Parry |
 | Grab / Drop | E | B | Grab |
-| Dash | Q or Left Shift | RB | Dash |
+| Dash | Q | RB | Dash |
+| Run (stamina) | Hold Left Shift | Press left stick (runs until you stop) | Run button (tap: runs until you stop) |
 | Scoreboard | Tab | D-pad Down | — |
 | Menu | M | D-pad Up | — |
 

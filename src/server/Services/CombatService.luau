@@ -11,12 +11,16 @@
 	run by whoever simulates the victim: its own client for players (Net "Knockback"), this server for training
 	dummies. PvP only counts inside the arena; training dummies can always be hit.
 
-	Dash: the client moves its own character and sends Dash; the server checks cooldown and hitstun and starts the
-	invulnerability (Dash.InvulnerabilityTime). A hit landing inside it misses; if the dash began within
-	PerfectDodge.Window before the hit, it is a Perfect Dodge (PerfectDodged signal; the dodger's next hit within
-	BonusWindow gets BonusKnockbackMultiplier). The Perfect Dodge Scrap is paid with the round rewards.
+	Dash: the client moves its own character and sends Dash; the server checks cooldown, hitstun and stamina
+	(Stamina.DashCost), spends it and starts the invulnerability (Dash.InvulnerabilityTime). A hit landing inside it
+	misses; if the dash began within PerfectDodge.Window before the hit, it is a Perfect Dodge (PerfectDodged signal;
+	the dodger's next hit within BonusWindow gets BonusKnockbackMultiplier). The Perfect Dodge Scrap is paid with the
+	round rewards.
 
-	Every combatant has a Fighter and the character attributes HP (modes with HP) and Percent, which UI reads.
+	Run: the client sends Run held / let go; every STAMINA_TICK the server advances each player's stamina (running
+	drains it while moving, it refills after a pause) and switches the "Run" walk-speed modifier.
+
+	Every combatant has a Fighter and the character attributes HP (modes with HP), Percent and Stamina, which UI reads.
 	Round rules (lives, respawns, scoring) live in RoundService, which replaces the knock-out handler and the
 	MapService fall handler. The defaults here (KO = back to the lobby with full HP and 0%) only run without it.
 	The spawn shield (CombatService.shield) blocks hits until it runs out or the fighter attacks.
@@ -82,6 +86,8 @@ local DUMMY_TAG = "TrainingDummy"
 local FIGHTER_GROUP = "Fighters"
 local SHIELD_NAME = "SpawnShield"
 local CHARGE_SPEED_KEY = "Charge"
+local RUN_SPEED_KEY = "Run"
+local STAMINA_TICK = 0.1 -- seconds between stamina updates
 local HITBOX_FLASH_TIME = 0.25
 local HITBOX_HIT_COLOR = Color3.fromHex("#FF3B30")
 local HITBOX_MISS_COLOR = Color3.fromHex("#B0B0B0")
@@ -133,6 +139,7 @@ local function syncAttributes(character: Model, fighter: Fighter)
 	local hasHealth = Config.Modes.List[fighter.ModeId].MaxHealth ~= nil
 	character:SetAttribute("HP", if hasHealth then fighter.Health else nil)
 	character:SetAttribute("Percent", fighter.Percent)
+	character:SetAttribute("Stamina", math.floor(fighter.Stamina + 0.5))
 end
 
 local function applySpeed(character: Model)
@@ -188,11 +195,15 @@ end
 
 -- Makes a character (player or training dummy) a combatant with full HP and 0%.
 function CombatService.register(character: Model)
+	local previous = fighters[character]
 	local fighter = Fighter.new(modeId)
+	-- A reset (e.g. entering the arena) keeps Run held: the player may still be holding the key.
+	Fighter.setRunHeld(fighter, previous ~= nil and previous.RunHeld)
 	fighters[character] = fighter
 	knockedOut[character] = nil
 	syncAttributes(character, fighter)
 	setCharging(character, false)
+	CombatService.setSpeedModifier(character, RUN_SPEED_KEY, nil) -- the new fighter starts walking
 	if character:GetAttribute("FighterCollisions") == nil then
 		character:SetAttribute("FighterCollisions", true)
 		-- Fighters pass through each other: no body-pushing someone off a ledge by walking into them, and dashes
@@ -722,7 +733,39 @@ local function onAbility(player: Player)
 	end
 end
 
--- The client already moved its character; the server only grants the invulnerability (cooldown + hitstun checked).
+-- Run held / let go (the client turns a toggle into the same intent). Stamina decides whether it really runs.
+local function onRun(player: Player, held: boolean)
+	local _, fighter = fighterOf(player)
+	if fighter then
+		Fighter.setRunHeld(fighter, held)
+	end
+end
+
+-- Stamina for every player fighter: running drains it while moving, it refills after a pause; the run speed and the
+-- Stamina attribute (HUD) follow.
+local function tickStamina(dt: number)
+	local now = os.clock()
+	for character, fighter in fighters do
+		local root = rootOf(character)
+		if root and Players:GetPlayerFromCharacter(character) then
+			local velocity = root.AssemblyLinearVelocity
+			local moving = Vector3.new(velocity.X, 0, velocity.Z).Magnitude > Config.Combat.Stamina.MovingSpeed
+			local wasRunning = fighter.Running
+			local running = Fighter.tickStamina(fighter, dt, now, moving)
+			if running ~= wasRunning then
+				local multiplier = Config.Combat.Stamina.RunSpeedMultiplier
+				CombatService.setSpeedModifier(character, RUN_SPEED_KEY, if running then multiplier else nil)
+			end
+			local shown = math.floor(fighter.Stamina + 0.5)
+			if character:GetAttribute("Stamina") ~= shown then
+				character:SetAttribute("Stamina", shown)
+			end
+		end
+	end
+end
+
+-- The client already moved its character; the server only grants the invulnerability and spends the stamina
+-- (cooldown, hitstun and stamina checked).
 local function onDash(player: Player)
 	local character, fighter = fighterOf(player)
 	if character == nil or fighter == nil then
@@ -732,6 +775,7 @@ local function onDash(player: Player)
 	if not Fighter.dash(fighter, os.clock()) then
 		return
 	end
+	character:SetAttribute("Stamina", math.floor(fighter.Stamina + 0.5))
 	if wasCharging then
 		setCharging(character, false)
 	end
@@ -762,6 +806,15 @@ function CombatService.Init(_self: any)
 	Net.onServerEvent("Charge", onCharge)
 	Net.onServerEvent("Ability", onAbility)
 	Net.onServerEvent("Dash", onDash)
+	Net.onServerEvent("Run", onRun)
+	local elapsed = 0
+	RunService.Heartbeat:Connect(function(deltaTime: number)
+		elapsed += deltaTime
+		if elapsed >= STAMINA_TICK then
+			tickStamina(elapsed)
+			elapsed = 0
+		end
+	end)
 
 	Players.PlayerAdded:Connect(watchPlayer)
 	for _, player in Players:GetPlayers() do
