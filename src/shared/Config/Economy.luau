@@ -21,6 +21,7 @@ type EconomyConfig = {
 	},
 	EventScrapMultiplier: number,
 	PrivateServerRewardScale: number,
+	PrivateServerProgress: boolean,
 }
 
 local Economy: EconomyConfig = {
@@ -51,8 +52,11 @@ local Economy: EconomyConfig = {
 	-- Live-event multiplier on all Scrap payouts (2 = double-Scrap weekend). Not part of the bonus cap.
 	EventScrapMultiplier = 1,
 
-	-- Private servers pay this fraction of normal rewards (anti-farming).
-	PrivateServerRewardScale = 0.5,
+	-- Private servers are for play and testing only (owner, 2026-10-17): round rewards (Scrap, XP, so no levels) are
+	-- scaled by PrivateServerRewardScale (0 = nothing), and PrivateServerProgress says whether lifetime stats — and
+	-- later quests, badges and leaderboards — count there. Robux purchases and the Shop still work.
+	PrivateServerRewardScale = 0,
+	PrivateServerProgress = false,
 }
 
 return Economy

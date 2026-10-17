@@ -17,7 +17,7 @@
 	  GiveScrap                      Config.Dev.GiveScrap Scrap (to test the Shop)
 	  TogglePerk (perk)              switch VIP / EmotePack / Premium on or off for this session
 	  GiveProduct (key)              what a Robux product gives, without a purchase
-	  TogglePrivate                  act as a private server you own (Server menu, 50% rewards), or stop
+	  TogglePrivate                  act as a private server you own (Server menu, no rewards), or stop
 ]]
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

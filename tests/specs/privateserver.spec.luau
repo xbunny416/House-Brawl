@@ -1,5 +1,5 @@
 --!strict
--- Private servers (step 3.2): what the owner can set, saved values, the locked ballot, reduced rewards.
+-- Private servers (step 3.2): what the owner can set, saved values, the locked ballot; nothing is earned there.
 local Roblox = require("../roblox")
 local expect = require("../expect")
 
@@ -16,7 +16,8 @@ return {
 		expect.equal(defaults.Map, PrivateServerRules.Vote)
 		expect.equal(defaults.RoundTime, Config.Round.RoundTime)
 		expect.truthy(table.find(Config.Round.PrivateRoundTimes, Config.Round.RoundTime), "default is a choice")
-		expect.equal(Config.Economy.PrivateServerRewardScale, 0.5, "bible: rewards at 50%")
+		expect.equal(Config.Economy.PrivateServerRewardScale, 0, "owner: no rewards in private servers")
+		expect.equal(Config.Economy.PrivateServerProgress, false, "owner: no stats in private servers")
 	end,
 	["valid values: a mode or map id (map enabled) or Vote, and a listed round length"] = function()
 		expect.truthy(PrivateServerRules.isValid("Mode", "Classic", MAPS))

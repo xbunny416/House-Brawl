@@ -34,7 +34,12 @@ local winnerLabel: TextLabel
 local rewardLabel: TextLabel
 
 -- What the local player earned (RoundReward arrives just after RoundResults).
+-- In a private server that pays nothing (Economy.PrivateServerRewardScale 0) the line says so instead.
 local function onReward(scrap: number, xp: number, level: number, levelsGained: number, newRank: string?)
+	if Workspace:GetAttribute("PrivateServer") == true and Config.Economy.PrivateServerRewardScale <= 0 then
+		rewardLabel.Text = Localization.format("Results.PrivateServer")
+		return
+	end
 	local lines = { Localization.format("Results.Reward", { scrap, xp }) }
 	if levelsGained > 0 then
 		table.insert(lines, Localization.format("Results.LevelUp", { level }))

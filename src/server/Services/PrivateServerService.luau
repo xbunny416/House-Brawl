@@ -4,8 +4,9 @@
 	servers don't count) the owner sets from their Server menu (PrivateServerSetting remote, Shared/PrivateServerRules):
 	the mode (locked, or "Vote"), the map (picked, or "Vote") and the round length (Config.Round.PrivateRoundTimes).
 	The choices are saved in the owner's data (PrivateServer), so they come back in every private server they own, and
-	apply from the next vote / round (RoundService asks `ballot` and `roundTime`). Rewards are scaled by
-	Economy.PrivateServerRewardScale (RewardService asks `isPrivate`); every player is told so when they join.
+	apply from the next vote / round (RoundService asks `ballot` and `roundTime`). Private servers are for play and
+	testing (owner, 2026-10-17): round rewards are scaled by Economy.PrivateServerRewardScale = 0 (RewardService asks
+	`isPrivate`) and lifetime stats don't count (`countsProgress`); every player is told so when they join.
 	Workspace attributes for the UI: PrivateServer, PrivateOwnerId, PrivateMode, PrivateMap, PrivateRoundTime.
 	Studio: the developer panel can make the playtest act as a private server owned by the player who asks.
 ]]
@@ -53,6 +54,12 @@ function PrivateServerService.isOwner(player: Player): boolean
 	return owner ~= 0 and player.UserId == owner
 end
 
+-- Whether lifetime stats (and later quests, badges, leaderboards) count here: not in a private server, unless
+-- Economy.PrivateServerProgress.
+function PrivateServerService.countsProgress(): boolean
+	return Config.Economy.PrivateServerProgress or not PrivateServerService.isPrivate()
+end
+
 -- The settings in force: the owner's (once their data has loaded) in a private server, otherwise the defaults.
 function PrivateServerService.settings(): PrivateServerRules.Settings
 	return if PrivateServerService.isPrivate() then current else PrivateServerRules.defaults()
@@ -88,7 +95,11 @@ end
 
 local function welcome(player: Player)
 	local percent = math.floor(Config.Economy.PrivateServerRewardScale * 100 + 0.5)
-	Net.fireClient("Notify", player, "PrivateServer.Welcome", { percent })
+	if percent > 0 then
+		Net.fireClient("Notify", player, "PrivateServer.WelcomeScaled", { percent })
+	else
+		Net.fireClient("Notify", player, "PrivateServer.Welcome")
+	end
 end
 
 local function onSetting(player: Player, key: string, text: string?, seconds: number?)

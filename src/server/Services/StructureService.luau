@@ -21,6 +21,7 @@ local StructureRules = require(Server:WaitForChild("Structures"):WaitForChild("S
 local Effects = require(Server:WaitForChild("Visuals"):WaitForChild("Effects"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
+local PrivateServerService = require(script.Parent:WaitForChild("PrivateServerService"))
 local CrumbleService = require(script.Parent:WaitForChild("CrumbleService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
 local PropService = require(script.Parent:WaitForChild("PropService"))
@@ -107,7 +108,7 @@ local function breakStructure(structure: Structure, attacker: Player?)
 		end
 	end
 
-	if attacker and attacker.Parent == Players then
+	if attacker and attacker.Parent == Players and PrivateServerService.countsProgress() then
 		DataService.incrementStat(attacker, "StructuresBroken")
 	end
 	log(`{typeId} broken by {if attacker then attacker.Name else "nobody"}`)

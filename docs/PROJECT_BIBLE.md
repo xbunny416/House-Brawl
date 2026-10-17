@@ -331,8 +331,10 @@ panel.
   player has the pass / Premium. VIP's gold name tag reads "[VIP] name" over the head and its chat tag is a gold
   "[VIP]" prefix. Ids live in `Config.Monetization` (0 = not created yet: "Coming soon").
 - **Private servers:** 100 R$/month. Owner can lock mode, pick map, set round length (2:00, 3:00 or 5:00) from a
-  Server menu that only they see; the choices are saved with the owner and apply from the next round. Rewards at 50%
-  (everyone is told when they join). Rounds still need 2 players on the join pad.
+  Server menu that only they see; the choices are saved with the owner and apply from the next round. Private servers
+  are for play and testing only (owner, 2026-10-17): no Scrap, XP / levels or lifetime stats are earned there
+  (everyone is told when they join); Robux purchases and the Shop still work. Rounds still need 2 players on the
+  join pad.
 - Nothing sold for Robux gives a combat advantage. Paid random items must show all outcomes and odds (none at launch).
   PolicyService hides paid random items / paid trading where not allowed and respects other policy flags (read once
   per player; unknown = not allowed; external links only where `AllowedExternalLinkReferences` lists the site).

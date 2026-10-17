@@ -199,13 +199,13 @@ return {
 		expect.equal(result.Scrap, 0)
 		expect.equal(result.XP, 0)
 	end,
-	["payout: VIP + Premium scrap, friend XP, private server half"] = function()
+	["payout: VIP + Premium scrap, friend XP, nothing in private servers"] = function()
 		local result = payout({ Placement = 1, Completed = true, IsVIP = true, IsPremium = true, FriendsInServer = 3 })
 		expect.equal(result.Scrap, 88) -- 65 * 1.35 = 87.75
 		expect.equal(result.XP, 182) -- 140 * 1.3
 		local private = payout({ Placement = 1, Completed = true, IsPrivateServer = true })
-		expect.equal(private.Scrap, 33) -- 65 * 0.5 = 32.5
-		expect.equal(private.XP, 70)
+		expect.equal(private.Scrap, 0) -- owner, 2026-10-17: private servers are for play and testing
+		expect.equal(private.XP, 0)
 	end,
 	["day number rolls over at the reset hour (UTC)"] = function()
 		expect.equal(F.dayNumber(0), 0)
