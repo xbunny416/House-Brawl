@@ -53,8 +53,8 @@ local Definitions: { [string]: Definition } = {
 	-- Server -> the victim's client: launch your character. (velocity: Vector3, hitstun: number)
 	Knockback = { Kind = "Event", Direction = "ToClient" },
 	-- Server -> all clients: a hit landed, for feedback (camera shake, the victim's hit / tumble animation; VFX/SFX
-	-- later). (attacker: Model, victim: Model, attack: "Punch" | "Charged" | ..., heavy: boolean, trail: boolean,
-	-- hitstun: number — seconds)
+	-- later). (attacker: Model, victim: Model, attack: "Punch" | "Charged" | "Parry" | prop type, heavy: boolean,
+	-- trail: boolean, hitstun: number — seconds, weapon: string — the attacker's style weapon, for the hit sound)
 	CombatHit = { Kind = "UnreliableEvent", Direction = "ToClient" },
 	-- Server -> clients: play a scripted animation clip (Shared/Animation/Clips) on a character. (character: Model,
 	-- clip: string)

@@ -13,6 +13,7 @@ local RunService = game:GetService("RunService")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 
+local SoundController = require(script.Parent:WaitForChild("SoundController"))
 local VfxController = require(script.Parent:WaitForChild("VfxController"))
 
 local WARNING_COLOR = Color3.fromHex("#FF2A1A")
@@ -56,6 +57,7 @@ local function addCracks(model: Model)
 	if base == nil then
 		return
 	end
+	SoundController.playAt("Rumble", base)
 	local half = base.Size / 2
 	for _ = 1, Config.Vfx.Crumble.Cracks do
 		local crack = Instance.new("Part")
@@ -82,6 +84,7 @@ local function breakAway(model: Model)
 		return
 	end
 	local crumble = Config.Vfx.Crumble
+	SoundController.playAt("Collapse", base.Position)
 	VfxController.burstDust(base.Position, crumble.Dust, DUST_COLOR)
 	local half = base.Size / 2
 	for _ = 1, crumble.Debris do

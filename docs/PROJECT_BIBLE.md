@@ -247,6 +247,7 @@ cartoon explosion with ring shockwave; dash streak and blue Perfect Dodge flash.
 
 ### 4.4 Sound (Creator Store audio)
 
+- Built in step 2.8 as slots in Config.Audio (asset ids picked from free Creator Store audio; silent until filled).
 - Music: Lobby retro synthwave; one gritty chiptune-rock track per arena; last-30 s tension layer; victory sting.
 - SFX: punch / bat thwack / shovel clang / wrench bonk; grab, throw whoosh, smash (wood/metal/glass); KO boom + short
   crowd cheer; platform rumble/collapse; dash whoosh, Perfect Dodge chime; UI clicks, coin pickup, level-up fanfare.
