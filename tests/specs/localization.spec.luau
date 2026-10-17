@@ -73,6 +73,11 @@ return {
 		for _, reason in DailyRules.Reasons do
 			expect.truthy(keys[`Daily.Error.{reason}`], `Daily.Error.{reason}`)
 		end
+		for _, list in { Config.Retention.Quests.Daily, Config.Retention.Quests.Weekly } do
+			for _, quest in list do
+				expect.truthy(keys[`Quest.{quest.Id}.Title`] and keys[`Quest.{quest.Id}.Desc`], `Quest.{quest.Id}`)
+			end
+		end
 		for _, key in HudFormat.QueueKeys do
 			expect.truthy(keys[key], key)
 		end

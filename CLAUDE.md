@@ -17,8 +17,8 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   PolicyService are built and switched off until the owner creates the passes / products and sends their ids (test
   with the dev panel's Robux buttons meanwhile). Walk-up Shop / Locker prompts added (owner's pick). 3.2 Private
   server settings are built (not yet playtested). Arenas doubled in size with four layers and rounds are 4:00 (owner,
-  2026-10-17). 3.3 Daily login streak + playtime rewards are built (not yet playtested). **Next step:** 3.4 Daily +
-  weekly quests.
+  2026-10-17). 3.3 Daily login streak + playtime rewards and 3.4 Daily + weekly quests are built (not yet
+  playtested). **Next step:** 3.5 Badges.
 
 ## How this repo works
 
@@ -211,7 +211,7 @@ any errors are fixed before the next item.
 - [x] 3.1 Game passes, dev products (idempotent receipts), Premium perks, PolicyService
 - [x] 3.2 Private server settings (owner controls, 50% rewards)
 - [x] 3.3 Daily login streak + playtime rewards
-- [ ] 3.4 Daily + weekly quests
+- [x] 3.4 Daily + weekly quests
 - [ ] 3.5 Badges
 - [ ] 3.6 Leaderboards (all-time + weekly) + lobby billboards
 - [ ] 3.7 Party system + friend XP bonus + group reward + chat tags
@@ -264,6 +264,7 @@ any errors are fixed before the next item.
 | 2026-10-17 | Private servers for play and testing only (owner): no Scrap / XP (`PrivateServerRewardScale` 0) and no lifetime stats (`PrivateServerProgress` false, `PrivateServerService.countsProgress`), join notice / Server menu / results line say so | #37 |
 | 2026-10-17 | Bigger arenas + 4:00 rounds (owner): all three arenas twice the size with four layers (low platforms, base, corner ledges + a raised centre deck with ramps, peaks): 13 platforms, 16 spawns, 24 prop spots, 8 structures, 6 barrels each; Arena `Deck` + Builder `spread` (decor laid out for the first size spreads without stretching); maps spec checks layers, climbs ≤ 6 and reachability; RoundTime 240, private round lengths 2 / 3 / 4 / 5 min | #38 |
 | 2026-10-17 | 3.3 Daily rewards: DailyService (ClaimDaily remote: 7-day login streak, day 7 = the week's cosmetic or 300 Scrap; playtime +25 Scrap per 10 active minutes, 6 a day, saved across rejoins; nothing in private servers), Daily reward screen (day cards, claim, countdown, playtime line; opens itself when a reward waits), Daily data field, RoundService.isAFK, PrivateServerService.paysRewards, dev "Next day" / "+10 min", pure DailyRules + specs | #39 |
+| 2026-10-17 | 3.4 Quests: QuestService (every lifetime stat counts toward today's 3 daily quests — a per-player pick of the 7 — and the weekly one, in the round's mode; done = Scrap at once + notice), Quests screen (progress bars, rewards, reset countdowns) from the menu and the lobby quest board (walk-up prompt), Quests data field, DataService.StatIncremented, RoundService.currentMode, dev "Finish quest" (+ "Next day" restarts daily quests), pure QuestRules + specs | #40 |
 
 ## Decisions and interpretations
 
@@ -537,6 +538,16 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   first; touch taps the prompt. The prompts are made on the client (opening a screen needs no server) and re-made
   when a streamed-out part comes back; they hide while a menu screen is open or the player is fighting. They use
   Roblox's default prompt look until the art pass. The left-edge menu still opens both screens anywhere in the lobby.
+- **Quests (3.4):** the bible's numbers (`Config.Retention.Quests`: a pool of 7 daily quests, 3 a day; 1 weekly).
+  Quests count lifetime stats: `DataService.incrementStat` fires `StatIncremented` and `QuestService` adds it to the
+  player's active quests (a quest with a `Mode` counts only while a round of that mode runs: `RoundService
+  .currentMode`, still set when Wins is counted at the round end). Each player's 3 daily quests are a shuffle seeded by
+  the day and their UserId (Park–Miller, like the daily shop): different players get different quests, the same all
+  day in every server, nothing saved but the progress (`Quests`: day, week, progress, done). Weeks start on Monday
+  (the bible only says "reset 00:00 UTC"). A finished quest pays its Scrap at once (Gameplay, sku `Quest.<id>`) with
+  a notice — no claim button. Because stats don't count in private servers, quests don't either. The Quests screen is
+  third in the left-edge menu and opens at the lobby's quest board too (`LobbyPromptController` target). Quest
+  names / goals are `Quest.<Id>.Title` / `.Desc` strings.
 - **Daily rewards (3.3):** the bible's numbers (`Config.Retention.LoginStreak`, `Playtime`). Saved per player in
   `Daily` (last claim day, streak day, today's playtime seconds and paid rewards; day numbers from
   `LoginStreak.ResetHourUTC`). The streak is claimed with a button (`ClaimDaily`), not paid on join, so the player
@@ -649,6 +660,10 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Dash movement is client-side** (clients simulate their character), so the once-per-jump air rule is enforced by
   the client; the server enforces the cooldown and hitstun, which gate the invulnerability and Perfect Dodge.
 - **Owner's Roblox UserId** is needed for `Config.Dev.AllowedUserIds` before live testing of the developer panel.
+- **Quests test (Studio):** open Quests (menu or walk up to the quest board, west wall): 3 daily quests and the weekly
+  one at 0. Play a solo round — KOs, falls and rounds finished count (`[Quests]` in Output when one completes, with a
+  notice and the Scrap). Dev panel → Daily → "Finish quest" completes the next one; "Next day" starts the daily ones
+  over.
 - **Daily rewards test (Studio):** on join the Daily reward screen opens with Day 1 waiting: Claim → +50 Scrap.
   Dev panel → Daily → "Next day" then Claim again for Day 2 ... (Day 7 gives this week's cosmetic); press "Next day"
   twice before claiming to see the streak reset. "+10 min" pays a playtime reward (notice) up to 6 a day; real

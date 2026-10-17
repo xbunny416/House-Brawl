@@ -50,6 +50,8 @@ local DataService = {
 	Loaded = Signal.new() :: Signal.Signal<Player, PlayerData>,
 	-- Fires when a player gains one or more levels: (player, new level)
 	LeveledUp = Signal.new() :: Signal.Signal<Player, number>,
+	-- Fires after a lifetime stat goes up: (player, stat, amount) — quests count from it
+	StatIncremented = Signal.new() :: Signal.Signal<Player, string, number>,
 }
 
 local profiles: { [Player]: Profile } = {}
@@ -221,6 +223,7 @@ function DataService.incrementStat(player: Player, stat: string, amount: number?
 	assert(type(stats[stat]) == "number", `Unknown stat "{stat}"`)
 	stats[stat] += amount or 1
 	replicate(player, "Stats")
+	DataService.StatIncremented:Fire(player, stat, amount or 1)
 end
 
 ---------------------------------------------------------------------------------------------------------------------

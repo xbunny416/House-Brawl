@@ -358,7 +358,9 @@ panel.
   times per day.
 - Daily and playtime rewards are not paid in private servers (play and testing only).
 - **Quests:** 3 daily (75–150 Scrap each, e.g. "KO 5 players with a chair", "Win 1 Classic round", "Perfect Dodge 10
-  times", "Break 8 structures"), 1 weekly (600 Scrap). Reset 00:00 UTC.
+  times", "Break 8 structures"), 1 weekly (600 Scrap). Reset 00:00 UTC (weekly: Mondays). Each player gets their own
+  3 of the 7 daily quests (the same all day); progress counts by itself and the Scrap is paid the moment a quest is
+  done. Quests screen in the left-edge menu and at the lobby's quest board. Nothing counts in private servers.
 - **Badges:** Welcome, First KO, First Win, Ring-Out Rookie (100 ring-outs), Chair Master (50 chair KOs), Demolition
   (500 structures), Survivor (win Classic without losing a life), Level 10 / 25 / 50 / 100.
 - **Leaderboards:** global all-time and weekly Wins, KOs, Level (OrderedDataStore); in-server scoreboard; lobby

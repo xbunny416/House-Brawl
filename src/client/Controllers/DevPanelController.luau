@@ -150,6 +150,7 @@ local function buildSections()
 			Localization.format("Dev.DailyPlaytime", { Config.Retention.Playtime.Interval // 60 }),
 			"DailyPlaytime"
 		),
+		command(Localization.format("Dev.FinishQuest"), "FinishQuest"),
 	})
 
 	section("Dev.Camera", {

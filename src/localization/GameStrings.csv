@@ -271,3 +271,32 @@ Daily.Error.TryAgain,Something went wrong. Try again.,Daily reward claim failed 
 Dev.Daily,Daily,Developer panel section: daily reward and playtime tests,
 Dev.DailyNextDay,Next day,Developer panel button: act as if a day has passed (daily reward and playtime),
 Dev.DailyPlaytime,+{1} min,Developer panel button: add playtime (minutes),+10 min
+Menu.Quests,Quests,Lobby menu button that opens the Quests screen,
+Quests.Title,Quests,Title of the Quests screen,
+Quests.Daily,Daily,Quests screen: a daily quest,
+Quests.Weekly,Weekly,Quests screen: the weekly quest,
+Quests.RowTitle,{1} · {2},"Quests screen row title (Daily / Weekly, quest name)",Daily · Chair Champ
+Quests.Progress,{1}/{2},Quests screen: progress toward the goal,3/5
+Quests.Done,Done!,Quests screen: the quest is complete (its reward was paid),
+Quests.Resets,New daily quests in {1} · weekly in {2}d {3},"Quests screen: time until the daily and weekly quests change (h:mm:ss; days, h:mm:ss)",New daily quests in 5:12:09 · weekly in 3d 5:12:09
+Quests.PrivateServer,Quests don't count in private servers (they are for play and testing).,Quests screen in a private server,
+Quests.Completed,Quest complete: {1}! +{2} Scrap,Notice when a quest is completed (quest name and Scrap reward),Quest complete: Chair Champ! +150 Scrap
+Quest.ChairKOs.Title,Chair Champ,Quest name,
+Quest.ChairKOs.Desc,KO {1} players with a chair,Quest goal (count),KO 5 players with a chair
+Quest.ClassicWin.Title,Last One Standing,Quest name,
+Quest.ClassicWin.Desc,Win {1} Classic round,Quest goal (count; 1),Win 1 Classic round
+Quest.PerfectDodges.Title,Untouchable,Quest name,
+Quest.PerfectDodges.Desc,Perfect Dodge {1} times,Quest goal (count),Perfect Dodge 10 times
+Quest.StructuresBroken.Title,Wrecking Crew,Quest name,
+Quest.StructuresBroken.Desc,Break {1} structures,Quest goal (count),Break 8 structures
+Quest.RingOuts.Title,Ring-Out Royalty,Quest name,
+Quest.RingOuts.Desc,Knock {1} players off the arena,Quest goal (count),Knock 10 players off the arena
+Quest.ThrowKOs.Title,Junk Thrower,Quest name,
+Quest.ThrowKOs.Desc,KO {1} players with props,Quest goal (count),KO 5 players with props
+Quest.RoundsPlayed.Title,Regular,Quest name,
+Quest.RoundsPlayed.Desc,Finish {1} rounds,Quest goal (count),Finish 3 rounds
+Quest.WeeklyWins.Title,Weekly Champion,Quest name,
+Quest.WeeklyWins.Desc,Win {1} rounds this week,Quest goal (count),Win 10 rounds this week
+Prompt.Quests,Quests,Walk-up prompt at the lobby quest board: opens the Quests screen,
+Prompt.Quests.Object,Quest board,Walk-up prompt at the lobby quest board: what it is,
+Dev.FinishQuest,Finish quest,Developer panel button: complete your next unfinished quest,

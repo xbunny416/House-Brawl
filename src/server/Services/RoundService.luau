@@ -644,6 +644,12 @@ function RoundService.getState(): State
 	return state
 end
 
+-- The running round's mode, or nil between rounds (quests that count in one mode only).
+function RoundService.currentMode(): string?
+	local r = round
+	return if r then r.ModeId else nil
+end
+
 -- True when the player has sent no input for Round.Participation.AFKTimeout (playtime rewards skip AFK time).
 function RoundService.isAFK(player: Player): boolean
 	return isAFK(player)

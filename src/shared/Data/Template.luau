@@ -41,6 +41,10 @@ export type DailyData = {
 	PlaytimeClaims: number, -- playtime rewards paid on PlaytimeDay
 }
 
+-- Quest progress (Shared/QuestRules) for the current day and week (day numbers as for Daily; weeks from Monday).
+export type QuestProgress = { Progress: { [string]: number }, Done: { [string]: boolean } }
+export type QuestData = { Day: number, Week: number, Daily: QuestProgress, Weekly: QuestProgress }
+
 export type PlayerData = {
 	Version: number,
 	Scrap: number,
@@ -55,6 +59,7 @@ export type PlayerData = {
 	PurchaseIds: { string }, -- recent developer-product purchases already granted
 	PrivateServer: PrivateServerSettings, -- applied in private servers this player owns
 	Daily: DailyData,
+	Quests: QuestData,
 }
 
 local VERSION = 1
@@ -86,6 +91,7 @@ local Template: PlayerData = {
 	PurchaseIds = {},
 	PrivateServer = { Mode = "Vote", Map = "Vote", RoundTime = Config.Round.RoundTime },
 	Daily = { LastClaimDay = -1, Streak = 0, PlaytimeDay = -1, PlaytimeSeconds = 0, PlaytimeClaims = 0 },
+	Quests = { Day = -1, Week = -1, Daily = { Progress = {}, Done = {} }, Weekly = { Progress = {}, Done = {} } },
 }
 
 return {
