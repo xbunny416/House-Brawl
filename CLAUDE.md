@@ -15,7 +15,8 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   owner picks audio ids) are built, not yet playtested.
   2.9 Tutorial skipped for now (owner). **Phase 3 in progress:** 3.1 Game passes, dev products, Premium perks and
   PolicyService are built and switched off until the owner creates the passes / products and sends their ids (test
-  with the dev panel's Robux buttons meanwhile). **Next step:** 3.2 Private server settings.
+  with the dev panel's Robux buttons meanwhile). Walk-up Shop / Locker prompts added (owner's pick).
+  **Next step:** 3.2 Private server settings.
 
 ## How this repo works
 
@@ -124,7 +125,8 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
   `Config.Animations.AssetIds`.
 - **Lobby menu screens** (Shop, Locker, later Quests, Daily Reward, Settings ...) register with
   `Controllers/MenuController.addScreen(text, order, gui, onOpen)`: a left-edge button, one screen open at a time,
-  closed while fighting; the Menu action (M / D-pad Up) closes the open screen or opens the first one.
+  closed while fighting; the Menu action (M / D-pad Up) closes the open screen or opens the first one. A lobby
+  object can open one too: add a target (tag, part, screen name) to `Controllers/LobbyPromptController`.
 - **Rounds:** `Services/RoundService` owns the loop, the scoreboard (`Server/Round/Scoreboard`), the lobby join pad
   (`Server/Round/Queue`: only players on it are taken into a round) and round stats. UI reads attributes: Workspace
   `RoundState`, `RoundEndsAt` (compare with `Workspace:GetServerTimeNow()`), `RoundMode`, `RoundMap`,
@@ -252,6 +254,7 @@ any errors are fixed before the next item.
 | 2026-10-17 | Bottom-right key panel (owner): Run / Dash / Ability slots with keys or gamepad glyphs and cooldown fills (stamina, dash cooldown, server AbilityReadyAt), on keyboard and gamepad (touch keeps its buttons and the dash ring); tutorial 2.9 skipped for now by the owner | #32 |
 | 2026-10-17 | 3.1 Monetization: MonetizationService (ProcessReceipt → idempotent DataService.processReceipt: Scrap packs, Robux cosmetics; VIP / Emote Pack passes checked on load + bought in-server; Premium + membership changes; perk attributes; perk cosmetics granted / taken back), Shop Robux tab (live prices, Roblox prompts, Premium card, "Coming soon" while ids are 0), VIP gold name tag + [VIP] chat tag, Emote Pack emotes (Robot, Salute, Air Guitar, Backflip), 3 Robux cosmetics, Notify notices, PlayerPolicyService + PolicyRules, dev panel perk toggles + product grants, RewardService bonuses from MonetizationService; specs | #33 |
 | 2026-10-17 | 3.1 playtest (Studio logs): CameraController.Init had failed since 1.5 (a LocalScript can't set `DevEnableMouseLock`), so camera shake never ran; Shift Lock permission is now set by the server (SettingsService → StarterPlayer.EnableMouseLockOption). Chat switched to TextChatService (`default.project.json`: the place was on legacy chat, whose ChatScript errors in Studio and which the [VIP] chat tag can't use) | #34 |
+| 2026-10-17 | Walk-up Shop and Locker (owner): ProximityPrompts on the bartender (Shop) and in the locker booth (Locker), client-made from the lobby tags, E / gamepad B / tap (`Config.Controls.Prompts`), hidden while a menu is open or fighting; MenuController `openNamed` / `isOpen`; input spec | #35 |
 
 ## Decisions and interpretations
 
@@ -503,6 +506,13 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   private server = `PrivateServerId` with an owner (reserved servers do not count). The rank title is the player
   attribute `Rank` (a rank id, set on load and after rewards). The results panel shows "+Scrap · +XP", level-ups and
   a new rank; the HUD's top-right chip shows level · rank · Scrap. Lifetime stats were already counted in 1.8.
+- **Walk-up Shop and Locker (owner, 2026-10-17):** picked over 3.2 as the next step. `LobbyPromptController`
+  puts a ProximityPrompt on the bartender's `Torso` (tag `ShopNPC`: "Shop · Bartender") and the locker booth's `Back`
+  wall (tag `Locker`: "Locker · Locker booth"), 12 studs, no hold, no line of sight needed. Keys: E / gamepad B
+  (`Config.Controls.Prompts`), the Grab keys — nothing to grab in the lobby, and a shown prompt takes the key press
+  first; touch taps the prompt. The prompts are made on the client (opening a screen needs no server) and re-made
+  when a streamed-out part comes back; they hide while a menu screen is open or the player is fighting. They use
+  Roblox's default prompt look until the art pass. The left-edge menu still opens both screens anywhere in the lobby.
 - **Monetization (3.1):** everything is built switched off: every pass / product id in `Config.Monetization` is 0
   until the owner creates them (Creator Dashboard → Monetization), and an item with id 0 shows "Coming soon" in the
   Shop. Perks (VIP, EmotePack, Premium) are what a player has right now: passes are checked with
@@ -586,8 +596,10 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Dash movement is client-side** (clients simulate their character), so the once-per-jump air rule is enforced by
   the client; the server enforces the cooldown and hitstun, which gate the invulnerability and Perfect Dodge.
 - **Owner's Roblox UserId** is needed for `Config.Dev.AllowedUserIds` before live testing of the developer panel.
-- **Shop NPC and Locker booth** in the lobby are not interactive yet (open the Shop / Locker from the left-edge menu).
-  A ProximityPrompt needs its own key: E is Grab and X is Punch on gamepad. Worth doing with the lobby art pass.
+- **Walk-up test (Studio):** walk to the bartender behind the bar counter (north) — a "Shop" prompt shows within 12
+  studs; press E (gamepad B, or tap it) and the Shop opens. Same in the locker booth (west wall) for the Locker. The
+  prompts disappear while a screen is open. If the bartender's prompt is hard to reach from the counter, the range
+  is `Config.Controls.Prompts.MaxDistance`.
 - **Animations are scripted poses** (2.6), tuned blind: angles may need flipping or softening after the first
   playtest (e.g. an arm swinging the wrong way). Real animations can replace any clip later via
   `Config.Animations.AssetIds` (made in Studio's Animation Editor or free Creator Store ones).

@@ -136,6 +136,19 @@ return {
 		expect.truthy(isEnumItem(roblox.Enum.KeyCode, key), `panel key {key}`)
 		expect.equal(lookup[key], nil, `panel key {key} is an action key`)
 	end,
+	["lobby prompt keys are real keys that only Grab shares; prompts have a range"] = function()
+		local prompts = Controls.Prompts
+		expect.truthy(isEnumItem(roblox.Enum.KeyCode, prompts.Keyboard), `prompt key {prompts.Keyboard}`)
+		expect.truthy(isEnumItem(roblox.Enum.KeyCode, prompts.Gamepad), `prompt key {prompts.Gamepad}`)
+		for _, bindings in { Controls.Keyboard, Controls.Gamepad } do
+			for action, keys in bindings do
+				if table.find(keys, prompts.Keyboard) or table.find(keys, prompts.Gamepad) then
+					expect.equal(action, "Grab", `{action} shares a prompt key`)
+				end
+			end
+		end
+		expect.truthy(prompts.MaxDistance > 0, "range")
+	end,
 	["camera limits: third person and max zoom 30"] = function()
 		expect.equal(Controls.Camera.MaxZoom, 30)
 		expect.truthy(Controls.Camera.MinZoom > 0.5 and Controls.Camera.MinZoom < Controls.Camera.MaxZoom, "MinZoom")

@@ -235,3 +235,7 @@ Tag.VIPName,[VIP] {1},Gold name tag over a VIP player's head (display name),[VIP
 Tag.VIPChat,[VIP],Chat tag in front of a VIP player's messages,
 Dev.Robux,Robux,Developer panel section: switch perks and get Robux products for testing,
 Dev.TogglePerk,{1} on/off,Developer panel button: switch a perk (VIP / Emote Pack / Premium) on or off,VIP on/off
+Prompt.Shop,Shop,Walk-up prompt at the lobby bartender: opens the Shop,
+Prompt.Shop.Object,Bartender,Walk-up prompt at the lobby bartender: who it is,
+Prompt.Locker,Locker,Walk-up prompt in the lobby locker booth: opens the Locker,
+Prompt.Locker.Object,Locker booth,Walk-up prompt in the lobby locker booth: what it is,

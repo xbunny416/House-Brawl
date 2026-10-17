@@ -24,6 +24,7 @@ type ControlsConfig = {
 		Gap: number,
 		Layouts: { [string]: { TouchButton } },
 	},
+	Prompts: { Keyboard: string, Gamepad: string, MaxDistance: number },
 	Camera: {
 		MinZoom: number,
 		MaxZoom: number,
@@ -79,6 +80,9 @@ local Controls: ControlsConfig = {
 			},
 		},
 	},
+	-- Walk-up prompts in the lobby (bartender → Shop, locker booth → Locker): the keys are Grab's, which has nothing
+	-- to grab in the lobby; touch taps the prompt. MaxDistance in studs.
+	Prompts = { Keyboard = "E", Gamepad = "ButtonB", MaxDistance = 12 },
 	Camera = {
 		MinZoom = 8, -- studs; keeps the camera third-person (no first person)
 		MaxZoom = 30,
