@@ -2,7 +2,8 @@
 --[[
 	CameraController — third-person camera rules (Config.Controls.Camera) and camera shake.
 	  * Zoom stays between MinZoom (no first person) and MaxZoom.
-	  * Shift Lock (PC) is allowed but toggled by ShiftLockKeys (Right Shift), so Left Shift stays free for Dash.
+	  * Shift Lock (PC) is allowed (ShiftLockAllowed, applied by the server's SettingsService: a LocalScript can't set
+	    it) but toggled by ShiftLockKeys (Right Shift), so Left Shift stays free for Run.
 	  * CameraController.shake(intensity) plays a short shake for heavy hits. It does nothing while the player has
 	    Camera Shake turned off in Settings.
 ]]
@@ -121,7 +122,6 @@ function CameraController.Init(_self: any)
 	local player = Players.LocalPlayer
 	player.CameraMaxZoomDistance = cameraConfig.MaxZoom
 	player.CameraMinZoomDistance = cameraConfig.MinZoom
-	player.DevEnableMouseLock = cameraConfig.ShiftLockAllowed
 
 	SettingsController.Changed:Connect(function(key: string, value: any)
 		if key == "CameraShake" and not value then
