@@ -4,7 +4,8 @@
 	Settings — each screen adds itself with addScreen as it is built). One menu screen is open at a time. The menu is
 	hidden while the player is fighting in a round, and an open screen closes then, so nothing covers the arena.
 	The Menu action (M / D-pad Up) closes the open screen; otherwise it opens the first screen (the Shop), or on a
-	gamepad selects the first menu button (move with the D-pad / stick, A opens).
+	gamepad selects the first menu button (move with the D-pad / stick, A opens). Screens also open from the lobby's
+	walk-up prompts (LobbyPromptController → openNamed).
 ]]
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
@@ -61,6 +62,11 @@ local function openScreen(): Screen?
 	return nil
 end
 
+-- True while a menu screen is open.
+function MenuController.isOpen(): boolean
+	return openScreen() ~= nil
+end
+
 -- Closes the open menu screen (if any).
 function MenuController.close()
 	for _, screen in screens do
@@ -82,6 +88,16 @@ function MenuController.open(screenGui: ScreenGui)
 			MenuController.close()
 			screenGui.Enabled = true
 			screen.OnOpen()
+			return
+		end
+	end
+end
+
+-- Opens the menu screen whose ScreenGui is named `name` (e.g. "Shop"), like `open` (lobby walk-up prompts).
+function MenuController.openNamed(name: string)
+	for _, screen in screens do
+		if screen.Gui.Name == name then
+			MenuController.open(screen.Gui)
 			return
 		end
 	end

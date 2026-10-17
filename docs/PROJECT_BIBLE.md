@@ -138,7 +138,8 @@ Diner rooftop; no Training Yard). North — the bar counter with the Shop NPC (t
 CRT TVs hanging over the bar and mode vote TVs on the counter ends, big neon "JUNKYARD BRAWL" sign. East — the steel
 ARENA door with the glowing join pad. West — Locker booth, Codes jukebox, Quest board (cork board). South —
 leaderboard screens and the spawns. Pool table, booths, high tables, crates and hanging lamps; brick walls, steel
-beams, neon trim.
+beams, neon trim. Walk up to the bartender for the Shop and into the locker booth for the Locker (a prompt: E / gamepad B /
+tap); both also open from the left-edge menu.
 
 **Broken Highway arena:**
 
