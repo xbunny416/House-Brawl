@@ -1,5 +1,5 @@
 --!strict
--- Combat tunables: knockback/Percent, hitstun, base attacks, dash and Perfect Dodge. Bible §2.1 and §3.3.
+-- Combat tunables: knockback/Percent, hitstun, base attacks, dash, stamina and Perfect Dodge. Bible §2.1 and §3.3.
 local Types = require(script.Parent.Types)
 
 type CombatConfig = {
@@ -26,6 +26,16 @@ type CombatConfig = {
 		Cooldown: number,
 		AirDashesPerJump: number,
 		CooldownTolerance: number,
+	},
+	Stamina: {
+		Max: number,
+		RunCostPerSecond: number,
+		DashCost: number,
+		RegenPerSecond: number,
+		RegenDelay: number,
+		RunResume: number,
+		RunSpeedMultiplier: number,
+		MovingSpeed: number,
 	},
 	Attacks: {
 		Punch: Types.PunchConfig,
@@ -68,11 +78,23 @@ local Combat: CombatConfig = {
 		Distance = 12, -- owner playtest 2026-10-16: 18 crossed too much of the map (bible had 18)
 		Duration = 0.25,
 		InvulnerabilityTime = 0.25,
-		Cooldown = 2.5,
+		Cooldown = 0.6, -- short since dashes cost stamina (owner, 2026-10-17); was 2.5 s
 		AirDashesPerJump = 1, -- dashes allowed per stay in the air (jump, fall or launch); ground dashes are unlimited
 		-- The client dashes at once and tells the server; the server accepts a dash this many seconds before the
 		-- cooldown ends so network jitter never costs a legitimate dash its invulnerability.
 		CooldownTolerance = 0.15,
+	},
+
+	-- Stamina (owner, 2026-10-17): running and dashing use it, for everyone, in every mode. It refills after a pause.
+	Stamina = {
+		Max = 100,
+		RunCostPerSecond = 20, -- 5 s of running from full
+		DashCost = 25, -- 4 dashes from full
+		RegenPerSecond = 30,
+		RegenDelay = 0.8, -- seconds after spending before it starts to refill
+		RunResume = 20, -- running stops at 0 and starts again (Run still held) once stamina is back to this
+		RunSpeedMultiplier = 1.5, -- 16 → 24 studs/s
+		MovingSpeed = 2, -- studs/s: a running fighter moving faster than this pays for it
 	},
 
 	-- Base (Brawler) attacks. Fighting styles scale these in Config.Styles.

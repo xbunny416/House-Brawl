@@ -231,6 +231,7 @@ any errors are fixed before the next item.
 | 2026-10-16 | Animation fix ("no animation at all"): clips now turn joints through Motor6D.C0 every frame before rendering (the default animations overwrote the Transform writes); Studio `[Anim]` log (Config.Dev.LogAnimations) | #25 |
 | 2026-10-16 | Animation fix 2: the owner's characters had no R15 Motor6Ds (Studio log: "no R15 joints found"); joints are now found as R15 or R6 Motor6Ds (R6 names mapped, turns applied in the parent part's axes) or AnimationConstraints (turned through Attachment0), and Studio logs which joints a character has (or what it has instead) | #26 |
 | 2026-10-17 | Charged punch replaces the Shove (owner): tap Attack to punch, keep holding to charge, let go for the charged punch (Charge remote, Charging attribute, own cooldown); right-click is camera only; new Ability action (F / Y / touch "Parry" for Wrecker only) runs the style's move (Wrecker parry, own cooldown); "Shove" renamed "Charged" through Config, Formulas, Fighter, CombatService, remotes, clips (Charge loop, PowerPunch, PowerSwing), strings, specs and bible | #27 |
+| 2026-10-17 | Stamina (owner): running (Left Shift held; gamepad left-stick press and a touch Run button run until you stop) at ×1.5 speed costs 20/s while moving, a dash costs 25 (dash cooldown 2.5 s → 0.6 s), refill 30/s after 0.8 s; stamina in the pure Fighter (spec-tested), CombatService ticks it, Run remote + speed modifier, Stamina attribute, HUD stamina bar; Dash moved to Q only | #PR |
 
 ## Decisions and interpretations
 
@@ -249,7 +250,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   cooldown 0.5 s, grab cooldown 0.3 s, results screen 8 s, minimum 2 players to start a round, platform fall 4 s.
 - Robux prices in Config are reference only; live prices come from the Creator Dashboard. Pass/product/badge/group
   ids are 0 until created.
-- **Controls (1.5):** Shift Lock toggles on Right Shift only (Left Shift is Dash), by rewriting the `BoundKeys` value of
+- **Controls (1.5):** Shift Lock toggles on Right Shift only (Left Shift is Run since 2026-10-17; it was Dash), by rewriting the `BoundKeys` value of
   Roblox's MouseLockController at runtime. Camera zoom 8–30 studs (8 keeps it third-person; bible only gave max 30).
   Mobile buttons are placed around Roblox's own jump button (kept, not replaced): base size 17% of the screen's
   shorter side, 64–104 px, Attack 1.15×; the `ButtonLayout` setting picks a layout from
@@ -357,6 +358,15 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   `Ability` action — F, gamepad Y, a touch button shown only for styles with an ability (labelled Parry) — runs the
   equipped style's move: `Config.Styles.List[id].Ability` (Wrecker: `Parry` 0.2 s, `Cooldown` 1.2 s; others none).
   Casual already had unlimited lives (no HP, endless respawns, nobody is eliminated) — confirmed to the owner.
+- **Stamina (owner, 2026-10-17):** "player can now run and dash with limited stamina, anyone". `Config.Combat.Stamina`:
+  100 max, running ×1.5 speed costs 20/s while actually moving (server sees the root's flat speed > 2 studs/s), a
+  dash costs 25, it refills at 30/s once nothing was spent for 0.8 s; running stops at 0 and resumes at 20 while Run
+  is held. The state lives in the pure Fighter (`spendStamina`, `setRunHeld`, `tickStamina`; dash spends inside
+  `Fighter.dash`), so a reset or respawn refills it; CombatService ticks player fighters every 0.1 s, switches the
+  "Run" walk-speed modifier and sets the `Stamina` attribute (whole numbers) for the HUD bar and the client's dash
+  pre-check. Dash cooldown 2.5 s → 0.6 s so stamina is the real limit. Controls: Left Shift held (Dash is Q only
+  now), gamepad left-stick press and a touch Run button (left of Attack) run until you stop moving
+  (`MovementController`); a reset keeps Run held, a new character starts walking.
 - **Animations (2.6):** scripted, not uploaded assets (the bible allows "scripted"; nothing can be uploaded from a
   code session and paid packs are out). Each frame before rendering, the joints a clip uses are turned through their
   rest offset — `Motor6D.C0`, or an `AnimationConstraint`'s `Attachment0` — never `Transform`, which Roblox's default
