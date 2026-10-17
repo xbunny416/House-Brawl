@@ -17,6 +17,7 @@
 	  GiveScrap                      Config.Dev.GiveScrap Scrap (to test the Shop)
 	  TogglePerk (perk)              switch VIP / EmotePack / Premium on or off for this session
 	  GiveProduct (key)              what a Robux product gives, without a purchase
+	  TogglePrivate                  act as a private server you own (Server menu, 50% rewards), or stop
 ]]
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -36,6 +37,7 @@ local DataService = require(script.Parent:WaitForChild("DataService"))
 local DummyService = require(script.Parent:WaitForChild("DummyService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
 local MonetizationService = require(script.Parent:WaitForChild("MonetizationService"))
+local PrivateServerService = require(script.Parent:WaitForChild("PrivateServerService"))
 local PropService = require(script.Parent:WaitForChild("PropService"))
 local RoundService = require(script.Parent:WaitForChild("RoundService"))
 local StyleService = require(script.Parent:WaitForChild("StyleService"))
@@ -122,6 +124,9 @@ local commands: { [string]: Command } = {
 		if text then
 			MonetizationService.giveProduct(player, text)
 		end
+	end,
+	TogglePrivate = function(player)
+		PrivateServerService.toggleSimulated(player)
 	end,
 }
 

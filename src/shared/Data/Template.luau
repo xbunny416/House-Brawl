@@ -28,6 +28,9 @@ export type Stats = {
 	RoundsCompleted: number,
 }
 
+-- A private server owner's choices (Shared/PrivateServerRules): "Vote" or a mode / map id, and the round length.
+export type PrivateServerSettings = { Mode: string, Map: string, RoundTime: number }
+
 export type PlayerData = {
 	Version: number,
 	Scrap: number,
@@ -40,6 +43,7 @@ export type PlayerData = {
 	Tutorial: { Completed: boolean, Step: number },
 	Settings: Settings,
 	PurchaseIds: { string }, -- recent developer-product purchases already granted
+	PrivateServer: PrivateServerSettings, -- applied in private servers this player owns
 }
 
 local VERSION = 1
@@ -69,6 +73,7 @@ local Template: PlayerData = {
 	Tutorial = { Completed = false, Step = 0 },
 	Settings = table.clone(Config.Data.DefaultSettings),
 	PurchaseIds = {},
+	PrivateServer = { Mode = "Vote", Map = "Vote", RoundTime = Config.Round.RoundTime },
 }
 
 return {

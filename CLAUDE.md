@@ -15,8 +15,8 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   owner picks audio ids) are built, not yet playtested.
   2.9 Tutorial skipped for now (owner). **Phase 3 in progress:** 3.1 Game passes, dev products, Premium perks and
   PolicyService are built and switched off until the owner creates the passes / products and sends their ids (test
-  with the dev panel's Robux buttons meanwhile). Walk-up Shop / Locker prompts added (owner's pick).
-  **Next step:** 3.2 Private server settings.
+  with the dev panel's Robux buttons meanwhile). Walk-up Shop / Locker prompts added (owner's pick). 3.2 Private
+  server settings are built (not yet playtested). **Next step:** 3.3 Daily login streak + playtime rewards.
 
 ## How this repo works
 
@@ -131,7 +131,9 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
   (`Server/Round/Queue`: only players on it are taken into a round) and round stats. UI reads attributes: Workspace
   `RoundState`, `RoundEndsAt` (compare with `Workspace:GetServerTimeNow()`), `RoundMode`, `RoundMap`,
   `PlayersNeeded`, `PlayersQueued`; Player `RoundStatus`, `QueueStatus` (`In` / `AFK` / `Off`), `Lives`, `KOs`,
-  `Falls`. Rewards and quests hook `RoundService.RoundEnded`.
+  `Falls`. Rewards and quests hook `RoundService.RoundEnded`. Private servers: `Services/PrivateServerService` (`isPrivate`,
+  `ballot`, `roundTime`; Workspace `PrivateServer`, `PrivateOwnerId`, `PrivateMode`, `PrivateMap`,
+  `PrivateRoundTime`).
 - **Settings** (Settings menu values) are read and changed through `Controllers/SettingsController`; the server
   validates each change with `Shared/Settings` (`Services/SettingsService`). New numeric settings need a range in
   `Config.Data.SettingRanges`.
@@ -204,7 +206,7 @@ any errors are fixed before the next item.
 ### Phase 3 — Monetization, retention & polish
 
 - [x] 3.1 Game passes, dev products (idempotent receipts), Premium perks, PolicyService
-- [ ] 3.2 Private server settings (owner controls, 50% rewards)
+- [x] 3.2 Private server settings (owner controls, 50% rewards)
 - [ ] 3.3 Daily login streak + playtime rewards
 - [ ] 3.4 Daily + weekly quests
 - [ ] 3.5 Badges
@@ -255,6 +257,7 @@ any errors are fixed before the next item.
 | 2026-10-17 | 3.1 Monetization: MonetizationService (ProcessReceipt → idempotent DataService.processReceipt: Scrap packs, Robux cosmetics; VIP / Emote Pack passes checked on load + bought in-server; Premium + membership changes; perk attributes; perk cosmetics granted / taken back), Shop Robux tab (live prices, Roblox prompts, Premium card, "Coming soon" while ids are 0), VIP gold name tag + [VIP] chat tag, Emote Pack emotes (Robot, Salute, Air Guitar, Backflip), 3 Robux cosmetics, Notify notices, PlayerPolicyService + PolicyRules, dev panel perk toggles + product grants, RewardService bonuses from MonetizationService; specs | #33 |
 | 2026-10-17 | 3.1 playtest (Studio logs): CameraController.Init had failed since 1.5 (a LocalScript can't set `DevEnableMouseLock`), so camera shake never ran; Shift Lock permission is now set by the server (SettingsService → StarterPlayer.EnableMouseLockOption). Chat switched to TextChatService (`default.project.json`: the place was on legacy chat, whose ChatScript errors in Studio and which the [VIP] chat tag can't use) | #34 |
 | 2026-10-17 | Walk-up Shop and Locker (owner): ProximityPrompts on the bartender (Shop) and in the locker booth (Locker), client-made from the lobby tags, E / gamepad B / tap (`Config.Controls.Prompts`), hidden while a menu is open or fighting; MenuController `openNamed` / `isOpen`; input spec | #35 |
+| 2026-10-17 | 3.2 Private servers: PrivateServerService (owner check, settings saved in the owner's data, Workspace attributes, 50% reward notice; Studio simulation), owner-only Server menu (mode: vote / Classic / Casual, map: vote / any arena, round length 2:00 / 3:00 / 5:00), PrivateServerSetting remote, RoundService ballot + round length from it, RewardService scale from it, dev "Private on/off", pure PrivateServerRules + specs | #PR |
 
 ## Decisions and interpretations
 
@@ -513,6 +516,17 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   first; touch taps the prompt. The prompts are made on the client (opening a screen needs no server) and re-made
   when a streamed-out part comes back; they hide while a menu screen is open or the player is fighting. They use
   Roblox's default prompt look until the art pass. The left-edge menu still opens both screens anywhere in the lobby.
+- **Private servers (3.2):** the bible's three controls only (the owner skipped the extras question; no solo start,
+  so a private server can't be used to farm rewards alone: rounds still need `MinPlayers` on the pad). The owner's
+  choices live in their saved data (`PrivateServer`: Mode, Map, RoundTime), so they follow the owner to every private
+  server they own; they apply once the owner's data loads (friends who start the server without the owner get the
+  defaults until then) and from the next vote / round. A locked mode or picked map is the only option on the ballot
+  (the vote panel shows one choice); round lengths are `Config.Round.PrivateRoundTimes` = 2:00 / 3:00 / 5:00 (new,
+  the bible gave no values; 3:00 = `RoundTime` is the default). Rewards use `Economy.PrivateServerRewardScale` 50%
+  (2.1 already applied it), now asked from `PrivateServerService.isPrivate` so the Studio simulation pays 50% too.
+  Every player gets a `Notify` on joining a private server. The Server menu is the third left-edge button, visible
+  only to the owner. Studio: dev panel "Private on/off" (Round section) makes the playtest a private server owned by
+  you; it is refused outside Studio.
 - **Monetization (3.1):** everything is built switched off: every pass / product id in `Config.Monetization` is 0
   until the owner creates them (Creator Dashboard → Monetization), and an item with id 0 shows "Coming soon" in the
   Shop. Perks (VIP, EmotePack, Premium) are what a player has right now: passes are checked with
@@ -596,6 +610,10 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Dash movement is client-side** (clients simulate their character), so the once-per-jump air rule is enforced by
   the client; the server enforces the cooldown and hitstun, which gate the invulnerability and Perfect Dodge.
 - **Owner's Roblox UserId** is needed for `Config.Dev.AllowedUserIds` before live testing of the developer panel.
+- **Private server test (Studio):** dev panel → Round → "Private on/off": a notice says rewards are 50%, and a
+  **Server** button appears on the left. Lock the mode / pick the map / pick 2:00, then stand on the join pad: the
+  vote offers only your choices and the round timer starts at 2:00; `[Rewards]` in Output pays half. Rejoin and turn
+  it on again: your choices are remembered (with Studio API access on). Output shows `[PrivateServer]`.
 - **Walk-up test (Studio):** walk to the bartender behind the bar counter (north) — a "Shop" prompt shows within 12
   studs; press E (gamepad B, or tap it) and the Shop opens. Same in the locker booth (west wall) for the Locker. The
   prompts disappear while a screen is open. If the bartender's prompt is hard to reach from the counter, the range

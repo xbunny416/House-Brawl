@@ -80,6 +80,7 @@ local function buildSections()
 		command(Localization.format("Dev.Start"), "StartRound"),
 		command(Localization.format("Dev.End"), "EndRound"),
 		command(Localization.format("Dev.Crumble"), "Crumble"),
+		command(Localization.format("Dev.TogglePrivate"), "TogglePrivate"),
 	})
 
 	local maps: { Button } = {}

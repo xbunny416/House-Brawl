@@ -9,6 +9,9 @@ return {
 	SpawnShieldTime = 2, -- breaks early if the player attacks
 	TensionTime = 30, -- the last N seconds use the tension music layer
 	PlacementsRewarded = 3, -- top N finishers get placement rewards
+	-- Private servers (bible §7): the owner picks the round length from these (seconds; RoundTime is the default).
+	-- Rewards there: Economy.PrivateServerRewardScale.
+	PrivateRoundTimes = { 120, 180, 300 },
 
 	-- Lobby join pad (QueueZone-tagged part): only active players standing on it are taken into the next round
 	-- (Casual: into the running round). Everyone else stays in the lobby (Shop, Locker ...).
