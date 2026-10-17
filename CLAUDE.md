@@ -251,6 +251,7 @@ any errors are fixed before the next item.
 | 2026-10-17 | 2.8 Music + SFX: Config.Audio slots (all silent until the owner picks Creator Store audio ids), SoundController (lobby / per-arena music with crossfade, last-30 s tension layer, victory sting; 3D hit sounds by weapon, charged / prop / parry hits, dash, grab, throw, KO boom + cheer, explosion, wood / metal / glass smash, Perfect Dodge chime, crumble rumble / collapse; UI click, coin, level-up), weapon in CombatHit, pure AudioRules + specs | #31 |
 | 2026-10-17 | Bottom-right key panel (owner): Run / Dash / Ability slots with keys or gamepad glyphs and cooldown fills (stamina, dash cooldown, server AbilityReadyAt), on keyboard and gamepad (touch keeps its buttons and the dash ring); tutorial 2.9 skipped for now by the owner | #32 |
 | 2026-10-17 | 3.1 Monetization: MonetizationService (ProcessReceipt → idempotent DataService.processReceipt: Scrap packs, Robux cosmetics; VIP / Emote Pack passes checked on load + bought in-server; Premium + membership changes; perk attributes; perk cosmetics granted / taken back), Shop Robux tab (live prices, Roblox prompts, Premium card, "Coming soon" while ids are 0), VIP gold name tag + [VIP] chat tag, Emote Pack emotes (Robot, Salute, Air Guitar, Backflip), 3 Robux cosmetics, Notify notices, PlayerPolicyService + PolicyRules, dev panel perk toggles + product grants, RewardService bonuses from MonetizationService; specs | #33 |
+| 2026-10-17 | 3.1 playtest (Studio logs): CameraController.Init had failed since 1.5 (a LocalScript can't set `DevEnableMouseLock`), so camera shake never ran; Shift Lock permission is now set by the server (SettingsService → StarterPlayer.EnableMouseLockOption). Chat switched to TextChatService (`default.project.json`: the place was on legacy chat, whose ChatScript errors in Studio and which the [VIP] chat tag can't use) | #PR |
 
 ## Decisions and interpretations
 
@@ -270,7 +271,8 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - Robux prices in Config are reference only; live prices come from the Creator Dashboard. Pass/product/badge/group
   ids are 0 until created.
 - **Controls (1.5):** Shift Lock toggles on Right Shift only (Left Shift is Run since 2026-10-17; it was Dash), by rewriting the `BoundKeys` value of
-  Roblox's MouseLockController at runtime. Camera zoom 8–30 studs (8 keeps it third-person; bible only gave max 30).
+  Roblox's MouseLockController at runtime. Whether Shift Lock may be used at all (`ShiftLockAllowed`) is set by the server
+  (`StarterPlayer.EnableMouseLockOption`, SettingsService). Camera zoom 8–30 studs (8 keeps it third-person; bible only gave max 30).
   Mobile buttons are placed around Roblox's own jump button (kept, not replaced): base size 17% of the screen's
   shorter side, 64–104 px, Attack 1.15×; the `ButtonLayout` setting picks a layout from
   `Config.Controls.Touch.Layouts` (only `Default` so far). Camera shake wobbles at 18 Hz and only moves the camera
@@ -540,6 +542,14 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   2 players. A solo Classic round ends when you lose your 3 lives; a solo Casual round runs the full 3:00.
 - **Studio combat debug:** `Config.Dev.LogCombat` prints every hit and KO; `Config.Dev.ShowHitboxes` flashes each
   attack box (red hit, grey miss). Studio only.
+- **3.1 playtest (2026-10-17, Studio logs):** every perk toggle granted and took back its items, products gave Scrap /
+  items, the Robot emote played after a round, no errors from the new code. Found in the logs: CameraController.Init
+  failed on every client since 1.5 (`DevEnableMouseLock` can't be set by a LocalScript), which stopped the camera
+  shake from ever binding — the 1st playtest's "camera shake not noticeable" was this, not the strength (now fixed:
+  re-check how strong it feels). The place was on legacy chat (`ChatVersion` 0, its ChatScript errors in Studio);
+  the project now sets TextChatService, so after `rojo serve` syncs it **save the place**. Not ours: the
+  `rbxassetid://203785492` "asset type does not match" warning (not in `src/`, `maps/` or the place: likely an avatar
+  item), UIBlox `FoundationProvider` and `RoundedCorner8` StyleRule warnings (Roblox's own UI).
 - **Robux items need the owner:** create the VIP (299 R$) and Emote Pack (149 R$) game passes and the 6 developer
   products (Scrap Pack S / M / L 49 / 149 / 399 R$; Inferno 149, Lightning Trail 99, Galaxy Burst 199) on the Creator
   Dashboard, then put their ids in `Config.Monetization`. Until then the Shop shows "Coming soon" and the VIP bonus

@@ -33,6 +33,11 @@
 				}
 			}
 		},
+		"TextChatService": {
+			"$properties": {
+				"ChatVersion": "TextChatService"
+			}
+		},
 		"LocalizationService": {
 			"GameStrings": {
 				"$path": "src/localization/GameStrings.csv"
