@@ -107,6 +107,14 @@ local Definitions: { [string]: Definition } = {
 		Args = { Guard.oneOf({ "Style", "Cosmetic" }), Guard.string(32), Guard.integer(0, 1000000) },
 		RateLimit = { Rate = 2, Burst = 4 },
 	},
+	-- Client -> server: claim today's login-streak reward (Shared/DailyRules). Returns (claimed: boolean, reward or
+	-- reason: { Day, Scrap, Cosmetic? } | "Claimed" | "NotLoaded" | "PrivateServer").
+	ClaimDaily = {
+		Kind = "Function",
+		Direction = "ToServer",
+		Args = {},
+		RateLimit = { Rate = 1, Burst = 3 },
+	},
 	-- Client -> server: a developer panel command (only allowed players; see Server/Dev/DevRules).
 	-- (command: string, text: string? — a map / mode / prop id, value: number? — a Percent or HP)
 	DevCommand = {

@@ -144,6 +144,14 @@ local function buildSections()
 	end
 	section("Dev.Robux", robux)
 
+	section("Dev.Daily", {
+		command(Localization.format("Dev.DailyNextDay"), "DailyNextDay"),
+		command(
+			Localization.format("Dev.DailyPlaytime", { Config.Retention.Playtime.Interval // 60 }),
+			"DailyPlaytime"
+		),
+	})
+
 	section("Dev.Camera", {
 		{
 			Label = Localization.format("Dev.TestShake"),

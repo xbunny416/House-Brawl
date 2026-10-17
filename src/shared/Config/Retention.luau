@@ -4,7 +4,7 @@ local Types = require(script.Parent.Types)
 
 type RetentionConfig = {
 	Tutorial: { Scrap: number, Title: string },
-	LoginStreak: { Scrap: { number }, FinalDayCosmetic: boolean, ResetHourUTC: number },
+	LoginStreak: { Scrap: { number }, FinalDayCosmetic: boolean, FinalDayFallbackScrap: number, ResetHourUTC: number },
 	Playtime: { Interval: number, Scrap: number, MaxClaimsPerDay: number },
 	Quests: {
 		DailyCount: number,
@@ -21,10 +21,16 @@ local Retention: RetentionConfig = {
 	-- Training Yard tutorial reward.
 	Tutorial = { Scrap = 200, Title = "Rookie" },
 
-	-- Days 1-6 give Scrap; day 7 gives the weekly rotating cosmetic. Missing a day resets to day 1.
-	LoginStreak = { Scrap = { 50, 75, 100, 150, 200, 250 }, FinalDayCosmetic = true, ResetHourUTC = 0 },
+	-- Days 1-6 give Scrap; day 7 gives the weekly rotating cosmetic (Scrap cosmetics only; FinalDayFallbackScrap
+	-- instead if the player already owns it). Missing a day resets to day 1. Days start at ResetHourUTC.
+	LoginStreak = {
+		Scrap = { 50, 75, 100, 150, 200, 250 },
+		FinalDayCosmetic = true,
+		FinalDayFallbackScrap = 300,
+		ResetHourUTC = 0,
+	},
 
-	-- +25 Scrap every 10 minutes online, up to 6 times per day.
+	-- +25 Scrap every 10 minutes online (AFK time doesn't count), up to 6 times per day.
 	Playtime = { Interval = 600, Scrap = 25, MaxClaimsPerDay = 6 },
 
 	Quests = {

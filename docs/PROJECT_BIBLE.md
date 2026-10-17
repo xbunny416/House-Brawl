@@ -351,9 +351,12 @@ panel.
   ledge → grab a chair and throw it → dash across a gap) was removed with the lobby rework (2026-10-16). Still
   planned: reward 200 Scrap + "Rookie" title, returning players skip (replay button in Settings), first round: tips
   for grabbing and dashing.
-- **Login streak (7 days):** 50 / 75 / 100 / 150 / 200 / 250 Scrap, Day 7 = weekly rotating cosmetic. Missing a day
-  resets to Day 1.
-- **Playtime:** +25 Scrap every 10 minutes online, up to 6 times per day.
+- **Login streak (7 days):** 50 / 75 / 100 / 150 / 200 / 250 Scrap, Day 7 = weekly rotating cosmetic (one of the
+  cosmetics sold for Scrap, the same for everyone that week; 300 Scrap instead if already owned). Missing a day
+  resets to Day 1. Claimed on the Daily reward screen (left-edge menu; it opens by itself when a reward is waiting).
+- **Playtime:** +25 Scrap every 10 minutes online (AFK time doesn't count; kept across rejoins that day), up to 6
+  times per day.
+- Daily and playtime rewards are not paid in private servers (play and testing only).
 - **Quests:** 3 daily (75–150 Scrap each, e.g. "KO 5 players with a chair", "Win 1 Classic round", "Perfect Dodge 10
   times", "Break 8 structures"), 1 weekly (600 Scrap). Reset 00:00 UTC.
 - **Badges:** Welcome, First KO, First Win, Ring-Out Rookie (100 ring-outs), Chair Master (50 chair KOs), Demolition

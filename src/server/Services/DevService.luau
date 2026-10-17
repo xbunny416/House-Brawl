@@ -18,6 +18,8 @@
 	  TogglePerk (perk)              switch VIP / EmotePack / Premium on or off for this session
 	  GiveProduct (key)              what a Robux product gives, without a purchase
 	  TogglePrivate                  act as a private server you own (Server menu, no rewards), or stop
+	  DailyNextDay                   as if a day had passed (daily reward claim and playtime)
+	  DailyPlaytime                  one playtime interval of play at once
 ]]
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -33,6 +35,7 @@ local Analytics = require(script.Parent:WaitForChild("Analytics"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local CosmeticService = require(script.Parent:WaitForChild("CosmeticService"))
 local CrumbleService = require(script.Parent:WaitForChild("CrumbleService"))
+local DailyService = require(script.Parent:WaitForChild("DailyService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local DummyService = require(script.Parent:WaitForChild("DummyService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
@@ -127,6 +130,12 @@ local commands: { [string]: Command } = {
 	end,
 	TogglePrivate = function(player)
 		PrivateServerService.toggleSimulated(player)
+	end,
+	DailyNextDay = function(player)
+		DailyService.devNextDay(player)
+	end,
+	DailyPlaytime = function(player)
+		DailyService.devAddPlaytime(player)
 	end,
 }
 
