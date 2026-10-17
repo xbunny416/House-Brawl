@@ -534,7 +534,17 @@ function land(victim: Model, blow: Blow, away: Vector3): boolean
 	else
 		Launch.apply(victim, velocity, result.Hitstun)
 	end
-	Net.fireAll("CombatHit", blow.AttackerCharacter, victim, blow.Source, blow.Heavy, result.Trail, result.Hitstun)
+	local weapon = Config.Styles.List[styleOf(blow.Attacker)].Weapon
+	Net.fireAll(
+		"CombatHit",
+		blow.AttackerCharacter,
+		victim,
+		blow.Source,
+		blow.Heavy,
+		result.Trail,
+		result.Hitstun,
+		weapon
+	)
 	CombatService.Hit:Fire(victim, blow.Attacker)
 
 	if isStudioFlag(Config.Dev.LogCombat) then

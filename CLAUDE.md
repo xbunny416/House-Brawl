@@ -11,8 +11,9 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   are built (2.2–2.4 not yet playtested; the Wrecker parry needs two players). Owner's lobby rework (2026-10-16):
   enclosed hideout bar lobby, join pad to enter rounds, no Training Yard. 2.5 Junkyard Isles + Neon Motel are built
   (owner looked: Motel brightened, lobby TVs fixed). 2.6 Animations (scripted R15) work in the owner's Studio (dynamic
-  pass, charged punch, stamina added 2026-10-17). 2.7 VFX + Low Graphics are built, not yet playtested.
-  **Next step:** 2.8 Music + SFX.
+  pass, charged punch, stamina added 2026-10-17). 2.7 VFX + Low Graphics and 2.8 Music + SFX (silent until the
+  owner picks audio ids) are built, not yet playtested.
+  **Next step:** 2.9 Tutorial + first-round tips (agree the onboarding plan with the owner first), then Phase 3.
 
 ## How this repo works
 
@@ -183,7 +184,7 @@ any errors are fixed before the next item.
 - [x] 2.5 Junkyard Isles + Neon Motel maps (+ night lighting preset)
 - [x] 2.6 Animations (R15)
 - [x] 2.7 VFX pass + Low Graphics setting
-- [ ] 2.8 Music + SFX (per-map tracks, last-30 s tension layer)
+- [x] 2.8 Music + SFX (per-map tracks, last-30 s tension layer)
 - [ ] 2.9 Tutorial + first-round tips (the Training Yard it was planned in was removed with the lobby rework on
       2026-10-16: agree a new onboarding plan with the owner first)
 
@@ -236,6 +237,7 @@ any errors are fixed before the next item.
 | 2026-10-17 | Stamina (owner): running (Left Shift held; gamepad left-stick press and a touch Run button run until you stop) at ×1.5 speed costs 20/s while moving, a dash costs 25 (dash cooldown 2.5 s → 0.6 s), refill 30/s after 0.8 s; stamina in the pure Fighter (spec-tested), CombatService ticks it, Run remote + speed modifier, Stamina attribute, HUD stamina bar; Dash moved to Q only | #28 |
 | 2026-10-17 | Dynamic animation pass (owner: "look not good and no dynamic"): per-key easing (Out / Back overshoot), every attack reworked as wind-up → snappy strike → hold → recovery with hips, lunges, head and footwork; hit-stop on landed hits; always-on Motion layer (lean into movement and strafes, air tuck); in-round fighting Stance; directional hit recoils; tucked tumble; rig lookup throttled; Config.Animations HitStop / Motion; specs | #29 |
 | 2026-10-17 | 2.7 VFX + Low Graphics: client VfxController (hit sparks + impact flash in Percent colors, launch smoke, POW / K.O.! starburst + red / gold screen-edge flash, client KO-effect cosmetic, cartoon explosion with ring shockwave, structure break chunks + dust, blue Perfect Dodge flash, dash streak), crumble cracks / dust / debris, Effect remote + Server/Visuals/Effects, Config.Vfx, Low Graphics (particles, debris, post-effects, shadows off; dev panel toggle), pure VfxRules + specs | #30 |
+| 2026-10-17 | 2.8 Music + SFX: Config.Audio slots (all silent until the owner picks Creator Store audio ids), SoundController (lobby / per-arena music with crossfade, last-30 s tension layer, victory sting; 3D hit sounds by weapon, charged / prop / parry hits, dash, grab, throw, KO boom + cheer, explosion, wood / metal / glass smash, Perfect Dodge chime, crumble rumble / collapse; UI click, coin, level-up), weapon in CombatHit, pure AudioRules + specs | #PR |
 
 ## Decisions and interpretations
 
@@ -362,6 +364,17 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   `Ability` action — F, gamepad Y, a touch button shown only for styles with an ability (labelled Parry) — runs the
   equipped style's move: `Config.Styles.List[id].Ability` (Wrecker: `Parry` 0.2 s, `Cooldown` 1.2 s; others none).
   Casual already had unlimited lives (no HP, endless respawns, nobody is eliminated) — confirmed to the owner.
+- **Music + SFX (2.8):** every sound is a slot in `Config.Audio` holding a Roblox audio asset id; all are 0 (silent)
+  until the owner picks free Creator Store audio (a code session can't browse or upload audio). `SoundController`
+  (client) plays: the lobby track, or the arena's track (by map id) while the player is in the running round
+  (fighting, respawning, spectating; lobby players keep the lobby track), crossfading over 1.5 s; the tension layer on
+  top in the last `Round.TensionTime` = 30 s; the victory sting on `RoundResults`. World sounds (3D, heard within 140
+  studs) from the same signals as the effects: hits by the attacker's weapon (`CombatHit` now carries it: Punch /
+  BatHit / ShovelHit / WrenchHit; heavy hits ChargedHit; thrown props PropHit; parries Parry), Dash / Grab / Throw /
+  Parry from `Animate`, KO boom + a short cheer, explosions, structures smashing (wood / metal / glass by material),
+  the Perfect Dodge chime, the crumble rumble and collapse. UI: a click on every menu button (not the touch action
+  buttons), a coin sound for round Scrap, a level-up fanfare. Volumes = the slot's volume × the Music / SFX setting;
+  repeated effects vary their pitch. Pure choices in `Lib/AudioRules` (spec-tested).
 - **VFX + Low Graphics (2.7):** every effect is drawn on the client (`VfxController`; crumbling in
   `CrumbleController`), numbers in `Config.Vfx`. From `CombatHit`: an impact flash and sparks in the victim's Percent
   color, more sparks the higher the Percent (8 → 30 at 150%), thrown away from the attacker; a smoke trail on
@@ -524,3 +537,6 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   `Config.Animations.AssetIds` (made in Studio's Animation Editor or free Creator Store ones).
 - **Shop test (Studio):** dev panel → "+5000 Scrap" → Shop: buy a daily deal (20% off), a style (then Equip), check
   the Scrap chip drops; buying something you own or can't afford is refused with a message. Output shows `[Shop]`.
+- **Audio ids are all 0 (silent).** To hear music and sounds: Studio → Toolbox → Audio (free Creator Store audio), right-click a
+  sound → Copy Asset ID, paste it into the matching slot in `src/shared/Config/Audio.luau` (or send the ids to Claude).
+  Bible: lobby retro synthwave, a gritty chiptune-rock track per arena, a tension layer, a victory sting.

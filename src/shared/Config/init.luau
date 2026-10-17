@@ -28,6 +28,7 @@ local Config = {
 	Lighting = require(script.Lighting),
 	Animations = require(script.Animations),
 	Vfx = require(script.Vfx),
+	Audio = require(script.Audio),
 }
 
 return Freeze.deep(Config)
