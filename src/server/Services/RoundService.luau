@@ -17,7 +17,7 @@
 	    standing wins. Casual: unlimited respawns, score = KOs − falls, passive Percent gain, and players who step on
 	    the pad join after RespawnDelay. In Classic the pad queues for the next round.
 	  * Results: everyone returns to the lobby; standings go to clients (RoundResults) and to RoundEnded, which the
-	    round rewards (step 2.1) pay from. Lifetime stats are counted here.
+	    round rewards (step 2.1) pay from. Lifetime stats are counted here (not in private servers).
 	Participation: clients report input (Activity); AFK = no input for AFKTimeout. Only active time counts toward
 	the MinSeconds needed for placement rewards, and AFK players are left out of the next round.
 
@@ -115,6 +115,13 @@ end
 local function log(message: string)
 	if RunService:IsStudio() then
 		print(`[Round] {message}`)
+	end
+end
+
+-- Counts a lifetime stat, except where progress doesn't count (private servers: PrivateServerService).
+local function countStat(player: Player, stat: string)
+	if PrivateServerService.countsProgress() then
+		DataService.incrementStat(player, stat)
 	end
 end
 
@@ -267,16 +274,16 @@ local function onKnockOut(character: Model, killer: Player?, cause: CombatServic
 		return
 	end
 	local victim = Scoreboard.recordKO(r.Board, player.UserId, killer and killer.UserId, cause == "Fall", now())
-	DataService.incrementStat(player, "Falls")
+	countStat(player, "Falls")
 	if killer and Scoreboard.get(r.Board, killer.UserId) then
-		DataService.incrementStat(killer, "KOs")
+		countStat(killer, "KOs")
 		if cause == "Fall" then
-			DataService.incrementStat(killer, "RingOuts")
+			countStat(killer, "RingOuts")
 		end
 		if weapon and Config.Props.Types[weapon] then
-			DataService.incrementStat(killer, "PropKOs")
+			countStat(killer, "PropKOs")
 			if weapon == "Chair" then
-				DataService.incrementStat(killer, "ChairKOs")
+				countStat(killer, "ChairKOs")
 			end
 		end
 		syncScore(killer)
@@ -308,7 +315,7 @@ local function onPerfectDodge(character: Model, _attacker: Player)
 	local r = round
 	if player and r and statuses[player] == "Playing" then
 		Scoreboard.recordPerfectDodge(r.Board, player.UserId)
-		DataService.incrementStat(player, "PerfectDodges")
+		countStat(player, "PerfectDodges")
 	end
 end
 
@@ -546,10 +553,10 @@ local function endRound()
 		end
 		local afk = Scoreboard.isAFK(entry, endedAt)
 		local eligible = entry.ActiveSeconds >= Config.Round.Participation.MinSeconds and not afk
-		DataService.incrementStat(player, "RoundsPlayed")
-		DataService.incrementStat(player, "RoundsCompleted")
+		countStat(player, "RoundsPlayed")
+		countStat(player, "RoundsCompleted")
 		if standing.Placement == 1 and eligible then
-			DataService.incrementStat(player, "Wins")
+			countStat(player, "Wins")
 		end
 		Analytics.roundFinished(player, duration, entry.KOs, r.ModeId, r.MapId)
 		table.insert(results, {

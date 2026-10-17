@@ -133,7 +133,8 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
   `PlayersNeeded`, `PlayersQueued`; Player `RoundStatus`, `QueueStatus` (`In` / `AFK` / `Off`), `Lives`, `KOs`,
   `Falls`. Rewards and quests hook `RoundService.RoundEnded`. Private servers: `Services/PrivateServerService` (`isPrivate`,
   `ballot`, `roundTime`; Workspace `PrivateServer`, `PrivateOwnerId`, `PrivateMode`, `PrivateMap`,
-  `PrivateRoundTime`).
+  `PrivateRoundTime`). Nothing is earned in private servers: anything that grants progress (stats, quests, badges,
+  leaderboards, playtime rewards) checks `PrivateServerService.countsProgress()`.
 - **Settings** (Settings menu values) are read and changed through `Controllers/SettingsController`; the server
   validates each change with `Shared/Settings` (`Services/SettingsService`). New numeric settings need a range in
   `Config.Data.SettingRanges`.
@@ -258,6 +259,7 @@ any errors are fixed before the next item.
 | 2026-10-17 | 3.1 playtest (Studio logs): CameraController.Init had failed since 1.5 (a LocalScript can't set `DevEnableMouseLock`), so camera shake never ran; Shift Lock permission is now set by the server (SettingsService → StarterPlayer.EnableMouseLockOption). Chat switched to TextChatService (`default.project.json`: the place was on legacy chat, whose ChatScript errors in Studio and which the [VIP] chat tag can't use) | #34 |
 | 2026-10-17 | Walk-up Shop and Locker (owner): ProximityPrompts on the bartender (Shop) and in the locker booth (Locker), client-made from the lobby tags, E / gamepad B / tap (`Config.Controls.Prompts`), hidden while a menu is open or fighting; MenuController `openNamed` / `isOpen`; input spec | #35 |
 | 2026-10-17 | 3.2 Private servers: PrivateServerService (owner check, settings saved in the owner's data, Workspace attributes, 50% reward notice; Studio simulation), owner-only Server menu (mode: vote / Classic / Casual, map: vote / any arena, round length 2:00 / 3:00 / 5:00), PrivateServerSetting remote, RoundService ballot + round length from it, RewardService scale from it, dev "Private on/off", pure PrivateServerRules + specs | #36 |
+| 2026-10-17 | Private servers for play and testing only (owner): no Scrap / XP (`PrivateServerRewardScale` 0) and no lifetime stats (`PrivateServerProgress` false, `PrivateServerService.countsProgress`), join notice / Server menu / results line say so | #PR |
 
 ## Decisions and interpretations
 
@@ -267,7 +269,8 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Participation:** the 60 s rule covers the completion reward too, and only non-AFK time counts. AFK at round end
   pays nothing. KO and Perfect Dodge Scrap are paid regardless of time played.
 - **Bonus cap:** VIP + Premium apply to Scrap, the friend bonus to XP; each currency's bonus is capped at +60%. The
-  live-event multiplier (double-Scrap weekends) and the private-server 50% scale are applied outside the cap.
+  live-event multiplier (double-Scrap weekends) and the private-server scale (0 since 2026-10-17: private servers pay
+  nothing) are applied outside the cap.
 - **Codes** live in the server-only `ServerScriptService.Server.ServerConfig` (not the shared Config) so clients
   cannot read unreleased codes. `LAUNCH` is a placeholder.
 - **Structures** take each attack's Classic HP damage in every mode.
@@ -522,7 +525,14 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   server they own; they apply once the owner's data loads (friends who start the server without the owner get the
   defaults until then) and from the next vote / round. A locked mode or picked map is the only option on the ballot
   (the vote panel shows one choice); round lengths are `Config.Round.PrivateRoundTimes` = 2:00 / 3:00 / 5:00 (new,
-  the bible gave no values; 3:00 = `RoundTime` is the default). Rewards use `Economy.PrivateServerRewardScale` 50%
+  the bible gave no values; 3:00 = `RoundTime` is the default). **Owner, 2026-10-17: "make private server only for
+  play and test, no cash or level etc gain in this"** — so `Economy.PrivateServerRewardScale` = 0 (no round Scrap /
+  XP, so no levels) and `Economy.PrivateServerProgress` = false (no lifetime stats: `PrivateServerService
+  .countsProgress()` gates RoundService's and StructureService's `incrementStat`; quests, badges, leaderboards and
+  playtime rewards must ask it too). Robux purchases, the Shop and the dev panel still work. The results line reads
+  "Private server: nothing is earned here"; the join notice and Server menu say the same (both fall back to a
+  percentage text if the scale is ever raised again). Before that change: rewards used
+  `Economy.PrivateServerRewardScale` 50%
   (2.1 already applied it), now asked from `PrivateServerService.isPrivate` so the Studio simulation pays 50% too.
   Every player gets a `Notify` on joining a private server. The Server menu is the third left-edge button, visible
   only to the owner. Studio: dev panel "Private on/off" (Round section) makes the playtest a private server owned by
@@ -612,7 +622,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Owner's Roblox UserId** is needed for `Config.Dev.AllowedUserIds` before live testing of the developer panel.
 - **Private server test (Studio):** dev panel → Round → "Private on/off": a notice says rewards are 50%, and a
   **Server** button appears on the left. Lock the mode / pick the map / pick 2:00, then stand on the join pad: the
-  vote offers only your choices and the round timer starts at 2:00; `[Rewards]` in Output pays half. Rejoin and turn
+  vote offers only your choices and the round timer starts at 2:00; `[Rewards]` in Output pays nothing and stats don't change. Rejoin and turn
   it on again: your choices are remembered (with Studio API access on). Output shows `[PrivateServer]`.
 - **Walk-up test (Studio):** walk to the bartender behind the bar counter (north) — a "Shop" prompt shows within 12
   studs; press E (gamepad B, or tap it) and the Shop opens. Same in the locker booth (west wall) for the Locker. The

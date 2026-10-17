@@ -46,7 +46,7 @@ return {
 		local payout = Payout.forResult(result({ Placement = 1, AFKAtEnd = true }), NO_BONUS)
 		expect.equal(payout.Scrap + payout.XP, 0)
 	end,
-	["bonuses: Premium +10% Scrap, friends +XP, private servers half"] = function()
+	["bonuses: Premium +10% Scrap, friends +XP, nothing in private servers"] = function()
 		local base = Payout.forResult(result({}), NO_BONUS)
 		local premium = Payout.forResult(result({}), {
 			IsVIP = false,
@@ -62,6 +62,7 @@ return {
 			FriendsInServer = 0,
 			IsPrivateServer = true,
 		})
-		expect.equal(private.Scrap, math.floor(base.Scrap * 0.5 + 0.5))
+		expect.equal(private.Scrap, 0, "private servers pay nothing")
+		expect.equal(private.XP, 0)
 	end,
 }

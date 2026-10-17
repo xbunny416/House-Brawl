@@ -245,6 +245,9 @@ PrivateServer.Mode,Mode,Private server settings row: lock the game mode,
 PrivateServer.Map,Map,Private server settings row: pick the arena,
 PrivateServer.RoundTime,Round length,Private server settings row: how long a round lasts,
 PrivateServer.Vote,By vote,Private server settings option: the players vote (no lock),
-PrivateServer.Info,Rewards are {1}% in private servers. Changes apply from the next round.,Private server settings note (reward percent),Rewards are 50% in private servers. Changes apply from the next round.
-PrivateServer.Welcome,Private server: round rewards are {1}% here.,Notice when joining a private server (reward percent),Private server: round rewards are 50% here.
+PrivateServer.Info,"Private servers are for play and testing: no Scrap, XP or stats. Changes apply from the next round.",Private server settings note (nothing is earned in private servers),
+PrivateServer.InfoScaled,Rewards are {1}% in private servers. Changes apply from the next round.,Private server settings note when private servers pay part of the rewards (percent),Rewards are 50% in private servers. Changes apply from the next round.
+PrivateServer.Welcome,"Private server: just for play and testing. No Scrap, XP or stats are earned here.",Notice when joining a private server (nothing is earned there),
+PrivateServer.WelcomeScaled,Private server: round rewards are {1}% here.,Notice when joining a private server that pays part of the rewards (percent),Private server: round rewards are 50% here.
+Results.PrivateServer,Private server: nothing is earned here.,Results screen reward line in a private server (no rewards),
 Dev.TogglePrivate,Private on/off,Developer panel button: act as a private server you own (Studio),

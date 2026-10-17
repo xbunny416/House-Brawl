@@ -157,7 +157,10 @@ local function build()
 	addRow(body, "Map", "PrivateMap", "PrivateServer.Map", 2)
 	addRow(body, "RoundTime", "PrivateRoundTime", "PrivateServer.RoundTime", 3)
 	local percent = math.floor(Config.Economy.PrivateServerRewardScale * 100 + 0.5)
-	local info = Kit.label(body, Localization.format("PrivateServer.Info", { percent }), UDim2.fromScale(1, 0.16), 20)
+	local infoText = if percent > 0
+		then Localization.format("PrivateServer.InfoScaled", { percent })
+		else Localization.format("PrivateServer.Info")
+	local info = Kit.label(body, infoText, UDim2.fromScale(1, 0.16), 20)
 	info.TextColor3 = Kit.Colors.Muted
 	info.TextXAlignment = Enum.TextXAlignment.Left
 	info.LayoutOrder = 4
