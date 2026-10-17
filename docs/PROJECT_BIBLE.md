@@ -233,7 +233,10 @@ Built as **scripted** R15 poses (step 2.6): keyframed joint angles blended over 
 animations on every client, triggered by the server when an action really happens. Weapon styles chain two swings
 and an overhead smash (Scrapper's shovel sweeps low); the Wrecker's Ability is a parry pose with the hubcap; the
 tumble backflips through the whole hitstun. The round winner plays their victory emote back in the lobby; equipping
-an emote previews it. Any clip can later be replaced by an uploaded animation (Config.Animations.AssetIds).
+an emote previews it. Attacks wind up, strike with a small overshoot and hold; landed hits freeze attacker and
+victim for a few frames (hit-stop); bodies lean into their movement, tuck up in the air, raise a guard when standing
+still in a round, and recoil away from where a hit came from. Any clip can later be replaced by an uploaded
+animation (Config.Animations.AssetIds).
 
 ### 4.3 VFX
 
