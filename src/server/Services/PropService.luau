@@ -32,6 +32,7 @@ local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
 local Server = script.Parent.Parent
 local Carrier = require(Server:WaitForChild("Props"):WaitForChild("Carrier"))
 local Animate = require(Server:WaitForChild("Visuals"):WaitForChild("Animate"))
+local Effects = require(Server:WaitForChild("Visuals"):WaitForChild("Effects"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
 
@@ -372,12 +373,7 @@ function explode(prop: Prop, igniter: Player?)
 	local radius = class.Radius or 0
 	local center = part.Position
 	part:Destroy()
-	local blast = Instance.new("Explosion")
-	blast.BlastPressure = 0 -- visual only: the blow below does the knockback
-	blast.DestroyJointRadiusPercent = 0
-	blast.BlastRadius = radius
-	blast.Position = center
-	blast.Parent = Workspace
+	Effects.play("Explosion", center, { Radius = radius }) -- the look only: the blow below does the knockback
 	local credited = igniter or prop.Igniter
 	if credited then
 		local hit = CombatService.explode(center, radius, blowFor(prop, credited))

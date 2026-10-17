@@ -46,6 +46,7 @@ local Launch = require(Shared:WaitForChild("Combat"):WaitForChild("Launch"))
 local Server = script.Parent.Parent
 local Fighter = require(Server:WaitForChild("Combat"):WaitForChild("Fighter"))
 local Animate = require(Server:WaitForChild("Visuals"):WaitForChild("Animate"))
+local Effects = require(Server:WaitForChild("Visuals"):WaitForChild("Effects"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
 
@@ -355,6 +356,14 @@ function CombatService.knockOut(character: Model, cause: KOCause)
 		local credit = if killer then `{killer.Name} ({weapon})` else "none"
 		print(`[Combat] KO: {character.Name} ({cause}), credit: {credit}`)
 	end
+	-- The POW starburst: at the victim, or around the scorer for a ring-out (the victim is out in the void).
+	local killerCharacter = killer and killer.Character
+	local victimRoot = rootOf(character)
+	local killerRoot = if killerCharacter then rootOf(killerCharacter) else nil
+	local where = if cause == "Fall" and killerRoot then killerRoot else victimRoot
+	if where then
+		Effects.play("KO", where.Position, { Victim = character, Killer = killerCharacter, Cause = cause })
+	end
 	CombatService.KnockedOut:Fire(character, killer, cause, weapon)
 	if not character:HasTag(DUMMY_TAG) then
 		knockOutHandler(character, killer, cause, weapon)
@@ -443,6 +452,10 @@ end
 local function dodged(victim: Model, blow: Blow, evade: Fighter.Evade)
 	if evade == "Perfect" then
 		CombatService.PerfectDodged:Fire(victim, blow.Attacker)
+		local root = rootOf(victim)
+		if root then
+			Effects.play("PerfectDodge", root.Position, { Character = victim })
+		end
 	end
 	if isStudioFlag(Config.Dev.LogCombat) then
 		local kind = if evade == "Perfect"

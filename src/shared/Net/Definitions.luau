@@ -59,6 +59,9 @@ local Definitions: { [string]: Definition } = {
 	-- Server -> clients: play a scripted animation clip (Shared/Animation/Clips) on a character. (character: Model,
 	-- clip: string)
 	Animate = { Kind = "UnreliableEvent", Direction = "ToClient" },
+	-- Server -> clients: draw a one-off visual effect (Server/Visuals/Effects lists the kinds).
+	-- (kind: string, position: Vector3, data: { [string]: any })
+	Effect = { Kind = "UnreliableEvent", Direction = "ToClient" },
 
 	-- Client -> server: vote during the intermission. (kind: "Map" | "Mode", option: map or mode id)
 	Vote = {

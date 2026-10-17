@@ -240,7 +240,8 @@ animation (Config.Animations.AssetIds).
 
 ### 4.3 VFX
 
-Hit sparks scaling with Percent (white → yellow → red); smoke launch trail above 100%; comic "POW" KO starburst +
+Built in step 2.7, all drawn on the client (Config.Vfx). Hit sparks scaling with Percent (white → yellow → red); smoke
+launch trail above 100%; comic "POW" KO starburst ("K.O.!" around the scorer for ring-outs) +
 screen-edge flash; platform crumble (red edge, cracks, dust, debris); prop break (splinters / scraps / shards); retro
 cartoon explosion with ring shockwave; dash streak and blue Perfect Dodge flash.
 

@@ -10,8 +10,9 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   2026-10-16). **Phase 2 in progress:** 2.1 Round rewards, 2.2 Fighting styles, 2.3 Cosmetics + Locker and 2.4 Shop
   are built (2.2–2.4 not yet playtested; the Wrecker parry needs two players). Owner's lobby rework (2026-10-16):
   enclosed hideout bar lobby, join pad to enter rounds, no Training Yard. 2.5 Junkyard Isles + Neon Motel are built
-  (owner looked: Motel brightened, lobby TVs fixed). 2.6 Animations (scripted R15) are built, not yet playtested.
-  **Next step:** 2.7 VFX pass + Low Graphics setting.
+  (owner looked: Motel brightened, lobby TVs fixed). 2.6 Animations (scripted R15) work in the owner's Studio (dynamic
+  pass, charged punch, stamina added 2026-10-17). 2.7 VFX + Low Graphics are built, not yet playtested.
+  **Next step:** 2.8 Music + SFX.
 
 ## How this repo works
 
@@ -181,7 +182,7 @@ any errors are fixed before the next item.
 - [x] 2.4 Shop (styles, cosmetics, 24 h UTC daily rotation)
 - [x] 2.5 Junkyard Isles + Neon Motel maps (+ night lighting preset)
 - [x] 2.6 Animations (R15)
-- [ ] 2.7 VFX pass + Low Graphics setting
+- [x] 2.7 VFX pass + Low Graphics setting
 - [ ] 2.8 Music + SFX (per-map tracks, last-30 s tension layer)
 - [ ] 2.9 Tutorial + first-round tips (the Training Yard it was planned in was removed with the lobby rework on
       2026-10-16: agree a new onboarding plan with the owner first)
@@ -234,6 +235,7 @@ any errors are fixed before the next item.
 | 2026-10-17 | Charged punch replaces the Shove (owner): tap Attack to punch, keep holding to charge, let go for the charged punch (Charge remote, Charging attribute, own cooldown); right-click is camera only; new Ability action (F / Y / touch "Parry" for Wrecker only) runs the style's move (Wrecker parry, own cooldown); "Shove" renamed "Charged" through Config, Formulas, Fighter, CombatService, remotes, clips (Charge loop, PowerPunch, PowerSwing), strings, specs and bible | #27 |
 | 2026-10-17 | Stamina (owner): running (Left Shift held; gamepad left-stick press and a touch Run button run until you stop) at ×1.5 speed costs 20/s while moving, a dash costs 25 (dash cooldown 2.5 s → 0.6 s), refill 30/s after 0.8 s; stamina in the pure Fighter (spec-tested), CombatService ticks it, Run remote + speed modifier, Stamina attribute, HUD stamina bar; Dash moved to Q only | #28 |
 | 2026-10-17 | Dynamic animation pass (owner: "look not good and no dynamic"): per-key easing (Out / Back overshoot), every attack reworked as wind-up → snappy strike → hold → recovery with hips, lunges, head and footwork; hit-stop on landed hits; always-on Motion layer (lean into movement and strafes, air tuck); in-round fighting Stance; directional hit recoils; tucked tumble; rig lookup throttled; Config.Animations HitStop / Motion; specs | #29 |
+| 2026-10-17 | 2.7 VFX + Low Graphics: client VfxController (hit sparks + impact flash in Percent colors, launch smoke, POW / K.O.! starburst + red / gold screen-edge flash, client KO-effect cosmetic, cartoon explosion with ring shockwave, structure break chunks + dust, blue Perfect Dodge flash, dash streak), crumble cracks / dust / debris, Effect remote + Server/Visuals/Effects, Config.Vfx, Low Graphics (particles, debris, post-effects, shadows off; dev panel toggle), pure VfxRules + specs | #30 |
 
 ## Decisions and interpretations
 
@@ -360,6 +362,19 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   `Ability` action — F, gamepad Y, a touch button shown only for styles with an ability (labelled Parry) — runs the
   equipped style's move: `Config.Styles.List[id].Ability` (Wrecker: `Parry` 0.2 s, `Cooldown` 1.2 s; others none).
   Casual already had unlimited lives (no HP, endless respawns, nobody is eliminated) — confirmed to the owner.
+- **VFX + Low Graphics (2.7):** every effect is drawn on the client (`VfxController`; crumbling in
+  `CrumbleController`), numbers in `Config.Vfx`. From `CombatHit`: an impact flash and sparks in the victim's Percent
+  color, more sparks the higher the Percent (8 → 30 at 150%), thrown away from the attacker; a smoke trail on
+  launches with `trail` for the hitstun. From the new `Effect` remote (`Server/Visuals/Effects.play(kind, position,
+  data)`): `KO` — a comic starburst with "POW!" at the victim (HP KO) or "K.O.!" around the scorer (ring-out), plus a
+  screen-edge flash: red on the knocked-out player's screen, gold on the scorer's; `KOBurst` — the KO-effect cosmetic
+  (moved off the server); `Explosion` — fireball, neon ring shockwave, smoke and debris (replaces Roblox's
+  `Explosion` instance); `Break` — chunks in the structure's color and material plus dust; `PerfectDodge` — a blue
+  flash with "PERFECT!" (and a blue edge flash for the dodger). Dash streak: a client Trail on every dash unless a
+  dash-trail cosmetic already draws one. Crumbling: dark cracks on the warning platform, a dust cloud and chunks when
+  it falls. Particles use Roblox's built-in textures (no assets). Low Graphics (saved setting; dev panel "Low gfx
+  on/off" until the Settings menu in 3.10) turns off particles, flying debris (structures still drop 3 chunks), the
+  Lighting post-effects (Bloom, color grading) and shadows, all locally; flashes, starbursts and edge flashes stay.
 - **Stamina (owner, 2026-10-17):** "player can now run and dash with limited stamina, anyone". `Config.Combat.Stamina`:
   100 max, running ×1.5 speed costs 20/s while actually moving (server sees the root's flat speed > 2 studs/s), a
   dash costs 25, it refills at 30/s once nothing was spent for 0.8 s; running stops at 0 and resumes at 20 while Run
@@ -479,7 +494,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   art / VFX passes restyle them. The lobby's CRT-TV vote screens from the bible are an art-pass item. The dash ring
   fills bottom-to-top (a true radial ring needs an image asset).
 - **Props are plain blocks** (size / material / color from `Config.Props.Types`) until the art pass; a lit barrel turns
-  Neon, explosions use Roblox's `Explosion` visual (no physics: `BlastPressure = 0`). Carry pose and throw animation
+  Neon, explosions are a client-drawn cartoon blast (2.7). Carry pose and throw animation
   are scripted clips (2.6). Flights are simulated by the server (props are server-owned while flying), so throws
   look slightly delayed on high ping.
 - **Camera sensitivity** is saved and validated but not applied: Roblox does not let scripts change mouse/gamepad
@@ -497,7 +512,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Arena gaps** of 8.5–12 studs (all three arenas) need a jump + air dash (1.7); worth confirming every gap in the
   playtest, and the 6-stud-high ledges (diagonal gaps 8.5–10). Neon Motel is the first night map: check it is not
   too dark (Night preset + neon).
-- **Perfect Dodge feedback** (blue flash, chime, "+5") comes with VFX/SFX/HUD (2.7, 2.8, 1.12); for now Studio's
+- **Perfect Dodge feedback:** the blue flash and "PERFECT!" pop-up came with 2.7; the chime comes with 2.8. Studio's
   Output shows `PERFECT DODGE`. Rounds count them (stat + standings); the +5 Scrap is paid with round rewards (2.1).
 - **Dash movement is client-side** (clients simulate their character), so the once-per-jump air rule is enforced by
   the client; the server enforces the cooldown and hitstun, which gate the invulnerability and Perfect Dodge.

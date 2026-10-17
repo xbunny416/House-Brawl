@@ -12,11 +12,9 @@
 	EquipCosmetic(slot, itemId?) equips an owned item (nil takes the slot off). Items are bought in the Shop
 	(ShopService → grant); Exclusive ones (VIP / Premium) are granted by the pass / membership (3.1).
 ]]
-local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
@@ -26,13 +24,13 @@ local Types = require(Shared:WaitForChild("Config"):WaitForChild("Types"))
 
 local Animate = require(script.Parent.Parent:WaitForChild("Visuals"):WaitForChild("Animate"))
 local Attached = require(script.Parent.Parent:WaitForChild("Visuals"):WaitForChild("Attached"))
+local Effects = require(script.Parent.Parent:WaitForChild("Visuals"):WaitForChild("Effects"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local RoundService = require(script.Parent:WaitForChild("RoundService"))
 
 local TRAIL_NAME = "CosmeticTrail"
 local CHARACTER_WAIT = 10
-local BURST_LIFETIME = 2
 -- Body parts each skin color goes to: head, torso, arms, legs.
 local SKIN_PARTS: { { string } } = {
 	{ "HeadColor3" },
@@ -141,37 +139,7 @@ local function onDashed(_player: Player, character: Model)
 	end
 end
 
-local function burst(position: Vector3, colors: { string })
-	local anchor = Instance.new("Part")
-	anchor.Name = "KOEffect"
-	anchor.Anchored = true
-	anchor.CanCollide = false
-	anchor.CanQuery = false
-	anchor.CanTouch = false
-	anchor.Transparency = 1
-	anchor.Size = Vector3.new(1, 1, 1)
-	anchor.Position = position
-	local keypoints: { ColorSequenceKeypoint } = {}
-	for index, hex in colors do
-		local time = if #colors > 1 then (index - 1) / (#colors - 1) else 0
-		table.insert(keypoints, ColorSequenceKeypoint.new(time, Color3.fromHex(hex)))
-	end
-	if #keypoints == 1 then
-		table.insert(keypoints, ColorSequenceKeypoint.new(1, Color3.fromHex(colors[1])))
-	end
-	local emitter = Instance.new("ParticleEmitter")
-	emitter.Color = ColorSequence.new(keypoints)
-	emitter.Speed = NumberRange.new(15, 30)
-	emitter.SpreadAngle = Vector2.new(180, 180)
-	emitter.Lifetime = NumberRange.new(0.5, 1)
-	emitter.Size = NumberSequence.new(0.6, 0)
-	emitter.Rate = 0
-	emitter.Parent = anchor
-	anchor.Parent = Workspace
-	emitter:Emit(Config.Cosmetics.KOEffectParticles)
-	Debris:AddItem(anchor, BURST_LIFETIME)
-end
-
+-- The scorer's KO-effect cosmetic: clients draw the burst (VfxController, skipped with Low Graphics).
 local function onKnockedOut(victim: Model, killer: Player?, cause: string)
 	if killer == nil then
 		return
@@ -183,7 +151,7 @@ local function onKnockedOut(victim: Model, killer: Player?, cause: string)
 	local where = if cause == "Health" then victim else killer.Character
 	local root = where and where:FindFirstChild("HumanoidRootPart")
 	if root and root:IsA("BasePart") then
-		burst(root.Position, item.Colors)
+		Effects.play("KOBurst", root.Position, { Colors = item.Colors })
 	end
 end
 

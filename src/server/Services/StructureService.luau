@@ -18,6 +18,7 @@ local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
 
 local Server = script.Parent.Parent
 local StructureRules = require(Server:WaitForChild("Structures"):WaitForChild("StructureRules"))
+local Effects = require(Server:WaitForChild("Visuals"):WaitForChild("Effects"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local CrumbleService = require(script.Parent:WaitForChild("CrumbleService"))
@@ -84,6 +85,11 @@ local function breakStructure(structure: Structure, attacker: Player?)
 	local typeId = structure.State.TypeId
 	local center = structure.Part.CFrame
 	local floorY = -structure.Part.Size.Y / 2
+	Effects.play("Break", center.Position, {
+		Size = structure.Part.Size,
+		Color = structure.BaseColor,
+		Material = structure.Part.Material.Name,
+	})
 	structures[structure.Model] = nil
 	structure.Model:Destroy()
 
