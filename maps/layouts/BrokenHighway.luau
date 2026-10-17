@@ -1,13 +1,16 @@
 --!strict
 --[[
-	Map 1: Broken Highway — shattered overpass chunks over a toxic void (bible §3.2).
+	Map 1: Broken Highway — shattered overpass chunks over a toxic void (bible §3.2), twice the first size with four
+	layers (owner, 2026-10-17).
 
 	Platforms (studs; X/Z footprint, top height):
-	  Center 60x40 (never falls) · East/West/North/South 24x24 · two 12x12 high ledges.
-	  Gaps to the nearest platform: East 11, West 9, North 12, South 10, ledges 10 (diagonal) — all within 8-14,
-	  crossable with jump + dash.
-	Gameplay markers ride on their platform so they fall with it: 12 spawns, 14 loose prop spots,
-	4 breakable structures, 1 explosive barrel per side platform.
+	  Center 120x80 (never falls) with a raised 36x20 overpass deck (+6, a ramp on each end) ·
+	  East/West/North/South 48x48 · four 24x24 corner ledges (+6) · two 20x20 peaks (+12) beyond the NE / SW
+	  ledges · two 28x28 low slabs beyond East (−4) and West (−6).
+	  Gaps to the nearest platform: East 11, West 9, North 12, South 10, ledges / peaks 9.9 (diagonal), lows 10 — all
+	  within 8-14, crossable with jump + dash; every climb is at most 6 studs.
+	Gameplay markers ride on their platform so they fall with it: 16 spawns, 24 loose prop spots,
+	8 breakable structures, 1 explosive barrel per side and low platform.
 ]]
 local Arena = require("../lib/Arena")
 local B = require("../lib/Builder")
@@ -20,109 +23,105 @@ local Layout = {}
 Layout.Id = "BrokenHighway"
 Layout.Lighting = "Dusk"
 
+-- One platform entry (keeps the list short).
+local function platform(
+	id: string,
+	kind: string,
+	center: { number },
+	size: { number },
+	top: number,
+	thickness: number,
+	color: string,
+	material: string
+): Platform
+	return {
+		Id = id,
+		Kind = kind :: any,
+		Center = center,
+		Size = size,
+		Top = top,
+		Thickness = thickness,
+		Color = color,
+		Material = material,
+	}
+end
+
+local center = platform("Center", "Center", { 0, 0 }, { 120, 80 }, 0, 4, "Asphalt", "Asphalt")
+center.Deck = { Size = { 36, 20 }, Height = 6, Ramp = 12, RampWidth = 12 }
+
 Layout.Platforms = {
-	{
-		Id = "Center",
-		Kind = "Center",
-		Center = { 0, 0 },
-		Size = { 60, 40 },
-		Top = 0,
-		Thickness = 4,
-		Color = "Asphalt",
-		Material = "Asphalt",
-	},
-	{
-		Id = "East",
-		Kind = "Side",
-		Center = { 53, 0 },
-		Size = { 24, 24 },
-		Top = 2,
-		Thickness = 3,
-		Color = "Asphalt",
-		Material = "Asphalt",
-	},
-	{
-		Id = "West",
-		Kind = "Side",
-		Center = { -51, 0 },
-		Size = { 24, 24 },
-		Top = 0,
-		Thickness = 3,
-		Color = "Asphalt",
-		Material = "Asphalt",
-	},
-	{
-		Id = "North",
-		Kind = "Side",
-		Center = { 0, 44 },
-		Size = { 24, 24 },
-		Top = -2,
-		Thickness = 3,
-		Color = "Concrete",
-		Material = "Concrete",
-	},
-	{
-		Id = "South",
-		Kind = "Side",
-		Center = { 0, -42 },
-		Size = { 24, 24 },
-		Top = 0,
-		Thickness = 3,
-		Color = "Concrete",
-		Material = "Concrete",
-	},
-	{
-		Id = "LedgeNE",
-		Kind = "Ledge",
-		Center = { 42, 34 },
-		Size = { 12, 12 },
-		Top = 6,
-		Thickness = 2,
-		Color = "ConcreteDark",
-		Material = "Concrete",
-	},
-	{
-		Id = "LedgeSW",
-		Kind = "Ledge",
-		Center = { -42, -34 },
-		Size = { 12, 12 },
-		Top = 6,
-		Thickness = 2,
-		Color = "ConcreteDark",
-		Material = "Concrete",
-	},
-} :: { Platform }
+	center,
+	platform("East", "Side", { 95, 0 }, { 48, 48 }, 2, 3, "Asphalt", "Asphalt"),
+	platform("West", "Side", { -93, 0 }, { 48, 48 }, 0, 3, "Asphalt", "Asphalt"),
+	platform("North", "Side", { 0, 76 }, { 48, 48 }, -2, 3, "Concrete", "Concrete"),
+	platform("South", "Side", { 0, -74 }, { 48, 48 }, 0, 3, "Concrete", "Concrete"),
+	platform("LedgeNE", "Ledge", { 79, 59 }, { 24, 24 }, 6, 2, "ConcreteDark", "Concrete"),
+	platform("LedgeNW", "Ledge", { -79, 59 }, { 24, 24 }, 6, 2, "ConcreteDark", "Concrete"),
+	platform("LedgeSE", "Ledge", { 79, -59 }, { 24, 24 }, 6, 2, "ConcreteDark", "Concrete"),
+	platform("LedgeSW", "Ledge", { -79, -59 }, { 24, 24 }, 6, 2, "ConcreteDark", "Concrete"),
+	platform("PeakNE", "Peak", { 108, 88 }, { 20, 20 }, 12, 2, "SignGreen", "Metal"),
+	platform("PeakSW", "Peak", { -108, -88 }, { 20, 20 }, 12, 2, "SignGreen", "Metal"),
+	platform("LowEast", "Low", { 143, 0 }, { 28, 28 }, -4, 3, "AsphaltDark", "Asphalt"),
+	platform("LowWest", "Low", { -141, 0 }, { 28, 28 }, -6, 3, "AsphaltDark", "Asphalt"),
+}
 
 Layout.Contents = {
 	Center = {
-		Spawns = { { -24, -14 }, { 24, -14 }, { -24, 14 }, { 24, 14 } },
-		Props = { { -16, -6 }, { -6, -12 }, { 8, -6 }, { -8, 6 }, { 4, 13 }, { 18, 4 } },
+		Spawns = { { -48, -28 }, { 48, -28 }, { -48, 28 }, { 48, 28 }, { 0, -30 }, { 0, 30 } },
+		Props = {
+			{ -32, -20 },
+			{ -12, -24 },
+			{ 16, -20 },
+			{ 36, -8 },
+			{ -36, 8 },
+			{ -16, 22 },
+			{ 12, 26 },
+			{ 32, 18 },
+		},
 		Structures = {
-			{ Type = "WreckedCar", At = { -15, 10 }, Yaw = 15 },
-			{ Type = "VendingMachine", At = { 14, -14 }, Yaw = 180 },
+			{ Type = "WreckedCar", At = { -30, 20 }, Yaw = 15 },
+			{ Type = "VendingMachine", At = { 28, -28 }, Yaw = 180 },
+			{ Type = "RoadBarrierStack", At = { -46, 0 }, Yaw = 90 },
 		},
 	},
 	East = {
-		Spawns = { { -6, -8 }, { 6, 8 } },
-		Props = { { -6, 6 }, { 2, -7 } },
+		Spawns = { { -12, -16 }, { 12, 16 } },
+		Props = { { -12, 12 }, { 4, -14 }, { 16, -4 } },
 		Explosive = { 0, 0 },
-		Structures = { { Type = "RoadBarrierStack", At = { 8, -1 }, Yaw = 90 } },
+		Structures = { { Type = "RoadBarrierStack", At = { 14, 6 }, Yaw = 90 } },
 	},
 	West = {
-		Spawns = { { -6, -8 }, { 8, 8 } },
-		Props = { { 6, -4 }, { -9, -2 } },
-		Explosive = { 2, -8 },
-		Structures = { { Type = "WreckedCar", At = { -2, 4 }, Yaw = 90 } },
+		Spawns = { { -12, -16 }, { 16, 16 } },
+		Props = { { 12, -8 }, { -18, -4 }, { 0, 14 } },
+		Explosive = { 4, -16 },
+		Structures = { { Type = "WreckedCar", At = { -4, 6 }, Yaw = 90 } },
 	},
 	North = {
-		Spawns = { { -7, -6 }, { 7, 7 } },
-		Props = { { 6, -5 }, { -6, 6 } },
+		Spawns = { { -14, -12 }, { 14, 14 } },
+		Props = { { 12, -10 }, { -12, 12 } },
 		Explosive = { 0, 0 },
+		Structures = { { Type = "VendingMachine", At = { -16, 0 }, Yaw = 90 } },
 	},
 	South = {
-		Spawns = { { 7, 6 }, { -7, -7 } },
-		Props = { { -6, 5 }, { 6, -5 } },
+		Spawns = { { 14, 12 }, { -14, -14 } },
+		Props = { { -12, 10 }, { 12, -10 } },
 		Explosive = { 0, 0 },
+		Structures = { { Type = "RoadBarrierStack", At = { -14, 0 }, Yaw = 0 } },
+	},
+	LedgeNE = { Props = { { -6, -6 } } },
+	LedgeNW = { Props = { { 6, -6 } } },
+	LedgeSE = { Props = { { -6, 6 } } },
+	LedgeSW = { Props = { { 6, 6 } } },
+	LowEast = {
+		Spawns = { { -6, -6 } },
+		Props = { { 6, 8 } },
+		Explosive = { 8, -8 },
+		Structures = { { Type = "WreckedCar", At = { -7, 7 }, Yaw = 0 } },
+	},
+	LowWest = {
+		Spawns = { { 6, 6 } },
+		Props = { { -6, -8 } },
+		Explosive = { -8, 8 },
 	},
 } :: { [string]: Contents }
 
@@ -154,8 +153,14 @@ local function centerDecor(platform: Platform)
 			CanCollide = false,
 		})
 	end
-	-- Two short, low guardrail stubs: knockback still carries players over them.
-	for _, rail in { { from = 10, to = 22, z = halfZ - 0.6 }, { from = -22, to = -12, z = -halfZ + 0.6 } } do
+	-- Low guardrail stubs: knockback still carries players over them.
+	for _, rail in
+		{
+			{ from = 20, to = 44, z = halfZ - 0.6 },
+			{ from = -44, to = -24, z = -halfZ + 0.6 },
+			{ from = -16, to = 0, z = halfZ - 0.6 },
+		}
+	do
 		local length = rail.to - rail.from
 		B.part({
 			Name = "Guardrail",
@@ -175,7 +180,9 @@ local function centerDecor(platform: Platform)
 		end
 	end
 	-- Cracks.
-	for _, crack in { { -4, 0, -9, 25 }, { 12, 0, 9, -40 }, { -20, 0, -2, 70 } } do
+	for _, crack in
+		{ { -8, 0, -18, 25 }, { 24, 0, 18, -40 }, { -40, 0, -4, 70 }, { 44, 0, -16, 10 }, { -24, 0, 30, -60 } }
+	do
 		B.part({
 			Name = "Crack",
 			Size = { 6, 0.08, 0.3 },
@@ -220,10 +227,10 @@ local function decorate(platform: Platform)
 		Material = "Concrete",
 	})
 	-- Overpass pillars hanging under the platform (decor only).
-	if platform.Kind ~= "Ledge" then
-		local diameter = if platform.Kind == "Center" then 8 else 5
-		local length = if platform.Kind == "Center" then 46 else 30
-		local offsets = if platform.Kind == "Center" then { -15, 15 } else { 0 }
+	if platform.Kind ~= "Ledge" and platform.Kind ~= "Peak" then
+		local diameter = if platform.Kind == "Center" then 10 else 6
+		local length = if platform.Kind == "Center" then 56 else 36
+		local offsets = if platform.Kind == "Center" then { -36, 0, 36 } else { 0 }
 		for _, offset in offsets do
 			B.part({
 				Name = "Pillar",
@@ -244,34 +251,40 @@ local function decorate(platform: Platform)
 		exitSign({ 2, 2 }, "South")
 	elseif platform.Id == "LedgeSW" then
 		exitSign({ -2, -2 }, "North")
+	elseif platform.Id == "PeakNE" then
+		exitSign({ -4, -4 }, "South")
+	elseif platform.Id == "PeakSW" then
+		exitSign({ 4, 4 }, "North")
 	end
 end
 
 local function scenery(killY: number)
-	-- Floating debris chunks around the arena.
-	for index, chunk in
-		{
-			{ -95, -18, 40, 22, 14, 12 },
-			{ 100, -26, -30, 18, 12, -9 },
-			{ 30, -34, 90, 26, 12, 6 },
-			{ -40, -22, -95, 20, 10, -14 },
-			{ 85, -12, 70, 12, 10, 18 },
-		}
-	do
-		B.part({
-			Name = `Debris{index}`,
-			Size = { chunk[4], 3, chunk[5] },
-			Position = { chunk[1], chunk[2], chunk[3] },
-			Rotation = { chunk[6], index * 23, chunk[6] / 2 },
-			Color = "Asphalt",
-			Material = "Asphalt",
-			CanCollide = false,
-		})
-	end
+	-- Floating debris chunks around the arena (laid out for the first, half-size arena).
+	B.spread(2, function()
+		for index, chunk in
+			{
+				{ -95, -18, 40, 22, 14, 12 },
+				{ 100, -26, -30, 18, 12, -9 },
+				{ 30, -34, 90, 26, 12, 6 },
+				{ -40, -22, -95, 20, 10, -14 },
+				{ 85, -12, 70, 12, 10, 18 },
+			}
+		do
+			B.part({
+				Name = `Debris{index}`,
+				Size = { chunk[4], 3, chunk[5] },
+				Position = { chunk[1], chunk[2], chunk[3] },
+				Rotation = { chunk[6], index * 23, chunk[6] / 2 },
+				Color = "Asphalt",
+				Material = "Asphalt",
+				CanCollide = false,
+			})
+		end
+	end)
 	-- Toxic sludge far below: the green glow under the arena.
 	B.part({
 		Name = "Sludge",
-		Size = { 700, 1, 700 },
+		Size = { 1400, 1, 1400 },
 		Position = { 0, killY - 30, 0 },
 		Color = "ToxicGreen",
 		Material = "Neon",

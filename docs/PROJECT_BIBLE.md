@@ -70,7 +70,7 @@ this file in the same PR as the Config change.
 - **Casual:** no HP, unlimited respawns. Score = KOs − falls. Highest score at time-out wins (tiebreak: more KOs, then
   fewer falls). Equal records share a placement.
 - Every KO you take is a fall (also resetting your character in the arena; the last attacker still gets the KO).
-- Round 3:00. Intermission/vote 15 s (up to 3 enabled maps + both modes; ties random). Respawn delay 3 s. Spawn
+- Round 4:00 (owner, 2026-10-17; was 3:00). Intermission/vote 15 s (up to 3 enabled maps + both modes; ties random). Respawn delay 3 s. Spawn
   shield 2 s (breaks if you attack). Results 8 s. A round needs 2 active players; AFK players sit out the next round.
 
 ### Attacks
@@ -143,32 +143,38 @@ tap); both also open from the left-edge menu.
 
 **Broken Highway arena:**
 
-- Central main platform 60×40; 4 side platforms 24×24; 2 high ledges 12×12. Gaps 8–14 studs (always crossable with
-  jump + dash). KillY 60 studs below the lowest platform. 12 spawn points around the edges of all platforms.
-- 14 loose prop spots (chairs, crates, tires, buckets, TVs, barrels), respawn 20 s.
-- 4 breakable structures: wrecked car (HP 100), vending machine (HP 80), road barrier stack (HP 60) — each drops 2–4
+- Twice the first size with four layers (owner, 2026-10-17): central main platform 120×80 with a raised 36×20 overpass
+  deck (+6, a ramp on each end); 4 side platforms 48×48; 4 corner ledges 24×24 (+6); 2 peaks 20×20 (+12) beyond two
+  ledges; 2 low slabs 28×28 (about 6 below a side). Gaps 8–14 studs (always crossable with jump + dash) and every climb
+  at most 6 studs. KillY 60 studs below the lowest platform. 16 spawn points spread over the platforms.
+- 24 loose prop spots (chairs, crates, tires, buckets, TVs, barrels), respawn 20 s.
+- 8 breakable structures: wrecked car (HP 100), vending machine (HP 80), road barrier stack (HP 60) — each drops 2–4
   props, respawn 45 s.
-- 1 explosive barrel spot per side platform, respawn 30 s.
+- 1 explosive barrel spot per side and low platform, respawn 30 s.
 - **Crumbling platforms:** from 1:00 into the round, every 20 s one random outer platform flashes red and shakes for
   3 s, then falls. The central platform never falls; at least 2 platforms always remain. Clear 3 s warning (shake,
   crack VFX, rumble SFX).
 
-**Every arena** follows the same rules as Broken Highway: one centre platform that never falls, 4 side platforms,
-2 high ledges (≤ 6 studs above the centre), every outer platform 8–14 studs from its nearest neighbour, 12 spawn
-points, 14 loose prop spots, 4 breakable structures (HP 100 / 80 / 60 tiers), 1 explosive barrel spot per side
-platform, KillY 60 studs below the lowest platform, crumbling as above. Edge decor stays low so knockback carries
+**Every arena** follows the same rules as Broken Highway: four layers — 2 low platforms (4–9 below the centre), the
+base level (one centre platform that never falls, with a raised deck ≤ 6 high and ramps, and 4 side platforms within
+3 studs of it), 4 corner ledges (4–6 above) and 2 peaks (10–12 above) — every outer platform 8–14 studs from its
+nearest neighbour, every platform reachable from the centre with climbs of at most 6 studs, 16 spawn points, 24 loose
+prop spots, 8 breakable structures (HP 100 / 80 / 60 tiers), 1 explosive barrel spot per side and low platform, KillY
+60 studs below the lowest platform, crumbling as above. Edge decor stays low so knockback carries
 over it.
 
-**Junkyard Isles arena** (dusk): a 48×48 scrap-heap centre island; a 20×28 shipping-container stack (east, "JOE'S
-SCRAP & SALVAGE"), a 22×22 car pile (west), a 24×20 crane barge whose crane arm reaches over the centre (north) and
-a 28×18 barge (south); two 10×10 tire-stack ledges. Toxic green sludge below with junk mounds and floating barrels.
-Structures: crushed car stack (HP 100) ×2, wrecked car (HP 100), scrap pile (HP 60).
+**Junkyard Isles arena** (dusk): a 96×96 scrap-heap centre island with a raised 28×20 scrap deck; a 40×56
+shipping-container stack (east, "JOE'S SCRAP & SALVAGE"), a 44×44 car pile (west), a 48×40 crane barge whose crane arm
+reaches over the centre (north) and a 56×36 barge (south); four 20×20 tire-stack ledges, two 18×18 tire towers (+12)
+and two 28×28 junk rafts (low). Toxic green sludge below with junk mounds and floating barrels.
+Structures: crushed car stack (HP 100) ×3, wrecked car (HP 100) ×2, scrap pile (HP 60) ×3.
 
-**Neon Motel arena** (night): a 56×36 main motel roof with AC units and neon-trimmed parapets; a 24×26 pool roof
-(east), a 22×22 roof under a giant flickering MOTEL / NO VACANCY sign (west), 26×20 and 24×20 lower roofs (north,
-south); a water-tower ledge and a billboard catwalk ledge. Motel buildings sink into a flooded street below,
-surrounded by dark towers with neon signs. Neon flickers now and then. Structures: vending machine (HP 80), ice
-machine (HP 80) ×2, lawn chair stack (HP 60).
+**Neon Motel arena** (night): a 112×72 main motel roof with AC units, neon-trimmed parapets and a raised 28×18
+roof-access deck; a 48×52 pool roof (east), a 44×44 roof under a giant flickering MOTEL / NO VACANCY sign (west),
+52×40 and 48×40 lower roofs (north, south); a water-tower ledge, a billboard catwalk ledge and two vent-roof ledges;
+two 18×18 antenna roofs (+12) and two 28×28 low roofs. Motel buildings sink into a flooded street below,
+surrounded by dark towers with neon signs. Neon flickers now and then. Structures: vending machine (HP 80) ×2, ice
+machine (HP 80) ×3, lawn chair stack (HP 60) ×3.
 
 **Art & performance:**
 
@@ -330,7 +336,7 @@ panel.
   (developer products once per purchase, confirmed only after the save). Pass and Premium items are owned while the
   player has the pass / Premium. VIP's gold name tag reads "[VIP] name" over the head and its chat tag is a gold
   "[VIP]" prefix. Ids live in `Config.Monetization` (0 = not created yet: "Coming soon").
-- **Private servers:** 100 R$/month. Owner can lock mode, pick map, set round length (2:00, 3:00 or 5:00) from a
+- **Private servers:** 100 R$/month. Owner can lock mode, pick map, set round length (2:00, 3:00, 4:00 or 5:00) from a
   Server menu that only they see; the choices are saved with the owner and apply from the next round. Private servers
   are for play and testing only (owner, 2026-10-17): no Scrap, XP / levels or lifetime stats are earned there
   (everyone is told when they join); Robux purchases and the Shop still work. Rounds still need 2 players on the

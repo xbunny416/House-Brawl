@@ -9,6 +9,7 @@ local BrokenHighway = require("../../maps/layouts/BrokenHighway")
 local Hideout = require("../../maps/layouts/Hideout")
 local JunkyardIsles = require("../../maps/layouts/JunkyardIsles")
 local NeonMotel = require("../../maps/layouts/NeonMotel")
+local Arena = require("../../maps/lib/Arena")
 
 local Config = Roblox.require(Roblox.game.ReplicatedStorage.Shared.Config)
 
@@ -72,24 +73,23 @@ return {
 			expect.equal(found.Model:GetAttribute("MapId"), mapId)
 		end
 	end,
-	["broken highway: platform sizes from the bible"] = function()
-		local counts = { Center = 0, Side = 0, Ledge = 0 }
+	["broken highway: platform sizes from the bible (twice the first arena)"] = function()
+		local sizes = {
+			Center = { 120, 80 },
+			Side = { 48, 48 },
+			Ledge = { 24, 24 },
+			Peak = { 20, 20 },
+			Low = { 28, 28 },
+		}
 		for _, platform in BrokenHighway.Platforms do
-			counts[platform.Kind] += 1
-			local expectedSize = if platform.Kind == "Center"
-				then { 60, 40 }
-				elseif platform.Kind == "Side" then { 24, 24 }
-				else { 12, 12 }
+			local expectedSize = sizes[platform.Kind]
 			expect.equal(platform.Size[1], expectedSize[1], `{platform.Id} X`)
 			expect.equal(platform.Size[2], expectedSize[2], `{platform.Id} Z`)
 		end
-		expect.equal(counts.Center, 1)
-		expect.equal(counts.Side, 4)
-		expect.equal(counts.Ledge, 2)
 	end,
-	["arenas: one centre, four sides, two ledges; platforms never overlap"] = function()
+	["arenas: one centre, four sides, four ledges, two peaks, two lows; platforms never overlap"] = function()
 		eachArena(function(layout)
-			local counts = { Center = 0, Side = 0, Ledge = 0 }
+			local counts = { Center = 0, Side = 0, Ledge = 0, Peak = 0, Low = 0 }
 			for index, platform in layout.Platforms do
 				counts[platform.Kind] += 1
 				for other = index + 1, #layout.Platforms do
@@ -97,9 +97,9 @@ return {
 					expect.truthy(gap(platform, second) > 0, `{layout.Id}: {platform.Id} overlaps {second.Id}`)
 				end
 			end
-			expect.equal(counts.Center, 1, `{layout.Id} centre`)
-			expect.equal(counts.Side, 4, `{layout.Id} sides`)
-			expect.equal(counts.Ledge, 2, `{layout.Id} ledges`)
+			for kind, count in { Center = 1, Side = 4, Ledge = 4, Peak = 2, Low = 2 } do
+				expect.equal(counts[kind], count, `{layout.Id} {kind} platforms`)
+			end
 		end)
 	end,
 	["arenas: every outer platform is 8-14 studs from its nearest neighbour"] = function()
@@ -117,29 +117,95 @@ return {
 			end
 		end)
 	end,
-	["arenas: ledges at most 6 studs above the centre, sides within 3"] = function()
+	["arenas: four layers — lows below, sides level, ledges (≤ 6 up) and peaks above"] = function()
+		local bands = {
+			Center = { 0, 0 },
+			Side = { -3, 3 },
+			Ledge = { 4, 6 },
+			Peak = { 10, 12 },
+			Low = { -9, -4 },
+		}
 		eachArena(function(layout)
 			for _, platform in layout.Platforms do
-				local limit = if platform.Kind == "Ledge" then 6 else 3
-				expect.truthy(math.abs(platform.Top) <= limit, `{layout.Id} {platform.Id} top {platform.Top}`)
+				local band = bands[platform.Kind]
+				local where = `{layout.Id} {platform.Id} top {platform.Top}`
+				expect.truthy(platform.Top >= band[1] and platform.Top <= band[2], where)
+			end
+		end)
+	end,
+	["arenas: every platform can be reached from the centre and back (gaps ≤ 14, climbs ≤ 6)"] = function()
+		eachArena(function(layout)
+			local center
+			for _, platform in layout.Platforms do
+				if platform.Kind == "Center" then
+					center = platform
+				end
+			end
+			local reached = { [center] = true }
+			local queue = { center }
+			while #queue > 0 do
+				local from = table.remove(queue, 1)
+				for _, to in layout.Platforms do
+					if not reached[to] and gap(from, to) <= 14 and math.abs(to.Top - from.Top) <= 6 then
+						reached[to] = true
+						table.insert(queue, to)
+					end
+				end
+			end
+			for _, platform in layout.Platforms do
+				expect.truthy(reached[platform], `{layout.Id} {platform.Id} can't be reached`)
+			end
+		end)
+	end,
+	["arenas: the centre's raised deck fits on it, is climbable and keeps clear of every spot"] = function()
+		eachArena(function(layout)
+			for _, platform in layout.Platforms do
+				local deck = platform.Deck
+				expect.equal(deck ~= nil, platform.Kind == "Center", `{layout.Id} {platform.Id} deck`)
+				if deck then
+					expect.truthy(deck.Height <= 6, `{layout.Id} deck height`)
+					local bounds = Arena.deckBounds(deck)
+					local halfX, halfZ = platform.Size[1] / 2, platform.Size[2] / 2
+					expect.truthy(bounds[1] >= -halfX + 2 and bounds[2] <= halfX - 2, `{layout.Id} deck X fits`)
+					expect.truthy(bounds[3] >= -halfZ + 2 and bounds[4] <= halfZ - 2, `{layout.Id} deck Z fits`)
+					local contents = layout.Contents[platform.Id] or {}
+					local spots: { { number } } = {}
+					for _, list in { contents.Spawns or {}, contents.Props or {} } do
+						for _, spot in list do
+							table.insert(spots, spot)
+						end
+					end
+					for _, structure in contents.Structures or {} do
+						table.insert(spots, structure.At)
+					end
+					for _, spot in spots do
+						local clear = spot[1] < bounds[1] - 1.5
+							or spot[1] > bounds[2] + 1.5
+							or spot[2] < bounds[3] - 1.5
+							or spot[2] > bounds[4] + 1.5
+						expect.truthy(clear, `{layout.Id}: spot {spot[1]}, {spot[2]} is on the deck`)
+					end
+				end
 			end
 		end)
 	end,
 	["arenas: marker counts"] = function()
 		eachArena(function(layout, model)
-			expect.equal(#tagged(model, "SpawnPoint"), 12, `{layout.Id} spawn points`)
-			expect.equal(#tagged(model, "PropSpot"), 14, `{layout.Id} loose prop spots`)
-			expect.equal(#tagged(model, "StructureSpot"), 4, `{layout.Id} breakable structures`)
-			expect.equal(#tagged(model, "ExplosiveSpot"), 4, `{layout.Id} explosive barrel spots`)
-			expect.equal(#tagged(model, "Platform"), 7, `{layout.Id} platforms`)
+			expect.equal(#tagged(model, "SpawnPoint"), 16, `{layout.Id} spawn points`)
+			expect.truthy(#tagged(model, "SpawnPoint") >= Config.World.MaxPlayers, `{layout.Id} a spawn per player`)
+			expect.equal(#tagged(model, "PropSpot"), 24, `{layout.Id} loose prop spots`)
+			expect.equal(#tagged(model, "StructureSpot"), 8, `{layout.Id} breakable structures`)
+			expect.equal(#tagged(model, "ExplosiveSpot"), 6, `{layout.Id} explosive barrel spots`)
+			expect.equal(#tagged(model, "Platform"), 13, `{layout.Id} platforms`)
 		end)
 	end,
-	["arenas: one explosive spot per side platform"] = function()
+	["arenas: one explosive spot per side and low platform"] = function()
 		eachArena(function(layout)
 			for _, platform in layout.Platforms do
 				local contents = layout.Contents[platform.Id]
 				local hasExplosive = contents ~= nil and contents.Explosive ~= nil
-				expect.equal(hasExplosive, platform.Kind == "Side", `{layout.Id} {platform.Id}`)
+				local expected = platform.Kind == "Side" or platform.Kind == "Low"
+				expect.equal(hasExplosive, expected, `{layout.Id} {platform.Id}`)
 			end
 		end)
 	end,
@@ -192,7 +258,7 @@ return {
 		end)
 	end,
 	["arenas: KillY is 60 studs below the lowest platform; centre never falls"] = function()
-		expect.equal(BrokenHighway.killY(), -2 - 3 - 60)
+		expect.equal(BrokenHighway.killY(), -6 - 3 - 60) -- the West low slab
 		eachArena(function(layout, model)
 			local lowest = math.huge
 			for _, platform in layout.Platforms do
