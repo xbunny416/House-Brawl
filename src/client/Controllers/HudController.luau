@@ -442,13 +442,15 @@ local function refreshBottom()
 	local status = player:GetAttribute("RoundStatus")
 	bottom.Visible = status ~= "Spectating"
 
-	local value = if player.Character then player.Character:GetAttribute("Stamina") else nil
+	local staminaLeft = if player.Character then player.Character:GetAttribute("Stamina") else nil
 	local staminaConfig = Config.Combat.Stamina
-	stamina.Bar.Visible = bottom.Visible and type(value) == "number"
-	if type(value) == "number" then
-		stamina.Fill.Size = UDim2.fromScale(math.clamp(value / staminaConfig.Max, 0, 1), 1)
-		stamina.Fill.BackgroundColor3 = if value < staminaConfig.DashCost then STAMINA_LOW_COLOR else STAMINA_COLOR
-		stamina.Bar.BackgroundTransparency = if value >= staminaConfig.Max then 0.5 else 0.2
+	stamina.Bar.Visible = bottom.Visible and type(staminaLeft) == "number"
+	if type(staminaLeft) == "number" then
+		stamina.Fill.Size = UDim2.fromScale(math.clamp(staminaLeft / staminaConfig.Max, 0, 1), 1)
+		stamina.Fill.BackgroundColor3 = if staminaLeft < staminaConfig.DashCost
+			then STAMINA_LOW_COLOR
+			else STAMINA_COLOR
+		stamina.Bar.BackgroundTransparency = if staminaLeft >= staminaConfig.Max then 0.5 else 0.2
 	end
 
 	local fill = HudFormat.dashFill(DashController.cooldownLeft(), Config.Combat.Dash.Cooldown)
