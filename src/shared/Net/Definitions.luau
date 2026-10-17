@@ -18,7 +18,8 @@ export type Definition = {
 }
 
 local Definitions: { [string]: Definition } = {
-	-- Server -> client: show a localized notice. (key: string, args: { [string]: any }?)
+	-- Server -> client: show a localized notice (NoticeController). (key: string, args: { any }? — an arg that is a
+	-- table { Key = string } is a GameStrings key the client localizes, e.g. an item name)
 	Notify = { Kind = "Event", Direction = "ToClient" },
 	-- Server -> client: the player's full saved data once it loads. (data: PlayerData)
 	DataSync = { Kind = "Event", Direction = "ToClient" },

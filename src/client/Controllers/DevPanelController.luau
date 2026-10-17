@@ -3,8 +3,9 @@
 	DevPanelController — the minimal developer panel (step 1.13), for players with the DevAccess attribute (anyone in
 	Studio playtests; see Server/Dev/DevRules). Open / close it with Config.Dev.PanelKey (` by default) or the DEV
 	button in the top-left corner. Buttons send DevCommand (the server re-checks access): start / end the round,
-	crumble a platform, pick the next map / mode, spawn a prop, set your own Percent / HP, own + equip a style. The
-	camera buttons run here: a test shake, and switching the saved Camera Shake setting.
+	crumble a platform, pick the next map / mode, spawn a prop, set your own Percent / HP, own + equip a style, switch
+	a perk (VIP / Emote Pack / Premium) on or off and get what a Robux product gives. The camera buttons run here: a
+	test shake, and switching the saved Camera Shake setting.
 ]]
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -12,6 +13,7 @@ local UserInputService = game:GetService("UserInputService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
+local MonetizationRules = require(Shared:WaitForChild("MonetizationRules"))
 local Localization = require(Shared:WaitForChild("Localization"))
 local Net = require(Shared:WaitForChild("Net"))
 
@@ -125,6 +127,21 @@ local function buildSections()
 	table.insert(styles, command(Localization.format("Dev.UnlockCosmetics"), "UnlockCosmetics"))
 	table.insert(styles, command(Localization.format("Dev.GiveScrap", { Config.Dev.GiveScrap }), "GiveScrap"))
 	section("Dev.Style", styles)
+
+	local robux: { Button } = {}
+	for _, perk in MonetizationRules.Perks do
+		table.insert(
+			robux,
+			command(Localization.format("Dev.TogglePerk", { Localization.format(`Perk.{perk}`) }), "TogglePerk", perk)
+		)
+	end
+	for _, offer in MonetizationRules.offers() do
+		if offer.Kind == "Product" then
+			local name = Localization.format(MonetizationRules.nameKey(offer))
+			table.insert(robux, command(name, "GiveProduct", offer.Key))
+		end
+	end
+	section("Dev.Robux", robux)
 
 	section("Dev.Camera", {
 		{

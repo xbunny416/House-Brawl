@@ -7,7 +7,8 @@
 	at rest (0) at that key.
 	Easing: the curve used to reach a key from the one before — the key's Ease, else the clip's, else "Smooth".
 	"Out" starts fast (strikes), "In" starts slow, "Back" overshoots a little and settles (snappy impacts), "Linear"
-	keeps a constant speed (spins).
+	keeps a constant speed (spins). Two keys at the same time snap from the first to the second (e.g. a spin that
+	turns 180° → −180°, the same angle, so it can end at 0 without turning back).
 ]]
 export type Ease = "Smooth" | "Linear" | "In" | "Out" | "Back"
 export type JointPose = { number } -- { x, y, z } degrees, then optionally { px, py, pz } studs

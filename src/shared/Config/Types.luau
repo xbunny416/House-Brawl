@@ -76,7 +76,9 @@ export type CosmeticItem = {
 	Slot: CosmeticSlot,
 	Rarity: string, -- a key of Config.Cosmetics.Rarities
 	Price: number, -- Scrap (0 for exclusive / Robux items)
-	Exclusive: string?, -- "VIP" or "Premium": granted by the pass / membership (step 3.1), never sold for Scrap
+	-- Never sold for Scrap. "VIP" / "EmotePack": comes with that game pass; "Premium": with Roblox Premium (while
+	-- subscribed); "Robux": sold as the developer product whose Cosmetic is this item (Config.Monetization.Products).
+	Exclusive: string?,
 	Colors: { string }?, -- Skin: head, torso, arms, legs; DashTrail: start → end; KOEffect: particle colors
 	Parts: { AttachedPart }?, -- Hat / BackItem
 	Emote: string?, -- VictoryEmote: which emote animation plays (step 2.6)

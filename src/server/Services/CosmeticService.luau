@@ -10,7 +10,8 @@
 	  * VictoryEmote: the round winner plays it back in the lobby while the results show (Config.Animations
 	    .EmoteDelay after the round ends); equipping one plays it once as a preview. NameplateFrame has no items yet.
 	EquipCosmetic(slot, itemId?) equips an owned item (nil takes the slot off). Items are bought in the Shop
-	(ShopService → grant); Exclusive ones (VIP / Premium) are granted by the pass / membership (3.1).
+	(ShopService → grant); Exclusive ones come with a pass / Premium or a Robux product (MonetizationService →
+	setOwned / grant), and pass / Premium items are taken back (and unequipped) when the perk is gone.
 ]]
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -201,6 +202,26 @@ function CosmeticService.grant(player: Player, itemId: string): boolean
 	return DataService.update(player, "Cosmetics", function(changed)
 		changed.Cosmetics.Owned[itemId] = true
 	end)
+end
+
+-- Grants `granted` and takes back `revoked` (perk items: MonetizationService); a taken-back item comes off.
+function CosmeticService.setOwned(player: Player, granted: { string }, revoked: { string }): boolean
+	local changed = DataService.update(player, "Cosmetics", function(data)
+		for _, itemId in granted do
+			data.Cosmetics.Owned[itemId] = true
+		end
+		for _, itemId in revoked do
+			data.Cosmetics.Owned[itemId] = nil
+			local item = Config.Cosmetics.Items[itemId]
+			if item and data.Cosmetics.Equipped[item.Slot] == itemId then
+				data.Cosmetics.Equipped[item.Slot] = nil
+			end
+		end
+	end)
+	if changed and #revoked > 0 then
+		applyAll(player)
+	end
+	return changed
 end
 
 -- Gives every item in the catalog (developer panel).

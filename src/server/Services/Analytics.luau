@@ -110,6 +110,11 @@ function Analytics.shopPurchase(player: Player, kind: string, itemId: string, pr
 	Analytics.custom(player, "ShopPurchase", price, { kind, itemId, if daily then "Daily" else "Regular" })
 end
 
+-- A Robux purchase: a game pass or developer product (key from Config.Monetization) and the Robux spent.
+function Analytics.robuxPurchase(player: Player, kind: string, key: string, robux: number)
+	Analytics.custom(player, "RobuxPurchase", robux, { kind, key })
+end
+
 function Analytics.roundFinished(player: Player, seconds: number, kos: number, modeId: string, mapId: string)
 	Analytics.custom(player, "RoundLength", seconds, { modeId, mapId })
 	Analytics.custom(player, "KOsPerRound", kos, { modeId, mapId })
