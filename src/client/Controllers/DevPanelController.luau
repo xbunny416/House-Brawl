@@ -139,6 +139,12 @@ local function buildSections()
 				SettingsController.set("CameraShake", not SettingsController.get("CameraShake"))
 			end,
 		},
+		{
+			Label = Localization.format("Dev.ToggleLowGraphics"),
+			Run = function()
+				SettingsController.set("LowGraphics", not SettingsController.get("LowGraphics"))
+			end,
+		},
 	})
 end
 

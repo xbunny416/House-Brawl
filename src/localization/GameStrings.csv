@@ -115,6 +115,7 @@ Dev.Me,Me,Developer panel section: set your own Percent / HP,
 Dev.Camera,Camera,Developer panel section: camera checks,
 Dev.TestShake,Test shake,Developer panel button: play a camera shake,
 Dev.ToggleShake,Shake on/off,Developer panel button: switch the Camera Shake setting,
+Dev.ToggleLowGraphics,Low gfx on/off,Developer panel button: switch the Low Graphics setting,
 Hud.Profile,{1}  ·  {2}  ·  {3},"Top-right profile chip: level, rank title, Scrap",Level 12  ·  Raider  ·  1250 Scrap
 Results.Reward,+{1} Scrap  ·  +{2} XP,What the local player earned in the round,+65 Scrap  ·  +140 XP
 Results.LevelUp,Level up! Level {1},Shown on the results panel after leveling up,Level up! Level 13
@@ -199,3 +200,6 @@ Shop.Error.NotEnoughScrap,Not enough Scrap.,Purchase refused,
 Shop.Error.PriceChanged,The daily deals just changed. Check the new price and try again.,Purchase refused because the price changed,
 Shop.Error.NotLoaded,Your data is still loading. Try again in a moment.,Purchase refused,
 Shop.Error.TryAgain,Something went wrong. Try again.,Purchase failed (no answer from the server),
+Vfx.Pow,POW!,Comic starburst text where a fighter is knocked out,
+Vfx.KO,K.O.!,Comic starburst text above a player who knocked someone off the arena,
+Vfx.Perfect,PERFECT!,Pop-up text on a Perfect Dodge,

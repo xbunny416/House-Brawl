@@ -1,7 +1,8 @@
 --!strict
 --[[
 	CrumbleController — draws crumbling platforms on this client. The server (CrumbleService) only sets attributes:
-	while Crumbling, the platform flashes red and shakes; once Falling (no longer solid), it sinks away and fades out
+	while Crumbling, the platform flashes red, shakes and cracks; once Falling (no longer solid), it breaks away in a
+	dust cloud with chunks flying off (Config.Vfx.Crumble; no dust or chunks with Low Graphics), sinks and fades out
 	over Round.Crumble.FallTime. Drawing here keeps it smooth instead of replicating a move every frame. The moves
 	are local only; the server removes the platform after FallTime.
 ]]
@@ -12,11 +13,15 @@ local RunService = game:GetService("RunService")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 
+local VfxController = require(script.Parent:WaitForChild("VfxController"))
+
 local WARNING_COLOR = Color3.fromHex("#FF2A1A")
 local FLASH_INTERVAL = 0.25 -- seconds per red flash
 local SHAKE_OFFSET = 0.25 -- studs
 local SHAKE_SPEED = 14 -- how fast the shake wanders
 local SINK_DEPTH = 45 -- studs the platform sinks while it falls
+local CRACK_COLOR = Color3.fromHex("#2A2420")
+local DUST_COLOR = Color3.fromHex("#B8AE9C")
 
 type Watch = {
 	origin: CFrame,
@@ -45,6 +50,47 @@ local function warningHighlight(model: Model): Highlight
 	return highlight
 end
 
+-- Dark cracks spread over the platform's top while it warns (part of the platform, so they shake and sink with it).
+local function addCracks(model: Model)
+	local base = model.PrimaryPart
+	if base == nil then
+		return
+	end
+	local half = base.Size / 2
+	for _ = 1, Config.Vfx.Crumble.Cracks do
+		local crack = Instance.new("Part")
+		crack.Name = "VfxCrack"
+		crack.Anchored = true
+		crack.CanCollide = false
+		crack.CanQuery = false
+		crack.CanTouch = false
+		crack.CastShadow = false
+		crack.Color = CRACK_COLOR
+		crack.Material = Enum.Material.SmoothPlastic
+		crack.Size = Vector3.new(0.18, 0.06, 2 + math.random() * 5)
+		local x = (math.random() * 2 - 1) * (half.X - 2)
+		local z = (math.random() * 2 - 1) * (half.Z - 2)
+		crack.CFrame = base.CFrame * CFrame.new(x, half.Y + 0.03, z) * CFrame.Angles(0, math.random() * math.pi, 0)
+		crack.Parent = model
+	end
+end
+
+-- The platform gives way: a dust cloud and chunks of it breaking off.
+local function breakAway(model: Model)
+	local base = model.PrimaryPart
+	if base == nil then
+		return
+	end
+	local crumble = Config.Vfx.Crumble
+	VfxController.burstDust(base.Position, crumble.Dust, DUST_COLOR)
+	local half = base.Size / 2
+	for _ = 1, crumble.Debris do
+		local edge = base.CFrame
+			* CFrame.new((math.random() * 2 - 1) * half.X, half.Y, (math.random() * 2 - 1) * half.Z)
+		VfxController.burstChunks(edge.Position, 1, base.Color, base.Material)
+	end
+end
+
 local function draw(model: Model, entry: Watch, now: number)
 	local crumbling = model:GetAttribute("Crumbling") == true
 	local falling = model:GetAttribute("Falling") == true
@@ -52,9 +98,11 @@ local function draw(model: Model, entry: Watch, now: number)
 		entry.warnedAt = now
 		entry.origin = model:GetPivot()
 		entry.highlight = warningHighlight(model)
+		addCracks(model)
 	end
 	if falling and entry.fallingAt == nil then
 		entry.fallingAt = now
+		breakAway(model)
 	end
 	local highlight = entry.highlight
 
