@@ -33,12 +33,15 @@ local Definitions: { [string]: Definition } = {
 		Direction = "ToServer",
 		Args = { Guard.optional(Guard.vector3(1.5)), Guard.optional(Guard.vector3()) },
 	},
-	-- Client -> server: Shove "Start" (pressed: charge), "Release" (let go: shove) or "Cancel" (stop charging).
-	Shove = {
+	-- Client -> server: the attack is still held after Charged.HoldTime: "Start" (charge), "Release" (let go: the
+	-- charged punch) or "Cancel" (stop charging).
+	Charge = {
 		Kind = "Event",
 		Direction = "ToServer",
 		Args = { Guard.oneOf({ "Start", "Release", "Cancel" }) },
 	},
+	-- Client -> server: the Ability key (the equipped style's move, e.g. the Wrecker parry).
+	Ability = { Kind = "Event", Direction = "ToServer", Args = {} },
 	-- Client -> server: the Grab action. Grabs the nearest prop in reach, or drops the held one.
 	Grab = { Kind = "Event", Direction = "ToServer", Args = {} },
 	-- Client -> server: the local player dashed (the client already moved its character). The server checks the
@@ -47,7 +50,7 @@ local Definitions: { [string]: Definition } = {
 	-- Server -> the victim's client: launch your character. (velocity: Vector3, hitstun: number)
 	Knockback = { Kind = "Event", Direction = "ToClient" },
 	-- Server -> all clients: a hit landed, for feedback (camera shake, the victim's hit / tumble animation; VFX/SFX
-	-- later). (attacker: Model, victim: Model, attack: "Punch" | "Shove" | ..., heavy: boolean, trail: boolean,
+	-- later). (attacker: Model, victim: Model, attack: "Punch" | "Charged" | ..., heavy: boolean, trail: boolean,
 	-- hitstun: number — seconds)
 	CombatHit = { Kind = "UnreliableEvent", Direction = "ToClient" },
 	-- Server -> clients: play a scripted animation clip (Shared/Animation/Clips) on a character. (character: Model,
@@ -67,7 +70,7 @@ local Definitions: { [string]: Definition } = {
 	-- (scrap: number, xp: number, level: number, levelsGained: number, newRank: string? — a rank id when it changed)
 	RoundReward = { Kind = "Event", Direction = "ToClient" },
 	-- Server -> all clients: a KO in the round, for the kill feed.
-	-- (killerName: string?, victimName: string, weapon: string? — "Punch", "Shove" or a prop type)
+	-- (killerName: string?, victimName: string, weapon: string? — "Punch", "Charged", "Parry" or a prop type)
 	KillFeed = { Kind = "UnreliableEvent", Direction = "ToClient" },
 	-- Server -> all clients: final standings when a round ends.
 	-- (rows: { { UserId, Name, Placement, KOs, Falls, Score, Lives? } }, modeId: string, mapId: string)

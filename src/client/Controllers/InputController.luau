@@ -3,8 +3,8 @@
 	InputController — one action map for keyboard/mouse, gamepad and touch (bindings in Config.Controls).
 
 	Gameplay code never reads raw keys; it listens for actions:
-		InputController.ActionBegan:Connect(function(action: string) ... end) -- "Attack", "Shove", "Grab", "Dash", ...
-		InputController.ActionEnded:Connect(function(action: string) ... end) -- released (e.g. a Shove charge)
+		InputController.ActionBegan:Connect(function(action: string) ... end) -- "Attack", "Ability", "Grab", "Dash", ...
+		InputController.ActionEnded:Connect(function(action: string) ... end) -- released (e.g. a charged punch)
 	The client only turns presses into intents; the server decides what they do.
 
 	Touch: the action buttons sit in an arc around Roblox's own jump button (bottom-right, sizes from
@@ -55,6 +55,7 @@ local screenGui: ScreenGui? = nil
 local container: Frame
 local buttons: { [string]: TextButton } = {}
 local labelKeys: { [string]: string? } = {} -- action -> GameStrings key, when not the default Controls.<Action>
+local hidden: { [string]: boolean? } = {} -- actions whose touch button is hidden (setVisible)
 local jumpButton: GuiObject? = nil
 local jumpConnections: { RBXScriptConnection } = {}
 
@@ -82,6 +83,16 @@ function InputController.setLabel(action: string, key: string?)
 	local button = buttons[action]
 	if button then
 		button.Text = Localization.format(key or `Controls.{action}`)
+	end
+end
+
+-- Shows or hides an action's touch button (e.g. Ability only for styles that have one). Buttons are visible by
+-- default; a hidden one keeps its place in the arc.
+function InputController.setVisible(action: string, visible: boolean)
+	hidden[action] = if visible then nil else true
+	local button = buttons[action]
+	if button then
+		button.Visible = visible
 	end
 end
 
@@ -237,6 +248,7 @@ local function buildButtons()
 	table.clear(buttons)
 	for _, spec in currentLayout() do
 		local button = createButton(spec.Action)
+		button.Visible = not hidden[spec.Action]
 		button.Parent = container
 		buttons[spec.Action] = button
 	end

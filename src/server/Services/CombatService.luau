@@ -1,10 +1,13 @@
 --!strict
 --[[
-	CombatService — Punch chain, charged Shove, server hitboxes, HP / Percent, knockback, hitstun and KO credit.
+	CombatService — Punch chain, charged punch, the Ability move (parry), server hitboxes, HP / Percent, knockback,
+	hitstun and KO credit.
 
-	Clients only send intents (Punch; Shove Start / Release / Cancel). Each one is checked against the attacker's
-	Fighter (Server/Combat/Fighter: cooldowns, chain, hitstun). After the attack's windup the server looks for
-	victims in the attack's box in front of the attacker (padded for latency) and applies the hits. Knockback is
+	Clients only send intents (Punch; Charge Start / Release / Cancel while the attack is held; Ability). Each one is
+	checked against the attacker's Fighter (Server/Combat/Fighter: cooldowns, chain, hitstun). After the attack's
+	windup the server looks for victims in the attack's box in front of the attacker (padded for latency) and
+	applies the hits. The Ability move is the equipped style's (Wrecker: parry); styles without one ignore it.
+	Knockback is
 	run by whoever simulates the victim: its own client for players (Net "Knockback"), this server for training
 	dummies. PvP only counts inside the arena; training dummies can always be hit.
 
@@ -52,7 +55,7 @@ export type Blow = {
 	Percent: number, -- Casual Percent
 	KnockbackScale: number,
 	Multiplier: number, -- extra knockback (finisher, charge, ...)
-	Source: string, -- "Punch", "Shove" or a prop type
+	Source: string, -- "Punch", "Charged", "Parry" or a prop type
 	Label: string, -- Studio log, e.g. "Punch 3"
 	Heavy: boolean, -- shakes the camera
 	Fallback: Vector3, -- launch direction when the victim is right on top of the blow's origin
@@ -93,7 +96,7 @@ local CombatService = {
 	PerfectDodged = Signal.new() :: Signal.Signal<Model, Player>,
 	-- (victim character, attacker) after every blow that landed.
 	Hit = Signal.new() :: Signal.Signal<Model, Player>,
-	-- (attacker, box CFrame, box size, Classic damage) for every Punch / Shove hit check, hit or miss.
+	-- (attacker, box CFrame, box size, Classic damage) for every Punch / Charged hit check, hit or miss.
 	Swung = Signal.new() :: Signal.Signal<Player, CFrame, Vector3, number>,
 	-- (player, character) when a dash is accepted (its invulnerability started): dash trails, VFX.
 	Dashed = Signal.new() :: Signal.Signal<Player, Model>,
@@ -163,11 +166,11 @@ function CombatService.setSpeedModifier(character: Model, key: string, multiplie
 	applySpeed(character)
 end
 
--- Walk speed: slowed while a Shove is charging. The ShoveCharging attribute shows the charge pose on every client.
+-- Walk speed: slowed while a punch is charging. The Charging attribute shows the charge pose on every client.
 local function setCharging(character: Model, charging: boolean)
-	local slow = Config.Combat.Attacks.Shove.ChargeSlow
+	local slow = Config.Combat.Attacks.Charged.ChargeSlow
 	CombatService.setSpeedModifier(character, CHARGE_SPEED_KEY, if charging then 1 - slow else nil)
-	character:SetAttribute("ShoveCharging", if charging then true else nil)
+	character:SetAttribute("Charging", if charging then true else nil)
 end
 
 -- Default knock-out handler (the round system replaces it): players go back to the lobby with a fresh fighter.
@@ -319,7 +322,7 @@ function CombatService.setKnockOutHandler(handler: KnockOutHandler)
 end
 
 -- Lets another system take over an attack intent before CombatService handles it. The interceptor returns true
--- when it took the intent (e.g. a player holding a prop: Punch throws it, Shove is blocked).
+-- when it took the intent (e.g. a player holding a prop: Punch throws it, a charge is blocked).
 function CombatService.setInterceptor(handler: Interceptor)
 	interceptor = handler
 end
@@ -452,7 +455,8 @@ local function reflect(parrier: Model, blow: Blow)
 	if parrierPlayer == nil or attackerCharacter == nil or parrierRoot == nil or attackerRoot == nil then
 		return
 	end
-	local parry = Formulas.resolveAttack(styleOf(parrierPlayer), "Shove").Parry
+	local ability = Config.Styles.List[styleOf(parrierPlayer)].Ability
+	local parry = ability and ability.Parry
 	land(attackerCharacter, {
 		Attacker = parrierPlayer,
 		AttackerCharacter = parrier,
@@ -460,7 +464,7 @@ local function reflect(parrier: Model, blow: Blow)
 		Percent = 0,
 		KnockbackScale = blow.KnockbackScale,
 		Multiplier = blow.Multiplier * (if parry then parry.ReflectMultiplier else 1),
-		Source = "Parry", -- not "Punch" / "Shove", so a reflected blow can't be parried back
+		Source = "Parry", -- not "Punch" / "Charged", so a reflected blow can't be parried back
 		Label = "Parry",
 		Heavy = true,
 		Fallback = parrierRoot.CFrame.LookVector,
@@ -475,7 +479,7 @@ function land(victim: Model, blow: Blow, away: Vector3): boolean
 		return false
 	end
 	local now = os.clock()
-	local melee = blow.Source == "Punch" or blow.Source == "Shove"
+	local melee = blow.Source == "Punch" or blow.Source == "Charged"
 	local evade: Fighter.Evade = Fighter.evade(fighter, now, melee)
 	if evade == "Parried" then
 		dodged(victim, blow, evade)
@@ -658,44 +662,31 @@ local function onPunch(player: Player, facing: Vector3?, position: Vector3?)
 	)
 end
 
-local function onShove(player: Player, phase: string)
+-- The attack held past Charged.HoldTime: "Start" charges, "Release" throws the charged punch, "Cancel" stops.
+local function onCharge(player: Player, phase: string)
 	local character, fighter = fighterOf(player)
 	if character == nil or fighter == nil then
 		return
 	end
 	local now = os.clock()
 	if phase == "Start" then
-		if intercepted(player, "Shove") then
-			return
-		end
-		local styleId = styleOf(player)
-		local shove = Formulas.resolveAttack(styleId, "Shove")
-		local parry = shove.Parry
-		if parry then
-			-- Parry styles (Wrecker): Shove is an instant parry instead of a charged push.
-			if Fighter.parry(fighter, now, parry.Window, shove.Cooldown) then
-				Animate.play(character, Config.Styles.List[styleId].Animations.Shove)
-				if isStudioFlag(Config.Dev.LogCombat) then
-					print(`[Combat] {player.Name} parries`)
-				end
-			end
-		elseif Fighter.startShove(fighter, now) then
+		if not intercepted(player, "Charged") and Fighter.startCharge(fighter, now) then
 			setCharging(character, true)
 			removeShieldVisual(character) -- attacking ended the spawn shield
 		end
 	elseif phase == "Cancel" then
-		if Fighter.cancelShove(fighter) then
+		if Fighter.cancelCharge(fighter) then
 			setCharging(character, false)
 		end
 	else
 		local styleId = styleOf(player)
-		local attack = Formulas.resolveAttack(styleId, "Shove")
-		local charge = Fighter.releaseShove(fighter, attack.Cooldown, now)
+		local attack = Formulas.resolveAttack(styleId, "Charged")
+		local charge = Fighter.releaseCharge(fighter, attack.Cooldown, now)
 		if charge == nil then
 			return
 		end
 		setCharging(character, false)
-		Animate.play(character, Config.Styles.List[styleId].Animations.Shove)
+		Animate.play(character, Config.Styles.List[styleId].Animations.Charged)
 		task.delay(
 			attack.Windup,
 			strike,
@@ -704,13 +695,30 @@ local function onShove(player: Player, phase: string)
 			fighter,
 			now,
 			{
-				Name = "Shove",
-				Label = `Shove {string.format("%.2f", charge)} s`,
+				Name = "Charged",
+				Label = `Charged punch {string.format("%.2f", charge)} s`,
 				Attack = attack,
-				Multiplier = Formulas.shoveChargeMultiplier(charge),
+				Multiplier = Formulas.chargeMultiplier(charge),
 				Heavy = true,
 			} :: Swing
 		)
+	end
+end
+
+-- The Ability key: the equipped style's move (Wrecker: a parry). Styles without one ignore it.
+local function onAbility(player: Player)
+	local character, fighter = fighterOf(player)
+	local styleId = styleOf(player)
+	local style = Config.Styles.List[styleId]
+	local ability = style.Ability
+	if character == nil or fighter == nil or ability == nil then
+		return
+	end
+	if Fighter.parry(fighter, os.clock(), ability.Parry.Window, ability.Cooldown) then
+		Animate.play(character, style.Animations.Ability or "Parry")
+		if isStudioFlag(Config.Dev.LogCombat) then
+			print(`[Combat] {player.Name} parries`)
+		end
 	end
 end
 
@@ -751,7 +759,8 @@ function CombatService.Init(_self: any)
 	PhysicsService:CollisionGroupSetCollidable(FIGHTER_GROUP, FIGHTER_GROUP, false)
 
 	Net.onServerEvent("Punch", onPunch)
-	Net.onServerEvent("Shove", onShove)
+	Net.onServerEvent("Charge", onCharge)
+	Net.onServerEvent("Ability", onAbility)
 	Net.onServerEvent("Dash", onDash)
 
 	Players.PlayerAdded:Connect(watchPlayer)

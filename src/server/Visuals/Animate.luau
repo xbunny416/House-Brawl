@@ -1,8 +1,9 @@
 --!strict
 --[[
 	Animate — tells clients to play a scripted animation clip on a character (client: AnimationController). Server
-	code calls it when an action really happens (an accepted punch, shove, grab, throw, a victory emote), so every
-	client shows the same thing. `except` skips the player whose client already played it (their own dash).
+	code calls it when an action really happens (an accepted punch, charged punch, parry, grab, throw, a victory
+	emote), so every client shows the same thing. `except` skips the player whose client already played it (their
+	own dash).
 ]]
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 

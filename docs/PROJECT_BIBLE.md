@@ -7,11 +7,11 @@ this file in the same PR as the Config change.
 
 - **Title:** Junkyard Brawl
 - **Genre:** Indie PvP platform fighter (knock-off / ring-out brawler)
-- **Pitch:** A retro, slightly-apocalyptic free-for-all where you punch, shove and hurl junk (chairs, crates, TVs,
+- **Pitch:** A retro, slightly-apocalyptic free-for-all where you punch, charge up haymakers and hurl junk (chairs, crates, TVs,
   fridges) to knock rivals off crumbling floating platforms. Short, chaotic rounds with two modes: **Classic** (HP +
   falling) and **Casual** (no HP, knockback % only).
 - **Core loop**
-  - Every few seconds: punch, shove, dash-dodge, grab loose props or smash structures for props, throw them to launch
+  - Every few seconds: punch, charge a power punch, dash-dodge, grab loose props or smash structures for props, throw them to launch
     rivals off the edge.
   - Per session: win rounds, KO streaks, finish daily quests, earn Scrap and XP to unlock fighting styles and cosmetics.
   - Over weeks: level and rank titles, new styles, new cosmetics, leaderboards, new maps, codes, limited-time events.
@@ -78,7 +78,7 @@ this file in the same PR as the Config change.
 | Attack | Damage / Percent | Knockback | Hitbox (studs, in front) | Cooldown |
 | --- | --- | --- | --- | --- |
 | Punch (3-hit chain) | 8 HP / 6% per hit | 3rd hit ×1.5 KB | 4×4×5 | 0.35 s between hits, 0.8 s after 3rd |
-| Shove (heavy) | 14 HP / 11% (×1.75 base) | AttackKBScale 1.6; charge up to 0.8 s for up to ×1.5 KB; 40% slow while charging | 5×5×6 | 1.2 s |
+| Charged punch (heavy; hold Punch) | 14 HP / 11% (×1.75 base) | AttackKBScale 1.6; keep holding Punch 0.25 s after a punch to charge, up to 0.8 s for up to ×1.5 KB; 40% slow while charging | 5×5×6 | 1.2 s |
 | Dash | — | 12 studs in 0.25 s (owner playtest; was 18), level (no gravity), 0.25 s invulnerability, once in the air per jump; ends a launch after hitstun (recovery) | — | 2.5 s |
 
 ### Reward distribution
@@ -94,10 +94,10 @@ Not used. Long-term goals are levels/ranks, styles, cosmetics and leaderboards.
 
 | Style | Weapon | Unlock | Changes |
 | --- | --- | --- | --- |
-| Brawler | Fists | Free default | Punch and Shove as above |
+| Brawler | Fists | Free default | Punch and charged punch as above |
 | Slugger | Baseball bat | 1,500 Scrap or Level 5 | Damage ×1.15, +2 studs reach, attack speed ×0.8 |
-| Scrapper | Shovel | 3,000 Scrap or Level 12 | Wide sweep hitbox 7×4×5, Damage ×0.9, Shove KB ×1.1 |
-| Wrecker | Wrench + hubcap shield | 6,000 Scrap or Level 25 | Shove becomes a 0.2 s parry: a punch or shove landing in it misses and its knockback (not damage) hits the attacker instead; Punch Damage ×0.95 |
+| Scrapper | Shovel | 3,000 Scrap or Level 12 | Wide sweep hitbox 7×4×5, Damage ×0.9, charged punch KB ×1.1 |
+| Wrecker | Wrench + hubcap shield | 6,000 Scrap or Level 25 | Ability key (F / Y / Parry button): a 0.2 s parry (cooldown 1.2 s) — a punch or charged punch landing in it misses and its knockback (not damage) hits the attacker instead; Punch Damage ×0.95 |
 
 - **Cosmetics** (Scrap or Robux): skins, hats, back items, dash trails, KO effects, victory emotes, name-plate frames.
   Catalog in `Config.Cosmetics.Items` (blockout visuals until the art pass). KO effects burst at the victim for HP KOs
@@ -191,7 +191,7 @@ machine (HP 80) ×2, lawn chair stack (HP 60).
 
 **Props (grab & throw):**
 
-- Grab range 6 studs (server-checked). Hold 1 prop. Holding replaces Punch with Throw and blocks Shove.
+- Grab range 6 studs (server-checked). Hold 1 prop. Holding replaces Punch with Throw and blocks charging.
 - Throw speed 90 studs/s the way the character faces (owner's choice), with a slight arc under 25% gravity so long
   throws stay level, and a gentle aim assist toward a fighter within 15° (80 studs). Thrown and dropped props despawn
   8 s after landing. Max 40 props per arena.
@@ -221,13 +221,13 @@ machine (HP 80) ×2, lawn chair stack (HP 60).
 
 ### 4.2 Animation (R15; Creator Store, Animation Capture, or scripted)
 
-Punch chain jab/cross/uppercut (0.3 s each); Shove charge + two-hand shove (0.5 s); bat/shovel/wrench swings (0.45 s);
+Punch chain jab/cross/uppercut (0.3 s each); charge wind-up + charged punch or swing (0.5 s); bat/shovel/wrench swings (0.45 s);
 Dash lean (0.25 s); Grab crouch-lift (0.3 s) + carry idle/walk loop; overhead Throw (0.4 s); hit reaction / launched
 tumble (0.6 s, loops in hitstun); 4 victory emotes (2 s).
 
 Built as **scripted** R15 poses (step 2.6): keyframed joint angles blended over Roblox's default walk / idle
 animations on every client, triggered by the server when an action really happens. Weapon styles chain two swings
-and an overhead smash (Scrapper's shovel sweeps low); the Wrecker's Shove is a parry pose with the hubcap; the
+and an overhead smash (Scrapper's shovel sweeps low); the Wrecker's Ability is a parry pose with the hubcap; the
 tumble backflips through the whole hitstun. The round winner plays their victory emote back in the lobby; equipping
 an emote previews it. Any clip can later be replaced by an uploaded animation (Config.Animations.AssetIds).
 
@@ -249,7 +249,7 @@ cartoon explosion with ring shockwave; dash streak and blue Perfect Dodge flash.
 
 AnchorPoint (0.5, 0.5), Scale coordinates (no fixed offsets), UIAspectRatioConstraint.
 
-- **Mobile:** bottom-right arc — Attack (Punch/Throw), Shove, Grab, Dash around Roblox's Jump button (≥ 64 px
+- **Mobile:** bottom-right arc — Attack (Punch/Throw; hold to charge), Ability (Wrecker only), Grab, Dash around Roblox's Jump button (≥ 64 px
   targets: 17% of the screen's shorter side, 64–104 px, Attack 1.15× larger; Settings > Button Layout picks the
   arrangement). Shown only while touch is the player's input. Bottom-center — own
   Percent (Casual) or HP bar + lives (Classic), held-prop icon, dash cooldown ring. Top-center — round timer, mode
@@ -266,7 +266,8 @@ AnchorPoint (0.5, 0.5), Scale coordinates (no fixed offsets), UIAspectRatioConst
 | Move | WASD | Left stick | Thumbstick |
 | Jump | Space | A | Jump button |
 | Punch / Throw | Left Click | X | Attack |
-| Shove (hold to charge) | Right Click | Y | Shove |
+| Charged punch | Hold Left Click | Hold X | Hold Attack |
+| Ability (Wrecker parry) | F | Y | Parry |
 | Grab / Drop | E | B | Grab |
 | Dash | Q or Left Shift | RB | Dash |
 | Scoreboard | Tab | D-pad Down | — |
@@ -317,7 +318,7 @@ panel.
 
 ## 8. Retention & social
 
-- **Onboarding (first 2 min):** *to be redesigned* — the Training Yard it used (move → punch dummy → shove it off a
+- **Onboarding (first 2 min):** *to be redesigned* — the Training Yard it used (move → punch dummy → knock it off a
   ledge → grab a chair and throw it → dash across a gap) was removed with the lobby rework (2026-10-16). Still
   planned: reward 200 Scrap + "Rookie" title, returning players skip (replay button in Settings), first round: tips
   for grabbing and dashing.
@@ -337,7 +338,7 @@ panel.
 
 ## 9. Build plan
 
-- **Phase 1 — Core loop playable:** Config, data saving, Lobby blockout, Broken Highway, movement + Punch + Shove +
+- **Phase 1 — Core loop playable:** Config, data saving, Lobby blockout, Broken Highway, movement + Punch + charged punch +
   Dash, knockback/Percent, Classic and Casual rules, round manager (vote → round → results), grab/throw props,
   breakable structures, crumbling platforms, basic HUD on mobile/PC/gamepad.
 - **Phase 2 — Progression & content:** Scrap/XP rewards, levels and ranks, 3 extra styles, cosmetics + Locker, Shop

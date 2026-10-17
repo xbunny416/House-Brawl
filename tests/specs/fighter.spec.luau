@@ -1,5 +1,5 @@
 --!strict
--- Combat rules for one fighter (step 1.6): punch chain, Shove charge, cooldowns, hitstun, HP / Percent, KO credit.
+-- Combat rules for one fighter (step 1.6): punch chain, charged punch, cooldowns, hitstun, HP / Percent, KO credit.
 local Roblox = require("../roblox")
 local expect = require("../expect")
 
@@ -9,7 +9,7 @@ local Formulas = Roblox.require(Shared.Formulas)
 local Fighter = Roblox.require(Roblox.game.ServerScriptService.Server.Combat.Fighter)
 
 local Punch = Config.Combat.Attacks.Punch
-local Shove = Config.Combat.Attacks.Shove
+local Charged = Config.Combat.Attacks.Charged
 
 local function punchHit(multiplier: number?): any
 	return {
@@ -52,24 +52,29 @@ return {
 		expect.equal(Fighter.punch(f, 0.8, 0.35 / 0.8), 2)
 	end,
 
-	-- Shove -----------------------------------------------------------------------------------------------------------
-	["shove charges, caps at MaxChargeTime and starts its cooldown on release"] = function()
+	-- Charged punch ---------------------------------------------------------------------------------------------------
+	["holding the attack after a punch can charge at once (the charge has its own cooldown)"] = function()
 		local f = Fighter.new("Classic")
-		expect.equal(Fighter.startShove(f, 0), true)
-		expect.equal(Fighter.startShove(f, 0.1), false, "already charging")
-		expect.equal(Fighter.punch(f, 1, 0.1), nil, "no punching while charging")
-		expect.equal(Fighter.releaseShove(f, Shove.Cooldown, 2), Shove.MaxChargeTime)
-		expect.equal(Fighter.releaseShove(f, Shove.Cooldown, 2.1), nil, "not charging")
-		expect.equal(Fighter.startShove(f, 2 + Shove.Cooldown - 0.01), false, "cooldown")
-		expect.equal(Fighter.startShove(f, 2 + Shove.Cooldown), true)
-		expect.near(Fighter.releaseShove(f, Shove.Cooldown, 2 + Shove.Cooldown + 0.4) :: number, 0.4)
+		expect.equal(Fighter.punch(f, 1, 0), 1)
+		expect.equal(Fighter.startCharge(f, Charged.HoldTime), true, "a punch's cooldown does not block the charge")
 	end,
-	["a cancelled shove has no cooldown"] = function()
+	["a charge caps at MaxChargeTime and starts its cooldown on release"] = function()
 		local f = Fighter.new("Classic")
-		Fighter.startShove(f, 0)
-		expect.equal(Fighter.cancelShove(f), true)
-		expect.equal(Fighter.cancelShove(f), false)
-		expect.equal(Fighter.startShove(f, 0.1), true)
+		expect.equal(Fighter.startCharge(f, 0), true)
+		expect.equal(Fighter.startCharge(f, 0.1), false, "already charging")
+		expect.equal(Fighter.punch(f, 1, 0.1), nil, "no punching while charging")
+		expect.equal(Fighter.releaseCharge(f, Charged.Cooldown, 2), Charged.MaxChargeTime)
+		expect.equal(Fighter.releaseCharge(f, Charged.Cooldown, 2.1), nil, "not charging")
+		expect.equal(Fighter.startCharge(f, 2 + Charged.Cooldown - 0.01), false, "cooldown")
+		expect.equal(Fighter.startCharge(f, 2 + Charged.Cooldown), true)
+		expect.near(Fighter.releaseCharge(f, Charged.Cooldown, 2 + Charged.Cooldown + 0.4) :: number, 0.4)
+	end,
+	["a cancelled charge has no cooldown"] = function()
+		local f = Fighter.new("Classic")
+		Fighter.startCharge(f, 0)
+		expect.equal(Fighter.cancelCharge(f), true)
+		expect.equal(Fighter.cancelCharge(f), false)
+		expect.equal(Fighter.startCharge(f, 0.1), true)
 	end,
 
 	-- Hits ------------------------------------------------------------------------------------------------------------
@@ -99,15 +104,15 @@ return {
 		local finisher = Fighter.takeHit(Fighter.new("Classic"), punchHit(1.5), "a", 0)
 		expect.near(finisher.Force, plain.Force * 1.5)
 	end,
-	["hitstun blocks attacks and interrupts a shove charge"] = function()
+	["hitstun blocks attacks and interrupts a charge"] = function()
 		local f = Fighter.new("Classic")
-		Fighter.startShove(f, 0)
+		Fighter.startCharge(f, 0)
 		local result = Fighter.takeHit(f, punchHit(), "a", 1)
 		expect.equal(result.InterruptedCharge, true)
 		expect.equal(f.ChargeStartedAt, nil)
 		expect.equal(Fighter.canAct(f, 1 + result.Hitstun / 2), false)
 		expect.equal(Fighter.punch(f, 1, 1 + result.Hitstun / 2), nil)
-		expect.equal(Fighter.startShove(f, 1 + result.Hitstun / 2), false)
+		expect.equal(Fighter.startCharge(f, 1 + result.Hitstun / 2), false)
 		expect.equal(Fighter.punch(f, 1, 1 + result.Hitstun), 1)
 	end,
 	["an attack is interrupted if its attacker is hit during the windup"] = function()
@@ -138,9 +143,9 @@ return {
 		local result = Fighter.takeHit(stunned, punchHit(), "a", 0)
 		expect.equal(Fighter.dash(stunned, result.Hitstun / 2), false, "hitstun")
 	end,
-	["a dash cancels a Shove charge"] = function()
+	["a dash cancels a charge"] = function()
 		local f = Fighter.new("Classic")
-		Fighter.startShove(f, 0)
+		Fighter.startCharge(f, 0)
 		Fighter.dash(f, 0.1)
 		expect.equal(f.ChargeStartedAt, nil)
 	end,
@@ -181,8 +186,8 @@ return {
 		expect.equal(Fighter.isShielded(f, 10.6), false, "a punch ends it")
 		local g = Fighter.new("Classic")
 		Fighter.shield(g, 0, 2)
-		Fighter.startShove(g, 0.5)
-		expect.equal(Fighter.isShielded(g, 0.6), false, "a shove ends it")
+		Fighter.startCharge(g, 0.5)
+		expect.equal(Fighter.isShielded(g, 0.6), false, "a charge ends it")
 	end,
 	["passive gain adds Percent in Casual only"] = function()
 		local casual = Fighter.new("Casual")

@@ -20,7 +20,8 @@ export type PunchConfig = AttackConfig & {
 	ChainResetTime: number,
 }
 
-export type ShoveConfig = AttackConfig & {
+export type ChargedConfig = AttackConfig & {
+	HoldTime: number,
 	MaxChargeTime: number,
 	MaxChargeKnockbackMultiplier: number,
 	ChargeSlow: number,
@@ -36,7 +37,12 @@ export type StyleAttack = {
 	KnockbackMultiplier: number,
 	ReachBonus: number,
 	Hitbox: Box?, -- replaces the base hitbox when set
-	Parry: ParryConfig?, -- replaces the attack with a parry when set
+}
+
+-- A style's move on the Ability key (Wrecker: the parry). Styles without one have no Ability button.
+export type StyleAbility = {
+	Parry: ParryConfig,
+	Cooldown: number,
 }
 
 export type StyleConfig = {
@@ -44,10 +50,12 @@ export type StyleConfig = {
 	Price: number,
 	UnlockLevel: number,
 	AttackSpeed: number, -- 1 = normal; cooldowns and windups are divided by this
-	-- Scripted animation clips (Shared/Animation/Clips): one per punch-chain hit, and the Shove (or parry) clip.
-	Animations: { Punch: { string }, Shove: string },
+	-- Scripted animation clips (Shared/Animation/Clips): one per punch-chain hit, the charged punch, and the
+	-- Ability move's clip (styles with an ability).
+	Animations: { Punch: { string }, Charged: string, Ability: string? },
 	Punch: StyleAttack,
-	Shove: StyleAttack,
+	Charged: StyleAttack,
+	Ability: StyleAbility?,
 }
 
 -- One block of a blockout model welded to a body part: weapons, hats, back items (art pass replaces with meshes).

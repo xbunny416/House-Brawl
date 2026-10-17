@@ -20,9 +20,9 @@ local Styles: StylesConfig = {
 			Price = 0,
 			UnlockLevel = 1,
 			AttackSpeed = 1,
-			Animations = { Punch = { "Jab", "Cross", "Uppercut" }, Shove = "Shove" },
+			Animations = { Punch = { "Jab", "Cross", "Uppercut" }, Charged = "PowerPunch" },
 			Punch = NO_CHANGE,
-			Shove = NO_CHANGE,
+			Charged = NO_CHANGE,
 		},
 		-- Baseball bat: harder hits, longer reach, slower swings.
 		Slugger = {
@@ -30,39 +30,35 @@ local Styles: StylesConfig = {
 			Price = 1500,
 			UnlockLevel = 5,
 			AttackSpeed = 0.8,
-			Animations = { Punch = { "SwingRight", "SwingLeft", "Smash" }, Shove = "Shove" },
+			Animations = { Punch = { "SwingRight", "SwingLeft", "Smash" }, Charged = "PowerSwing" },
 			Punch = { DamageMultiplier = 1.15, KnockbackMultiplier = 1, ReachBonus = 2 },
-			Shove = { DamageMultiplier = 1.15, KnockbackMultiplier = 1, ReachBonus = 2 },
+			Charged = { DamageMultiplier = 1.15, KnockbackMultiplier = 1, ReachBonus = 2 },
 		},
-		-- Shovel: wide sweeps, a bit less damage, stronger shove.
+		-- Shovel: wide sweeps, a bit less damage, a stronger charged swing.
 		Scrapper = {
 			Weapon = "Shovel",
 			Price = 3000,
 			UnlockLevel = 12,
 			AttackSpeed = 1,
-			Animations = { Punch = { "SweepRight", "SweepLeft", "Smash" }, Shove = "Shove" },
+			Animations = { Punch = { "SweepRight", "SweepLeft", "Smash" }, Charged = "PowerSwing" },
 			Punch = {
 				DamageMultiplier = 0.9,
 				KnockbackMultiplier = 1,
 				ReachBonus = 0,
 				Hitbox = { X = 7, Y = 4, Z = 5 },
 			},
-			Shove = { DamageMultiplier = 0.9, KnockbackMultiplier = 1.1, ReachBonus = 0 },
+			Charged = { DamageMultiplier = 0.9, KnockbackMultiplier = 1.1, ReachBonus = 0 },
 		},
-		-- Wrench + hubcap shield: Shove becomes a short parry that reflects knockback.
+		-- Wrench + hubcap shield: the Ability key raises the hubcap for a short parry that reflects knockback.
 		Wrecker = {
 			Weapon = "WrenchAndHubcap",
 			Price = 6000,
 			UnlockLevel = 25,
 			AttackSpeed = 1,
-			Animations = { Punch = { "SwingRight", "SwingLeft", "Smash" }, Shove = "Parry" },
+			Animations = { Punch = { "SwingRight", "SwingLeft", "Smash" }, Charged = "PowerSwing", Ability = "Parry" },
 			Punch = { DamageMultiplier = 0.95, KnockbackMultiplier = 1, ReachBonus = 0 },
-			Shove = {
-				DamageMultiplier = 1,
-				KnockbackMultiplier = 1,
-				ReachBonus = 0,
-				Parry = { Window = 0.2, ReflectMultiplier = 1 },
-			},
+			Charged = NO_CHANGE,
+			Ability = { Parry = { Window = 0.2, ReflectMultiplier = 1 }, Cooldown = 1.2 },
 		},
 	},
 

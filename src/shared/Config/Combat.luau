@@ -29,7 +29,7 @@ type CombatConfig = {
 	},
 	Attacks: {
 		Punch: Types.PunchConfig,
-		Shove: Types.ShoveConfig,
+		Charged: Types.ChargedConfig,
 	},
 	Launch: { MaxTime: number },
 	Feedback: { VictimShake: number, AttackerShake: number },
@@ -89,13 +89,16 @@ local Combat: CombatConfig = {
 			FinisherCooldown = 0.8, -- after the 3rd hit
 			ChainResetTime = 1, -- seconds without punching before the chain restarts at hit 1
 		},
-		Shove = {
+		-- Charged punch (owner, 2026-10-17: replaces the right-click Shove). Tap the attack to punch; keep holding it
+		-- HoldTime seconds after the punch and it starts charging; let go to throw the charged punch.
+		Charged = {
 			Damage = 14,
 			Percent = 11,
 			KnockbackScale = 1.6,
 			Cooldown = 1.2,
 			Windup = 0.05, -- after the charge is released (owner playtest: 0.15 felt delayed)
 			Hitbox = { X = 5, Y = 5, Z = 6 },
+			HoldTime = 0.25, -- seconds the attack is held before charging starts
 			MaxChargeTime = 0.8,
 			MaxChargeKnockbackMultiplier = 1.5,
 			ChargeSlow = 0.4, -- 40% slower while charging
@@ -105,7 +108,7 @@ local Combat: CombatConfig = {
 	-- A launched character cannot steer until its hitstun is over and it has landed, or after MaxTime seconds.
 	Launch = { MaxTime = 3 },
 
-	-- Camera shake intensity (0-1, scales Config.Controls.Camera.ShakeMagnitude) on heavy hits (Shove, punch finisher).
+	-- Camera shake intensity (0-1, scales Config.Controls.Camera.ShakeMagnitude) on heavy hits (charged, finisher).
 	Feedback = { VictimShake = 1, AttackerShake = 0.6 },
 
 	-- Practice dummy (developer panel): back this long after a KO or a fall of this many studs below its place.

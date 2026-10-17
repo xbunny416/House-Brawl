@@ -12,7 +12,7 @@ local Progression = Config.Progression
 
 local Formulas = {}
 
-export type AttackName = "Punch" | "Shove"
+export type AttackName = "Punch" | "Charged"
 
 export type ResolvedAttack = {
 	Damage: number,
@@ -21,7 +21,6 @@ export type ResolvedAttack = {
 	Cooldown: number,
 	Windup: number,
 	Hitbox: Types.Box,
-	Parry: Types.ParryConfig?,
 }
 
 export type PayoutInput = {
@@ -61,7 +60,7 @@ end
 ---------------------------------------------------------------------------------------------------------------------
 
 -- Knockback force = (Base + (Percent / 100) * Growth * attackScale) * ModeMultiplier * extraMultiplier.
--- extraMultiplier covers per-hit bonuses (punch finisher, shove charge, Perfect Dodge bonus).
+-- extraMultiplier covers per-hit bonuses (punch finisher, charge, Perfect Dodge bonus).
 function Formulas.knockbackForce(percent: number, attackScale: number, modeId: string, extraMultiplier: number?): number
 	local kb = Combat.Knockback
 	local force = (kb.Base + (percent / 100) * kb.Growth * attackScale) * getMode(modeId).KnockbackMultiplier
@@ -170,8 +169,8 @@ end
 -- Combines a base attack with a fighting style's modifiers.
 function Formulas.resolveAttack(styleId: string, attackName: AttackName): ResolvedAttack
 	local style = getStyle(styleId)
-	local base: Types.AttackConfig = if attackName == "Punch" then Combat.Attacks.Punch else Combat.Attacks.Shove
-	local modifier = if attackName == "Punch" then style.Punch else style.Shove
+	local base: Types.AttackConfig = if attackName == "Punch" then Combat.Attacks.Punch else Combat.Attacks.Charged
+	local modifier = if attackName == "Punch" then style.Punch else style.Charged
 	local hitbox = modifier.Hitbox or base.Hitbox
 	return {
 		Damage = base.Damage * modifier.DamageMultiplier,
@@ -180,7 +179,6 @@ function Formulas.resolveAttack(styleId: string, attackName: AttackName): Resolv
 		Cooldown = base.Cooldown / style.AttackSpeed,
 		Windup = base.Windup / style.AttackSpeed,
 		Hitbox = { X = hitbox.X, Y = hitbox.Y, Z = hitbox.Z + modifier.ReachBonus },
-		Parry = modifier.Parry,
 	}
 end
 
@@ -197,11 +195,11 @@ function Formulas.punchCooldown(hitIndex: number, attackSpeed: number): number
 	return cooldown / attackSpeed
 end
 
--- Knockback multiplier for a Shove charged for `chargeTime` seconds (linear up to the max charge).
-function Formulas.shoveChargeMultiplier(chargeTime: number): number
-	local shove = Combat.Attacks.Shove
-	local t = math.clamp(chargeTime, 0, shove.MaxChargeTime) / shove.MaxChargeTime
-	return 1 + t * (shove.MaxChargeKnockbackMultiplier - 1)
+-- Knockback multiplier for a punch charged for `chargeTime` seconds (linear up to the max charge).
+function Formulas.chargeMultiplier(chargeTime: number): number
+	local charged = Combat.Attacks.Charged
+	local t = math.clamp(chargeTime, 0, charged.MaxChargeTime) / charged.MaxChargeTime
+	return 1 + t * (charged.MaxChargeKnockbackMultiplier - 1)
 end
 
 -- Dash speed in studs/s (Distance covered over Duration).

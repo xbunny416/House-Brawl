@@ -85,12 +85,12 @@ return {
 	end,
 	["releaseAll ends every held action once"] = function()
 		local tracker = ActionMap.newTracker()
-		tracker.press("MouseButton2", "Shove")
+		tracker.press("F", "Ability")
 		tracker.press("Touch.Dash", "Dash")
 		tracker.press("Q", "Dash")
 		local ended = tracker.releaseAll()
-		expect.equal(table.concat(ended, ","), "Dash,Shove")
-		expect.equal(tracker.isDown("Shove"), false)
+		expect.equal(table.concat(ended, ","), "Ability,Dash")
+		expect.equal(tracker.isDown("Ability"), false)
 		expect.equal(tracker.release("Q", "Dash"), false, "key released after focus loss")
 		expect.equal(tracker.press("Q", "Dash"), true, "can begin again")
 	end,
@@ -162,7 +162,7 @@ return {
 				expect.truthy(button.Distance >= Controls.Touch.Gap, `{name}: {button.Action} touches the jump button`)
 				expect.truthy(button.Scale >= 1, `{name}: {button.Action} smaller than the base size`)
 			end
-			for _, action in { "Attack", "Shove", "Grab", "Dash" } do
+			for _, action in { "Attack", "Ability", "Grab", "Dash" } do
 				expect.truthy(seen[action], `{name}: no {action} button (bible §5.1 arc)`)
 			end
 		end

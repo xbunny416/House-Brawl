@@ -50,7 +50,8 @@ return {
 			SweepRight = 0.45,
 			SweepLeft = 0.45,
 			Smash = 0.45,
-			Shove = 0.5,
+			PowerPunch = 0.5,
+			PowerSwing = 0.5,
 			Dash = 0.25,
 			Grab = 0.3,
 			Throw = 0.4,
@@ -65,19 +66,22 @@ return {
 			expect.truthy(Clips[name], `{name} exists`)
 			expect.equal(Clips[name].Duration, length, name)
 		end
-		for _, name in { "Tumble", "Carry", "ShoveCharge" } do
+		for _, name in { "Tumble", "Carry", "Charge" } do
 			expect.equal(Clips[name].Loop, true, `{name} loops`)
 		end
 	end,
-	["every style names one clip per punch-chain hit and a Shove clip; parry styles parry"] = function()
+	["every style names one clip per punch-chain hit, a charged clip, and an Ability clip if it has an ability"] = function()
 		for styleId, style in Config.Styles.List do
 			expect.equal(#style.Animations.Punch, Config.Combat.Attacks.Punch.ChainLength, `{styleId} chain`)
 			for _, clip in style.Animations.Punch do
 				expect.truthy(Clips[clip], `{styleId}: clip {clip}`)
 			end
-			expect.truthy(Clips[style.Animations.Shove], `{styleId}: clip {style.Animations.Shove}`)
-			local parries = style.Shove.Parry ~= nil
-			expect.equal(style.Animations.Shove == "Parry", parries, `{styleId} shove clip`)
+			expect.truthy(Clips[style.Animations.Charged], `{styleId}: clip {style.Animations.Charged}`)
+			local abilityClip = style.Animations.Ability
+			expect.equal(abilityClip ~= nil, style.Ability ~= nil, `{styleId} ability clip`)
+			if abilityClip then
+				expect.truthy(Clips[abilityClip], `{styleId}: clip {abilityClip}`)
+			end
 		end
 	end,
 	["every victory emote cosmetic has a 2 s clip; uploaded ids only for known clips"] = function()

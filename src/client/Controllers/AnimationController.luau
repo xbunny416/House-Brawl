@@ -5,10 +5,10 @@
 	default walk / idle animations never touch C0, so they keep playing on top of the clip (arms still swing a little
 	while walking) and nothing has to win a race with them. Nothing replicates: every client poses every character
 	from the same signals.
-	  * One-shots: the server's Animate event (punch chain / weapon swings, Shove, parry, grab, throw, victory
+	  * One-shots: the server's Animate event (punch chain / weapon swings, charged punch, parry, grab, throw, victory
 	    emotes, other players' dashes); the local dash (DashController.Dashed, no round trip); hits from CombatHit (a
 	    short recoil, or a tumble looping through a long hitstun).
-	  * Loops from replicated attributes: ShoveCharge while ShoveCharging is set, Carry while HeldProp is set. They
+	  * Loops from replicated attributes: Charge while Charging is set, Carry while HeldProp is set. They
 	    blend in when the state starts and out when it ends; a one-shot plays on top of a loop.
 	When a clip lets go of a joint, its C0 goes back to the rest offset it had before. A clip with an uploaded
 	animation in Config.Animations.AssetIds plays that animation instead. Studio: Config.Dev.LogAnimations prints
@@ -187,10 +187,10 @@ function AnimationController.play(character: Model, clipName: string, length: nu
 	rig.OneShot = { Clip = clip, Name = clipName, StartedAt = now(), Length = length }
 end
 
--- The loop a character's replicated state asks for (charging a Shove beats carrying).
+-- The loop a character's replicated state asks for (charging a punch beats carrying).
 local function loopFor(character: Model): string?
-	if character:GetAttribute("ShoveCharging") then
-		return "ShoveCharge"
+	if character:GetAttribute("Charging") then
+		return "Charge"
 	elseif character:GetAttribute("HeldProp") ~= nil then
 		return "Carry"
 	end
