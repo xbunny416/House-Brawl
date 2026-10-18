@@ -275,7 +275,7 @@ any errors are fixed before the next item.
 | 2026-10-18 | Party bar (top-left "Party 2/4" with avatar cards, #43) removed again at the owner's request ("go back to normal"); parties work as in 3.7 | #44 |
 | 2026-10-18 | 3.8 Codes: CodeService (RedeemCode remote, codes in the server-only ServerConfig: Scrap and / or a cosmetic, optional expiry, once per player, not in private servers), Codes screen (menu + lobby jukebox prompt), Codes data field, dev "Reset codes", pure Codes/CodeRules + specs | #45 |
 | 2026-10-18 | 3.9 Full developer panel: Target button (player commands act on any player in the server: Percent / HP, spawn prop / dummy, Scrap, unlocks, perks, daily / quests / codes), Progress section (+1000 XP, set level 1 / 5 / 12 / 25 / 50, all styles), DataService.setLevel, rank title follows every level change; DevCommand carries the target UserId | #46 |
-| 2026-10-18 | 3.10 Settings menu (music / SFX volume − / +, camera shake, low graphics, touch button layout when there is a choice, camera sensitivity note) with a How to play page (rules + controls for the device), loading screen in ReplicatedFirst (title, random tip, waits for the game and the player's data, fades out), Config.Data.VolumeStep, Config.World.Loading | #PR |
+| 2026-10-18 | 3.10 Settings menu (music / SFX volume − / +, camera shake, low graphics, touch button layout when there is a choice, camera sensitivity note) with a How to play page (rules + controls for the device), loading screen in ReplicatedFirst (title, random tip, waits for the game and the player's data, fades out), Config.Data.VolumeStep, Config.World.Loading | #47 |
 
 ## Decisions and interpretations
 
