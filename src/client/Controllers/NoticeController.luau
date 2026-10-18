@@ -85,6 +85,11 @@ local function show(key: unknown, args: unknown)
 	end)
 end
 
+-- Shows a notice from this client (same look as the server's Notify).
+function NoticeController.show(key: string, args: { any }?)
+	show(key, args)
+end
+
 function NoticeController.Start(_self: any)
 	local gui = Kit.screen("Notices", 9)
 	gui.Enabled = true

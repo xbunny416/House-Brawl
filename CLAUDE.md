@@ -20,7 +20,8 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   2026-10-17). 3.3 Daily login streak + playtime rewards, 3.4 Daily + weekly quests and 3.6 Leaderboards are built
   (not yet playtested); 3.5 Badges skipped for now (owner). 3.7 Party system + friend XP bonus + group reward + chat
   tags, 3.8 Codes, 3.9 Full developer panel and 3.10 Settings menu + loading screen + How to play are built (not
-  yet playtested). **Next step:** 3.11 Low-end mobile performance pass + localization check. The place must be published (File → Publish to
+  yet playtested). 3.11 Low-end mobile performance pass + localization check built (not yet
+  tested on a phone). **Next step:** 3.12 Launch checklist support. The place must be published (File → Publish to
   Roblox) for DataStores to work in Studio.
 
 ## How this repo works
@@ -223,7 +224,7 @@ any errors are fixed before the next item.
 - [x] 3.8 Codes
 - [x] 3.9 Full developer panel
 - [x] 3.10 Settings menu, loading screen, tutorial replay (a How to play page while the tutorial is skipped)
-- [ ] 3.11 Low-end mobile performance pass + localization check
+- [x] 3.11 Low-end mobile performance pass + localization check
 - [ ] 3.12 Launch checklist support (owner-side: icon, thumbnails, maturity form, beta test)
 
 ## Progress log
@@ -276,6 +277,7 @@ any errors are fixed before the next item.
 | 2026-10-18 | 3.8 Codes: CodeService (RedeemCode remote, codes in the server-only ServerConfig: Scrap and / or a cosmetic, optional expiry, once per player, not in private servers), Codes screen (menu + lobby jukebox prompt), Codes data field, dev "Reset codes", pure Codes/CodeRules + specs | #45 |
 | 2026-10-18 | 3.9 Full developer panel: Target button (player commands act on any player in the server: Percent / HP, spawn prop / dummy, Scrap, unlocks, perks, daily / quests / codes), Progress section (+1000 XP, set level 1 / 5 / 12 / 25 / 50, all styles), DataService.setLevel, rank title follows every level change; DevCommand carries the target UserId | #46 |
 | 2026-10-18 | 3.10 Settings menu (music / SFX volume − / +, camera shake, low graphics, touch button layout when there is a choice, camera sensitivity note) with a How to play page (rules + controls for the device), loading screen in ReplicatedFirst (title, random tip, waits for the game and the player's data, fades out), Config.Data.VolumeStep, Config.World.Loading | #47 |
+| 2026-10-18 | 3.11 Performance + localization: animation detail levels (other characters posed every frame only up close and in view, every 2–4 frames further / off screen, not past 300 studs; Low Graphics closer), one-time frame-rate check turns Low Graphics on below 40 FPS (GraphicsAutoChecked setting), neon steady under Low Graphics, Config.Performance; specs: no hard-coded UI text, every {n} string has an Example, AnimationLod; unused Notify.Welcome removed | #PR |
 
 ## Decisions and interpretations
 
@@ -562,6 +564,20 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   first; touch taps the prompt. The prompts are made on the client (opening a screen needs no server) and re-made
   when a streamed-out part comes back; they hide while a menu screen is open or the player is fighting. They use
   Roblox's default prompt look until the art pass. The left-edge menu still opens both screens anywhere in the lobby.
+- **Performance + localization (3.11):** done in code, without a phone to profile on — measure on a real low-end
+  device (Studio's Device Emulator doesn't show phone speed). Animation posing is the per-frame client cost that grows
+  with players, so `AnimationController` now poses other characters every frame only within
+  `Performance.AnimationLod.Near` (60 studs) and in view, every `FarEvery` (2) frames up to `Far` (150), every
+  `OffscreenEvery` (4) frames off screen or further, not at all past `Cull` (300); Low Graphics multiplies the
+  distances by 0.6; each rig has a random phase so the skipped work spreads over frames; your own character is always
+  posed (`Client/Lib/AnimationLod`, spec-tested). Once per player (`GraphicsAutoChecked` setting), 10 s after loading
+  the client measures its frame rate for 20 s and turns Low Graphics on below 40 FPS with a notice
+  (`PerformanceController`; players can turn it off again). Neon flicker stays steady under Low Graphics. Earlier
+  steps already keep small parts' shadows off, cap props at 40, stream the world, make arena platforms Persistent and
+  run effects only on clients. Localization: every string the code shows is in GameStrings (the literal-key spec, and
+  a new spec failing on any `Text = "..."` with letters in code), every string with `{n}` has an Example for
+  translators (new spec), and the one unused string (`Notify.Welcome`) is gone. Automatic translation still needs the
+  CSV uploaded to the Creator Dashboard (owner).
 - **Settings, loading screen, How to play (3.10):** the Settings screen (6th in the left-edge menu) changes every
   setting through `SettingsController` (server-checked): music / SFX volume with − / + buttons in steps of
   `Data.VolumeStep` = 0.1 (no drag slider: the buttons work the same with mouse, touch and gamepad), camera shake and

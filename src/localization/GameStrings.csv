@@ -1,7 +1,6 @@
 Key,Source,Context,Example
 Currency.Scrap,{1} Scrap,Amount of the soft currency,250 Scrap
 Common.Level,Level {1},Player level label,Level 12
-Notify.Welcome,Welcome to Junkyard Brawl!,First notice after joining,
 Mode.Classic.Name,Classic,Game mode name,
 Mode.Classic.Desc,100 HP and 3 lives. Last fighter standing wins.,Game mode description,
 Mode.Casual.Name,Casual,Game mode name,
@@ -261,7 +260,7 @@ Daily.Got,You got {1}!,Message after claiming the daily reward (Scrap amount or 
 Daily.Info,Log in every day for bigger rewards: miss a day and you start again at Day 1.,Daily reward screen note,
 Daily.ComeBack,Next reward in {1},Daily reward screen: time until the next reward (hours:minutes:seconds),Next reward in 5:12:09
 Daily.Playtime,"Playtime: +{1} Scrap every {2} minutes you play ({3}/{4} today)","Daily reward screen: playtime rewards (Scrap, minutes, paid today, max per day)",Playtime: +25 Scrap every 10 minutes you play (2/6 today)
-Daily.PlaytimeDone,All {1} playtime rewards collected today. Come back tomorrow!,Daily reward screen: every playtime reward was paid today (count),
+Daily.PlaytimeDone,All {1} playtime rewards collected today. Come back tomorrow!,Daily reward screen: every playtime reward was paid today (count),All 6 playtime rewards collected today. Come back tomorrow!
 Daily.PlaytimeReward,+{1} Scrap for playing {2} minutes today!,Notice: a playtime reward was paid (Scrap and minutes played today),+25 Scrap for playing 20 minutes today!
 Daily.Error.Claimed,You already claimed today's reward.,Daily reward claim refused,
 Daily.Error.NotLoaded,Your data is still loading. Try again in a moment.,Daily reward claim refused,
@@ -315,7 +314,7 @@ Tag.PartyChat,[Party],Chat tag in front of messages from your own party members,
 Group.Reward,Thanks for joining the group! +{1} Scrap,Notice: the one-time group join reward was paid (Scrap),Thanks for joining the group! +150 Scrap
 Menu.Party,Party,Lobby menu button that opens the Party screen,
 Party.Title,Party,Title of the Party screen,
-Party.Info,Up to {1} players. Party members go into rounds with their leader and start on the same platform.,Party screen note (max party size),
+Party.Info,Up to {1} players. Party members go into rounds with their leader and start on the same platform.,Party screen note (max party size),Up to 4 players. Party members go into rounds with their leader and start on the same platform.
 Party.Members,Your party,Party screen section: the members of your party,
 Party.InviteTitle,Invite players,Party screen section: players in the server you can invite,
 Party.Alone,You're not in a party. Invite someone below!,Party screen: not in a party,
@@ -329,11 +328,11 @@ Party.FriendBonus,Friends in this server: {1} (+{2}% XP),"Party screen: Roblox f
 Party.Join,Join,Party invite popup: accept,
 Party.No,No,Party invite popup: decline,
 Party.InvitedYou,{1} invited you to their party ({2} s),"Party invite popup (inviter's name, seconds to answer)",Alex invited you to their party (30 s)
-Party.Invited,Invite sent to {1}.,Notice: your party invite was sent (player's name),
-Party.Declined,{1} said no.,Notice: a player declined your party invite (name),
-Party.Joined,{1} joined the party!,Notice: a player joined your party (name),
-Party.YouJoined,You joined {1}'s party!,Notice: you joined a party (leader's name),
-Party.Left,{1} left the party.,Notice: a member left your party (name),
+Party.Invited,Invite sent to {1}.,Notice: your party invite was sent (player's name),Invite sent to Alex.
+Party.Declined,{1} said no.,Notice: a player declined your party invite (name),Alex said no.
+Party.Joined,{1} joined the party!,Notice: a player joined your party (name),Alex joined the party!
+Party.YouJoined,You joined {1}'s party!,Notice: you joined a party (leader's name),You joined Alex's party!
+Party.Left,{1} left the party.,Notice: a member left your party (name),Alex left the party.
 Party.YouLeft,You left the party.,Notice: you left your party,
 Party.Kicked,You were removed from the party.,Notice: the leader removed you from the party,
 Party.Disbanded,Your party ended (nobody else is in it).,Notice: your party ended because everyone else left,
@@ -396,3 +395,4 @@ Tip.5,Outer platforms crumble during the round — stay near the centre.,Loading
 Tip.6,Claim your daily reward every day for bigger rewards.,Loading screen tip,
 Tip.7,Party up: your party goes into rounds together.,Loading screen tip,
 Tip.8,Throw props from far away to knock rivals off.,Loading screen tip,
+Performance.LowGraphicsOn,Low graphics turned on for smoother play. Change it any time in Settings.,Notice: the game switched on Low Graphics because the frame rate was low,

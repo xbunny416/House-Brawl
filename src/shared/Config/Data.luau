@@ -14,6 +14,7 @@ return {
 		CameraShake = true,
 		LowGraphics = false,
 		ButtonLayout = "Default", -- a key of Config.Controls.Touch.Layouts
+		GraphicsAutoChecked = false, -- the one-time frame-rate check (Config.Performance.AutoLowGraphics) has run
 	},
 	-- How much one press of the Settings menu's − / + buttons changes a volume.
 	VolumeStep = 0.1,

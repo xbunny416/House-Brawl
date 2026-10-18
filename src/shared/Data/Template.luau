@@ -13,6 +13,7 @@ export type Settings = {
 	CameraShake: boolean,
 	LowGraphics: boolean,
 	ButtonLayout: string,
+	GraphicsAutoChecked: boolean,
 }
 
 export type Stats = {

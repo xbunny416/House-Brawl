@@ -3,9 +3,11 @@
 	NeonFlickerController — neon that flickers now and then (Neon Motel's "flickering retro neon", bible §3.1). Parts
 	tagged NeonFlicker (map layouts) blink off a few times at random intervals: a Neon part fades, a sign's text
 	fades, and the light they cast goes out with them. Stops on a platform that is falling (CrumbleController fades
-	it out). Local and visual only.
+	it out), and stays steady with Low Graphics. Local and visual only.
 ]]
 local CollectionService = game:GetService("CollectionService")
+
+local SettingsController = require(script.Parent:WaitForChild("SettingsController"))
 
 local TAG = "NeonFlicker"
 local MIN_WAIT, MAX_WAIT = 2, 9 -- seconds between two flickers of one part
@@ -48,6 +50,9 @@ local function flicker(part: BasePart)
 		task.wait(random:NextNumber(MIN_WAIT, MAX_WAIT))
 		if not running[part] or part.Parent == nil or onFallingPlatform(part) then
 			break
+		end
+		if SettingsController.get("LowGraphics") == true then
+			continue -- steady neon with Low Graphics (no light toggling)
 		end
 		for index, duration in BLINKS do
 			setOff(part, index % 2 == 1, base)
