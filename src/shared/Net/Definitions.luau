@@ -123,6 +123,14 @@ local Definitions: { [string]: Definition } = {
 	PartyKick = { Kind = "Event", Direction = "ToServer", Args = { Guard.integer(-1e15, 1e15) } },
 	-- Server -> client: someone invited you to their party. (inviter UserId, inviter display name, seconds to answer)
 	PartyInvited = { Kind = "Event", Direction = "ToClient" },
+	-- Client -> server: redeem a code (Server/Codes/CodeRules; the codes are server-only). (text: what the player
+	-- typed) Returns (redeemed: boolean, reward or reason: { Scrap, Cosmetic? } | a CodeRules reason).
+	RedeemCode = {
+		Kind = "Function",
+		Direction = "ToServer",
+		Args = { Guard.string(24) },
+		RateLimit = { Rate = 0.5, Burst = 3 },
+	},
 	-- Client -> server: claim today's login-streak reward (Shared/DailyRules). Returns (claimed: boolean, reward or
 	-- reason: { Day, Scrap, Cosmetic? } | "Claimed" | "NotLoaded" | "PrivateServer").
 	ClaimDaily = {

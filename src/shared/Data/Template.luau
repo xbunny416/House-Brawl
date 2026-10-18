@@ -66,6 +66,7 @@ export type PlayerData = {
 	Quests: QuestData,
 	LeaderboardWeek: LeaderboardWeek,
 	Social: { GroupRewardClaimed: boolean }, -- the Roblox group join reward was paid
+	Codes: { [string]: boolean }, -- redeem codes this player has used (ServerConfig.Codes keys)
 }
 
 local VERSION = 1
@@ -100,6 +101,7 @@ local Template: PlayerData = {
 	Quests = { Day = -1, Week = -1, Daily = { Progress = {}, Done = {} }, Weekly = { Progress = {}, Done = {} } },
 	LeaderboardWeek = { Week = -1, Wins = 0, KOs = 0, StartLevel = 1 },
 	Social = { GroupRewardClaimed = false },
+	Codes = {},
 }
 
 return {

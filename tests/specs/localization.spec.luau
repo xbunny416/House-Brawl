@@ -10,6 +10,7 @@ local ShopRules = Roblox.require(Roblox.game.ReplicatedStorage.Shared.ShopRules)
 local MonetizationRules = Roblox.require(Roblox.game.ReplicatedStorage.Shared.MonetizationRules)
 local DailyRules = Roblox.require(Roblox.game.ReplicatedStorage.Shared.DailyRules)
 local Parties = Roblox.require(Roblox.game.ServerScriptService.Server.Social.Parties)
+local CodeRules = Roblox.require(Roblox.game.ServerScriptService.Server.Codes.CodeRules)
 local HudFormat = Roblox.require(Roblox.game.StarterPlayer.StarterPlayerScripts.Client.Lib.HudFormat)
 
 local CSV_PATH = "src/localization/GameStrings.csv"
@@ -70,6 +71,9 @@ return {
 		end
 		for _, reason in ShopRules.Reasons do
 			expect.truthy(keys[`Shop.Error.{reason}`], `Shop.Error.{reason}`)
+		end
+		for _, reason in CodeRules.Reasons do
+			expect.truthy(keys[`Codes.Error.{reason}`], `Codes.Error.{reason}`)
 		end
 		for _, reason in Parties.Reasons do
 			expect.truthy(keys[`Party.Error.{reason}`], `Party.Error.{reason}`)

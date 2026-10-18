@@ -2,11 +2,11 @@
 --[[
 	LobbyPromptController — walk-up menus in the lobby (owner, 2026-10-17): a ProximityPrompt on the bartender
 	(ShopNPC tag) opens the Shop, one in the locker booth (Locker tag) opens the Locker, one at the quest board
-	(QuestBoard tag) opens the Quests screen. They open through MenuController, so its rules apply (one screen at a
-	time, never while fighting), and hide while a menu screen is open or the player is fighting. Keys and range:
-	Config.Controls.Prompts (E / gamepad B; touch taps the prompt).
+	(QuestBoard tag) opens the Quests screen, one at the codes jukebox (CodesJukebox tag) opens Codes. They open
+	through MenuController, so its rules apply (one screen at a time, never while fighting), and hide while a menu
+	screen is open or the player is fighting. Keys and range: Config.Controls.Prompts (E / gamepad B; touch taps).
 	The prompts are made here on the client — opening a screen needs nothing from the server — and come back when a
-	streamed-out part streams in again. Later lobby screens (codes jukebox) add a target here.
+	streamed-out part streams in again. Later lobby screens add a target here.
 ]]
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -50,6 +50,13 @@ local function targets(): { Target }
 			Screen = "Quests",
 			Action = Localization.format("Prompt.Quests"),
 			Object = Localization.format("Prompt.Quests.Object"),
+		},
+		{
+			Tag = "CodesJukebox",
+			Part = "Body",
+			Screen = "Codes",
+			Action = Localization.format("Prompt.Codes"),
+			Object = Localization.format("Prompt.Codes.Object"),
 		},
 	}
 end

@@ -19,7 +19,7 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   server settings are built (not yet playtested). Arenas doubled in size with four layers and rounds are 4:00 (owner,
   2026-10-17). 3.3 Daily login streak + playtime rewards, 3.4 Daily + weekly quests and 3.6 Leaderboards are built
   (not yet playtested); 3.5 Badges skipped for now (owner). 3.7 Party system + friend XP bonus + group reward + chat
-  tags is built (not yet playtested). **Next step:** 3.8 Codes. The place must be published (File → Publish to
+  tags and 3.8 Codes are built (not yet playtested). **Next step:** 3.9 Full developer panel. The place must be published (File → Publish to
   Roblox) for DataStores to work in Studio.
 
 ## How this repo works
@@ -218,7 +218,7 @@ any errors are fixed before the next item.
       (BadgeId 0 = skipped)
 - [x] 3.6 Leaderboards (all-time + weekly) + lobby billboards
 - [x] 3.7 Party system + friend XP bonus + group reward + chat tags
-- [ ] 3.8 Codes
+- [x] 3.8 Codes
 - [ ] 3.9 Full developer panel
 - [ ] 3.10 Settings menu, loading screen, tutorial replay
 - [ ] 3.11 Low-end mobile performance pass + localization check
@@ -271,6 +271,7 @@ any errors are fixed before the next item.
 | 2026-10-17 | 3.6 Leaderboards (3.5 Badges skipped by the owner): LeaderboardService (all-time + weekly Wins / KOs / Level in OrderedDataStores, changed scores saved every 2 min and on leave / close, tops read + names looked up, Leaderboards remote; this-server fallback offline; nothing saved from private servers), LeaderboardWeek data, lobby screens (top 10, all-time / this week every 10 s), Leaderboard menu screen (top 50), pure LeaderboardRules + specs | #41 |
 | 2026-10-18 | 3.7 Social: PartyService on pure Social/Parties (invite / join / leave / kick, up to 4, PartyId / PartyLeader attributes, invite popup), party members queued with their leader and spawned on one platform (Round/SpawnPlan), Party screen (members, invite list with friends, friend XP bonus line), party-colored name tags + [Party] / [Crew] chat tags (PlayerTagController), GroupRewardService (group check, one-time 150 Scrap, GroupMember attribute; off while GroupId is 0), Social data field; specs | #42 |
 | 2026-10-18 | Party bar (top-left "Party 2/4" with avatar cards, #43) removed again at the owner's request ("go back to normal"); parties work as in 3.7 | #44 |
+| 2026-10-18 | 3.8 Codes: CodeService (RedeemCode remote, codes in the server-only ServerConfig: Scrap and / or a cosmetic, optional expiry, once per player, not in private servers), Codes screen (menu + lobby jukebox prompt), Codes data field, dev "Reset codes", pure Codes/CodeRules + specs | #45 |
 
 ## Decisions and interpretations
 
@@ -283,7 +284,13 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   live-event multiplier (double-Scrap weekends) and the private-server scale (0 since 2026-10-17: private servers pay
   nothing) are applied outside the cap.
 - **Codes** live in the server-only `ServerScriptService.Server.ServerConfig` (not the shared Config) so clients
-  cannot read unreleased codes. `LAUNCH` is a placeholder.
+  cannot read unreleased codes. `LAUNCH` (250 Scrap) is a placeholder. **3.8:** a code gives Scrap and / or a cosmetic
+  and may expire (`ExpiresAt`, unix time); keys are upper-case letters and digits (a spec checks every code). What the
+  player types is tidied (spaces dropped, upper-case) and checked by the pure `Server/Codes/CodeRules`; used codes are
+  saved per player (`Codes`), so each works once. `RedeemCode` is a RemoteFunction limited to 24 characters and one try
+  every 2 s (burst 3) against guessing. Nothing is given in private servers (the code stays unused). Scrap is logged as
+  Gameplay, sku `Code.<CODE>`, plus a `CodeRedeemed` event. The Codes screen is 8th in the left-edge menu and opens at
+  the lobby's jukebox (`LobbyPromptController` target).
 - **Structures** take each attack's Classic HP damage in every mode.
 - New tunables not in the bible: attack windups (Punch and charged punch 0.05 s since the 1st playtest, needed for "dodge
   before the hit lands"), punch chain reset 1 s, hitbox latency padding 0.5 studs, launch angle 30°, throw arc +14 studs/s, throw
@@ -697,6 +704,9 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Dash movement is client-side** (clients simulate their character), so the once-per-jump air rule is enforced by
   the client; the server enforces the cooldown and hitstun, which gate the invulnerability and Perfect Dodge.
 - **Owner's Roblox UserId** is needed for `Config.Dev.AllowedUserIds` before live testing of the developer panel.
+- **Codes test (Studio):** Codes (menu, or walk up to the jukebox on the west wall) → type `launch` → +250 Scrap;
+  again → "already used"; a made-up code → "doesn't exist". Dev panel → Daily → "Reset codes" to use it again. Output
+  shows `[Codes]`.
 - **Party test (Studio, 2 players):** Test → Clients and Servers → 2 players. Player1: Party screen → Invite Player2;
   Player2: Join on the popup. Both see the other's name in blue and `[Party]` in chat. Player1 stands on the join pad
   while Player2 stays in the lobby: both go into the round, on the same platform. Leave / Remove work from the screen.
