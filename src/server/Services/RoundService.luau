@@ -5,7 +5,8 @@
 
 	  * Join pad: only players standing on the lobby's join pad (QueueZone tag, Server/Round/Queue) and not AFK are
 	    queued; everyone else stays in the lobby (Shop, Locker ...) through the round. Player attribute QueueStatus
-	    ("In" | "AFK" | "Off"), Workspace attribute PlayersQueued.
+	    ("In" | "AFK" | "Off"), Workspace attribute PlayersQueued. Party members in the lobby are queued with their
+	    leader (PartyService.leaderOf) and start the round on the same platform (Round/SpawnPlan).
 	  * Waiting: fewer than Config.Round.MinPlayers players are queued (Config.Dev.StudioMinPlayers in Studio).
 	  * Voting: up to Maps.VoteChoices enabled maps and every mode are on the ballot (Vote remote; only players on the
 	    pad vote, and stepping off drops your vote); ties are random. Too few on the pad = back to Waiting. In a
@@ -39,11 +40,13 @@ local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
 local Server = script.Parent.Parent
 local Queue = require(Server:WaitForChild("Round"):WaitForChild("Queue"))
 local Scoreboard = require(Server:WaitForChild("Round"):WaitForChild("Scoreboard"))
+local SpawnPlan = require(Server:WaitForChild("Round"):WaitForChild("SpawnPlan"))
 local Vote = require(Server:WaitForChild("Round"):WaitForChild("Vote"))
 local Analytics = require(script.Parent:WaitForChild("Analytics"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
+local PartyService = require(script.Parent:WaitForChild("PartyService"))
 local PrivateServerService = require(script.Parent:WaitForChild("PrivateServerService"))
 
 export type State = "Waiting" | "Voting" | "Playing" | "Results"
@@ -186,8 +189,19 @@ end
 -- Updates every player's queue status (and the attributes the UI reads). Returns the queued players.
 local function refreshQueue(): { Player }
 	local queued: { Player } = {}
+	local onPads: { [Player]: boolean } = {}
 	for _, player in Players:GetPlayers() do
-		local ready = DataService.get(player) ~= nil and onPad(player)
+		onPads[player] = DataService.get(player) ~= nil and onPad(player)
+	end
+	for _, player in Players:GetPlayers() do
+		local ready = onPads[player]
+		-- Party members in the lobby go in with their leader (owner, 2026-10-18).
+		local leader = if not ready and (statuses[player] or "Lobby") == "Lobby"
+			then PartyService.leaderOf(player)
+			else nil
+		if leader and onPads[leader] and not isAFK(leader) and DataService.get(player) and aliveCharacter(player) then
+			ready = true
+		end
 		local status: Queue.Status = Queue.status(statuses[player] or "Lobby", ready, isAFK(player))
 		queueStatuses[player] = status
 		if player:GetAttribute("QueueStatus") ~= status then
@@ -217,13 +231,13 @@ end
 -- Arena entry
 ---------------------------------------------------------------------------------------------------------------------
 
-local function shuffled<T>(list: { T }): { T }
-	local copy = table.clone(list)
-	for index = #copy, 2, -1 do
-		local other = pick(index)
-		copy[index], copy[other] = copy[other], copy[index]
+-- The name of the platform a marker stands on (its Platform-tagged ancestor).
+local function platformOf(marker: Instance): string
+	local node = marker.Parent
+	while node and not node:HasTag("Platform") do
+		node = node.Parent
 	end
-	return copy
+	return if node then node.Name else ""
 end
 
 -- Puts a participant's (living) character into the arena: fresh fighter, spawn point, spawn shield.
@@ -479,13 +493,20 @@ local function startRound(mapId: string, modeId: string): boolean
 	RoundService.RoundStarted:Fire(modeId, mapId)
 
 	-- Everyone not on the pad stays in the lobby (status "Lobby").
-	local spawns = shuffled(MapService.getArenaMarkers("SpawnPoint"))
-	for index, player in participants do
+	-- Parties start on one platform, everyone else spread out (Round/SpawnPlan).
+	local spawns = MapService.getArenaMarkers("SpawnPoint")
+	local platforms: { string } = {}
+	for index, spawn in spawns do
+		platforms[index] = platformOf(spawn)
+	end
+	local plan = SpawnPlan.assign(PartyService.groupsOf(participants), platforms, pick)
+	for _, player in participants do
 		Scoreboard.add(r.Board, player.UserId, player.Name, startedAt)
 		local data = DataService.get(player)
 		Analytics.roundModePicked(player, modeId, mapId)
 		Analytics.styleUsed(player, if data then data.Styles.Equipped else Config.Styles.Default, modeId)
-		task.spawn(enterArena, player, if #spawns > 0 then spawns[(index - 1) % #spawns + 1] else nil)
+		local spawnIndex = plan[player.UserId]
+		task.spawn(enterArena, player, if spawnIndex then spawns[spawnIndex] else nil)
 	end
 	return true
 end

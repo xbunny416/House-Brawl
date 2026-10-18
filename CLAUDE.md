@@ -18,8 +18,9 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   with the dev panel's Robux buttons meanwhile). Walk-up Shop / Locker prompts added (owner's pick). 3.2 Private
   server settings are built (not yet playtested). Arenas doubled in size with four layers and rounds are 4:00 (owner,
   2026-10-17). 3.3 Daily login streak + playtime rewards, 3.4 Daily + weekly quests and 3.6 Leaderboards are built
-  (not yet playtested); 3.5 Badges skipped for now (owner). **Next step:** 3.7 Party system + friend XP bonus + group
-  reward + chat tags.
+  (not yet playtested); 3.5 Badges skipped for now (owner). 3.7 Party system + friend XP bonus + group reward + chat
+  tags is built (not yet playtested). **Next step:** 3.8 Codes. The place must be published (File → Publish to
+  Roblox) for DataStores to work in Studio.
 
 ## How this repo works
 
@@ -210,13 +211,13 @@ any errors are fixed before the next item.
 ### Phase 3 — Monetization, retention & polish
 
 - [x] 3.1 Game passes, dev products (idempotent receipts), Premium perks, PolicyService
-- [x] 3.2 Private server settings (owner controls, 50% rewards)
+- [x] 3.2 Private server settings (owner controls; no rewards since 2026-10-17)
 - [x] 3.3 Daily login streak + playtime rewards
 - [x] 3.4 Daily + weekly quests
 - [ ] 3.5 Badges — **skipped for now (owner, 2026-10-17: "not necessary right now")**; the Config entries stay
       (BadgeId 0 = skipped)
 - [x] 3.6 Leaderboards (all-time + weekly) + lobby billboards
-- [ ] 3.7 Party system + friend XP bonus + group reward + chat tags
+- [x] 3.7 Party system + friend XP bonus + group reward + chat tags
 - [ ] 3.8 Codes
 - [ ] 3.9 Full developer panel
 - [ ] 3.10 Settings menu, loading screen, tutorial replay
@@ -268,6 +269,7 @@ any errors are fixed before the next item.
 | 2026-10-17 | 3.3 Daily rewards: DailyService (ClaimDaily remote: 7-day login streak, day 7 = the week's cosmetic or 300 Scrap; playtime +25 Scrap per 10 active minutes, 6 a day, saved across rejoins; nothing in private servers), Daily reward screen (day cards, claim, countdown, playtime line; opens itself when a reward waits), Daily data field, RoundService.isAFK, PrivateServerService.paysRewards, dev "Next day" / "+10 min", pure DailyRules + specs | #39 |
 | 2026-10-17 | 3.4 Quests: QuestService (every lifetime stat counts toward today's 3 daily quests — a per-player pick of the 7 — and the weekly one, in the round's mode; done = Scrap at once + notice), Quests screen (progress bars, rewards, reset countdowns) from the menu and the lobby quest board (walk-up prompt), Quests data field, DataService.StatIncremented, RoundService.currentMode, dev "Finish quest" (+ "Next day" restarts daily quests), pure QuestRules + specs | #40 |
 | 2026-10-17 | 3.6 Leaderboards (3.5 Badges skipped by the owner): LeaderboardService (all-time + weekly Wins / KOs / Level in OrderedDataStores, changed scores saved every 2 min and on leave / close, tops read + names looked up, Leaderboards remote; this-server fallback offline; nothing saved from private servers), LeaderboardWeek data, lobby screens (top 10, all-time / this week every 10 s), Leaderboard menu screen (top 50), pure LeaderboardRules + specs | #41 |
+| 2026-10-18 | 3.7 Social: PartyService on pure Social/Parties (invite / join / leave / kick, up to 4, PartyId / PartyLeader attributes, invite popup), party members queued with their leader and spawned on one platform (Round/SpawnPlan), Party screen (members, invite list with friends, friend XP bonus line), party-colored name tags + [Party] / [Crew] chat tags (PlayerTagController), GroupRewardService (group check, one-time 150 Scrap, GroupMember attribute; off while GroupId is 0), Social data field; specs | #42 |
 
 ## Decisions and interpretations
 
@@ -541,6 +543,20 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   first; touch taps the prompt. The prompts are made on the client (opening a screen needs no server) and re-made
   when a streamed-out part comes back; they hide while a menu screen is open or the player is fighting. They use
   Roblox's default prompt look until the art pass. The left-edge menu still opens both screens anywhere in the lobby.
+- **Social (3.7):** parties live in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
+  only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
+  leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,
+  2026-10-18, picked "queue together" + "spawn near each other"): when the leader stands on the join pad, members in
+  the lobby who aren't AFK are queued too (RoundService's queue pass; Casual mid-round joins included), and at the
+  round start each party takes the platform with the most free spawn points (`Round/SpawnPlan`; solos spread out;
+  respawns are still random). No friendly-fire change. Clients read the Player attributes `PartyId` / `PartyLeader`:
+  party members see each other's overhead names in `Party.Color` and a `[Party]` chat tag (only for their own party);
+  `[VIP]` and the group's `[Crew]` tags show to everyone (`PlayerTagController`, one `OnIncomingMessage`). The Party
+  screen (menu order 7) lists members and invitable players (friends marked) and the friend XP bonus you have now (the
+  +10% per friend, max +30%, was already paid since 2.1). Group: `GroupRewardService` checks `GroupService
+  :GetGroupsAsync` on join and every 120 s until paid, sets `GroupMember`, pays `Group.Scrap` once (saved in
+  `Social.GroupRewardClaimed`, Onboarding transaction; waits for a public server); everything is off while
+  `Retention.Group.GroupId` is 0. Party remotes accept negative UserIds (Studio test players).
 - **Leaderboards (3.6):** six OrderedDataStores — `Leaderboard_<Stat>` (all-time) and `Leaderboard_<Stat>_W<week>`
   (weekly, a fresh store each Monday; `StorePrefix` in Config) for Wins, KOs and Level. All-time scores are the
   lifetime stats / level; weekly Wins / KOs are counted from `DataService.StatIncremented` into the player's
@@ -667,8 +683,10 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   HP (100 / 50 / 10); own + equip any fighting style; own every cosmetic; +5000 Scrap; switch VIP / Emote Pack /
   Premium on or off and get any Robux product; test camera shake and switch the Camera Shake setting. Output shows
   `[Dev]` lines.
-- **Data in Studio:** with "Studio Access to API Services" off, ProfileStore uses an in-memory store and prints
-  "Roblox API services unavailable - data will not be saved". Turn it on to test real saving
+- **Data in Studio:** with "Studio Access to API Services" off — or while the place isn't published to Roblox (the
+  owner's place wasn't on 2026-10-18: "You must publish this place to the web to access DataStore") — ProfileStore uses
+  an in-memory store and prints "Roblox API services unavailable - data will not be saved". Publish the place (File →
+  Publish to Roblox) and turn API access on to test real saving
   (`Config.Data.UseMockInStudio = true` forces the in-memory store even with access on).
 - **Arena gaps** of 8.5–12 studs (all three arenas) need a jump + air dash (1.7); worth confirming every gap in the
   playtest, and the 6-stud climbs: base → ledges, ledges → peaks (diagonal gaps 8.5–10) and lows → sides. Neon Motel is the first night map: check it is not
@@ -678,6 +696,10 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Dash movement is client-side** (clients simulate their character), so the once-per-jump air rule is enforced by
   the client; the server enforces the cooldown and hitstun, which gate the invulnerability and Perfect Dodge.
 - **Owner's Roblox UserId** is needed for `Config.Dev.AllowedUserIds` before live testing of the developer panel.
+- **Party test (Studio, 2 players):** Test → Clients and Servers → 2 players. Player1: Party screen → Invite Player2;
+  Player2: Join on the popup. Both see the other's name in blue and `[Party]` in chat. Player1 stands on the join pad
+  while Player2 stays in the lobby: both go into the round, on the same platform. Leave / Remove work from the screen.
+  Output shows `[Party]`. The group perks need a group: put its id in `Config.Retention.Group.GroupId`.
 - **Leaderboards test (Studio):** with API access off the boards say "this server only" and list you from your stats
   (lobby screens on the south wall, and the Leaderboard menu); play a round and they update within 2 min. With
   "Studio Access to API Services" on, scores are saved to the real boards. Output shows `[Leaderboards]`.
@@ -689,7 +711,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   Dev panel → Daily → "Next day" then Claim again for Day 2 ... (Day 7 gives this week's cosmetic); press "Next day"
   twice before claiming to see the streak reset. "+10 min" pays a playtime reward (notice) up to 6 a day; real
   playtime pays every 10 active minutes. Output shows `[Daily]`.
-- **Private server test (Studio):** dev panel → Round → "Private on/off": a notice says rewards are 50%, and a
+- **Private server test (Studio):** dev panel → Round → "Private on/off": a notice says nothing is earned there, and a
   **Server** button appears on the left. Lock the mode / pick the map / pick 2:00, then stand on the join pad: the
   vote offers only your choices and the round timer starts at 2:00; `[Rewards]` in Output pays nothing and stats don't change. Rejoin and turn
   it on again: your choices are remembered (with Studio API access on). Output shows `[PrivateServer]`.

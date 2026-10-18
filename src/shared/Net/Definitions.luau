@@ -110,6 +110,19 @@ local Definitions: { [string]: Definition } = {
 	-- Server -> client: the global leaderboards (Shared/LeaderboardRules). (boards: { [key]: { { UserId, Name, Value } } }
 	-- — key "<Stat>.<Period>", best first; online: boolean — false = this server's players only)
 	Leaderboards = { Kind = "Event", Direction = "ToClient" },
+	-- Client -> server: party actions (Server/Social/Parties). PartyInvite (target UserId), PartyRespond (inviter UserId,
+	-- accept), PartyLeave (), PartyKick (member UserId: leader only). Studio test players have negative UserIds.
+	PartyInvite = {
+		Kind = "Event",
+		Direction = "ToServer",
+		Args = { Guard.integer(-1e15, 1e15) },
+		RateLimit = { Rate = 1, Burst = 4 },
+	},
+	PartyRespond = { Kind = "Event", Direction = "ToServer", Args = { Guard.integer(-1e15, 1e15), Guard.boolean } },
+	PartyLeave = { Kind = "Event", Direction = "ToServer", Args = {} },
+	PartyKick = { Kind = "Event", Direction = "ToServer", Args = { Guard.integer(-1e15, 1e15) } },
+	-- Server -> client: someone invited you to their party. (inviter UserId, inviter display name, seconds to answer)
+	PartyInvited = { Kind = "Event", Direction = "ToClient" },
 	-- Client -> server: claim today's login-streak reward (Shared/DailyRules). Returns (claimed: boolean, reward or
 	-- reason: { Day, Scrap, Cosmetic? } | "Claimed" | "NotLoaded" | "PrivateServer").
 	ClaimDaily = {
