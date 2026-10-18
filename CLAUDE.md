@@ -19,7 +19,8 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   server settings are built (not yet playtested). Arenas doubled in size with four layers and rounds are 4:00 (owner,
   2026-10-17). 3.3 Daily login streak + playtime rewards, 3.4 Daily + weekly quests and 3.6 Leaderboards are built
   (not yet playtested); 3.5 Badges skipped for now (owner). 3.7 Party system + friend XP bonus + group reward + chat
-  tags and 3.8 Codes are built (not yet playtested). **Next step:** 3.9 Full developer panel. The place must be published (File → Publish to
+  tags, 3.8 Codes and 3.9 Full developer panel are built (not yet playtested). **Next step:** 3.10 Settings menu,
+  loading screen, tutorial replay. The place must be published (File → Publish to
   Roblox) for DataStores to work in Studio.
 
 ## How this repo works
@@ -219,7 +220,7 @@ any errors are fixed before the next item.
 - [x] 3.6 Leaderboards (all-time + weekly) + lobby billboards
 - [x] 3.7 Party system + friend XP bonus + group reward + chat tags
 - [x] 3.8 Codes
-- [ ] 3.9 Full developer panel
+- [x] 3.9 Full developer panel
 - [ ] 3.10 Settings menu, loading screen, tutorial replay
 - [ ] 3.11 Low-end mobile performance pass + localization check
 - [ ] 3.12 Launch checklist support (owner-side: icon, thumbnails, maturity form, beta test)
@@ -272,6 +273,7 @@ any errors are fixed before the next item.
 | 2026-10-18 | 3.7 Social: PartyService on pure Social/Parties (invite / join / leave / kick, up to 4, PartyId / PartyLeader attributes, invite popup), party members queued with their leader and spawned on one platform (Round/SpawnPlan), Party screen (members, invite list with friends, friend XP bonus line), party-colored name tags + [Party] / [Crew] chat tags (PlayerTagController), GroupRewardService (group check, one-time 150 Scrap, GroupMember attribute; off while GroupId is 0), Social data field; specs | #42 |
 | 2026-10-18 | Party bar (top-left "Party 2/4" with avatar cards, #43) removed again at the owner's request ("go back to normal"); parties work as in 3.7 | #44 |
 | 2026-10-18 | 3.8 Codes: CodeService (RedeemCode remote, codes in the server-only ServerConfig: Scrap and / or a cosmetic, optional expiry, once per player, not in private servers), Codes screen (menu + lobby jukebox prompt), Codes data field, dev "Reset codes", pure Codes/CodeRules + specs | #45 |
+| 2026-10-18 | 3.9 Full developer panel: Target button (player commands act on any player in the server: Percent / HP, spawn prop / dummy, Scrap, unlocks, perks, daily / quests / codes), Progress section (+1000 XP, set level 1 / 5 / 12 / 25 / 50, all styles), DataService.setLevel, rank title follows every level change; DevCommand carries the target UserId | #PR |
 
 ## Decisions and interpretations
 
@@ -537,6 +539,13 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   that round starts; forced map / mode apply to the next vote result only. Set HP never goes below 1 (no KO from the
   panel); spawned props despawn like structure drops (30 s untouched). Spawning a prop for another player and the
   other Phase 3 tools (Scrap, levels, unlocks) are step 3.9. The K / L Studio keys were replaced by panel buttons.
+  **3.9:** the bible's full list (§6): a **Target** button at the top cycles through the players in the server (you
+  first); every player command then acts on that player (Percent / HP, spawn a prop or the dummy in front of them,
+  Scrap / XP, level, styles, cosmetics, perks, Robux products, daily / quest / code tests) — `DevCommand` carries
+  the target's UserId and the server falls back to the sender if they left. New: "+1000 XP" (`Dev.GiveXP`, level-ups
+  apply), Level 1 / 5 / 12 / 25 / 50 (`Dev.LevelPresets`; `DataService.setLevel`, XP 0, fires `LeveledUp` so the rank
+  title and style unlocks follow — RewardService now updates `Rank` on every level change), "All styles". Still
+  Studio-only in live servers until the owner's UserId goes in `Dev.AllowedUserIds`.
 - **Round rewards (2.1):** `RewardService` pays every player still in the server when `RoundEnded` fires, through
   `Server/Round/Payout` → `Formulas.roundPayout` (the 1.1 rules), then `DataService.addScrap` (sku "RoundReward",
   logged as a Gameplay source) and `addXP`. Bonus inputs: VIP = game pass ownership (cached per session),
@@ -688,9 +697,10 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Developer panel (Studio):** press ` (Backquote, `Config.Dev.PanelKey`) or click DEV (top left). Round: start now
   (starts the vote with one player on the join pad, or closes it), end now, crumble a platform; next map / mode (or
   back to the vote); spawn any prop or the practice dummy in front of you; set your own Percent (0 / 100 / 200) or
-  HP (100 / 50 / 10); own + equip any fighting style; own every cosmetic; +5000 Scrap; switch VIP / Emote Pack /
-  Premium on or off and get any Robux product; test camera shake and switch the Camera Shake setting. Output shows
-  `[Dev]` lines.
+  HP (100 / 50 / 10); own + equip any fighting style, all styles, every cosmetic; +5000 Scrap, +1000 XP, set level;
+  switch VIP / Emote Pack / Premium on or off and get any Robux product; daily / quest / code tests; test camera shake
+  and switch the Camera Shake / Low Graphics settings. "Target: Me" at the top: tap it to act on another player (2-player
+  test). Output shows `[Dev]` lines (with "on <player>" for a target).
 - **Data in Studio:** with "Studio Access to API Services" off — or while the place isn't published to Roblox (the
   owner's place wasn't on 2026-10-18: "You must publish this place to the web to access DataStore") — ProfileStore uses
   an in-memory store and prints "Roblox API services unavailable - data will not be saved". Publish the place (File →

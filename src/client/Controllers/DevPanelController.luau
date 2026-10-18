@@ -1,11 +1,12 @@
 --!strict
 --[[
-	DevPanelController — the minimal developer panel (step 1.13), for players with the DevAccess attribute (anyone in
-	Studio playtests; see Server/Dev/DevRules). Open / close it with Config.Dev.PanelKey (` by default) or the DEV
-	button in the top-left corner. Buttons send DevCommand (the server re-checks access): start / end the round,
-	crumble a platform, pick the next map / mode, spawn a prop, set your own Percent / HP, own + equip a style, switch
-	a perk (VIP / Emote Pack / Premium) on or off and get what a Robux product gives. The camera buttons run here: a
-	test shake, and switching the saved Camera Shake setting.
+	DevPanelController — the developer panel (steps 1.13 and 3.9; bible §6), for players with the DevAccess attribute
+	(anyone in Studio playtests; see Server/Dev/DevRules). Open / close it with Config.Dev.PanelKey (` by default) or
+	the DEV button in the top-left corner. Buttons send DevCommand (the server re-checks access): start / end the
+	round, crumble a platform, pick the next map / mode, spawn a prop or the dummy, set Percent / HP, give Scrap / XP,
+	set the level, own styles / cosmetics, switch perks, get Robux products, daily / quest / code tests. The Target
+	button at the top picks who player commands act on (you, or any other player in the server; it cycles through
+	them). The camera buttons run here: a test shake, and switching the saved Camera Shake / Low Graphics settings.
 ]]
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -34,9 +35,47 @@ local gui: ScreenGui? = nil
 local panel: Frame
 local list: ScrollingFrame
 local sections = 0
+local target: Player? = nil -- who player commands act on (nil = you)
+local targetButton: TextButton? = nil
+
+-- The target if they are still in the server, else nil (you).
+local function currentTarget(): Player?
+	local chosen = target
+	if chosen and chosen.Parent == Players then
+		return chosen
+	end
+	target = nil
+	return nil
+end
 
 local function send(command: string, text: string?, value: number?)
-	Net.fire("DevCommand", command, text, value)
+	local chosen = currentTarget()
+	Net.fire("DevCommand", command, text, value, if chosen then chosen.UserId else nil)
+end
+
+local function targetLabel(): string
+	local chosen = currentTarget()
+	local name = if chosen then chosen.DisplayName else Localization.format("Dev.TargetMe")
+	return Localization.format("Dev.Target", { name })
+end
+
+-- Moves the target on to the next player (you first, then everyone else by name).
+local function cycleTarget()
+	local others: { Player } = {}
+	for _, other in Players:GetPlayers() do
+		if other ~= player then
+			table.insert(others, other)
+		end
+	end
+	table.sort(others, function(a: Player, b: Player): boolean
+		return a.DisplayName < b.DisplayName
+	end)
+	local index = if currentTarget() then table.find(others, target :: Player) else 0
+	target = others[(index or 0) + 1] -- past the last player: back to you (nil)
+	local button = targetButton
+	if button then
+		button.Text = targetLabel()
+	end
 end
 
 -- A button that sends one DevCommand.
@@ -49,8 +88,8 @@ local function command(label: string, name: string, text: string?, value: number
 	}
 end
 
--- A heading with a grid of buttons under it.
-local function section(titleKey: string, buttons: { Button })
+-- A heading with a grid of buttons under it. Returns the buttons made.
+local function section(titleKey: string, buttons: { Button }): { TextButton }
 	sections += 1
 	local heading = Kit.label(list, Localization.format(titleKey), UDim2.new(1, 0, 0, BUTTON_HEIGHT * 0.8), 18)
 	heading.TextXAlignment = Enum.TextXAlignment.Left
@@ -67,15 +106,20 @@ local function section(titleKey: string, buttons: { Button })
 	layout.CellPadding = UDim2.new(0.02, 0, 0, 4)
 	layout.SortOrder = Enum.SortOrder.LayoutOrder
 	layout.Parent = grid
+	local made: { TextButton } = {}
 	for order, entry in buttons do
 		local button = Kit.button(grid, entry.Label, UDim2.new())
 		button.LayoutOrder = order
 		button.Activated:Connect(entry.Run)
+		table.insert(made, button)
 	end
 	grid.Parent = list
+	return made
 end
 
 local function buildSections()
+	targetButton = section("Dev.TargetTitle", { { Label = targetLabel(), Run = cycleTarget } })[1]
+
 	section("Dev.Round", {
 		command(Localization.format("Dev.Start"), "StartRound"),
 		command(Localization.format("Dev.End"), "EndRound"),
@@ -128,6 +172,15 @@ local function buildSections()
 	table.insert(styles, command(Localization.format("Dev.UnlockCosmetics"), "UnlockCosmetics"))
 	table.insert(styles, command(Localization.format("Dev.GiveScrap", { Config.Dev.GiveScrap }), "GiveScrap"))
 	section("Dev.Style", styles)
+
+	local progress: { Button } = {
+		command(Localization.format("Dev.GiveXP", { Config.Dev.GiveXP }), "GiveXP"),
+		command(Localization.format("Dev.AllStyles"), "AllStyles"),
+	}
+	for _, level in Config.Dev.LevelPresets do
+		table.insert(progress, command(Localization.format("Common.Level", { level }), "SetLevel", nil, level))
+	end
+	section("Dev.Progress", progress)
 
 	local robux: { Button } = {}
 	for _, perk in MonetizationRules.Perks do

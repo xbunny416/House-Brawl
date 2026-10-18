@@ -48,7 +48,7 @@ local DataService = {
 
 	-- Fires once per player when their data is ready: (player, data)
 	Loaded = Signal.new() :: Signal.Signal<Player, PlayerData>,
-	-- Fires when a player gains one or more levels: (player, new level)
+	-- Fires when a player gains one or more levels (or the developer panel changes it): (player, new level)
 	LeveledUp = Signal.new() :: Signal.Signal<Player, number>,
 	-- Fires after a lifetime stat goes up: (player, stat, amount) — quests count from it
 	StatIncremented = Signal.new() :: Signal.Signal<Player, string, number>,
@@ -192,6 +192,25 @@ function DataService.spendScrap(player: Player, amount: number, transaction: str
 	replicate(player, "Scrap")
 	Analytics.scrapSpent(player, amount, profile.Data.Scrap, transaction, sku)
 	return true
+end
+
+-- Sets the level (1 to Progression.LevelCap) with no XP into it — developer panel. Fires LeveledUp when it changes
+-- (lower too), so the rank title and style unlocks follow.
+function DataService.setLevel(player: Player, level: number)
+	local profile = profiles[player]
+	if not profile then
+		return
+	end
+	local data = profile.Data
+	local old = data.Level
+	data.Level = math.clamp(math.floor(level), 1, Config.Progression.LevelCap)
+	data.XP = 0
+	replicate(player, "Level")
+	replicate(player, "XP")
+	player:SetAttribute("Level", data.Level)
+	if data.Level ~= old then
+		DataService.LeveledUp:Fire(player, data.Level)
+	end
 end
 
 -- Adds XP and applies level-ups. Returns the number of levels gained.

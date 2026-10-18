@@ -111,7 +111,7 @@ Dev.NextMode,Next mode,Developer panel section: force the next round's mode,
 Dev.ByVote,By vote,Developer panel button: let the vote decide again,
 Dev.SpawnProp,Spawn,Developer panel section: spawn a prop or the practice dummy in front of you,
 Dev.SpawnDummy,Dummy,Developer panel button: spawn the practice dummy in front of you,
-Dev.Me,Me,Developer panel section: set your own Percent / HP,
+Dev.Me,Percent / HP,Developer panel section: set the target's Percent / HP,
 Dev.Camera,Camera,Developer panel section: camera checks,
 Dev.TestShake,Test shake,Developer panel button: play a camera shake,
 Dev.ToggleShake,Shake on/off,Developer panel button: switch the Camera Shake setting,
@@ -120,7 +120,7 @@ Hud.Profile,{1}  ·  {2}  ·  {3},"Top-right profile chip: level, rank title, Sc
 Results.Reward,+{1} Scrap  ·  +{2} XP,What the local player earned in the round,+65 Scrap  ·  +140 XP
 Results.LevelUp,Level up! Level {1},Shown on the results panel after leveling up,Level up! Level 13
 Results.NewRank,New rank: {1},Shown on the results panel when the rank title changes,New rank: Raider
-Dev.Style,Style,Developer panel section: own and equip a fighting style,
+Dev.Style,Style + unlocks,"Developer panel section: own and equip a style, own every cosmetic, give Scrap",
 Dev.UnlockCosmetics,All cosmetics,Developer panel button: own every cosmetic,
 Common.Close,Close,Button that closes a panel,
 Menu.Locker,Locker,Lobby menu button that opens the Locker,
@@ -358,3 +358,9 @@ Codes.Error.TryAgain,Something went wrong. Try again.,Code check failed (no answ
 Prompt.Codes,Codes,Walk-up prompt at the lobby jukebox: opens the Codes screen,
 Prompt.Codes.Object,Jukebox,Walk-up prompt at the lobby jukebox: what it is,
 Dev.ResetCodes,Reset codes,Developer panel button: forget the codes you have used,
+Dev.TargetTitle,Target,Developer panel section: who the player buttons act on,
+Dev.Target,Target: {1},Developer panel button: the player the buttons act on (tap for the next player),Target: Me
+Dev.TargetMe,Me,Developer panel: you are the target,
+Dev.Progress,Progress,"Developer panel section: XP, level and styles",
+Dev.GiveXP,+{1} XP,Developer panel button: give XP (level-ups apply),+1000 XP
+Dev.AllStyles,All styles,Developer panel button: own every fighting style,

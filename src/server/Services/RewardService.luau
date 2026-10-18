@@ -86,6 +86,7 @@ function RewardService.Init(_self: any)
 	DataService.Loaded:Connect(function(player: Player, data)
 		setRank(player, data.Level)
 	end)
+	DataService.LeveledUp:Connect(setRank)
 end
 
 return RewardService
