@@ -65,6 +65,7 @@ export type PlayerData = {
 	Daily: DailyData,
 	Quests: QuestData,
 	LeaderboardWeek: LeaderboardWeek,
+	Social: { GroupRewardClaimed: boolean }, -- the Roblox group join reward was paid
 }
 
 local VERSION = 1
@@ -98,6 +99,7 @@ local Template: PlayerData = {
 	Daily = { LastClaimDay = -1, Streak = 0, PlaytimeDay = -1, PlaytimeSeconds = 0, PlaytimeClaims = 0 },
 	Quests = { Day = -1, Week = -1, Daily = { Progress = {}, Done = {} }, Weekly = { Progress = {}, Done = {} } },
 	LeaderboardWeek = { Week = -1, Wins = 0, KOs = 0, StartLevel = 1 },
+	Social = { GroupRewardClaimed = false },
 }
 
 return {

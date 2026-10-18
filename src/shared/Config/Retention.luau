@@ -21,7 +21,8 @@ type RetentionConfig = {
 		BoardCycle: number,
 		StorePrefix: string,
 	},
-	Group: { GroupId: number, Scrap: number },
+	Party: { MaxSize: number, InviteTimeout: number, Color: string },
+	Group: { GroupId: number, Scrap: number, RecheckInterval: number },
 }
 
 local Retention: RetentionConfig = {
@@ -84,8 +85,13 @@ local Retention: RetentionConfig = {
 		StorePrefix = "Leaderboard_", -- changing it starts every board from scratch
 	},
 
-	-- GroupId 0 = no group yet (reward disabled).
-	Group = { GroupId = 0, Scrap = 150 },
+	-- Parties (in one server): up to MaxSize players; an invite lasts InviteTimeout seconds. Members are taken into a
+	-- round with their leader and start on the same platform. Color: party members' name tags and [Party] chat tag.
+	Party = { MaxSize = 4, InviteTimeout = 30, Color = "#4FC3F7" },
+
+	-- The Roblox group: members get Scrap once (in a public server) and a [Crew] chat tag. GroupId 0 = no group yet
+	-- (both off). Membership is checked on join and every RecheckInterval seconds until the reward is paid.
+	Group = { GroupId = 0, Scrap = 150, RecheckInterval = 120 },
 }
 
 return Retention

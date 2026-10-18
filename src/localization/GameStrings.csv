@@ -231,7 +231,6 @@ Purchase.Done.VIP,VIP unlocked! Enjoy +25% Scrap and your gold tags. The Gold Tr
 Purchase.Done.EmotePack,Emote Pack unlocked! Your new victory emotes are in the Locker.,Notice after buying the Emote Pack pass,
 Purchase.Done.Scrap,+{1} Scrap. Thanks for your support!,Notice after buying a Scrap pack (amount),+2000 Scrap. Thanks for your support!
 Purchase.Done.Cosmetic,{1} is yours! Equip it in the Locker.,Notice after buying a Robux cosmetic (item name),Inferno is yours! Equip it in the Locker.
-Tag.VIPName,[VIP] {1},Gold name tag over a VIP player's head (display name),[VIP] Alex
 Tag.VIPChat,[VIP],Chat tag in front of a VIP player's messages,
 Dev.Robux,Robux,Developer panel section: switch perks and get Robux products for testing,
 Dev.TogglePerk,{1} on/off,Developer panel button: switch a perk (VIP / Emote Pack / Premium) on or off,VIP on/off
@@ -311,3 +310,35 @@ Leaderboard.LevelsGained,Levels gained,Leaderboard tab: levels gained this week,
 Leaderboard.Row,{1}. {2} — {3},"Leaderboard row (rank, display name, score)",1. Alex — 342
 Leaderboard.Empty,No scores yet. Be the first!,Leaderboard with no entries,
 Leaderboard.Offline,Showing this server only (leaderboards are offline).,"Leaderboard note when the global boards can't be reached (e.g. Studio without API access)",
+Tag.GroupChat,[Crew],Chat tag in front of messages from members of the game's Roblox group,
+Tag.PartyChat,[Party],Chat tag in front of messages from your own party members,
+Group.Reward,Thanks for joining the group! +{1} Scrap,Notice: the one-time group join reward was paid (Scrap),Thanks for joining the group! +150 Scrap
+Menu.Party,Party,Lobby menu button that opens the Party screen,
+Party.Title,Party,Title of the Party screen,
+Party.Info,Up to {1} players. Party members go into rounds with their leader and start on the same platform.,Party screen note (max party size),
+Party.Members,Your party,Party screen section: the members of your party,
+Party.InviteTitle,Invite players,Party screen section: players in the server you can invite,
+Party.Alone,You're not in a party. Invite someone below!,Party screen: not in a party,
+Party.LeaderName,{1} (leader),Party screen: the party leader's name,Alex (leader)
+Party.FriendName,{1} (friend),Party screen: a player who is your Roblox friend,Sam (friend)
+Party.Kick,Remove,Party screen button (leader): remove a member,
+Party.Leave,Leave,Party screen button: leave your party,
+Party.Invite,Invite,Party screen button: invite a player,
+Party.NobodyToInvite,Nobody to invite right now.,Party screen: no players can be invited,
+Party.FriendBonus,Friends in this server: {1} (+{2}% XP),"Party screen: Roblox friends here and the XP bonus they give (count, percent)",Friends in this server: 2 (+20% XP)
+Party.Join,Join,Party invite popup: accept,
+Party.No,No,Party invite popup: decline,
+Party.InvitedYou,{1} invited you to their party ({2} s),"Party invite popup (inviter's name, seconds to answer)",Alex invited you to their party (30 s)
+Party.Invited,Invite sent to {1}.,Notice: your party invite was sent (player's name),
+Party.Declined,{1} said no.,Notice: a player declined your party invite (name),
+Party.Joined,{1} joined the party!,Notice: a player joined your party (name),
+Party.YouJoined,You joined {1}'s party!,Notice: you joined a party (leader's name),
+Party.Left,{1} left the party.,Notice: a member left your party (name),
+Party.YouLeft,You left the party.,Notice: you left your party,
+Party.Kicked,You were removed from the party.,Notice: the leader removed you from the party,
+Party.Disbanded,Your party ended (nobody else is in it).,Notice: your party ended because everyone else left,
+Party.Error.Self,You can't do that to yourself.,Party action refused,
+Party.Error.NotLeader,Only the party leader can do that.,Party action refused,
+Party.Error.InParty,That player is already in a party.,Party action refused,
+Party.Error.Full,The party is full.,Party action refused,
+Party.Error.NoInvite,That invite has run out.,Party action refused,
