@@ -1,27 +1,33 @@
 --!strict
 --[[
-	DevService — the server side of the minimal developer panel (step 1.13; the full panel is step 3.9).
-	Commands arrive on the DevCommand remote and run only for allowed players (Server/Dev/DevRules: anyone in Studio
-	playtests, Config.Dev.AllowedUserIds in live servers). Allowed players get the DevAccess attribute, which makes
-	their client show the panel. Every command is printed to Output.
+	DevService — the server side of the developer panel (steps 1.13 and 3.9; bible §6). Commands arrive on the
+	DevCommand remote and run only for allowed players (Server/Dev/DevRules: anyone in Studio playtests,
+	Config.Dev.AllowedUserIds in live servers). Allowed players get the DevAccess attribute, which makes their client
+	show the panel. Every command is printed to Output.
+	A command may name a target player (the panel's Target button): player commands then act on them instead of the
+	sender — e.g. set another player's Percent / HP, spawn a prop in front of them, give them Scrap.
 
+	Round (everyone):
 	  StartRound / EndRound          start the vote now (one player on the join pad is enough) or close it; end the
 	                                 running round now
 	  ForceMap / ForceMode (id?)     the next round uses this map / mode whatever the vote says (no id = the vote)
 	  Crumble                        crumble the next platform now
-	  SpawnProp (typeId)             a prop in front of you
-	  SpawnDummy                     the practice dummy in front of you (replaces the last one)
-	  SetPercent / SetHealth (n)     your own Percent / HP
+	Target player:
+	  SpawnProp (typeId)             a prop in front of them
+	  SpawnDummy                     the practice dummy in front of them (replaces the last one)
+	  SetPercent / SetHealth (n)     their Percent / HP
 	  SetStyle (styleId)             own and equip a fighting style
+	  AllStyles                      own every fighting style
 	  UnlockCosmetics                own every cosmetic (equip them in the Locker)
-	  GiveScrap                      Config.Dev.GiveScrap Scrap (to test the Shop)
+	  GiveScrap / GiveXP             Config.Dev.GiveScrap Scrap / Config.Dev.GiveXP XP (level-ups apply)
+	  SetLevel (n)                   set their level (no XP into it)
 	  TogglePerk (perk)              switch VIP / EmotePack / Premium on or off for this session
 	  GiveProduct (key)              what a Robux product gives, without a purchase
-	  TogglePrivate                  act as a private server you own (Server menu, no rewards), or stop
+	  TogglePrivate                  act as a private server they own (Server menu, no rewards), or stop (Studio)
 	  DailyNextDay                   as if a day had passed (daily reward claim, playtime, daily quests)
 	  DailyPlaytime                  one playtime interval of play at once
-	  FinishQuest                    complete your next unfinished quest
-	  ResetCodes                     forget the codes you have used
+	  FinishQuest                    complete their next unfinished quest
+	  ResetCodes                     forget the codes they have used
 ]]
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -122,6 +128,19 @@ local commands: { [string]: Command } = {
 	GiveScrap = function(player)
 		DataService.addScrap(player, Config.Dev.GiveScrap, Analytics.Transaction.Gameplay, "DevPanel")
 	end,
+	GiveXP = function(player)
+		DataService.addXP(player, Config.Dev.GiveXP)
+	end,
+	SetLevel = function(player, _text, value)
+		if value then
+			DataService.setLevel(player, value)
+		end
+	end,
+	AllStyles = function(player)
+		for _, styleId in Config.Styles.Order do
+			StyleService.grant(player, styleId)
+		end
+	end,
 	TogglePerk = function(player, text)
 		if text then
 			MonetizationService.togglePerk(player, text)
@@ -150,14 +169,17 @@ local commands: { [string]: Command } = {
 	end,
 }
 
-local function onCommand(player: Player, name: string, text: string?, value: number?)
+local function onCommand(player: Player, name: string, text: string?, value: number?, targetId: number?)
 	if not isAllowed(player) then
 		return
 	end
 	local command = commands[name]
 	if command then
-		print(`[Dev] {player.Name}: {name} {text or ""} {if value then tostring(value) else ""}`)
-		command(player, text, value)
+		-- Player commands act on the panel's target (another player in this server), or on the sender.
+		local target = if targetId then Players:GetPlayerByUserId(targetId) or player else player
+		local on = if target ~= player then ` (on {target.Name})` else ""
+		print(`[Dev] {player.Name}: {name} {text or ""} {if value then tostring(value) else ""}{on}`)
+		command(target, text, value)
 	end
 end
 

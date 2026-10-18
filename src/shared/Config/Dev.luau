@@ -20,4 +20,8 @@ return {
 	PanelKey = "Backquote",
 	-- Scrap the developer panel's "+Scrap" button gives (to test the Shop).
 	GiveScrap = 5000,
+	-- XP the panel's "+XP" button gives (level-ups apply), and the levels its Level buttons set (5 / 12 / 25 unlock
+	-- the Slugger / Scrapper / Wrecker).
+	GiveXP = 1000,
+	LevelPresets = { 1, 5, 12, 25, 50 },
 }
