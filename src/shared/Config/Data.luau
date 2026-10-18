@@ -15,6 +15,8 @@ return {
 		LowGraphics = false,
 		ButtonLayout = "Default", -- a key of Config.Controls.Touch.Layouts
 	},
+	-- How much one press of the Settings menu's − / + buttons changes a volume.
+	VolumeStep = 0.1,
 	-- Allowed range of every numeric setting (changes outside it are rejected by the server).
 	SettingRanges = {
 		MusicVolume = { Min = 0, Max = 1 },
