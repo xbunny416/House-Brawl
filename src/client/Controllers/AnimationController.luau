@@ -16,11 +16,14 @@
 	When a layer lets go of a joint, the joint goes back to its rest offset. A clip with an uploaded animation in
 	Config.Animations.AssetIds plays that animation instead. Studio: Config.Dev.LogAnimations prints each rig found and
 	every clip started.
+	Performance (step 3.11): other characters far from the camera or off screen are posed only every few frames, and
+	not at all past Config.Performance.AnimationLod.Cull (Lib/AnimationLod; closer under Low Graphics).
 ]]
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
@@ -29,7 +32,9 @@ local Clips = require(Shared:WaitForChild("Animation"):WaitForChild("Clips"))
 local Motion = require(Shared:WaitForChild("Animation"):WaitForChild("Motion"))
 local Pose = require(Shared:WaitForChild("Animation"):WaitForChild("Pose"))
 
+local AnimationLod = require(script.Parent.Parent:WaitForChild("Lib"):WaitForChild("AnimationLod"))
 local DashController = require(script.Parent:WaitForChild("DashController"))
+local SettingsController = require(script.Parent:WaitForChild("SettingsController"))
 
 local DUMMY_TAG = "TrainingDummy"
 local RIG_RETRY = 1 -- seconds between looks for the joints of a character that is not (fully) streamed in yet
@@ -64,6 +69,7 @@ type Rig = {
 	Fading: Playing?, -- the loop that just ended, blending out
 	FadeStartedAt: number,
 	Tracks: { [string]: AnimationTrack },
+	Phase: number, -- spreads characters updated every few frames over different frames
 }
 
 local AnimationController = {}
@@ -158,6 +164,7 @@ local function rigOf(character: Model): Rig?
 		Posed = {},
 		Clock = 0,
 		LastFrame = t,
+		Phase = math.random(0, 3),
 		FrozenUntil = 0,
 		Pitch = 0,
 		Roll = 0,
@@ -414,18 +421,34 @@ function AnimationController.Start(_self: any)
 			AnimationController.play(character, "Dash")
 		end
 	end)
-	-- Right before each frame is drawn: every character this client sees.
+	-- Right before each frame is drawn: every character this client sees — far or off-screen ones only every few
+	-- frames, the farthest not at all (Lib/AnimationLod, Config.Performance.AnimationLod).
+	local frame = 0
 	RunService.RenderStepped:Connect(function()
+		frame += 1
+		local camera = Workspace.CurrentCamera
+		local lowGraphics = SettingsController.get("LowGraphics") == true
+		local own = Players.LocalPlayer.Character
+		local function due(character: Model, rig: Rig): boolean
+			local root = character:FindFirstChild("HumanoidRootPart")
+			if character == own or camera == nil or root == nil or not root:IsA("BasePart") then
+				return true
+			end
+			local _, onScreen = camera:WorldToViewportPoint(root.Position)
+			local distance = (camera.CFrame.Position - root.Position).Magnitude
+			local every = AnimationLod.interval(distance, onScreen, lowGraphics, false, Config.Performance.AnimationLod)
+			return every ~= nil and (frame + rig.Phase) % every == 0
+		end
 		for _, player in Players:GetPlayers() do
 			local character = player.Character
 			local rig = character and rigOf(character)
-			if character and rig then
+			if character and rig and due(character, rig) then
 				update(character, rig)
 			end
 		end
 		for _, dummy in CollectionService:GetTagged(DUMMY_TAG) do
 			local rig = if dummy:IsA("Model") then rigOf(dummy) else nil
-			if rig and dummy:IsA("Model") then
+			if rig and dummy:IsA("Model") and due(dummy, rig) then
 				update(dummy, rig)
 			end
 		end

@@ -46,6 +46,31 @@ return {
 			seen[row[1]] = true
 		end
 	end,
+	["no hard-coded UI text: every Text / PlaceholderText / prompt text set in code comes from GameStrings"] = function()
+		local files: { string } = {}
+		walk("src", files)
+		for _, path in files do
+			local lineNumber = 0
+			for line in string.gmatch(fs.readFile(path), "[^\n]+") do
+				lineNumber += 1
+				local code = string.gsub(line, "%-%-.*$", "")
+				local field, value = string.match(code, '[%.%s](%a*Text)%s*=%s*"([^"]*)"')
+				if field and value and string.find(value, "%a") then
+					error(`{path}:{lineNumber} sets {field} to a hard-coded string: "{value}"`)
+				end
+			end
+		end
+	end,
+	["strings with {n} placeholders have an example (translators see a filled-in line)"] = function()
+		local missing: { string } = {}
+		for index = 2, #rows do
+			local row = rows[index]
+			if string.find(row[2], "{%d+}") and (row[4] == nil or row[4] == "") then
+				table.insert(missing, row[1])
+			end
+		end
+		expect.equal(table.concat(missing, ", "), "", "keys without an Example")
+	end,
 	["every mode, map, style and rank has its strings"] = function()
 		for id in Config.Modes.List do
 			expect.truthy(keys[`Mode.{id}.Name`] and keys[`Mode.{id}.Desc`], `Mode.{id}`)
