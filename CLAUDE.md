@@ -21,7 +21,8 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   (not yet playtested); 3.5 Badges skipped for now (owner). 3.7 Party system + friend XP bonus + group reward + chat
   tags, 3.8 Codes, 3.9 Full developer panel and 3.10 Settings menu + loading screen + How to play are built (not
   yet playtested). 3.11 Low-end mobile performance pass + localization check built (not yet
-  tested on a phone). **Next step:** 3.12 Launch checklist support. The place must be published (File → Publish to
+  tested on a phone). 3.12 Launch support: `docs/LAUNCH.md` (owner's checklist) and `lune run tools/launch-check`.
+  **Phase 3 is done in code; what's left is owner-side** (see docs/LAUNCH.md) plus playtests and fixes. The place must be published (File → Publish to
   Roblox) for DataStores to work in Studio.
 
 ## How this repo works
@@ -70,6 +71,7 @@ selene src                  # lint
 scripts/typecheck.sh        # strict type-check with luau-lsp + Roblox API types
 lune run tests/run          # syntax-compile every src/*.luau + run specs
 lune run maps/build         # regenerate maps/generated/*.rbxmx after editing maps/layouts (a spec checks this)
+lune run tools/launch-check  # list the ids / placeholders still unset before release (report only)
 rojo build default.project.json -o build/JunkyardBrawl.rbxlx
 ```
 
@@ -225,7 +227,8 @@ any errors are fixed before the next item.
 - [x] 3.9 Full developer panel
 - [x] 3.10 Settings menu, loading screen, tutorial replay (a How to play page while the tutorial is skipped)
 - [x] 3.11 Low-end mobile performance pass + localization check
-- [ ] 3.12 Launch checklist support (owner-side: icon, thumbnails, maturity form, beta test)
+- [x] 3.12 Launch checklist support (owner-side: icon, thumbnails, maturity form, beta test) — `docs/LAUNCH.md` +
+      `lune run tools/launch-check`
 
 ## Progress log
 
@@ -278,6 +281,7 @@ any errors are fixed before the next item.
 | 2026-10-18 | 3.9 Full developer panel: Target button (player commands act on any player in the server: Percent / HP, spawn prop / dummy, Scrap, unlocks, perks, daily / quests / codes), Progress section (+1000 XP, set level 1 / 5 / 12 / 25 / 50, all styles), DataService.setLevel, rank title follows every level change; DevCommand carries the target UserId | #46 |
 | 2026-10-18 | 3.10 Settings menu (music / SFX volume − / +, camera shake, low graphics, touch button layout when there is a choice, camera sensitivity note) with a How to play page (rules + controls for the device), loading screen in ReplicatedFirst (title, random tip, waits for the game and the player's data, fades out), Config.Data.VolumeStep, Config.World.Loading | #47 |
 | 2026-10-18 | 3.11 Performance + localization: animation detail levels (other characters posed every frame only up close and in view, every 2–4 frames further / off screen, not past 300 studs; Low Graphics closer), one-time frame-rate check turns Low Graphics on below 40 FPS (GraphicsAutoChecked setting), neon steady under Low Graphics, Config.Performance; specs: no hard-coded UI text, every {n} string has an Example, AnimationLod; unused Notify.Welcome removed | #48 |
+| 2026-10-18 | 3.12 Launch support: docs/LAUNCH.md (publish + game settings, Robux items / group / badges with where each id goes, audio, store page with icon / thumbnail shot list / description draft / maturity notes, translation upload, the bible's pre-launch tests, launch day) and tools/launch-check (lists unset pass / product / group / badge / audio ids and the placeholder code) | #49 |
 
 ## Decisions and interpretations
 
