@@ -21,6 +21,7 @@
 	  DailyNextDay                   as if a day had passed (daily reward claim, playtime, daily quests)
 	  DailyPlaytime                  one playtime interval of play at once
 	  FinishQuest                    complete your next unfinished quest
+	  ResetCodes                     forget the codes you have used
 ]]
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -34,6 +35,7 @@ local Server = script.Parent.Parent
 local DevRules = require(Server:WaitForChild("Dev"):WaitForChild("DevRules"))
 local Analytics = require(script.Parent:WaitForChild("Analytics"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
+local CodeService = require(script.Parent:WaitForChild("CodeService"))
 local CosmeticService = require(script.Parent:WaitForChild("CosmeticService"))
 local CrumbleService = require(script.Parent:WaitForChild("CrumbleService"))
 local DailyService = require(script.Parent:WaitForChild("DailyService"))
@@ -139,6 +141,9 @@ local commands: { [string]: Command } = {
 	end,
 	FinishQuest = function(player)
 		QuestService.devFinishNext(player)
+	end,
+	ResetCodes = function(player)
+		CodeService.devReset(player)
 	end,
 	DailyPlaytime = function(player)
 		DailyService.devAddPlaytime(player)

@@ -151,6 +151,7 @@ local function buildSections()
 			"DailyPlaytime"
 		),
 		command(Localization.format("Dev.FinishQuest"), "FinishQuest"),
+		command(Localization.format("Dev.ResetCodes"), "ResetCodes"),
 	})
 
 	section("Dev.Camera", {
