@@ -299,8 +299,8 @@ players.
 ### 5.3 Screens
 
 Loading, Lobby HUD, Map & Mode vote, Round HUD, Results / MVP, Spectate, Shop (Daily, Styles, Cosmetics, Robux),
-Locker, Daily Quests, Daily Reward calendar, Leaderboards, Party panel, Codes, Settings (camera sensitivity,
-music/SFX volume, low graphics, camera shake, button layout), Tutorial overlay, Purchase confirmations, Developer test
+Locker, Daily Quests, Daily Reward calendar, Leaderboards, Party panel, Codes, Settings (music/SFX volume, low graphics,
+camera shake, button layout; camera sensitivity is Roblox's own setting — games can't change it), How to play, Tutorial overlay, Purchase confirmations, Developer test
 panel.
 
 ## 6. Technical rules

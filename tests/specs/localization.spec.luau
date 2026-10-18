@@ -72,6 +72,12 @@ return {
 		for _, reason in ShopRules.Reasons do
 			expect.truthy(keys[`Shop.Error.{reason}`], `Shop.Error.{reason}`)
 		end
+		for index = 1, Config.World.Loading.TipCount do
+			expect.truthy(keys[`Tip.{index}`], `Tip.{index}`)
+		end
+		for id in Config.Controls.Touch.Layouts do
+			expect.truthy(keys[`Layout.{id}`], `Layout.{id}`)
+		end
 		for _, reason in CodeRules.Reasons do
 			expect.truthy(keys[`Codes.Error.{reason}`], `Codes.Error.{reason}`)
 		end

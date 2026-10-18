@@ -19,8 +19,8 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   server settings are built (not yet playtested). Arenas doubled in size with four layers and rounds are 4:00 (owner,
   2026-10-17). 3.3 Daily login streak + playtime rewards, 3.4 Daily + weekly quests and 3.6 Leaderboards are built
   (not yet playtested); 3.5 Badges skipped for now (owner). 3.7 Party system + friend XP bonus + group reward + chat
-  tags, 3.8 Codes and 3.9 Full developer panel are built (not yet playtested). **Next step:** 3.10 Settings menu,
-  loading screen, tutorial replay. The place must be published (File → Publish to
+  tags, 3.8 Codes, 3.9 Full developer panel and 3.10 Settings menu + loading screen + How to play are built (not
+  yet playtested). **Next step:** 3.11 Low-end mobile performance pass + localization check. The place must be published (File → Publish to
   Roblox) for DataStores to work in Studio.
 
 ## How this repo works
@@ -49,6 +49,7 @@ Roblox Studio MCP server).
 | `src/client/` | `StarterPlayer.StarterPlayerScripts.Client` | `Main.client.luau` + `Controllers/` (input, HUD, camera, VFX) |
 | `src/client/Lib/` | `...Client.Lib` | Pure client logic tested by specs (action map, touch layout, camera shake, dash rules) |
 | `src/client/Ui/` | `...Client.Ui` | `Kit`: shared look (colors, fonts) and builders for panels, labels, buttons |
+| `src/first/` | `ReplicatedFirst` | `LoadingScreen.client.luau` (runs before everything else) |
 | `src/localization/GameStrings.csv` | `LocalizationService.GameStrings` | Every player-facing string (Key, Source, Context, Example) |
 | `src/server/Vendor/` | `ServerScriptService.Server.Vendor` | Third-party modules kept as published (see `licenses/`) |
 | `maps/layouts/` | — | Map layouts as code (platform sizes, spots, decor) — the source of truth for blockouts |
@@ -221,7 +222,7 @@ any errors are fixed before the next item.
 - [x] 3.7 Party system + friend XP bonus + group reward + chat tags
 - [x] 3.8 Codes
 - [x] 3.9 Full developer panel
-- [ ] 3.10 Settings menu, loading screen, tutorial replay
+- [x] 3.10 Settings menu, loading screen, tutorial replay (a How to play page while the tutorial is skipped)
 - [ ] 3.11 Low-end mobile performance pass + localization check
 - [ ] 3.12 Launch checklist support (owner-side: icon, thumbnails, maturity form, beta test)
 
@@ -274,6 +275,7 @@ any errors are fixed before the next item.
 | 2026-10-18 | Party bar (top-left "Party 2/4" with avatar cards, #43) removed again at the owner's request ("go back to normal"); parties work as in 3.7 | #44 |
 | 2026-10-18 | 3.8 Codes: CodeService (RedeemCode remote, codes in the server-only ServerConfig: Scrap and / or a cosmetic, optional expiry, once per player, not in private servers), Codes screen (menu + lobby jukebox prompt), Codes data field, dev "Reset codes", pure Codes/CodeRules + specs | #45 |
 | 2026-10-18 | 3.9 Full developer panel: Target button (player commands act on any player in the server: Percent / HP, spawn prop / dummy, Scrap, unlocks, perks, daily / quests / codes), Progress section (+1000 XP, set level 1 / 5 / 12 / 25 / 50, all styles), DataService.setLevel, rank title follows every level change; DevCommand carries the target UserId | #46 |
+| 2026-10-18 | 3.10 Settings menu (music / SFX volume − / +, camera shake, low graphics, touch button layout when there is a choice, camera sensitivity note) with a How to play page (rules + controls for the device), loading screen in ReplicatedFirst (title, random tip, waits for the game and the player's data, fades out), Config.Data.VolumeStep, Config.World.Loading | #PR |
 
 ## Decisions and interpretations
 
@@ -560,6 +562,18 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   first; touch taps the prompt. The prompts are made on the client (opening a screen needs no server) and re-made
   when a streamed-out part comes back; they hide while a menu screen is open or the player is fighting. They use
   Roblox's default prompt look until the art pass. The left-edge menu still opens both screens anywhere in the lobby.
+- **Settings, loading screen, How to play (3.10):** the Settings screen (6th in the left-edge menu) changes every
+  setting through `SettingsController` (server-checked): music / SFX volume with − / + buttons in steps of
+  `Data.VolumeStep` = 0.1 (no drag slider: the buttons work the same with mouse, touch and gamepad), camera shake and
+  low graphics On / Off, and the touch button layout (shown on touch only when `Controls.Touch.Layouts` has more than
+  one). Camera sensitivity stays in the saved data but isn't shown: a game script can't change Roblox's camera
+  sensitivity (forking the PlayerModule's camera input would be the only way), so a note points to Roblox's own menu.
+  "Tutorial replay": the tutorial is skipped (owner), so Settings has a **How to play** page instead — six rule lines
+  and the controls for the current device (`KeyHint` boxes: key names / gamepad glyphs; touch gets a note); no reward.
+  The **loading screen** is `src/first/LoadingScreen.client.luau` (mapped to ReplicatedFirst): it removes Roblox's
+  default screen, shows the title, a random tip (`Tip.1`–`Tip.8`) and "Loading...", stays at least
+  `World.Loading.MinTime` = 1.5 s and until `game:IsLoaded()` and the player's `Level` attribute (set when the data
+  loads), at most 20 s, then fades out (0.6 s). Its colors repeat Kit's (the client modules aren't loaded yet).
 - **Social (3.7):** parties live in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,
@@ -690,8 +704,9 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   Neon, explosions are a client-drawn cartoon blast (2.7). Carry pose and throw animation
   are scripted clips (2.6). Flights are simulated by the server (props are server-owned while flying), so throws
   look slightly delayed on high ping.
-- **Camera sensitivity** is saved and validated but not applied: Roblox does not let scripts change mouse/gamepad
-  sensitivity. Needs a custom approach in 3.10.
+- **Camera sensitivity** is saved and validated but not used or shown: Roblox does not let scripts change mouse /
+  gamepad sensitivity, so the Settings screen points players to Roblox's own menu (3.10). A custom camera input (a
+  forked PlayerModule) would be the only way to offer it in-game.
 - **Studio input debug:** `Config.Dev.LogInput` prints every action and device change to Output in Studio playtests.
   Test touch with Studio's Device Emulator (a phone in landscape).
 - **Developer panel (Studio):** press ` (Backquote, `Config.Dev.PanelKey`) or click DEV (top left). Round: start now
@@ -714,6 +729,9 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Dash movement is client-side** (clients simulate their character), so the once-per-jump air rule is enforced by
   the client; the server enforces the cooldown and hitstun, which gate the invulnerability and Perfect Dodge.
 - **Owner's Roblox UserId** is needed for `Config.Dev.AllowedUserIds` before live testing of the developer panel.
+- **Settings test (Studio):** the loading screen shows on Play (title, a tip, "Loading...") and fades out once you
+  load. Settings (left menu): − / + change music / SFX volume (hear it once audio ids are set), Camera shake and Low
+  graphics switch On / Off and stay after rejoining (with saving on); How to play shows the rules and your controls.
 - **Codes test (Studio):** Codes (menu, or walk up to the jukebox on the west wall) → type `launch` → +250 Scrap;
   again → "already used"; a made-up code → "doesn't exist". Dev panel → Daily → "Reset codes" to use it again. Output
   shows `[Codes]`.
