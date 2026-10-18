@@ -369,8 +369,7 @@ panel.
 - **Social:** party system (up to 4), friend bonus +10% XP per friend in server (max +30%), group join reward
   150 Scrap + group chat tag. Parties are formed in a server from the Party screen (invite → Join / No popup);
   members go into a round with their leader (when the leader stands on the join pad) and start on the same platform
-  (owner, 2026-10-18); party members see each other's names in the party color and a [Party] tag in chat, and a party bar at the
-  top left shows "Party 2/4" with every member's avatar headshot (gold ring = leader), name and where they are. Group
+  (owner, 2026-10-18); party members see each other's names in the party color and a [Party] tag in chat. Group
   members get a [Crew] chat tag; the 150 Scrap is paid once, in a public server.
 - **Codes & events:** one-use codes validated on the server (stored in Config); seasonal map remixes, double-Scrap
   weekends, event-only cosmetics.

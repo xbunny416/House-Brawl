@@ -1,3 +1,4 @@
+| 2026-10-18 | Party bar (top-left "Party 2/4" with avatar cards, #43) removed again at the owner's request ("go back to normal"); parties work as in 3.7 | #PR |
 # Junkyard Brawl — working notes for Claude
 
 Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs/PROJECT_BIBLE.md).
@@ -270,7 +271,6 @@ any errors are fixed before the next item.
 | 2026-10-17 | 3.4 Quests: QuestService (every lifetime stat counts toward today's 3 daily quests — a per-player pick of the 7 — and the weekly one, in the round's mode; done = Scrap at once + notice), Quests screen (progress bars, rewards, reset countdowns) from the menu and the lobby quest board (walk-up prompt), Quests data field, DataService.StatIncremented, RoundService.currentMode, dev "Finish quest" (+ "Next day" restarts daily quests), pure QuestRules + specs | #40 |
 | 2026-10-17 | 3.6 Leaderboards (3.5 Badges skipped by the owner): LeaderboardService (all-time + weekly Wins / KOs / Level in OrderedDataStores, changed scores saved every 2 min and on leave / close, tops read + names looked up, Leaderboards remote; this-server fallback offline; nothing saved from private servers), LeaderboardWeek data, lobby screens (top 10, all-time / this week every 10 s), Leaderboard menu screen (top 50), pure LeaderboardRules + specs | #41 |
 | 2026-10-18 | 3.7 Social: PartyService on pure Social/Parties (invite / join / leave / kick, up to 4, PartyId / PartyLeader attributes, invite popup), party members queued with their leader and spawned on one platform (Round/SpawnPlan), Party screen (members, invite list with friends, friend XP bonus line), party-colored name tags + [Party] / [Crew] chat tags (PlayerTagController), GroupRewardService (group check, one-time 150 Scrap, GroupMember attribute; off while GroupId is 0), Social data field; specs | #42 |
-| 2026-10-18 | Party bar (owner): while in a party, a top-left strip "Party 2/4" with a card per member — avatar headshot (rbxthumb, gold ring for the leader, initial as fallback), name / "You", status (Lobby / Fighting / Respawning / Watching) — in the lobby and in rounds; headshots in the Party screen rows | #43 |
 
 ## Decisions and interpretations
 
@@ -558,12 +558,6 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   :GetGroupsAsync` on join and every 120 s until paid, sets `GroupMember`, pays `Group.Scrap` once (saved in
   `Social.GroupRewardClaimed`, Onboarding transaction; waits for a public server); everything is off while
   `Retention.Group.GroupId` is 0. Party remotes accept negative UserIds (Studio test players).
-  **Party bar (owner, 2026-10-18: "really show the players in the same party, their profile, 2/4"):** while in a
-  party, a strip at the top left (under Roblox's buttons, above the left-edge menu) shows "Party n/4" and a card per
-  member, the leader first: avatar headshot (`rbxthumb://type=AvatarHeadShot`, no web call; the first letter shows
-  until it loads — Studio test players with negative UserIds only show the letter), a gold ring for the leader, the
-  name ("You" for yourself) and their `RoundStatus` (Lobby / Fighting / Respawning / Watching, colored). Shown in the
-  lobby and in rounds; the Party screen's rows show the headshots too.
 - **Leaderboards (3.6):** six OrderedDataStores — `Leaderboard_<Stat>` (all-time) and `Leaderboard_<Stat>_W<week>`
   (weekly, a fresh store each Monday; `StorePrefix` in Config) for Wins, KOs and Level. All-time scores are the
   lifetime stats / level; weekly Wins / KOs are counted from `DataService.StatIncremented` into the player's
@@ -706,7 +700,6 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Party test (Studio, 2 players):** Test → Clients and Servers → 2 players. Player1: Party screen → Invite Player2;
   Player2: Join on the popup. Both see the other's name in blue and `[Party]` in chat. Player1 stands on the join pad
   while Player2 stays in the lobby: both go into the round, on the same platform. Leave / Remove work from the screen.
-  The party bar (top left) shows "Party 2/2" with both cards; their status changes to Fighting in the round.
   Output shows `[Party]`. The group perks need a group: put its id in `Config.Retention.Group.GroupId`.
 - **Leaderboards test (Studio):** with API access off the boards say "this server only" and list you from your stats
   (lobby screens on the south wall, and the Leaderboard menu); play a round and they update within 2 min. With
