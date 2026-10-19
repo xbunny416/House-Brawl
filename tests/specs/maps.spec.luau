@@ -360,6 +360,16 @@ return {
 			expect.equal(onPad, false, `{seat.Name} on the join pad`)
 		end
 	end,
+	["lobby: a few main lamps cast shadows (Future lighting), all tagged for Low Graphics"] = function()
+		local shadows = 0
+		for _, light in lobby:GetDescendants() do
+			if light:IsA("Light") and light.Shadows then
+				shadows += 1
+				expect.truthy(light:HasTag("ShadowLight"), `{light:GetFullName()} casts shadows but isn't tagged`)
+			end
+		end
+		expect.truthy(shadows >= 1 and shadows <= 12, `{shadows} shadow-casting lights (keep it to the main lamps)`)
+	end,
 	["lobby: KillY sits below the floor"] = function()
 		expect.equal(lobby:GetAttribute("KillY"), Config.Maps.LobbyOrigin[2] - 40)
 	end,

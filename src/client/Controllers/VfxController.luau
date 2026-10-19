@@ -8,9 +8,10 @@
 	    retro cartoon explosion (fireball, ring shockwave, smoke, debris); a structure breaking into chunks of its
 	    own color and material; the blue Perfect Dodge flash (and a blue edge flash for the dodger).
 	  * A dash streak behind every dash (unless a dash-trail cosmetic already draws one).
-	Low Graphics (Settings): no particles, flying debris, post-effects (Bloom, color grading) or shadows; the flashes,
-	the starburst and the edge flash stay. Crumbling-platform effects live in CrumbleController.
+	Low Graphics (Settings): no particles, flying debris, post-effects (Bloom, color grading) or shadows (the sun's and
+	the lobby lamps', ShadowLight-tagged); the flashes, the starburst and the edge flash stay. Crumbling-platform effects live in CrumbleController.
 ]]
+local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
@@ -524,9 +525,17 @@ end
 -- Low Graphics
 ---------------------------------------------------------------------------------------------------------------------
 
+-- Lamps that cast shadows under Future lighting (maps/lib/Builder.light with shadows).
+local SHADOW_LIGHT_TAG = "ShadowLight"
+
 local function applyGraphics()
 	local low = lowGraphics()
 	Lighting.GlobalShadows = not low
+	for _, light in CollectionService:GetTagged(SHADOW_LIGHT_TAG) do
+		if light:IsA("Light") then
+			light.Shadows = not low
+		end
+	end
 	for _, effect in Lighting:GetChildren() do
 		if effect:IsA("PostEffect") then
 			effect.Enabled = not low
@@ -560,6 +569,12 @@ function VfxController.Start(_self: any)
 	SettingsController.Changed:Connect(function(key: string)
 		if key == "LowGraphics" then
 			applyGraphics()
+		end
+	end)
+	-- Lobby lamps that stream in later.
+	CollectionService:GetInstanceAddedSignal(SHADOW_LIGHT_TAG):Connect(function(light: Instance)
+		if light:IsA("Light") then
+			light.Shadows = not lowGraphics()
 		end
 	end)
 	-- Lighting effects the server adds later (MapService creates them on first use).

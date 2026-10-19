@@ -242,12 +242,16 @@ function Builder.sign(spec: PartSpec & {
 	return board
 end
 
-function Builder.light(parentPart: any, lightColor: string, range: number, brightness: number): any
+-- A point light. `shadows`: it casts soft shadows (Future lighting) — only the few main lamps, it costs frame time.
+function Builder.light(parentPart: any, lightColor: string, range: number, brightness: number, shadows: boolean?): any
 	local light = Instance.new("PointLight")
 	light.Color = color(lightColor)
 	light.Range = range
 	light.Brightness = brightness
-	light.Shadows = false
+	light.Shadows = shadows == true
+	if shadows then
+		light:AddTag("ShadowLight") -- Low Graphics turns these shadows off (VfxController)
+	end
 	light.Parent = parentPart
 	return light
 end

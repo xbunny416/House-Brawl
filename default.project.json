@@ -41,6 +41,12 @@
 				"ChatVersion": "TextChatService"
 			}
 		},
+		"Lighting": {
+			"$properties": {
+				"Technology": "Future",
+				"GlobalShadows": true
+			}
+		},
 		"LocalizationService": {
 			"GameStrings": {
 				"$path": "src/localization/GameStrings.csv"
