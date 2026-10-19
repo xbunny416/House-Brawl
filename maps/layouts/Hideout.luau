@@ -813,6 +813,129 @@ local function questBoard()
 	end):AddTag("QuestBoard")
 end
 
+--[[
+	The spin wheel on the west wall (owner's fix list, 2026-10-19: "a spin wheel"). A wood backboard with a gold rim,
+	and a Rotor: a black face, WHEEL_SEGMENTS pie slices (each two wedges; attribute Segment = its prize's index, the
+	client paints them in the prize colours from Config.Retention.Wheel and turns the Rotor to each spin's prize), a gold
+	hub and pegs. Slice 1 starts under the pointer at the top; slices go round toward +Z (south). The prompt that opens
+	the wheel screen sits on the Backboard (LobbyPromptController).
+]]
+local WHEEL_SEGMENTS = 8 -- one per prize in Config.Retention.Wheel.Prizes (the maps spec checks)
+local function spinWheel()
+	local centerX, centerY, centerZ = -HALF_X + 2, 11, -25.5 -- between the wall pillars at z -17 and -34
+	local radius = 6.5
+	B.model("SpinWheel", function()
+		B.part({
+			Name = "Backboard",
+			Size = { 0.5, radius * 2 + 1.6, radius * 2 + 1.6 },
+			Position = { centerX - 1.4, centerY, centerZ },
+			Shape = "Cylinder",
+			Color = "WoodDark",
+			Material = "Wood",
+		})
+		B.part({
+			Name = "Rim",
+			Size = { 0.4, radius * 2 + 0.8, radius * 2 + 0.8 },
+			Position = { centerX - 1, centerY, centerZ },
+			Shape = "Cylinder",
+			Color = "Gold",
+			Material = "Metal",
+		})
+		B.part({
+			Name = "Pointer",
+			Size = { 0.5, 1.5, 1.5 },
+			Position = { centerX + 0.4, centerY + radius + 0.35, centerZ },
+			Rotation = { 45, 0, 0 },
+			Color = "Red",
+			Material = "SmoothPlastic",
+			CanCollide = false,
+		})
+		B.sign({
+			Name = "WheelSign",
+			Size = { 12, 2.4, 0.4 },
+			Position = { centerX - 1.3, centerY + radius + 2.8, centerZ },
+			Rotation = B.yaw("East"),
+			Color = "Black",
+			Material = "SmoothPlastic",
+			Key = "Lobby.Sign.Wheel",
+			TextColor = "Gold",
+			Glow = true,
+		})
+		B.model("Rotor", function()
+			B.part({
+				Name = "Face",
+				Size = { 0.3, radius * 2, radius * 2 },
+				Position = { centerX - 0.7, centerY, centerZ },
+				Shape = "Cylinder",
+				Color = "Black",
+				Material = "SmoothPlastic",
+				CanCollide = false,
+			})
+			-- A slice = two right-angled wedges meeting on the line from the centre to the middle of its rim chord.
+			local half = math.pi / WHEEL_SEGMENTS
+			local inner, side = radius * math.cos(half), radius * math.sin(half) * 0.97 -- a hair short: thin seams show
+			for index = 1, WHEEL_SEGMENTS do
+				local angle = (index - 1) * 2 * half
+				local up = { 0, math.cos(angle), math.sin(angle) } -- outward, toward this slice's middle
+				local along = { 0, -math.sin(angle), math.cos(angle) } -- along the rim chord
+				local middle = { centerY + inner * up[2], centerZ + inner * up[3] } -- the chord's middle (Y, Z)
+				for _, sign in { 1, -1 } do
+					B.part({
+						Name = `Slice{index}`,
+						Size = { 0.2, inner, side },
+						Position = {
+							centerX - 0.45,
+							middle[1] - inner / 2 * up[2] + sign * side / 2 * along[2],
+							middle[2] - inner / 2 * up[3] + sign * side / 2 * along[3],
+						},
+						-- Up runs inward (chord middle → centre); Right flips for the second half so its slope faces out.
+						Axes = { Right = { sign, 0, 0 }, Up = { 0, -up[2], -up[3] } },
+						Shape = "Wedge",
+						Color = "OffWhite",
+						Material = "SmoothPlastic",
+						CanCollide = false,
+						CastShadow = false,
+						Attributes = { Segment = index },
+					})
+				end
+				B.part({
+					Name = "Peg",
+					Size = { 0.45, 0.45, 0.45 },
+					Position = {
+						centerX - 0.35,
+						centerY + (radius - 0.3) * math.cos(angle + half),
+						centerZ + (radius - 0.3) * math.sin(angle + half),
+					},
+					Shape = "Ball",
+					Color = "Gold",
+					Material = "Metal",
+					CanCollide = false,
+				})
+			end
+			local hub = B.part({
+				Name = "Hub",
+				Size = { 0.6, 2.2, 2.2 },
+				Position = { centerX - 0.3, centerY, centerZ },
+				Shape = "Cylinder",
+				Color = "Gold",
+				Material = "Metal",
+				CanCollide = false,
+			})
+			B.light(hub, "WarmLight", 12, 0.6)
+		end)
+	end):AddTag("SpinWheel")
+	-- A red mat in front of it.
+	B.part({
+		Name = "WheelMat",
+		Size = { 6, 0.08, 10 },
+		Position = { -HALF_X + 6, 0.12, centerZ },
+		Color = "Sofa",
+		Material = "Carpet",
+		CanCollide = false,
+		CastShadow = false,
+	})
+end
+
 -- Three tall dark leaderboard boards on the south wall (reference: leaderboard-boards.png): a wood frame with gold
 -- corners, a cream title with a thin gold underline, and the screen the rows are drawn on (LeaderboardController).
 local function leaderboards()
@@ -1036,6 +1159,7 @@ function Layout.build(origin: { number }): any
 			locker()
 			jukebox()
 			questBoard()
+			spinWheel()
 			leaderboards()
 			spawns()
 			lounge()

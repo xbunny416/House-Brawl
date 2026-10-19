@@ -103,6 +103,17 @@ local Definitions: { [string]: Definition } = {
 		Args = { Guard.oneOf({ "Free", "Paid" }) },
 		RateLimit = { Rate = 0.7, Burst = 2 },
 	},
+	-- Client -> server: spin the lobby spin wheel (Shared/WheelRules). (kind: "Free" | "Paid" — the spin the wheel screen
+	-- showed). Returns (ok: boolean, result) — result { Index, Kind, Amount, Cosmetic? } or a reason from WheelRules.Reasons.
+	SpinWheel = {
+		Kind = "Function",
+		Direction = "ToServer",
+		Args = { Guard.oneOf({ "Free", "Paid" }) },
+		RateLimit = { Rate = 0.5, Burst = 2 },
+	},
+	-- Server -> all clients: someone spun the wheel, so every client turns the lobby wheel to the prize.
+	-- (index: number — in Config.Retention.Wheel.Prizes, name: string — who spun)
+	WheelSpun = { Kind = "Event", Direction = "ToClient" },
 	-- Client -> server: equip one of your style slots (refused while fighting in a round). (index: number)
 	EquipStyleSlot = {
 		Kind = "Event",

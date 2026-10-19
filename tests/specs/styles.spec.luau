@@ -31,6 +31,7 @@ local function slots(): any
 		Equipped = template.Equipped,
 		Pity = template.Pity,
 		FreeSpinDay = template.FreeSpinDay,
+		BonusSpins = template.BonusSpins,
 	}
 end
 
@@ -144,6 +145,20 @@ return {
 		expect.equal(StyleRules.isSlot(styles, Roll.Slots.Max + 1), false)
 		styles.Slots[styles.Active] = "Gone"
 		expect.equal(StyleRules.equipped(styles), Config.Styles.Default, "an unknown style falls back")
+	end,
+	["bonus spins from the wheel are free spins once today's is used"] = function()
+		local styles = slots()
+		styles.FreeSpinDay = DAY
+		expect.equal(StyleRules.freeSpinReady(styles, DAY), false)
+		styles.BonusSpins = 2
+		expect.equal(StyleRules.freeSpinReady(styles, DAY), true)
+		StyleRules.applySpin(styles, "Free", DAY, "Slugger")
+		expect.equal(styles.BonusSpins, 1)
+		local fresh = slots()
+		fresh.BonusSpins = 1
+		StyleRules.applySpin(fresh, "Free", DAY, "Slugger")
+		expect.equal(fresh.FreeSpinDay, DAY, "today's free spin goes first")
+		expect.equal(fresh.BonusSpins, 1)
 	end,
 	["odds read like the reference: whole numbers plain, up to 3 decimals"] = function()
 		expect.equal(StyleRules.formatPercent(70), "70")

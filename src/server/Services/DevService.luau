@@ -25,6 +25,7 @@
 	  TogglePerk (perk)              switch VIP / Premium on or off for this session
 	  GiveProduct (key)              what a Robux product gives, without a purchase
 	  TogglePrivate                  act as a private server they own (Server menu, no rewards), or stop (Studio)
+	  WheelFree                      today's free spin on the lobby wheel is ready again
 	  DailyNextDay                   as if a day had passed (daily reward claim, playtime, daily quests)
 	  DailyPlaytime                  one playtime interval of play at once
 	  FinishQuest                    complete their next unfinished quest
@@ -55,6 +56,7 @@ local PropService = require(script.Parent:WaitForChild("PropService"))
 local QuestService = require(script.Parent:WaitForChild("QuestService"))
 local RoundService = require(script.Parent:WaitForChild("RoundService"))
 local StyleService = require(script.Parent:WaitForChild("StyleService"))
+local WheelService = require(script.Parent:WaitForChild("WheelService"))
 
 local SPAWN_DISTANCE = 6 -- studs in front of the player
 
@@ -155,6 +157,9 @@ local commands: { [string]: Command } = {
 	end,
 	TogglePrivate = function(player)
 		PrivateServerService.toggleSimulated(player)
+	end,
+	WheelFree = function(player)
+		WheelService.resetFreeSpin(player)
 	end,
 	DailyNextDay = function(player)
 		DailyService.devNextDay(player)

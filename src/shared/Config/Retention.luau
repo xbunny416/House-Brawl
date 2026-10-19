@@ -2,6 +2,10 @@
 -- Onboarding, daily/playtime rewards, quests, badges, leaderboards and group perks. Bible §8.
 local Types = require(script.Parent.Types)
 
+-- One segment of the lobby spin wheel. Kind: "Coins" / "XP" (Amount of it), "StyleSpin" (one bonus free style spin),
+-- "Cosmetic" (a random cosmetic sold for Scrap the player doesn't own). Percent: its exact chance per spin.
+export type WheelPrize = { Id: string, Kind: string, Amount: number, Percent: number, Color: string }
+
 type RetentionConfig = {
 	Tutorial: { Scrap: number, Title: string },
 	LoginStreak: { Scrap: { number }, FinalDayCosmetic: boolean, FinalDayFallbackScrap: number, ResetHourUTC: number },
@@ -22,6 +26,12 @@ type RetentionConfig = {
 		StorePrefix: string,
 	},
 	Group: { GroupId: number, Scrap: number, RecheckInterval: number },
+	Wheel: {
+		SpinPrice: number,
+		FreeSpinResetHourUTC: number,
+		CosmeticFallbackScrap: number,
+		Prizes: { WheelPrize },
+	},
 }
 
 local Retention: RetentionConfig = {
@@ -87,6 +97,26 @@ local Retention: RetentionConfig = {
 	-- The Roblox group: members get Scrap once (in a public server) and a [Crew] chat tag. GroupId 0 = no group yet
 	-- (both off). Membership is checked on join and every RecheckInterval seconds until the reward is paid.
 	Group = { GroupId = 0, Scrap = 150, RecheckInterval = 120 },
+
+	-- The lobby spin wheel (owner's fix list, 2026-10-19: "1 free spin a day plus extra spins for Scrap"). Paid spins
+	-- are a paid random item: every prize and its exact Percent show before a spin, they are offered only where
+	-- PolicyService allows paid random items, and the maturity questionnaire declares them. Percents add up to 100;
+	-- the segments go round the wheel in this order. Nothing in private servers (nothing is earned there).
+	Wheel = {
+		SpinPrice = 200, -- Scrap per spin after the day's free one
+		FreeSpinResetHourUTC = 0,
+		CosmeticFallbackScrap = 500, -- the Cosmetic prize when the player owns every cosmetic sold for Scrap
+		Prizes = {
+			{ Id = "Coins50", Kind = "Coins", Amount = 50, Percent = 30, Color = "#7A8B99" },
+			{ Id = "XP150", Kind = "XP", Amount = 150, Percent = 15, Color = "#4A9BFF" },
+			{ Id = "Coins100", Kind = "Coins", Amount = 100, Percent = 20, Color = "#5BD16A" },
+			{ Id = "StyleSpin", Kind = "StyleSpin", Amount = 1, Percent = 10, Color = "#B05BD1" },
+			{ Id = "Coins250", Kind = "Coins", Amount = 250, Percent = 12, Color = "#2F8C8C" },
+			{ Id = "Cosmetic", Kind = "Cosmetic", Amount = 1, Percent = 5, Color = "#FF4FA3" },
+			{ Id = "Coins500", Kind = "Coins", Amount = 500, Percent = 6, Color = "#FF8A3D" },
+			{ Id = "Coins1000", Kind = "Coins", Amount = 1000, Percent = 2, Color = "#F2C14E" },
+		},
+	},
 }
 
 return Retention

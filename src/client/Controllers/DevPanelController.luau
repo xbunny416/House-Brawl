@@ -201,6 +201,7 @@ local function buildSections()
 
 	section("Dev.Daily", {
 		command(Localization.format("Dev.DailyNextDay"), "DailyNextDay"),
+		command(Localization.format("Dev.WheelFree"), "WheelFree"),
 		command(
 			Localization.format("Dev.DailyPlaytime", { Config.Retention.Playtime.Interval // 60 }),
 			"DailyPlaytime"

@@ -59,6 +59,7 @@ export type StyleData = {
 	Equipped: string, -- = Slots[Active], for everything that reads the equipped style
 	Pity: number, -- spins since the last Config.Styles.Roll.PityRarity style
 	FreeSpinDay: number, -- day of the last free spin (days as for Daily; -1 = never)
+	BonusSpins: number, -- extra free spins won on the lobby spin wheel (used after the day's free spin)
 }
 
 export type PlayerData = {
@@ -79,6 +80,7 @@ export type PlayerData = {
 	LeaderboardWeek: LeaderboardWeek,
 	Social: { GroupRewardClaimed: boolean }, -- the Roblox group join reward was paid
 	Codes: { [string]: boolean }, -- redeem codes this player has used (ServerConfig.Codes keys)
+	Wheel: { FreeDay: number }, -- the lobby spin wheel: day of the last free spin (-1 = never)
 }
 
 local VERSION = 3 -- 2: styles in slots (the style roll) instead of owned styles; 3: victory emotes removed
@@ -117,6 +119,7 @@ local Template: PlayerData = {
 		Equipped = defaultStyle,
 		Pity = 0,
 		FreeSpinDay = -1,
+		BonusSpins = 0,
 	},
 	Cosmetics = { Owned = {}, Equipped = {} },
 	Titles = { Owned = {}, Equipped = "" },
@@ -129,6 +132,7 @@ local Template: PlayerData = {
 	LeaderboardWeek = { Week = -1, Wins = 0, KOs = 0, StartLevel = 1 },
 	Social = { GroupRewardClaimed = false },
 	Codes = {},
+	Wheel = { FreeDay = -1 },
 }
 
 return {
