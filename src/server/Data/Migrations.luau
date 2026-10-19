@@ -33,6 +33,24 @@ Migrations.Steps[1] = function(data)
 	}
 end
 
+-- 2 → 3 (owner, 2026-10-19: "remove victory emotes"): the emote cosmetics and their slot are gone, so owned emotes and
+-- the equipped one are dropped.
+local REMOVED_EMOTES = { "Flex", "JunkDance", "Taunt", "Champion", "Robot", "Salute", "AirGuitar", "Backflip" }
+Migrations.Steps[2] = function(data)
+	local cosmetics = data.Cosmetics
+	if type(cosmetics) ~= "table" then
+		return
+	end
+	if type(cosmetics.Owned) == "table" then
+		for _, itemId in REMOVED_EMOTES do
+			cosmetics.Owned[itemId] = nil
+		end
+	end
+	if type(cosmetics.Equipped) == "table" then
+		cosmetics.Equipped.VictoryEmote = nil
+	end
+end
+
 -- Upgrades `data` in place to `targetVersion`. Returns false if a step is missing (data is left as far as it got).
 function Migrations.run(data: { [string]: any }, targetVersion: number): boolean
 	local version = if type(data.Version) == "number" then data.Version else 1

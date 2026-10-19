@@ -2,11 +2,10 @@
 --[[
 	Scripted R15 animations (bible §4.2: "Creator Store, Animation Capture, or scripted"). The clips themselves are pose
 	data in Shared/Animation/Clips; these are the numbers around them. Which clips a fighting style uses is in
-	Config.Styles.List[id].Animations; a victory emote's clip is its cosmetic's Emote field.
+	Config.Styles.List[id].Animations.
 ]]
 type AnimationsConfig = {
 	BlendTime: number,
-	EmoteDelay: number,
 	HitStop: { Light: number, Heavy: number },
 	Motion: {
 		LeanDegrees: number,
@@ -21,7 +20,6 @@ type AnimationsConfig = {
 
 local Animations: AnimationsConfig = {
 	BlendTime = 0.06, -- seconds a clip takes to blend in over (and out back to) the default walk / idle animations
-	EmoteDelay = 1, -- seconds after a round ends before the winner's victory emote plays (they are back in the lobby)
 	-- On every landed hit the attacker's and the victim's poses freeze this long ("hit-stop": it sells the impact).
 	HitStop = { Light = 0.05, Heavy = 0.09 },
 	-- The always-on layer under every clip (Shared/Animation/Motion), from how each character moves.

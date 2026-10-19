@@ -59,6 +59,21 @@ return {
 		Migrations.run(gone, 2)
 		expect.equal(gone.Styles.Equipped, Config.Styles.Default, "a style that no longer exists falls back")
 	end,
+	["migration 2 → 3: owned and equipped victory emotes are dropped, other cosmetics stay"] = function()
+		local data: { [string]: any } = {
+			Version = 2,
+			Cosmetics = {
+				Owned = { Flex = true, Robot = true, ConeHat = true },
+				Equipped = { VictoryEmote = "Flex", Hat = "ConeHat" },
+			},
+		}
+		expect.equal(Migrations.run(data, 3), true)
+		expect.equal(data.Cosmetics.Owned.Flex, nil)
+		expect.equal(data.Cosmetics.Owned.Robot, nil)
+		expect.equal(data.Cosmetics.Owned.ConeHat, true)
+		expect.equal(data.Cosmetics.Equipped.VictoryEmote, nil)
+		expect.equal(data.Cosmetics.Equipped.Hat, "ConeHat")
+	end,
 	["new players start at level 1 with starting Scrap and zeroed stats"] = function()
 		local template = DataTemplate.Template
 		expect.equal(template.Level, 1)

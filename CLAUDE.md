@@ -131,7 +131,7 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
   Clients prompt (`PromptGamePassPurchase` / `PromptProductPurchase` / `PromptPremiumPurchase`); the server grants
   what Roblox confirms. Ids, prices and the Robux tab order are `Config.Monetization`; the rules (offers, perk
   cosmetics, receipts → product) are `Shared/MonetizationRules`. Ask `MonetizationService.has(player, perk)` for VIP /
-  EmotePack / Premium (clients: the Player attributes of the same names). A cosmetic's `Exclusive` names where it
+  Premium (clients: the Player attributes of the same names). A cosmetic's `Exclusive` names where it
   comes from: a perk, or "Robux" (a product whose `Cosmetic` is that item). Region rules: ask
   `Services/PlayerPolicyService.allows(player, feature)` (`Shared/PolicyRules`) before adding paid random items,
   paid trading or external links.
@@ -300,6 +300,7 @@ any errors are fixed before the next item.
 | 2026-10-19 | Owner's fix list 2/6, part 2 — UI: "Game in progress" card under the lobby menu (live dot, arena, time left, fighters still in, Watch / Stop watching: the camera follows the round from the lobby through the spectate system, the server streams the arena to lobby watchers, arena music while watching); small light-grey key hints along the bottom edge (keyboard / gamepad: Run + Menu in the lobby and "[E] Shop"-style hints for walk-up prompts in reach, Punch · hold to charge + Scoreboard while fighting, Switch fighter while spectating) from Config.Controls.Hints and the pure Lib/HintRules + spec; bottom HUD bar, stamina bar, key panel and spectate bar moved up 14 px; MenuController.addWidget | #54 |
 | 2026-10-19 | Owner's fix list 3/6 — style roll: styles come from spins instead of levels / the Shop (Slugger Uncommon 70%, Scrapper Rare 25%, Wrecker Legendary 5%, Brawler the default and never rolled; pity: the 50th spin without a Legendary is one); 1 free spin a day, more for 250 Coins (paid random item: odds shown before spinning, paid spins only where PolicyService allows them, none in private servers' free spin); slots: 1 to start, more from the StyleSlot Robux product (up to 4), lockable; Inventory's Styles tab is the roll page (slots, equipped style, reel, odds, pity, free-spin countdown); data v2 (Styles = slots, migration keeps the equipped style), SpinStyle / EquipStyleSlot / LockStyleSlot remotes, Shop's Styles tab removed, dev panel Free spin / Pity next / +1 style slot; StyleRules rewritten + specs | #55 |
 | 2026-10-19 | Style roll as its own screen (owner: "prefer style as separate ui instead of within inventory"): StyleRollController (left-menu "Styles" button, third: Shop, Inventory, Styles, Settings, Quests; a bigger panel), the Inventory is cosmetics only again, StyleRollView gets a countdown-only tick (no rebuild every second), menu buttons a little shorter for five | #56 |
+| 2026-10-19 | Victory emotes removed (owner: "remove victory emotes"): the VictoryEmote cosmetic slot and its 8 items (Flex, Junk Dance, Taunt, Champion and the Emote Pack's Robot, Salute, Air Guitar, Backflip), their clips, the winner's emote after a round and the equip preview, `Animations.EmoteDelay`, and the Emote Pack game pass (it only sold emotes); data v3 drops owned / equipped emotes; strings, specs and docs updated | #PR |
 
 ## Decisions and interpretations
 
@@ -682,6 +683,15 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   `EquipStyle` became `EquipStyleSlot`. Developer panel (Styles + items): style buttons put that style in the
   equipped slot, "Free spin", "Pity next" (pity = PityAt − 1), "+1 style slot" (the product's grant, overflow
   included); "All styles" is gone.
+- **Victory emotes removed (owner, 2026-10-19: "remove victory emotes"):** the `VictoryEmote` cosmetic slot is gone
+  from `Config.Cosmetics.Slots` (so from the Inventory, the Shop's slot tabs, the daily rotation and the day-7 pick)
+  with its 8 items, their scripted clips (Flex, JunkDance, Taunt, Champion, Robot, Salute, AirGuitar, Backflip) and
+  `Animations.EmoteDelay`; round winners no longer emote in the lobby and equipping no longer previews. The **Emote
+  Pack** game pass only sold 4 of those emotes, so it is gone too (`GamePasses`, `RobuxOrder`, the `EmotePack` perk,
+  its strings); VIP and Premium are the perks left. Data v3 (`Migrations.Steps[2]`) removes the emote ids from
+  `Cosmetics.Owned` and `Cosmetics.Equipped.VictoryEmote`. The pose sampler still allows equal key times (the snap
+  that the Backflip used), now tested with a small made-up clip. Older decisions below that mention emotes or the
+  Emote Pack describe what was built then.
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,
@@ -798,8 +808,8 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   the project now sets TextChatService, so after `rojo serve` syncs it **save the place**. Not ours: the
   `rbxassetid://203785492` "asset type does not match" warning (not in `src/`, `maps/` or the place: likely an avatar
   item), UIBlox `FoundationProvider` and `RoundedCorner8` StyleRule warnings (Roblox's own UI).
-- **Robux items need the owner:** create the VIP (299 R$) and Emote Pack (149 R$) game passes and the 6 developer
-  products (Scrap Pack S / M / L 49 / 149 / 399 R$; Inferno 149, Lightning Trail 99, Galaxy Burst 199) on the Creator
+- **Robux items need the owner:** create the VIP (299 R$) game pass and the 7 developer
+  products (Scrap Pack S / M / L 49 / 149 / 399 R$; Inferno 149, Lightning Trail 99, Galaxy Burst 199; Style slot 99) on the Creator
   Dashboard, then put their ids in `Config.Monetization`. Until then the Shop shows "Coming soon" and the VIP bonus
   is off (Premium and friend bonuses already apply). Studio test: dev panel → Robux → "VIP on/off" (Gold Trail in
   the Locker, +25% Scrap; the gold name tag shows to *other* players: 2-player test), product buttons (Scrap or the
@@ -822,7 +832,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   (starts the vote with one player on the join pad, or closes it), end now, crumble a platform; next map / mode (or
   back to the vote); spawn any prop or the practice dummy in front of you; set your own Percent (0 / 100 / 200) or
   HP (100 / 50 / 10); own + equip any fighting style, all styles, every cosmetic; +5000 Scrap, +1000 XP, set level;
-  switch VIP / Emote Pack / Premium on or off and get any Robux product; daily / quest / code tests; test camera shake
+  switch VIP / Premium on or off and get any Robux product; daily / quest / code tests; test camera shake
   and switch the Camera Shake / Low Graphics settings. "Target: Me" at the top: tap it to act on another player (2-player
   test). Output shows `[Dev]` lines (with "on <player>" for a target).
 - **Data in Studio:** with "Studio Access to API Services" off — or while the place isn't published to Roblox (the

@@ -7,8 +7,7 @@
 	  * DashTrail: a streak behind every dash (CombatService.Dashed).
 	  * KOEffect: a particle burst on each KO you score — at the victim for HP KOs, around you for ring-outs (the
 	    victim is out in the void by then).
-	  * VictoryEmote: the round winner plays it back in the lobby while the results show (Config.Animations
-	    .EmoteDelay after the round ends); equipping one plays it once as a preview. NameplateFrame has no items yet.
+	  NameplateFrame has no items yet. (Victory emotes were removed by the owner, 2026-10-19.)
 	EquipCosmetic(slot, itemId?) equips an owned item (nil takes the slot off). Items are bought in the Shop
 	(ShopService → grant); Exclusive ones come with a pass / Premium or a Robux product (MonetizationService →
 	setOwned / grant), and pass / Premium items are taken back (and unequipped) when the perk is gone.
@@ -23,12 +22,10 @@ local CosmeticRules = require(Shared:WaitForChild("CosmeticRules"))
 local Net = require(Shared:WaitForChild("Net"))
 local Types = require(Shared:WaitForChild("Config"):WaitForChild("Types"))
 
-local Animate = require(script.Parent.Parent:WaitForChild("Visuals"):WaitForChild("Animate"))
 local Attached = require(script.Parent.Parent:WaitForChild("Visuals"):WaitForChild("Attached"))
 local Effects = require(script.Parent.Parent:WaitForChild("Visuals"):WaitForChild("Effects"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
-local RoundService = require(script.Parent:WaitForChild("RoundService"))
 
 local TRAIL_NAME = "CosmeticTrail"
 local CHARACTER_WAIT = 10
@@ -185,10 +182,6 @@ function CosmeticService.equip(player: Player, slot: string, itemId: string?, gr
 		end
 	end)
 	applyAll(player)
-	local emote = if itemId then Config.Cosmetics.Items[itemId].Emote else nil
-	if emote and player.Character then
-		Animate.play(player.Character, emote) -- a preview of the emote just equipped
-	end
 	log(`{player.Name}: {slot} = {itemId or "none"}`)
 	return true
 end
@@ -233,25 +226,6 @@ function CosmeticService.grantAll(player: Player)
 	end)
 end
 
--- The round's winners (placement 1, not AFK) play their victory emote, once they are back in the lobby.
-local function onRoundEnded(summary: RoundService.Summary)
-	for _, result in summary.Results do
-		local item = if result.Placement == 1 and not result.AFKAtEnd
-			then CosmeticService.equippedIn(result.Player, "VictoryEmote")
-			else nil
-		local emote = item and item.Emote
-		if emote then
-			local player = result.Player
-			task.delay(Config.Animations.EmoteDelay, function()
-				local character = player.Character
-				if character and player.Parent then
-					Animate.play(character, emote)
-				end
-			end)
-		end
-	end
-end
-
 local function onCharacterAdded(player: Player, character: Model)
 	if
 		character:WaitForChild("Head", CHARACTER_WAIT) and character:WaitForChild("HumanoidRootPart", CHARACTER_WAIT)
@@ -269,7 +243,6 @@ function CosmeticService.Init(_self: any)
 	end)
 	CombatService.Dashed:Connect(onDashed)
 	CombatService.KnockedOut:Connect(onKnockedOut)
-	RoundService.RoundEnded:Connect(onRoundEnded)
 	DataService.Loaded:Connect(function(player: Player)
 		applyAll(player)
 	end)

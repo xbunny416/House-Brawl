@@ -4,9 +4,9 @@
 	advantage. Ids are 0 until the passes / products are created on the Creator Dashboard (Monetization → Passes /
 	Developer Products); an item with id 0 shows "Coming soon" in the Shop and can't be bought. PriceRobux is for
 	reference only: the Shop shows the live price from MarketplaceService once it has loaded.
-	  * Passes unlock the cosmetics whose Exclusive is the pass key (VIP → GoldTrail, EmotePack → 4 victory emotes)
-	    for as long as the player owns the pass. VIP also gives +25% Scrap (Economy.Bonuses.VIPScrap) and a gold name
-	    tag and chat tag in VIPColor.
+	  * Passes unlock the cosmetics whose Exclusive is the pass key (VIP → GoldTrail) for as long as the player owns
+	    the pass (the Emote Pack pass went with the victory emotes, owner 2026-10-19). VIP also gives +25% Scrap
+	    (Economy.Bonuses.VIPScrap) and a gold name tag and chat tag in VIPColor.
 	  * Roblox Premium (not sold here) unlocks the cosmetics whose Exclusive is "Premium" and +10% Scrap while the
 	    player is subscribed.
 	  * Products: Scrap packs (Scrap), Robux-only cosmetics (Cosmetic = the item, whose Exclusive is "Robux") and the
@@ -30,7 +30,6 @@ type MonetizationConfig = {
 local Monetization: MonetizationConfig = {
 	GamePasses = {
 		VIP = { Id = 0, PriceRobux = 299 }, -- +25% Scrap, gold name + chat tags, exclusive gold dash trail
-		EmotePack = { Id = 0, PriceRobux = 149 }, -- 4 extra victory emotes
 	},
 	Products = {
 		ScrapPackS = { Id = 0, PriceRobux = 49, Scrap = 500 },
@@ -46,7 +45,6 @@ local Monetization: MonetizationConfig = {
 	-- The Shop's Robux tab, in this order (game pass and product keys).
 	RobuxOrder = {
 		"VIP",
-		"EmotePack",
 		"ScrapPackS",
 		"ScrapPackM",
 		"ScrapPackL",

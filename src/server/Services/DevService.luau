@@ -22,7 +22,7 @@
 	  UnlockCosmetics                own every cosmetic (equip them in the Inventory)
 	  GiveScrap / GiveXP             Config.Dev.GiveScrap Scrap / Config.Dev.GiveXP XP (level-ups apply)
 	  SetLevel (n)                   set their level (no XP into it)
-	  TogglePerk (perk)              switch VIP / EmotePack / Premium on or off for this session
+	  TogglePerk (perk)              switch VIP / Premium on or off for this session
 	  GiveProduct (key)              what a Robux product gives, without a purchase
 	  TogglePrivate                  act as a private server they own (Server menu, no rewards), or stop (Studio)
 	  DailyNextDay                   as if a day had passed (daily reward claim, playtime, daily quests)

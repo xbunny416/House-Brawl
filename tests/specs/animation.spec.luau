@@ -31,7 +31,7 @@ return {
 			expect.equal(clip.Keys[1].T, 0, `{name} starts at 0`)
 			local last = -1
 			for index, key in clip.Keys do
-				-- Equal times are allowed: the clip snaps from one key to the next (Backflip: 180° → −180°).
+				-- Equal times are allowed: the clip snaps from one key to the next (e.g. a turn from 180° to −180°).
 				expect.truthy(key.T >= last, `{name} key {index} out of order`)
 				expect.truthy(key.T <= clip.Duration, `{name} key {index} after the end`)
 				last = key.T
@@ -62,10 +62,6 @@ return {
 			HitLeft = 0.6,
 			HitRight = 0.6,
 			Tumble = 0.6,
-			Flex = 2,
-			JunkDance = 2,
-			Taunt = 2,
-			Champion = 2,
 		}
 		for name, length in lengths do
 			expect.truthy(Clips[name], `{name} exists`)
@@ -89,20 +85,22 @@ return {
 			end
 		end
 	end,
-	["every victory emote cosmetic has a 2 s clip; uploaded ids only for known clips"] = function()
-		for itemId, item in Config.Cosmetics.Items do
-			if item.Slot == "VictoryEmote" then
-				local clip = item.Emote and Clips[item.Emote]
-				expect.truthy(clip, `{itemId} clip`)
-				expect.equal(clip.Duration, 2, `{itemId} length`)
-			end
-		end
+	["uploaded animation ids only for known clips"] = function()
 		for clipName in Config.Animations.AssetIds do
 			expect.truthy(Clips[clipName], `asset id for unknown clip {clipName}`)
 		end
 	end,
-	["two keys at the same time snap: the backflip turns 0 → 180, −180 → 0 and ends upright"] = function()
-		local flip = Clips.Backflip
+	["two keys at the same time snap: a flip turns 0 → 180, −180 → 0 and ends upright"] = function()
+		local flip = {
+			Duration = 2,
+			Keys = {
+				{ T = 0, Pose = {} },
+				{ T = 0.75, Ease = "Linear", Pose = { Root = { 180, 0, 0, 0, 0, 0 } } },
+				{ T = 0.75, Pose = { Root = { -180, 0, 0, 0, 0, 0 } } },
+				{ T = 1, Ease = "Linear", Pose = { Root = { -60, 0, 0, 0, 0, 0 } } },
+				{ T = 2, Pose = {} },
+			},
+		}
 		expect.near(Pose.sample(flip, 0.7499).Root[1], 180, 1, "just before the top")
 		expect.near(Pose.sample(flip, 0.75).Root[1], -180, 0.001, "at the top")
 		expect.near(Pose.sample(flip, 0.9).Root[1], -108, 0.001, "on the way down")
