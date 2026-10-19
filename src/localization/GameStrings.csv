@@ -1,6 +1,10 @@
 Key,Source,Context,Example
-Currency.Scrap,{1} Scrap,Amount of the soft currency,250 Scrap
+Currency.Scrap,{1} Coins,Amount of the soft currency,250 Coins
 Common.Level,Level {1},Player level label,Level 12
+Profile.Coins,COINS,"Left-side profile block: label under the coin balance",
+Profile.Level,Level {1} · {2},"Left-side profile block: level and rank title",Level 12 · Raider
+Profile.XP,{1} / {2} XP,"Left-side profile block: XP into this level / XP needed for the next",340 / 500 XP
+Profile.MaxLevel,Max level,Left-side profile block: shown on the XP bar at the level cap,
 Mode.Classic.Name,Classic,Game mode name,
 Mode.Classic.Desc,100 HP and 3 lives. Last fighter standing wins.,Game mode description,
 Mode.Casual.Name,Casual,Game mode name,
@@ -115,30 +119,29 @@ Dev.Camera,Camera,Developer panel section: camera checks,
 Dev.TestShake,Test shake,Developer panel button: play a camera shake,
 Dev.ToggleShake,Shake on/off,Developer panel button: switch the Camera Shake setting,
 Dev.ToggleLowGraphics,Low gfx on/off,Developer panel button: switch the Low Graphics setting,
-Hud.Profile,{1}  ·  {2}  ·  {3},"Top-right profile chip: level, rank title, Scrap",Level 12  ·  Raider  ·  1250 Scrap
-Results.Reward,+{1} Scrap  ·  +{2} XP,What the local player earned in the round,+65 Scrap  ·  +140 XP
+Results.Reward,+{1} Coins  ·  +{2} XP,What the local player earned in the round,+65 Coins  ·  +140 XP
 Results.LevelUp,Level up! Level {1},Shown on the results panel after leveling up,Level up! Level 13
 Results.NewRank,New rank: {1},Shown on the results panel when the rank title changes,New rank: Raider
-Dev.Style,Style + unlocks,"Developer panel section: own and equip a style, own every cosmetic, give Scrap",
+Dev.Style,Style + unlocks,"Developer panel section: own and equip a style, own every cosmetic, give Coins",
 Dev.UnlockCosmetics,All cosmetics,Developer panel button: own every cosmetic,
 Common.Close,Close,Button that closes a panel,
-Menu.Locker,Locker,Lobby menu button that opens the Locker,
-Locker.Title,Locker,Title of the Locker (equip styles and cosmetics),
-Locker.Styles,Styles,Locker tab: fighting styles,
-Locker.Equipped,Equipped,Locker card: this is the equipped style,
-Locker.EquippedRemovable,Equipped · tap to take off,Locker card: the equipped cosmetic (tapping removes it),
-Locker.Equip,Equip,Locker card: tap to equip,
-Locker.Price,{1} Scrap,Locker card: price of an item not owned yet,1500 Scrap
-Locker.UnlockStyle,Level {1} or {2} Scrap,"Locker card: how a style unlocks (level, Scrap price)",Level 12 or 3000 Scrap
-Locker.VIPOnly,VIP only,Locker card: item that comes with the VIP pass,
-Locker.PremiumOnly,Premium only,Locker card: item that comes with Roblox Premium,
-Slot.Skin,Skins,Locker tab: cosmetic slot,
-Slot.Hat,Hats,Locker tab: cosmetic slot,
-Slot.BackItem,Back items,Locker tab: cosmetic slot,
-Slot.DashTrail,Dash trails,Locker tab: cosmetic slot,
-Slot.KOEffect,KO effects,Locker tab: cosmetic slot,
-Slot.VictoryEmote,Victory emotes,Locker tab: cosmetic slot,
-Slot.NameplateFrame,Name plates,Locker tab: cosmetic slot,
+Menu.Locker,Inventory,Lobby menu button that opens the Inventory,
+Locker.Title,Inventory,Title of the Inventory (equip styles and cosmetics),
+Locker.Styles,Styles,Inventory tab: fighting styles,
+Locker.Equipped,Equipped,Inventory card: this is the equipped style,
+Locker.EquippedRemovable,Equipped · tap to take off,Inventory card: the equipped cosmetic (tapping removes it),
+Locker.Equip,Equip,Inventory card: tap to equip,
+Locker.Price,{1} Coins,Inventory card: price of an item not owned yet,1500 Coins
+Locker.UnlockStyle,Level {1} or {2} Coins,"Inventory card: how a style unlocks (level, Coins price)",Level 12 or 3000 Coins
+Locker.VIPOnly,VIP only,Inventory card: item that comes with the VIP pass,
+Locker.PremiumOnly,Premium only,Inventory card: item that comes with Roblox Premium,
+Slot.Skin,Skins,Inventory tab: cosmetic slot,
+Slot.Hat,Hats,Inventory tab: cosmetic slot,
+Slot.BackItem,Back items,Inventory tab: cosmetic slot,
+Slot.DashTrail,Dash trails,Inventory tab: cosmetic slot,
+Slot.KOEffect,KO effects,Inventory tab: cosmetic slot,
+Slot.VictoryEmote,Victory emotes,Inventory tab: cosmetic slot,
+Slot.NameplateFrame,Name plates,Inventory tab: cosmetic slot,
 Rarity.Common,Common,Cosmetic rarity,
 Rarity.Rare,Rare,Cosmetic rarity,
 Rarity.Premium,Premium,Cosmetic rarity (Robux / perks),
@@ -168,7 +171,7 @@ Cosmetic.Taunt.Name,Taunt,Victory emote name,
 Cosmetic.Champion.Name,Champion,Victory emote name,
 Common.Cancel,Cancel,Button that cancels a choice,
 Menu.Shop,Shop,Lobby menu button that opens the Shop,
-Dev.GiveScrap,+{1} Scrap,Developer panel button: give yourself Scrap,+5000 Scrap
+Dev.GiveScrap,+{1} Coins,Developer panel button: give yourself Coins,+5000 Coins
 Slot.Skin.One,Skin,Cosmetic slot name for one item,
 Slot.Hat.One,Hat,Cosmetic slot name for one item,
 Slot.BackItem.One,Back item,Cosmetic slot name for one item,
@@ -176,26 +179,26 @@ Slot.DashTrail.One,Dash trail,Cosmetic slot name for one item,
 Slot.KOEffect.One,KO effect,Cosmetic slot name for one item,
 Slot.VictoryEmote.One,Victory emote,Cosmetic slot name for one item,
 Slot.NameplateFrame.One,Name plate,Cosmetic slot name for one item,
-Shop.Title,Shop,Title of the Shop (buy styles and cosmetics with Scrap),
+Shop.Title,Shop,Title of the Shop (buy styles and cosmetics with Coins),
 Shop.Daily,Daily deals,Shop tab: today's discounted cosmetics,
 Shop.Styles,Styles,Shop tab: fighting styles,
 Shop.DailyInfo,{1}% off today · new deals in {2},"Shop: daily discount and time until the deals change (hours:minutes:seconds)",20% off today · new deals in 5:12:09
 Shop.StylesInfo,Styles also unlock for free when you reach their level.,Shop: note above the styles,
-Shop.CosmeticsInfo,Equip what you own in the Locker.,Shop: note above the cosmetics,
+Shop.CosmeticsInfo,Equip what you own in your Inventory.,Shop: note above the cosmetics,
 Shop.Owned,Owned,Shop card: the player already owns this,
-Shop.DealPrice,{1} Scrap (was {2}),Shop card: discounted price and the normal price,320 Scrap (was 400)
-Shop.StylePrice,{1} Scrap or Level {2},"Shop card: style price, or the level that unlocks it for free",1500 Scrap or Level 5
-Shop.NotForSale,Not for sale,Shop card: item that cannot be bought with Scrap,
+Shop.DealPrice,{1} Coins (was {2}),Shop card: discounted price and the normal price,320 Coins (was 400)
+Shop.StylePrice,{1} Coins or Level {2},"Shop card: style price, or the level that unlocks it for free",1500 Coins or Level 5
+Shop.NotForSale,Not for sale,Shop card: item that cannot be bought with Coins,
 Shop.ItemDetail,{1} · {2},"Shop card: item type and rarity",Hat · Common
-Shop.Confirm,Buy {1} for {2} Scrap? You have {3} Scrap.,"Purchase confirmation (item name, price, the player's Scrap)",Buy Cone Hat for 300 Scrap? You have 1250 Scrap.
-Shop.NeedMore,{1} costs {2} Scrap. You need {3} more Scrap: play rounds to earn it.,"Purchase confirmation when the player cannot afford the item (name, price, Scrap missing)",Chrome King costs 2500 Scrap. You need 400 more Scrap: play rounds to earn it.
+Shop.Confirm,Buy {1} for {2} Coins? You have {3} Coins.,"Purchase confirmation (item name, price, the player's Coins)",Buy Cone Hat for 300 Coins? You have 1250 Coins.
+Shop.NeedMore,{1} costs {2} Coins. You need {3} more Coins: play rounds to earn it.,"Purchase confirmation when the player cannot afford the item (name, price, Coins missing)",Chrome King costs 2500 Coins. You need 400 more Coins: play rounds to earn it.
 Shop.Buy,Buy,Purchase confirmation button,
 Shop.Buying,Buying...,Purchase confirmation button while the purchase is on its way,
 Shop.Bought,You got {1}!,Message after a purchase (item name),You got Cone Hat!
 Shop.Equip,Equip,Button after a purchase: put the new item on now,
-Shop.Error.NotForSale,This item can't be bought with Scrap.,Purchase refused,
+Shop.Error.NotForSale,This item can't be bought with Coins.,Purchase refused,
 Shop.Error.Owned,You already own this.,Purchase refused,
-Shop.Error.NotEnoughScrap,Not enough Scrap.,Purchase refused,
+Shop.Error.NotEnoughScrap,Not enough Coins.,Purchase refused,
 Shop.Error.PriceChanged,The daily deals just changed. Check the new price and try again.,Purchase refused because the price changed,
 Shop.Error.NotLoaded,Your data is still loading. Try again in a moment.,Purchase refused,
 Shop.Error.TryAgain,Something went wrong. Try again.,Purchase failed (no answer from the server),
@@ -209,33 +212,33 @@ Cosmetic.Robot.Name,Robot,Cosmetic name: a robot-dance victory emote (Emote Pack
 Cosmetic.Salute.Name,Salute,Cosmetic name: a salute victory emote (Emote Pack),
 Cosmetic.AirGuitar.Name,Air Guitar,Cosmetic name: an air-guitar victory emote (Emote Pack),
 Cosmetic.Backflip.Name,Backflip,Cosmetic name: a backflip victory emote (Emote Pack),
-Locker.EmotePackOnly,Emote Pack only,Locker card: item that comes with the Emote Pack pass,
-Locker.RobuxOnly,Robux item (Shop),Locker card: item sold for Robux in the Shop,
+Locker.EmotePackOnly,Emote Pack only,Inventory card: item that comes with the Emote Pack pass,
+Locker.RobuxOnly,Robux item (Shop),Inventory card: item sold for Robux in the Shop,
 Perk.VIP,VIP,Name of the VIP game pass,
-Perk.VIP.Desc,"+25% Scrap, a gold name tag and chat tag, and the Gold Trail.",Shop: what the VIP pass gives,
+Perk.VIP.Desc,"+25% Coins, a gold name tag and chat tag, and the Gold Trail.",Shop: what the VIP pass gives,
 Perk.EmotePack,Emote Pack,Name of the Emote Pack game pass,
 Perk.EmotePack.Desc,"4 extra victory emotes: Robot, Salute, Air Guitar and Backflip.",Shop: what the Emote Pack pass gives,
 Perk.Premium,Roblox Premium,Name of Roblox's Premium membership,
-Perk.Premium.Desc,+10% Scrap and the Premium Gold skin while you are subscribed.,Shop: what Roblox Premium gives in this game,
-Robux.ScrapPackS.Name,Scrap Pack S,Shop: name of the small Scrap pack (Robux),
-Robux.ScrapPackM.Name,Scrap Pack M,Shop: name of the medium Scrap pack (Robux),
-Robux.ScrapPackL.Name,Scrap Pack L,Shop: name of the large Scrap pack (Robux),
+Perk.Premium.Desc,+10% Coins and the Premium Gold skin while you are subscribed.,Shop: what Roblox Premium gives in this game,
+Robux.ScrapPackS.Name,Coin Pack S,Shop: name of the small Coin pack (Robux),
+Robux.ScrapPackM.Name,Coin Pack M,Shop: name of the medium Coin pack (Robux),
+Robux.ScrapPackL.Name,Coin Pack L,Shop: name of the large Coin pack (Robux),
 Shop.Robux,Robux,Shop tab: items sold for Robux,
 Shop.RobuxInfo,Thanks for supporting the game! Nothing sold for Robux gives an edge in a fight.,Shop: note above the Robux items,
 Shop.RobuxPrice,R$ {1},Shop card: price in Robux,R$ 149
 Shop.ComingSoon,Coming soon,Shop card: Robux item that can't be bought yet,
 Shop.GetPremium,Get Premium,Shop card: button text that opens Roblox's Premium purchase,
 Shop.PremiumActive,Active,Shop card: the player already has Roblox Premium,
-Purchase.Done.VIP,VIP unlocked! Enjoy +25% Scrap and your gold tags. The Gold Trail is in your Locker.,Notice after buying the VIP pass,
-Purchase.Done.EmotePack,Emote Pack unlocked! Your new victory emotes are in the Locker.,Notice after buying the Emote Pack pass,
-Purchase.Done.Scrap,+{1} Scrap. Thanks for your support!,Notice after buying a Scrap pack (amount),+2000 Scrap. Thanks for your support!
-Purchase.Done.Cosmetic,{1} is yours! Equip it in the Locker.,Notice after buying a Robux cosmetic (item name),Inferno is yours! Equip it in the Locker.
+Purchase.Done.VIP,VIP unlocked! Enjoy +25% Coins and your gold tags. The Gold Trail is in your Inventory.,Notice after buying the VIP pass,
+Purchase.Done.EmotePack,Emote Pack unlocked! Your new victory emotes are in your Inventory.,Notice after buying the Emote Pack pass,
+Purchase.Done.Scrap,+{1} Coins. Thanks for your support!,Notice after buying a Coin pack (amount),+2000 Coins. Thanks for your support!
+Purchase.Done.Cosmetic,{1} is yours! Equip it in your Inventory.,Notice after buying a Robux cosmetic (item name),Inferno is yours! Equip it in your Inventory.
 Tag.VIPChat,[VIP],Chat tag in front of a VIP player's messages,
 Dev.Robux,Robux,Developer panel section: switch perks and get Robux products for testing,
 Dev.TogglePerk,{1} on/off,Developer panel button: switch a perk (VIP / Emote Pack / Premium) on or off,VIP on/off
 Prompt.Shop,Shop,Walk-up prompt at the lobby bartender: opens the Shop,
 Prompt.Shop.Object,Bartender,Walk-up prompt at the lobby bartender: who it is,
-Prompt.Locker,Locker,Walk-up prompt in the lobby locker booth: opens the Locker,
+Prompt.Locker,Inventory,Walk-up prompt in the lobby locker booth: opens the Inventory,
 Prompt.Locker.Object,Locker booth,Walk-up prompt in the lobby locker booth: what it is,
 Menu.Server,Server,Lobby menu button that opens the private server settings (only the private server's owner sees it),
 PrivateServer.Title,Private server,Title of the private server settings screen,
@@ -243,25 +246,24 @@ PrivateServer.Mode,Mode,Private server settings row: lock the game mode,
 PrivateServer.Map,Map,Private server settings row: pick the arena,
 PrivateServer.RoundTime,Round length,Private server settings row: how long a round lasts,
 PrivateServer.Vote,By vote,Private server settings option: the players vote (no lock),
-PrivateServer.Info,"Private servers are for play and testing: no Scrap, XP or stats. Changes apply from the next round.",Private server settings note (nothing is earned in private servers),
+PrivateServer.Info,"Private servers are for play and testing: no Coins, XP or stats. Changes apply from the next round.",Private server settings note (nothing is earned in private servers),
 PrivateServer.InfoScaled,Rewards are {1}% in private servers. Changes apply from the next round.,Private server settings note when private servers pay part of the rewards (percent),Rewards are 50% in private servers. Changes apply from the next round.
-PrivateServer.Welcome,"Private server: just for play and testing. No Scrap, XP or stats are earned here.",Notice when joining a private server (nothing is earned there),
+PrivateServer.Welcome,"Private server: just for play and testing. No Coins, XP or stats are earned here.",Notice when joining a private server (nothing is earned there),
 PrivateServer.WelcomeScaled,Private server: round rewards are {1}% here.,Notice when joining a private server that pays part of the rewards (percent),Private server: round rewards are 50% here.
 Results.PrivateServer,Private server: nothing is earned here.,Results screen reward line in a private server (no rewards),
 Dev.TogglePrivate,Private on/off,Developer panel button: act as a private server you own (Studio),
-Menu.Daily,Daily,Lobby menu button that opens the Daily reward screen,
 Daily.Title,Daily reward,Title of the daily login reward screen,
 Daily.Day,Day {1},Daily reward card: day of the 7-day login streak,Day 3
 Daily.Today,Today,Daily reward card: today's reward,
 Daily.Claimed,Claimed,Daily reward card: already claimed,
 Daily.Claim,Claim,Button: claim today's login reward,
 Daily.Claiming,Claiming...,Claim button while the claim is on its way,
-Daily.Got,You got {1}!,Message after claiming the daily reward (Scrap amount or item name),You got 100 Scrap!
+Daily.Got,You got {1}!,Message after claiming the daily reward (Coins amount or item name),You got 100 Coins!
 Daily.Info,Log in every day for bigger rewards: miss a day and you start again at Day 1.,Daily reward screen note,
 Daily.ComeBack,Next reward in {1},Daily reward screen: time until the next reward (hours:minutes:seconds),Next reward in 5:12:09
-Daily.Playtime,"Playtime: +{1} Scrap every {2} minutes you play ({3}/{4} today)","Daily reward screen: playtime rewards (Scrap, minutes, paid today, max per day)",Playtime: +25 Scrap every 10 minutes you play (2/6 today)
+Daily.Playtime,"Playtime: +{1} Coins every {2} minutes you play ({3}/{4} today)","Daily reward screen: playtime rewards (Coins, minutes, paid today, max per day)",Playtime: +25 Coins every 10 minutes you play (2/6 today)
 Daily.PlaytimeDone,All {1} playtime rewards collected today. Come back tomorrow!,Daily reward screen: every playtime reward was paid today (count),All 6 playtime rewards collected today. Come back tomorrow!
-Daily.PlaytimeReward,+{1} Scrap for playing {2} minutes today!,Notice: a playtime reward was paid (Scrap and minutes played today),+25 Scrap for playing 20 minutes today!
+Daily.PlaytimeReward,+{1} Coins for playing {2} minutes today!,Notice: a playtime reward was paid (Coins and minutes played today),+25 Coins for playing 20 minutes today!
 Daily.Error.Claimed,You already claimed today's reward.,Daily reward claim refused,
 Daily.Error.NotLoaded,Your data is still loading. Try again in a moment.,Daily reward claim refused,
 Daily.Error.PrivateServer,Daily and playtime rewards are paid in public servers.,Daily reward screen in a private server (no rewards there),
@@ -278,7 +280,7 @@ Quests.Progress,{1}/{2},Quests screen: progress toward the goal,3/5
 Quests.Done,Done!,Quests screen: the quest is complete (its reward was paid),
 Quests.Resets,New daily quests in {1} · weekly in {2}d {3},"Quests screen: time until the daily and weekly quests change (h:mm:ss; days, h:mm:ss)",New daily quests in 5:12:09 · weekly in 3d 5:12:09
 Quests.PrivateServer,Quests don't count in private servers (they are for play and testing).,Quests screen in a private server,
-Quests.Completed,Quest complete: {1}! +{2} Scrap,Notice when a quest is completed (quest name and Scrap reward),Quest complete: Chair Champ! +150 Scrap
+Quests.Completed,Quest complete: {1}! +{2} Coins,Notice when a quest is completed (quest name and Coins reward),Quest complete: Chair Champ! +150 Coins
 Quest.ChairKOs.Title,Chair Champ,Quest name,
 Quest.ChairKOs.Desc,KO {1} players with a chair,Quest goal (count),KO 5 players with a chair
 Quest.ClassicWin.Title,Last One Standing,Quest name,
@@ -303,21 +305,19 @@ Leaderboard.Weekly,This week,Leaderboard period: scores since Monday,
 Leaderboard.Row,{1}. {2} — {3},"Leaderboard row (rank, display name, score)",1. Alex — 342
 Leaderboard.Empty,No scores yet. Be the first!,Leaderboard with no entries,
 Tag.GroupChat,[Crew],Chat tag in front of messages from members of the game's Roblox group,
-Group.Reward,Thanks for joining the group! +{1} Scrap,Notice: the one-time group join reward was paid (Scrap),Thanks for joining the group! +150 Scrap
-Menu.Codes,Codes,Lobby menu button that opens the Codes screen,
-Codes.Title,Codes,Title of the redeem codes screen,
+Group.Reward,Thanks for joining the group! +{1} Coins,Notice: the one-time group join reward was paid (Coins),Thanks for joining the group! +150 Coins
 Codes.Placeholder,Enter a code,Placeholder text in the code box,
 Codes.Redeem,Redeem,Button: redeem the typed code,
 Codes.Redeeming,Checking...,Redeem button while the code is being checked,
 Codes.Info,Got a code? Type it here. Each code works once.,Codes screen note,
-Codes.Redeemed,Code redeemed! You got {1}.,Codes screen: the code worked (what it gave),Code redeemed! You got 250 Scrap.
+Codes.Redeemed,Code redeemed! You got {1}.,Codes screen: the code worked (what it gave),Code redeemed! You got 250 Coins.
 Codes.Error.Invalid,That code doesn't exist. Check the spelling.,Code refused,
 Codes.Error.Expired,That code has expired.,Code refused,
 Codes.Error.Redeemed,You already used that code.,Code refused,
 Codes.Error.PrivateServer,Codes can only be used in public servers.,Code refused in a private server (nothing is earned there),
 Codes.Error.NotLoaded,Your data is still loading. Try again in a moment.,Code refused,
 Codes.Error.TryAgain,Something went wrong. Try again.,Code check failed (no answer from the server),
-Prompt.Codes,Codes,Walk-up prompt at the lobby jukebox: opens the Codes screen,
+Prompt.Codes,Promo code,Walk-up prompt at the lobby jukebox: opens Settings on the Promo code tab,
 Prompt.Codes.Object,Jukebox,Walk-up prompt at the lobby jukebox: what it is,
 Dev.ResetCodes,Reset codes,Developer panel button: forget the codes you have used,
 Dev.TargetTitle,Target,Developer panel section: who the player buttons act on,
@@ -328,6 +328,10 @@ Dev.GiveXP,+{1} XP,Developer panel button: give XP (level-ups apply),+1000 XP
 Dev.AllStyles,All styles,Developer panel button: own every fighting style,
 Menu.Settings,Settings,Lobby menu button that opens the Settings screen,
 Settings.Title,Settings,Title of the Settings screen,
+Settings.Tab.Visual,Visual,Settings tab: camera shake / graphics / button layout,
+Settings.Tab.Audio,Audio,Settings tab: music and sound volume,
+Settings.Tab.Codes,Promo code,Settings tab: redeem a promo code,
+Settings.Tab.Guide,How to play,Settings tab: the rules and the controls,
 Settings.Music,Music,Settings row: music volume,
 Settings.Sfx,Sound effects,Settings row: sound effects volume,
 Settings.CameraShake,Camera shake,Settings row: shake the camera on heavy hits,
@@ -337,8 +341,6 @@ Settings.On,On,Settings toggle value,
 Settings.Off,Off,Settings toggle value,
 Settings.Percent,{1}%,Settings: a volume as a percent,80%
 Settings.Sensitivity,Camera sensitivity: change it in Roblox's own menu (Esc → Settings).,Settings note (games can't change camera sensitivity on Roblox),
-Settings.HowToPlay,How to play,Settings button: open the How to play page,
-Settings.Back,Back,How to play page: back to the settings,
 Layout.Default,Default,Name of the default touch button layout,
 Guide.Goal,Knock your rivals off the floating platforms! Hits push harder the more damage someone has taken.,How to play: the goal,
 Guide.Modes,Everyone has 100 HP and 3 lives — the last fighter standing wins.,How to play: the rules of a round (Classic),

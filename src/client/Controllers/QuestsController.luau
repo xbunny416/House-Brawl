@@ -3,8 +3,8 @@
 	QuestsController — the Quests screen (bible §5.3 / §8; Shared/QuestRules): today's daily quests and this week's
 	weekly quest, each with what to do, a progress bar, the reward and a done mark, and the time until each set
 	changes. Quests count by themselves and pay when done (QuestService); this screen only shows them. Opens from the
-	left-edge menu and the lobby's quest board (LobbyPromptController). In a private server nothing counts, and it
-	says so.
+	left-edge menu and the lobby's quest board (LobbyPromptController); its tab row links to the Daily reward screen
+	(owner's fix list, 2026-10-19). In a private server nothing counts, and it says so.
 ]]
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -23,7 +23,7 @@ local Kit = require(Client:WaitForChild("Ui"):WaitForChild("Kit"))
 local DataController = require(script.Parent:WaitForChild("DataController"))
 local MenuController = require(script.Parent:WaitForChild("MenuController"))
 
-local MENU_ORDER = 3 -- bible §5.1: Shop, Locker, Quests, Daily Reward, ...
+local MENU_ORDER = 4 -- owner, 2026-10-19: Shop, Inventory, Settings, Quests
 local TICK_INTERVAL = 1
 local ROW_HEIGHT = 0.17 -- of the list
 
@@ -119,28 +119,36 @@ local function build()
 	gui = Kit.screen("Quests", 8)
 	local panel = Kit.panel(
 		gui,
-		UDim2.fromScale(0.6, 0.66),
+		UDim2.fromScale(0.66, 0.62),
 		UDim2.fromScale(0.5, 0.5),
 		Vector2.new(0.5, 0.5),
-		Vector2.new(760, 520)
+		Vector2.new(880, 500)
 	)
 
 	local header = Instance.new("Frame")
 	header.BackgroundTransparency = 1
-	header.Size = UDim2.fromScale(1, 0.12)
+	header.Size = UDim2.fromScale(1, 0.15)
 	header.Parent = panel
-	local title = Kit.label(header, Localization.format("Quests.Title"), UDim2.fromScale(0.8, 1), 30)
-	title.Font = Kit.TitleFont
-	title.TextXAlignment = Enum.TextXAlignment.Left
-	local closeButton = Kit.button(header, Localization.format("Common.Close"), UDim2.fromScale(0.2, 0.9))
+	local tabs = Kit.tabRow(
+		header,
+		{ Localization.format("Daily.Title"), Localization.format("Quests.Title") },
+		UDim2.fromScale(0, 0),
+		UDim2.fromScale(0.7, 0.9),
+		0.4
+	)
+	Kit.setChosen(tabs[2], true)
+	tabs[1].Activated:Connect(function()
+		MenuController.openNamed("DailyReward")
+	end)
+	local closeButton = Kit.button(header, Localization.format("Common.Close"), UDim2.fromScale(0.18, 0.9))
 	closeButton.AnchorPoint = Vector2.new(1, 0)
 	closeButton.Position = UDim2.fromScale(1, 0)
 	closeButton.Activated:Connect(MenuController.close)
 
 	list = Instance.new("Frame")
 	list.BackgroundTransparency = 1
-	list.Position = UDim2.fromScale(0, 0.15)
-	list.Size = UDim2.fromScale(1, 0.72)
+	list.Position = UDim2.fromScale(0, 0.19)
+	list.Size = UDim2.fromScale(1, 0.69)
 	list.Parent = panel
 	local layout = Kit.list(list, Enum.FillDirection.Vertical, UDim.new(0.03, 0))
 	layout.VerticalAlignment = Enum.VerticalAlignment.Top

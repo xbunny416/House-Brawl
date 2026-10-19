@@ -1,11 +1,11 @@
 --!strict
 --[[
 	LobbyPromptController — walk-up menus in the lobby (owner, 2026-10-17): a ProximityPrompt on the bartender
-	(ShopNPC tag) opens the Shop, one in the locker booth (Locker tag) opens the Locker, one at the quest board
-	(QuestBoard tag) opens the Quests screen, one at the codes jukebox (CodesJukebox tag) opens Codes. They open
-	through MenuController, so its rules apply (one screen at a time, never while fighting), and hide while a menu
-	screen is open or the player is fighting. Keys and range: Config.Controls.Prompts (E / gamepad B; touch taps).
-	The prompts are made here on the client — opening a screen needs nothing from the server — and come back when a
+	(ShopNPC tag) opens the Shop, one in the locker booth (Locker tag) opens the Inventory, one at the quest board
+	(QuestBoard tag) opens the Quests screen, one at the codes jukebox (CodesJukebox tag) opens Settings on the Promo
+	code tab. They open through MenuController, so its rules apply (one screen at a time, never while fighting), and
+	hide while a menu screen is open or the player is fighting. Keys and range: Config.Controls.Prompts (E / gamepad
+	B; touch taps). The prompts are made here on the client — opening a screen needs nothing from the server — and come back when a
 	streamed-out part streams in again. Later lobby screens add a target here.
 ]]
 local CollectionService = game:GetService("CollectionService")
@@ -22,7 +22,7 @@ local PROMPT_NAME = "MenuPrompt"
 local REFRESH_INTERVAL = 0.25
 
 -- Tag: the lobby model's tag; Part: the child the prompt sits on; Screen: the menu ScreenGui's name.
-type Target = { Tag: string, Part: string, Screen: string, Action: string, Object: string }
+type Target = { Tag: string, Part: string, Screen: string, Arg: string?, Action: string, Object: string }
 
 local LobbyPromptController = {}
 
@@ -54,7 +54,8 @@ local function targets(): { Target }
 		{
 			Tag = "CodesJukebox",
 			Part = "Body",
-			Screen = "Codes",
+			Screen = "Settings",
+			Arg = "Codes", -- the Promo code tab
 			Action = Localization.format("Prompt.Codes"),
 			Object = Localization.format("Prompt.Codes.Object"),
 		},
@@ -77,7 +78,7 @@ local function addPrompt(target: Target, part: BasePart)
 	prompt.HoldDuration = 0
 	prompt.Enabled = not MenuController.isFighting() and not MenuController.isOpen()
 	prompt.Triggered:Connect(function()
-		MenuController.openNamed(target.Screen)
+		MenuController.openNamed(target.Screen, target.Arg)
 	end)
 	prompt.Parent = part
 	table.insert(prompts, prompt)

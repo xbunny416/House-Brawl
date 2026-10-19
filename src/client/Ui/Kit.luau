@@ -14,6 +14,7 @@ Kit.Colors = {
 	Muted = Color3.fromHex("#A89A85"),
 	Accent = Color3.fromHex("#D9822B"),
 	Button = Color3.fromHex("#3A302A"),
+	Coin = Color3.fromHex("#F2C14E"),
 }
 Kit.TitleFont = Enum.Font.GothamBlack
 Kit.BodyFont = Enum.Font.GothamBold
@@ -133,6 +134,26 @@ function Kit.list(parent: Instance, direction: Enum.FillDirection, padding: UDim
 	layout.VerticalAlignment = Enum.VerticalAlignment.Center
 	layout.Parent = parent
 	return layout
+end
+
+-- A row of tab buttons (already-localized texts) in a new frame at `position` / `size` inside `parent`, left to
+-- right; each button is `width` of the row wide. Returns the buttons in order (mark the open one with setChosen).
+function Kit.tabRow(parent: Instance, texts: { string }, position: UDim2, size: UDim2, width: number): { TextButton }
+	local row = Instance.new("Frame")
+	row.Name = "Tabs"
+	row.BackgroundTransparency = 1
+	row.Position = position
+	row.Size = size
+	row.Parent = parent
+	local layout = Kit.list(row, Enum.FillDirection.Horizontal, UDim.new(0.02, 0))
+	layout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+	local buttons: { TextButton } = {}
+	for index, text in texts do
+		local button = Kit.button(row, text, UDim2.fromScale(width, 1))
+		button.LayoutOrder = index
+		table.insert(buttons, button)
+	end
+	return buttons
 end
 
 return Kit

@@ -28,7 +28,7 @@ this file in the same PR as the Config change.
 
 ### 2.1 Currencies and rewards
 
-- **Scrap** — the only soft currency. Earned from KOs, placement, participation, daily rewards, quests, codes. Spent on
+- **Scrap** — the only soft currency. Shown to players as **Coins** (owner, 2026-10-19); code and data keep "Scrap". Earned from KOs, placement, participation, daily rewards, quests, codes. Spent on
   styles and cosmetics. Robux buys premium cosmetics and Scrap packs. No stat upgrades for sale.
 - **XP** — earned alongside Scrap; drives Level and Rank titles.
 
@@ -105,7 +105,7 @@ Not used. Long-term goals are levels/ranks, styles, cosmetics and leaderboards.
 
 - **Cosmetics** (Scrap or Robux): skins, hats, back items, dash trails, KO effects, victory emotes, name-plate frames.
   Catalog in `Config.Cosmetics.Items` (blockout visuals until the art pass). KO effects burst at the victim for HP KOs
-  and around the scorer for ring-outs. Victory emotes play once animations exist (2.6). Equipped in the Locker.
+  and around the scorer for ring-outs. Victory emotes play once animations exist (2.6). Equipped in the Inventory.
   Common 300–800 Scrap; Rare 1,200–2,500 Scrap; Premium = Robux only (sold as developer products, or coming with the
   VIP / Emote Pack passes or Roblox Premium: §7).
 - **Daily rotating shop:** 4 cosmetics rotate every 24 h (UTC) and sell at 20% off (`DailyRotation.Discount`); the
@@ -125,12 +125,12 @@ Not used. No pets, eggs, or paid random items.
 - Lobby → (vote) → arena via server-side teleport of characters within the same place. After the round, everyone
   returns to the Lobby. Arenas live in ServerStorage; only the active one is in Workspace.
 - All maps free. Players enter the arena only when the server starts a round, and only if they stand on the lobby's
-  **join pad** (in front of the ARENA door) when it starts; everyone else stays in the lobby (Shop, Locker ...).
+  **join pad** (in front of the ARENA door) when it starts; everyone else stays in the lobby (Shop, Inventory ...).
   Late joiners stay in the lobby too (Casual: stepping on the pad joins the running round after the 3 s respawn).
 
 | Zone | Description |
 | --- | --- |
-| Lobby — "The Hideout" (enclosed hideout bar) | Shop (bar counter), Locker, Quest board, leaderboards, join pad |
+| Lobby — "The Hideout" (enclosed hideout bar) | Shop (bar counter), Locker booth (Inventory), Quest board, leaderboards, join pad |
 | Map 1 — Broken Highway | Shattered overpass chunks, abandoned cars, road signs |
 | Map 2 — Junkyard Isles | Stacked car and container islands over toxic sludge |
 | Map 3 — Neon Motel | Sinking motel rooftops, flickering retro neon, pool on one roof |
@@ -142,7 +142,7 @@ Diner rooftop; no Training Yard). North — the bar counter with the Shop NPC (t
 CRT TVs hanging over the bar and mode vote TVs on the counter ends, big neon "JUNKYARD BRAWL" sign. East — the steel
 ARENA door with the glowing join pad. West — Locker booth, Codes jukebox, Quest board (cork board). South —
 leaderboard screens and the spawns. Pool table, booths, high tables, crates and hanging lamps; brick walls, steel
-beams, neon trim. Walk up to the bartender for the Shop and into the locker booth for the Locker (a prompt: E / gamepad B /
+beams, neon trim. Walk up to the bartender for the Shop and into the locker booth for the Inventory (a prompt: E / gamepad B /
 tap); both also open from the left-edge menu.
 
 **Broken Highway arena:**
@@ -275,7 +275,7 @@ AnchorPoint (0.5, 0.5), Scale coordinates (no fixed offsets), UIAspectRatioConst
   arrangement). Shown only while touch is the player's input. Bottom-center — own
   Percent (Casual) or HP bar + lives (Classic), held-prop icon, dash cooldown ring. Top-center — round timer, mode
   badge, players alive / score. Kill feed top-right (top-center is the timer and the vote panel). Left edge (Lobby
-  only) — Shop, Locker, Quests, Daily Reward, Leaderboard, Settings. Default thumbstick bottom-left.
+  only) — a coins + level / XP block, then Shop, Inventory, Settings, Quests (owner, 2026-10-19). Default thumbstick bottom-left.
 - **PC:** same layout, touch buttons hidden, key hints next to HUD items; bottom-right key panel (Run, Dash, the
   style's Ability) with keys and cooldowns, where touch players have their buttons; Tab = round scoreboard
   (replaces Roblox's player list).
@@ -302,10 +302,11 @@ players.
 
 ### 5.3 Screens
 
-Loading, Lobby HUD, Map & Mode vote, Round HUD, Results / MVP, Spectate, Shop (Daily, Styles, Cosmetics, Robux),
-Locker, Daily Quests, Daily Reward calendar, Leaderboards, Party panel, Codes, Settings (music/SFX volume, low graphics,
-camera shake, button layout; camera sensitivity is Roblox's own setting — games can't change it), How to play, Tutorial overlay, Purchase confirmations, Developer test
-panel.
+Loading, Lobby HUD (coins + level block, left menu), Map vote, Round HUD, Results / MVP, Spectate, Shop (Daily,
+Styles, Cosmetics, Robux), Inventory (the Locker renamed), Daily Reward calendar + Daily Quests (one tab row),
+Settings in tabs (Visual: camera shake, low graphics, button layout — camera sensitivity is Roblox's own setting;
+Audio: music / SFX volume; Promo code; How to play), lobby leaderboard boards, Tutorial overlay, Purchase
+confirmations, Developer test panel.
 
 ## 6. Technical rules
 
@@ -357,7 +358,7 @@ panel.
   for grabbing and dashing.
 - **Login streak (7 days):** 50 / 75 / 100 / 150 / 200 / 250 Scrap, Day 7 = weekly rotating cosmetic (one of the
   cosmetics sold for Scrap, the same for everyone that week; 300 Scrap instead if already owned). Missing a day
-  resets to Day 1. Claimed on the Daily reward screen (left-edge menu; it opens by itself when a reward is waiting).
+  resets to Day 1. Claimed on the Daily reward screen (it opens by itself when a reward is waiting, and is a tab of Quests).
 - **Playtime:** +25 Scrap every 10 minutes online (AFK time doesn't count; kept across rejoins that day), up to 6
   times per day.
 - Daily and playtime rewards are not paid in private servers (play and testing only).
@@ -374,7 +375,7 @@ panel.
   ([Crew]; the Scrap is paid once, in a public server). The party system was built in 3.7 and removed on 2026-10-19
   (owner). No reward for liking or favoriting the game (Roblox doesn't allow it).
 - **Codes & events:** one-use codes validated on the server (stored in the server-only ServerConfig; Scrap and / or
-  a cosmetic, optional expiry; redeemed on the Codes screen or at the lobby jukebox; not in private servers); seasonal map remixes, double-Scrap
+  a cosmetic, optional expiry; redeemed on Settings' Promo code tab or at the lobby jukebox; not in private servers); seasonal map remixes, double-Scrap
   weekends, event-only cosmetics.
 
 ## 9. Build plan

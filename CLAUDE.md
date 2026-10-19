@@ -28,8 +28,9 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   the style roll and lobby furniture, the rules to respect) and look at the reference pictures in `docs/reference/`
   before starting. The owner is doing it in their local CLI session (connected to Studio); a cloud session should
   not work on it at the same time. Progress: 1/6 cleanup (parties and the Leaderboard screen removed,
-  Classic only, run-only lobby) is done; next the UI rework (left menu, coins, watch-the-match, key hints, Settings
-  tabs with the promo code, daily popup with quests, Shop tabs).
+  Classic only, run-only lobby) is done; 2/6 UI rework, part 1 (left menu Shop / Inventory / Settings / Quests,
+  coins + level block, Settings tabs with the promo code, Daily reward + Quests tabs, "Coins" and "Inventory" on
+  screen) is done; next part 2 (watch the match from the lobby, key hints), then the style roll.
 
 ## How this repo works
 
@@ -138,10 +139,13 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
   always-on Motion layer (lean, air pose) and the in-round Stance come from each character's movement. A style's
   clips are `Config.Styles.List[id].Animations`; an uploaded animation can replace any clip via
   `Config.Animations.AssetIds`.
-- **Lobby menu screens** (Shop, Locker, later Quests, Daily Reward, Settings ...) register with
-  `Controllers/MenuController.addScreen(text, order, gui, onOpen)`: a left-edge button, one screen open at a time,
-  closed while fighting; the Menu action (M / D-pad Up) closes the open screen or opens the first one. A lobby
-  object can open one too: add a target (tag, part, screen name) to `Controllers/LobbyPromptController`.
+- **Lobby menu screens** (Shop, Inventory, Settings, Quests; the Daily reward and the owner's Server menu) register
+  with `Controllers/MenuController.addScreen(text, order, gui, onOpen)`: a left-edge button (none when `text` is nil),
+  one screen open at a time, closed while fighting; the Menu action (M / D-pad Up) closes the open screen or opens the
+  first one; `open` / `openNamed(name, arg)` pass `arg` to `onOpen` (e.g. a tab). Tabs use `Kit.tabRow`. A lobby
+  object can open one too: add a target (tag, part, screen name, arg) to `Controllers/LobbyPromptController`.
+  On screen the soft currency is **Coins** and the Locker is the **Inventory** (owner, 2026-10-19); code, data and
+  string keys keep the names Scrap and Locker.
 - **Rounds:** `Services/RoundService` owns the loop, the scoreboard (`Server/Round/Scoreboard`), the lobby join pad
   (`Server/Round/Queue`: only players on it are taken into a round) and round stats. UI reads attributes: Workspace
   `RoundState`, `RoundEndsAt` (compare with `Workspace:GetServerTimeNow()`), `RoundMode`, `RoundMap`,
@@ -289,6 +293,7 @@ any errors are fixed before the next item.
 | 2026-10-18 | 3.11 Performance + localization: animation detail levels (other characters posed every frame only up close and in view, every 2–4 frames further / off screen, not past 300 studs; Low Graphics closer), one-time frame-rate check turns Low Graphics on below 40 FPS (GraphicsAutoChecked setting), neon steady under Low Graphics, Config.Performance; specs: no hard-coded UI text, every {n} string has an Example, AnimationLod; unused Notify.Welcome removed | #48 |
 | 2026-10-18 | 3.12 Launch support: docs/LAUNCH.md (publish + game settings, Robux items / group / badges with where each id goes, audio, store page with icon / thumbnail shot list / description draft / maturity notes, translation upload, the bible's pre-launch tests, launch day) and tools/launch-check (lists unset pass / product / group / badge / audio ids and the placeholder code) | #49 |
 | 2026-10-19 | Owner's fix list 1/6 — cleanup: parties deleted (PartyService, Social/Parties, Party screen, party remotes / tags / strings; SpawnPlan kept for spreading fighters), no Leaderboard menu screen (lobby boards only), Classic the only mode (vote map-only, one-choice rows hidden, the two counter mode TVs become news TVs), lobby run-only (punch / charge / ability / dash / grab only while Playing, on the server and the client; touch buttons and key-panel slots hide outside a round); reference notes record the owner's answers | #52 |
+| 2026-10-19 | Owner's fix list 2/6, part 1 — UI: left menu Shop / Inventory / Settings / Quests under a new coins + level block (ProfileController: big coin balance with thousands separators, level · rank, XP bar; the HUD's top-right chip is gone), Settings in tabs (Visual / Audio / Promo code / How to play; the Codes screen folded in, the jukebox opens the Promo code tab), Daily reward without a menu button (pops up on login) sharing a tab row with Quests, "Scrap" shown as "Coins" and the Locker as "Inventory"; MenuController optional buttons + open argument, Kit.tabRow, HudFormat.thousands + spec | #53 |
 
 ## Decisions and interpretations
 
@@ -306,8 +311,8 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   player types is tidied (spaces dropped, upper-case) and checked by the pure `Server/Codes/CodeRules`; used codes are
   saved per player (`Codes`), so each works once. `RedeemCode` is a RemoteFunction limited to 24 characters and one try
   every 2 s (burst 3) against guessing. Nothing is given in private servers (the code stays unused). Scrap is logged as
-  Gameplay, sku `Code.<CODE>`, plus a `CodeRedeemed` event. The Codes screen is 8th in the left-edge menu and opens at
-  the lobby's jukebox (`LobbyPromptController` target).
+  Gameplay, sku `Code.<CODE>`, plus a `CodeRedeemed` event. Codes are typed on the Settings screen's Promo code tab
+  (a Codes screen until 2026-10-19), which the lobby's jukebox opens (`LobbyPromptController` target).
 - **Structures** take each attack's Classic HP damage in every mode.
 - New tunables not in the bible: attack windups (Punch and charged punch 0.05 s since the 1st playtest, needed for "dodge
   before the hit lands"), punch chain reset 1 s, hitbox latency padding 0.5 studs, launch angle 30°, throw arc +14 studs/s, throw
@@ -567,7 +572,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   Premium = `MembershipType`, friends = other players in the server you are friends with (`IsFriendsWithAsync`),
   private server = `PrivateServerId` with an owner (reserved servers do not count). The rank title is the player
   attribute `Rank` (a rank id, set on load and after rewards). The results panel shows "+Scrap · +XP", level-ups and
-  a new rank; the HUD's top-right chip shows level · rank · Scrap. Lifetime stats were already counted in 1.8.
+  a new rank; the profile block (top left, since 2026-10-19) shows coins, level · rank and XP. Lifetime stats were already counted in 1.8.
 - **Walk-up Shop and Locker (owner, 2026-10-17):** picked over 3.2 as the next step. `LobbyPromptController`
   puts a ProximityPrompt on the bartender's `Torso` (tag `ShopNPC`: "Shop · Bartender") and the locker booth's `Back`
   wall (tag `Locker`: "Locker · Locker booth"), 12 studs, no hold, no line of sight needed. Keys: E / gamepad B
@@ -589,13 +594,13 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   a new spec failing on any `Text = "..."` with letters in code), every string with `{n}` has an Example for
   translators (new spec), and the one unused string (`Notify.Welcome`) is gone. Automatic translation still needs the
   CSV uploaded to the Creator Dashboard (owner).
-- **Settings, loading screen, How to play (3.10):** the Settings screen (6th in the left-edge menu) changes every
+- **Settings, loading screen, How to play (3.10):** the Settings screen (3rd in the left-edge menu since 2026-10-19, in tabs) changes every
   setting through `SettingsController` (server-checked): music / SFX volume with − / + buttons in steps of
   `Data.VolumeStep` = 0.1 (no drag slider: the buttons work the same with mouse, touch and gamepad), camera shake and
   low graphics On / Off, and the touch button layout (shown on touch only when `Controls.Touch.Layouts` has more than
   one). Camera sensitivity stays in the saved data but isn't shown: a game script can't change Roblox's camera
   sensitivity (forking the PlayerModule's camera input would be the only way), so a note points to Roblox's own menu.
-  "Tutorial replay": the tutorial is skipped (owner), so Settings has a **How to play** page instead — six rule lines
+  "Tutorial replay": the tutorial is skipped (owner), so Settings has a **How to play** page (a tab since 2026-10-19) instead — six rule lines
   and the controls for the current device (`KeyHint` boxes: key names / gamepad glyphs; touch gets a note); no reward.
   The **loading screen** is `src/first/LoadingScreen.client.luau` (mapped to ReplicatedFirst): it removes Roblox's
   default screen, shows the title, a random tip (`Tip.1`–`Tip.8`) and "Loading...", stays at least
@@ -611,6 +616,22 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   `Playing`; the client doesn't send them, hides the touch Attack / Grab / Dash / Ability buttons and the key panel's
   Dash / Ability slots outside a round (Run stays). The developer panel's practice dummy can only be hit in the arena
   now (spawn it there during a round). Tip 7 and the How to play rules no longer mention parties or Casual.
+- **Owner's fix list, step 2 part 1 — UI (2026-10-19):** the owner asked for "left menu = Shop, Inventory, Settings,
+  Quests; also coins", "daily reward pops up on login; quests can be checked there" and "Settings: visual, audio,
+  promo code", and answered "Rename Scrap to Coins" (on screen) and "Inventory = the Locker renamed". So: the
+  left-edge menu is Shop (1), Inventory (2), Settings (3), Quests (4); the private server's owner still gets Server
+  (9) at the end. Above it, top left, `ProfileController` shows a gold coin with the balance in big numbers
+  (`HudFormat.thousands`: "12,500") and COINS under it, "Level 12 · Raider" and an XP bar ("340 / 500 XP", "Max level"
+  at the cap); it hides while fighting, like the menu, and replaces the HUD's top-right profile chip. The Daily reward
+  has no menu button (`addScreen(nil, ...)`): it still opens itself once a session when a reward waits, and the Daily
+  reward and Quests screens share a tab row (same panel size), so each is one tap from the other. Settings has four
+  tabs (`Settings.Tab.*`): Visual (camera shake, low graphics, button layout, the sensitivity note), Audio (music /
+  SFX volume), Promo code (the old Codes screen, which is gone; the lobby jukebox opens Settings on this tab) and How
+  to play (the old page, no Back button). Strings: every "Scrap" in GameStrings' text is "Coins" ("Coin Pack S / M /
+  L"); names that only contain the word stay (Scrapper, Apex Scrapper, Scrap Metal, Scrap Burst, the JOE'S SCRAP
+  sign); "Locker" is "Inventory" (the lobby's "Locker booth" and LOCKER sign stay, it is a place). Keys, data fields,
+  Config and code keep Scrap / Locker, so saves and analytics don't change. Still to come in step 2: watching the
+  match from the lobby and the small key hints; the Shop's Styles tab goes with the style roll (step 3).
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,
@@ -649,7 +670,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   day in every server, nothing saved but the progress (`Quests`: day, week, progress, done). Weeks start on Monday
   (the bible only says "reset 00:00 UTC"). A finished quest pays its Scrap at once (Gameplay, sku `Quest.<id>`) with
   a notice — no claim button. Because stats don't count in private servers, quests don't either. The Quests screen is
-  third in the left-edge menu and opens at the lobby's quest board too (`LobbyPromptController` target). Quest
+  4th in the left-edge menu (since 2026-10-19; tabbed with the Daily reward) and opens at the lobby's quest board too (`LobbyPromptController` target). Quest
   names / goals are `Quest.<Id>.Title` / `.Desc` strings.
 - **Daily rewards (3.3):** the bible's numbers (`Config.Retention.LoginStreak`, `Playtime`). Saved per player in
   `Daily` (last claim day, streak day, today's playtime seconds and paid rewards; day numbers from
@@ -661,7 +682,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   45 s rule as rounds), ticks every 15 s and is saved, so leaving and rejoining the same day keeps it; each reward
   sends a notice. Neither is paid in private servers (`PrivateServerService.paysRewards`); the screen says so. Scrap
   is logged as `TimedReward` (skus `LoginStreak.Day<n>`, `Playtime`). The Server menu moved to the end of the
-  left-edge menu (order 9) so Quests / Daily / Leaderboard / Settings come first.
+  left-edge menu (order 9). Since 2026-10-19 the Daily reward has no menu button (it pops up, and is a tab of Quests).
 - **Private servers (3.2):** the bible's three controls only (the owner skipped the extras question; no solo start,
   so a private server can't be used to farm rewards alone: rounds still need `MinPlayers` on the pad). The owner's
   choices live in their saved data (`PrivateServer`: Mode, Map, RoundTime), so they follow the owner to every private

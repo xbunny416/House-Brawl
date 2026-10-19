@@ -20,7 +20,6 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local Localization = require(Shared:WaitForChild("Localization"))
-local Formulas = require(Shared:WaitForChild("Formulas"))
 local Net = require(Shared:WaitForChild("Net"))
 
 local Client = script.Parent.Parent
@@ -28,7 +27,6 @@ local HudFormat = require(Client:WaitForChild("Lib"):WaitForChild("HudFormat"))
 local KeyHint = require(Client:WaitForChild("Ui"):WaitForChild("KeyHint"))
 local Kit = require(Client:WaitForChild("Ui"):WaitForChild("Kit"))
 local DashController = require(script.Parent:WaitForChild("DashController"))
-local DataController = require(script.Parent:WaitForChild("DataController"))
 local InputController = require(script.Parent:WaitForChild("InputController"))
 
 local REFRESH_INTERVAL = 0.1
@@ -67,7 +65,6 @@ local vitals = {} :: {
 	Percent: TextLabel,
 }
 local held = {} :: { Frame: Frame, Name: TextLabel, Hints: Frame, Prompt: Frame }
-local profileLabel: TextLabel
 
 local function rgb(color: HudFormat.Rgb): Color3
 	return Color3.new(color.R, color.G, color.B)
@@ -355,32 +352,6 @@ local function fighterCount(): number
 	return count
 end
 
--- Top right: level, rank title and Scrap (from the saved data).
-local function buildProfile()
-	local panel = Kit.panel(
-		gui,
-		UDim2.fromScale(0.26, 0.055),
-		UDim2.fromScale(0.985, 0.015),
-		Vector2.new(1, 0),
-		Vector2.new(340, 40)
-	)
-	profileLabel = Kit.label(panel, "", UDim2.fromScale(1, 1), 18)
-end
-
-local function refreshProfile()
-	local data = DataController.get()
-	if data == nil then
-		profileLabel.Text = ""
-		return
-	end
-	local args: { any } = {
-		Localization.format("Common.Level", { data.Level }),
-		Localization.format(`Rank.{Formulas.rankForLevel(data.Level)}`),
-		Localization.format("Currency.Scrap", { data.Scrap }),
-	}
-	profileLabel.Text = Localization.format("Hud.Profile", args)
-end
-
 local function attribute(instance: Instance, name: string): string?
 	local value = instance:GetAttribute(name)
 	return if type(value) == "string" then value else nil
@@ -549,13 +520,6 @@ function HudController.Start(_self: any)
 	buildTop()
 	buildFeed()
 	buildBottom()
-	buildProfile()
-	refreshProfile()
-	DataController.Changed:Connect(function(key: string)
-		if key == "Scrap" or key == "Level" then
-			refreshProfile()
-		end
-	end)
 	Net.on("KillFeed", addFeedLine)
 	local elapsed = 0
 	RunService.Heartbeat:Connect(function(deltaTime: number)
