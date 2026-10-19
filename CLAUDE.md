@@ -30,7 +30,8 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   not work on it at the same time. Progress: 1/6 cleanup (parties and the Leaderboard screen removed,
   Classic only, run-only lobby) is done; 2/6 UI rework, part 1 (left menu Shop / Inventory / Settings / Quests,
   coins + level block, Settings tabs with the promo code, Daily reward + Quests tabs, "Coins" and "Inventory" on
-  screen) is done; next part 2 (watch the match from the lobby, key hints), then the style roll.
+  screen) is done; part 2 (Game in progress card with Watch, bottom-edge key hints) is done; next 3/6 the style
+  roll.
 
 ## How this repo works
 
@@ -294,6 +295,7 @@ any errors are fixed before the next item.
 | 2026-10-18 | 3.12 Launch support: docs/LAUNCH.md (publish + game settings, Robux items / group / badges with where each id goes, audio, store page with icon / thumbnail shot list / description draft / maturity notes, translation upload, the bible's pre-launch tests, launch day) and tools/launch-check (lists unset pass / product / group / badge / audio ids and the placeholder code) | #49 |
 | 2026-10-19 | Owner's fix list 1/6 — cleanup: parties deleted (PartyService, Social/Parties, Party screen, party remotes / tags / strings; SpawnPlan kept for spreading fighters), no Leaderboard menu screen (lobby boards only), Classic the only mode (vote map-only, one-choice rows hidden, the two counter mode TVs become news TVs), lobby run-only (punch / charge / ability / dash / grab only while Playing, on the server and the client; touch buttons and key-panel slots hide outside a round); reference notes record the owner's answers | #52 |
 | 2026-10-19 | Owner's fix list 2/6, part 1 — UI: left menu Shop / Inventory / Settings / Quests under a new coins + level block (ProfileController: big coin balance with thousands separators, level · rank, XP bar; the HUD's top-right chip is gone), Settings in tabs (Visual / Audio / Promo code / How to play; the Codes screen folded in, the jukebox opens the Promo code tab), Daily reward without a menu button (pops up on login) sharing a tab row with Quests, "Scrap" shown as "Coins" and the Locker as "Inventory"; MenuController optional buttons + open argument, Kit.tabRow, HudFormat.thousands + spec | #53 |
+| 2026-10-19 | Owner's fix list 2/6, part 2 — UI: "Game in progress" card under the lobby menu (live dot, arena, time left, fighters still in, Watch / Stop watching: the camera follows the round from the lobby through the spectate system, the server streams the arena to lobby watchers, arena music while watching); small light-grey key hints along the bottom edge (keyboard / gamepad: Run + Menu in the lobby and "[E] Shop"-style hints for walk-up prompts in reach, Punch · hold to charge + Scoreboard while fighting, Switch fighter while spectating) from Config.Controls.Hints and the pure Lib/HintRules + spec; bottom HUD bar, stamina bar, key panel and spectate bar moved up 14 px; MenuController.addWidget | #54 |
 
 ## Decisions and interpretations
 
@@ -630,8 +632,24 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   to play (the old page, no Back button). Strings: every "Scrap" in GameStrings' text is "Coins" ("Coin Pack S / M /
   L"); names that only contain the word stay (Scrapper, Apex Scrapper, Scrap Metal, Scrap Burst, the JOE'S SCRAP
   sign); "Locker" is "Inventory" (the lobby's "Locker booth" and LOCKER sign stay, it is a place). Keys, data fields,
-  Config and code keep Scrap / Locker, so saves and analytics don't change. Still to come in step 2: watching the
-  match from the lobby and the small key hints; the Shop's Styles tab goes with the style roll (step 3).
+  Config and code keep Scrap / Locker, so saves and analytics don't change. The Shop's Styles tab goes with the
+  style roll (step 3).
+- **Owner's fix list, step 2 part 2 — watching and key hints (2026-10-19):** "'game in progress' and spectate mode"
+  and "small light-grey key hints at the bottom of the UI, more when near something interactive". **Game in progress**
+  (`GameInProgressController`): while a round runs, a lobby player sees a card under the menu buttons
+  (`MenuController.addWidget`) with a blinking red live dot, the arena, the time left and how many are still fighting
+  (Playing or Respawning), and **Watch**: `SpectateController.watch(true)` turns the camera onto a fighter like a
+  Classic spectator (spectate bar, Z / X or D-pad to switch); the character stays in the lobby and can still walk.
+  The server's `Spectate` handler now also streams the arena (`ReplicationFocus`) to players whose status is Lobby
+  while the round is Playing. Watching ends with **Stop watching**, the round ending, or the player's status leaving
+  Lobby; watchers hear the arena's music. **Key hints** (`HintBarController`): one row along the very bottom edge,
+  light grey (`Kit.Colors.Hint`) 14 px text after each action's key box (KeyHint: key names, gamepad glyphs), not on
+  touch and not while a menu screen is open. Which hints show is the pure `Client/Lib/HintRules` over
+  `Config.Controls.Hints`: lobby = Run, Menu, plus one hint per ProximityPrompt in reach (its key is Grab's, its text
+  the prompt's, e.g. "[E] Shop"); fighting / respawning = "Punch · hold to charge", Scoreboard (Run / Dash / Ability
+  are already on the bottom-right key panel, and "[E] Grab" by a prop in the bottom bar); spectating or watching =
+  "Switch fighter" (Z + X), Scoreboard. To make room, the bottom HUD bar, the stamina bar, the key panel and the
+  spectate bar sit 14 px higher.
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,

@@ -70,6 +70,10 @@ Results.RowClassic,{1}. {2}    KOs {3} · Falls {4},"Results row in Classic: pla
 Results.RowCasual,{1}. {2}    Score {3} · KOs {4} · Falls {5},"Results row in Casual: placement, name, score, KOs, falls","1. Alex    Score 3 · KOs 4 · Falls 1"
 Spectate.Watching,Spectating {1},Spectate bar: the fighter being watched,Spectating Alex
 Spectate.Nobody,Waiting for the next round,Spectate bar when nobody is left to watch,
+InProgress.Title,GAME IN PROGRESS,Card under the lobby menu while a round is running,
+InProgress.Info,{1} · {2} fighting,"Game in progress card: time left in the round, fighters still in it",2:41 · 4 fighting
+InProgress.Watch,Watch,Game in progress card: button that turns the camera onto the running round,
+InProgress.Stop,Stop watching,Game in progress card: button that brings the camera back to the lobby,
 Round.Waiting,Step on the ARENA pad to play ({1}/{2}),"Top status line before a round, for players off the lobby join pad: players on the pad, players needed",Step on the ARENA pad to play (1/2)
 Round.WaitingIn,You're in! Waiting for players ({1}/{2}),"Top status line before a round, for players on the join pad: players on the pad, players needed",You're in! Waiting for players (1/2)
 Round.QueueAFK,You're on the pad: move to show you're here,Status line for a player standing on the join pad who has been idle too long (not counted),
@@ -82,6 +86,11 @@ Controls.Throw,Throw,Mobile Attack button while holding a prop,
 Controls.Drop,Drop,Mobile Grab button while holding a prop,
 Hint.LeftClick,Click,Key hint for the left mouse button,
 Hint.RightClick,Right-click,Key hint for the right mouse button,
+Hint.Run,Run,Bottom-edge key hint in the lobby: hold to run (uses stamina),
+Hint.Menu,Menu,Bottom-edge key hint in the lobby: open the menu,
+Hint.Attack,Punch · hold to charge,Bottom-edge key hint while fighting: tap to punch / hold for a charged punch,
+Hint.Scoreboard,Scoreboard,Bottom-edge key hint: hold to show the round scoreboard,
+Hint.Spectate,Switch fighter,Bottom-edge key hint while spectating: watch the previous / next fighter,
 Hud.Left,{1} left,"Top bar in Classic: fighters with lives left",4 left
 Hud.Score,Score {1},Top bar in Casual: your score (KOs minus falls),Score 3
 Hud.Fighting,{1} fighting,Top bar in Casual for players in the lobby: players in the round,6 fighting
