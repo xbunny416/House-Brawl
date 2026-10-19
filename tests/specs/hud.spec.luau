@@ -1,5 +1,5 @@
 --!strict
--- HUD helpers (step 1.12): round clock, Percent colors, dash ring, scoreboard order.
+-- HUD helpers (step 1.12): round clock, thousands separators, Percent colors, dash ring, scoreboard order.
 local Roblox = require("../roblox")
 local expect = require("../expect")
 
@@ -43,6 +43,14 @@ return {
 		expect.equal(HudFormat.longClock(59.5), "0:01:00")
 		expect.equal(HudFormat.longClock(86400), "24:00:00")
 		expect.equal(HudFormat.longClock(-1), "0:00:00")
+	end,
+	["thousands: groups of three digits, whole part, minus sign kept"] = function()
+		expect.equal(HudFormat.thousands(0), "0")
+		expect.equal(HudFormat.thousands(999), "999")
+		expect.equal(HudFormat.thousands(1000), "1,000")
+		expect.equal(HudFormat.thousands(1234567), "1,234,567")
+		expect.equal(HudFormat.thousands(123456.9), "123,456")
+		expect.equal(HudFormat.thousands(-12500), "-12,500")
 	end,
 	["percent color: white at 0%, yellow at 60%, red from 150%"] = function()
 		local white = HudFormat.percentColor(0)

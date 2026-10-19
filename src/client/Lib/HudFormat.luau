@@ -1,7 +1,7 @@
 --!strict
 --[[
 	HudFormat — pure helpers for the HUD and scoreboard (no instances, so Lune specs test them): the round clock,
-	the Percent color, the dash ring fill and the scoreboard order.
+	numbers with thousands separators, the Percent color, the dash ring fill and the scoreboard order.
 ]]
 export type Rgb = { R: number, G: number, B: number } -- 0..1 each
 
@@ -66,6 +66,17 @@ end
 function HudFormat.longClock(seconds: number): string
 	local whole = math.max(math.ceil(seconds), 0)
 	return string.format("%d:%02d:%02d", whole // 3600, whole // 60 % 60, whole % 60)
+end
+
+-- A whole number with thousands separators ("1,234,567"; the whole part, minus sign kept), for coin balances.
+function HudFormat.thousands(value: number): string
+	local whole = if value < 0 then math.ceil(value) else math.floor(value)
+	local digits = tostring(math.abs(whole))
+	local grouped = string.reverse((string.gsub(string.reverse(digits), "(%d%d%d)", "%1,")))
+	if string.sub(grouped, 1, 1) == "," then
+		grouped = string.sub(grouped, 2)
+	end
+	return if whole < 0 then "-" .. grouped else grouped
 end
 
 -- The color a Percent is shown in.

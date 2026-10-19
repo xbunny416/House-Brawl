@@ -179,7 +179,7 @@ end
 
 function PrivateServerController.Start(_self: any)
 	build()
-	menuButton = MenuController.addScreen(Localization.format("Menu.Server"), MENU_ORDER, gui, onOpen)
+	menuButton = MenuController.addScreen(Localization.format("Menu.Server"), MENU_ORDER, gui, onOpen) :: TextButton
 	refreshOwner()
 	Workspace:GetAttributeChangedSignal("PrivateOwnerId"):Connect(refreshOwner)
 	for _, attribute in { "PrivateMode", "PrivateMap", "PrivateRoundTime" } do

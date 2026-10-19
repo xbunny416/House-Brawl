@@ -3,8 +3,10 @@
 	DailyRewardController — the Daily reward screen (bible §5.3 / §8; Shared/DailyRules): the 7-day login streak as a
 	row of day cards (claimed, today's, still to come; day 7 shows the week's cosmetic), a Claim button or the time
 	until the next reward, and today's playtime rewards. Claim asks the server (ClaimDaily), which checks everything
-	again. It opens by itself once per session when a reward is waiting (not while fighting), and from the left-edge
-	menu. In a private server that pays nothing it says rewards come in public servers.
+	again. It opens by itself once per session when a reward is waiting (not while fighting) and from the Quests screen's
+	Daily reward tab — it has no menu button (owner's fix list, 2026-10-19: "daily reward pops up on login; quests can
+	be checked there", so the two screens share a tab row). In a private server that pays nothing it says rewards come
+	in public servers.
 ]]
 local GuiService = game:GetService("GuiService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -25,7 +27,7 @@ local DataController = require(script.Parent:WaitForChild("DataController"))
 local InputController = require(script.Parent:WaitForChild("InputController"))
 local MenuController = require(script.Parent:WaitForChild("MenuController"))
 
-local MENU_ORDER = 4 -- bible §5.1: Shop, Locker, Quests, Daily Reward, ...
+local MENU_ORDER = 5 -- no button; after Quests, whose tab row it shares
 local TICK_INTERVAL = 1
 local AUTO_OPEN_DELAY = 3 -- seconds after the data loads, so the player sees the lobby first
 
@@ -143,19 +145,27 @@ local function build()
 	gui = Kit.screen("DailyReward", 8)
 	local panel = Kit.panel(
 		gui,
-		UDim2.fromScale(0.66, 0.56),
+		UDim2.fromScale(0.66, 0.62),
 		UDim2.fromScale(0.5, 0.5),
 		Vector2.new(0.5, 0.5),
-		Vector2.new(880, 440)
+		Vector2.new(880, 500)
 	)
 
 	local header = Instance.new("Frame")
 	header.BackgroundTransparency = 1
 	header.Size = UDim2.fromScale(1, 0.15)
 	header.Parent = panel
-	local title = Kit.label(header, Localization.format("Daily.Title"), UDim2.fromScale(0.8, 1), 30)
-	title.Font = Kit.TitleFont
-	title.TextXAlignment = Enum.TextXAlignment.Left
+	local tabs = Kit.tabRow(
+		header,
+		{ Localization.format("Daily.Title"), Localization.format("Quests.Title") },
+		UDim2.fromScale(0, 0),
+		UDim2.fromScale(0.7, 0.9),
+		0.4
+	)
+	Kit.setChosen(tabs[1], true)
+	tabs[2].Activated:Connect(function()
+		MenuController.openNamed("Quests")
+	end)
 	local closeButton = Kit.button(header, Localization.format("Common.Close"), UDim2.fromScale(0.18, 0.9))
 	closeButton.AnchorPoint = Vector2.new(1, 0)
 	closeButton.Position = UDim2.fromScale(1, 0)
@@ -209,7 +219,7 @@ end
 
 function DailyRewardController.Start(_self: any)
 	build()
-	MenuController.addScreen(Localization.format("Menu.Daily"), MENU_ORDER, gui, onOpen)
+	MenuController.addScreen(nil, MENU_ORDER, gui, onOpen)
 	DataController.Changed:Connect(function(key: string)
 		if gui.Enabled and (key == "Daily" or key == "Cosmetics") then
 			render()
