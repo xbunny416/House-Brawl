@@ -307,6 +307,7 @@ any errors are fixed before the next item.
 | 2026-10-19 | Future lighting (owner: "yes switch to future lighting"): `default.project.json` sets Lighting.LightingStyle = Realistic (the old Technology = Future, #60; Studio no longer shows Technology) and GlobalShadows; the lobby's 10 main lamps (pendants, floor lamps) cast soft shadows (`Builder.light` shadows flag, tagged ShadowLight; the maps spec caps them at 12), Low Graphics turns those shadows off too (VfxController) | #60 |
 | 2026-10-19 | Lighting fix (owner: "no technology in lighting"): Roblox replaced Lighting.Technology with LightingStyle, so the project sets LightingStyle = Realistic (the Future look) instead | #61 |
 | 2026-10-19 | Owner's fix list 4/6, part 2 — lobby news TVs (NewsController: a "JUNKYARD NEWS" channel on both NewsScreen TVs — red banner with a blinking LIVE dot, a headline every 8 s with a burst of static, a scrolling ticker, CRT scanlines; 12 fun headlines mixed with live news: the last winner, today's daily deal, the Wins leader; pure Lib/NewsRules + spec; Config.World.News) and leaderboard rows like the reference (rank · headshot · name · value with thousands separators; top 3 in gold / silver / bronze outlines; headshots cached; HudFormat.medal + spec) | #62 |
+| 2026-10-20 | The three big bar TVs get screens too (owner: "about 3 big tv, screen only show in 2 small"): NewsController draws the news channel on the VoteScreen TVs as well, and over it the round when there is one — during the map vote each TV shows one map of the ballot with its votes and the time left (VoteState), during a round the middle TV shows the live match (arena, time left, fighters still in) | #PR |
 
 ## Decisions and interpretations
 
@@ -748,6 +749,10 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   thousands separators (right-aligned); the top 3 rows are taller with rounded outlines and gold / silver / bronze rank
   numbers and values (`HudFormat.medal`, `Kit.Colors.Gold` / `Silver` / `Bronze`), rows 4–10 plain; your own name is
   in the accent color; a small "All time" / "This week" line on top. `Leaderboard.Row` is gone.
+  **Big TVs (2026-10-20, owner: "about 3 big tv, screen only show in 2 small"):** the three `VoteScreen` TVs over the bar
+  show the same news channel, with a screen over it when there is a round to show: during the map vote TV n shows map
+  n of the ballot (`VoteState`, sent to everyone) with its votes and "Stand on the ARENA pad to vote · time left";
+  during a round the middle TV shows "LIVE MATCH", the arena, time left and fighters still in, and how to watch.
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,

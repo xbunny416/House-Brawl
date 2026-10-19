@@ -345,6 +345,12 @@ News.9,Record number of fighters fall off platforms this week.,Lobby news TVs: a
 News.10,Reminder: the floor is not lava. The void is.,Lobby news TVs: a fun headline,
 News.11,Perfect Dodge spotted in the wild. Crowd goes mild.,Lobby news TVs: a fun headline,
 News.12,Raccoons declare hubcaps fine dining.,Lobby news TVs: a fun headline,
+TV.Vote,MAP VOTE,Big lobby TV banner while the map vote is open,
+TV.Votes,{1} votes,Big lobby TV: votes for this map,3 votes
+TV.OneVote,1 vote,Big lobby TV: one vote for this map,
+TV.VoteHint,Stand on the ARENA pad to vote · {1},Big lobby TV during the map vote: how to vote and the time left,Stand on the ARENA pad to vote · 0:12
+TV.Live,LIVE MATCH,Big lobby TV banner while a round runs,
+TV.Watch,Watch it: Game in progress → Watch,Big lobby TV during a round: how to watch it from the lobby,
 Tag.GroupChat,[Crew],Chat tag in front of messages from members of the game's Roblox group,
 Group.Reward,Thanks for joining the group! +{1} Coins,Notice: the one-time group join reward was paid (Coins),Thanks for joining the group! +150 Coins
 Codes.Placeholder,Enter a code,Placeholder text in the code box,

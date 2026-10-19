@@ -149,7 +149,8 @@ Not used. No pets, eggs, or paid random items.
 no Training Yard, 2026-10-16; 25% bigger — 115 × 85 studs, 26 high — in the style of the reference pictures with
 detailed furniture, 2026-10-19). Grey-green plaster walls over dark wood wainscoting with a gold rail, dark wood pillars with
 white wall lamps, wood beams, a light carpet (wood planks in the bar). North — the marble-topped bar counter with the Shop NPC
-(the bartender), bar stools, a mirrored back bar with bottle shelves, map vote CRT TVs hanging over the bar and news TVs on the counter ends (a "JUNKYARD NEWS"
+(the bartender), bar stools, a mirrored back bar with bottle shelves, three big CRT TVs over the bar (each shows one map of the ballot with its votes during the vote,
+the middle one the live match during a round, the news otherwise) and news TVs on the counter ends (a "JUNKYARD NEWS"
 channel: fun headlines mixed with live news — the last winner, today's deal, the Wins leader — and a scrolling
 ticker), the "JUNKYARD BRAWL" sign; booths in both corners. East — the steel ARENA door with the glowing join pad. West — Locker
 booth, Codes jukebox, the cork quest board. South — three tall dark leaderboard boards (cream title, gold underline; rows of rank,
