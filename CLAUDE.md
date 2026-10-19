@@ -303,6 +303,7 @@ any errors are fixed before the next item.
 | 2026-10-19 | Victory emotes removed (owner: "remove victory emotes"): the VictoryEmote cosmetic slot and its 8 items (Flex, Junk Dance, Taunt, Champion and the Emote Pack's Robot, Salute, Air Guitar, Backflip), their clips, the winner's emote after a round and the equip preview, `Animations.EmoteDelay`, and the Emote Pack game pass (it only sold emotes); data v3 drops owned / equipped emotes; strings, specs and docs updated | #57 |
 | 2026-10-19 | Owner's fix list 4/6, part 1 — lobby: The Hideout 50% bigger (138 × 102, 28 high) and rebuilt in the reference furniture style (plaster over dark wood wainscoting with a gold rail, wood pillars with wall lamps, carpet; lounge with rug + gold ring, black marble table, red sofa + armchairs, floor lamps, topiaries; bunk corner with metal bunk beds and a kitchen counter; vending machines; tall dark leaderboard boards with cream titles and a gold underline; marble bar and tables); 25 LobbySeat Seats (sofas, armchairs, booth benches, bar and high-table stools) with a Sit prompt (SeatController) → Sit remote → SeatService; Builder.seat, palette colors, maps spec checks size and seats | #58 |
 | 2026-10-19 | Lobby redo (owner: "design like the ref, not copied into Studio … too blocky, no detail like the ref … lobby too big, shrink a little"): 115 × 85 × 26 (1.25× the first Hideout); the copied bunk beds, kitchen counter and vending machines are gone; new maps/lib/Furniture builds detailed pieces from parts (tufted sofas with rolled arms and piping, booth benches with channel tufting, round-seat stools, marble tables with gold rims, drum-shade floor lamps, stepped-dome pendants, wall sconces, pillars with gold bands, framed wainscot panels, bottles with necks and caps, a pool table with pockets); mirrored back bar, framed counter, crown molding, gold-strip beams, TV bezels / knobs, leaderboard wood frames; Builder `Yaw`; 24 seats | #59 |
+| 2026-10-19 | Future lighting (owner: "yes switch to future lighting"): `default.project.json` sets Lighting.Technology = Future and GlobalShadows; the lobby's 10 main lamps (pendants, floor lamps) cast soft shadows (`Builder.light` shadows flag, tagged ShadowLight; the maps spec caps them at 12), Low Graphics turns those shadows off too (VfxController) | #PR |
 
 ## Decisions and interpretations
 
@@ -723,6 +724,13 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   fighting, and within SitDistance + `SitTolerance` (4). Jump to stand up. Seats are never on the join pad, so a
   sitting player is never taken into a round. 24 seats: 3 sofa + 2 armchair cushions, 8 booth seats, 7 bar stools,
   4 high-table stools. Not playtested yet: brightness (Dusk preset + ~30 warm lights), sitting heights.
+- **Future lighting (owner, 2026-10-19: "yes switch to future lighting"):** the reference's soft lamp shadows come from
+  Roblox's Future lighting, so `default.project.json` sets `Lighting.Technology` = Future (and `GlobalShadows`); the
+  place itself used whatever it had before. Lights from `Builder.light` still don't cast shadows unless asked: only the
+  lobby's main lamps do (`Furniture.pendant` and `Furniture.floorLamp`, 10 lights), tagged `ShadowLight`; the maps
+  spec fails above 12, since shadowed lights cost frame time. Low Graphics now also turns those lamp shadows off on
+  that client (`VfxController`, along with `GlobalShadows`). Roblox scales Future lighting down by itself on weak
+  devices. If `rojo serve` can't change Technology in an open place, set Lighting → Technology → Future by hand once.
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,

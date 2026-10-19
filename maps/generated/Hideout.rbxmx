@@ -23950,7 +23950,8 @@
               <B>0.5411765</B>
             </Color3>
             <float name="Range">26</float>
-            <bool name="Shadows">false</bool>
+            <bool name="Shadows">true</bool>
+            <BinaryString name="Tags">U2hhZG93TGlnaHQ=</BinaryString>
           </Properties>
         </Item>
       </Item>
@@ -24160,7 +24161,8 @@
               <B>0.5411765</B>
             </Color3>
             <float name="Range">26</float>
-            <bool name="Shadows">false</bool>
+            <bool name="Shadows">true</bool>
+            <BinaryString name="Tags">U2hhZG93TGlnaHQ=</BinaryString>
           </Properties>
         </Item>
       </Item>
@@ -29006,7 +29008,8 @@
               <B>0.5411765</B>
             </Color3>
             <float name="Range">30</float>
-            <bool name="Shadows">false</bool>
+            <bool name="Shadows">true</bool>
+            <BinaryString name="Tags">U2hhZG93TGlnaHQ=</BinaryString>
           </Properties>
         </Item>
       </Item>
@@ -33176,7 +33179,8 @@
               <B>0.5411765</B>
             </Color3>
             <float name="Range">18</float>
-            <bool name="Shadows">false</bool>
+            <bool name="Shadows">true</bool>
+            <BinaryString name="Tags">U2hhZG93TGlnaHQ=</BinaryString>
           </Properties>
         </Item>
       </Item>
@@ -33450,7 +33454,8 @@
               <B>0.5411765</B>
             </Color3>
             <float name="Range">18</float>
-            <bool name="Shadows">false</bool>
+            <bool name="Shadows">true</bool>
+            <BinaryString name="Tags">U2hhZG93TGlnaHQ=</BinaryString>
           </Properties>
         </Item>
       </Item>
@@ -34116,7 +34121,8 @@
               <B>0.5411765</B>
             </Color3>
             <float name="Range">30</float>
-            <bool name="Shadows">false</bool>
+            <bool name="Shadows">true</bool>
+            <BinaryString name="Tags">U2hhZG93TGlnaHQ=</BinaryString>
           </Properties>
         </Item>
       </Item>
@@ -35316,7 +35322,8 @@
               <B>0.5411765</B>
             </Color3>
             <float name="Range">24</float>
-            <bool name="Shadows">false</bool>
+            <bool name="Shadows">true</bool>
+            <BinaryString name="Tags">U2hhZG93TGlnaHQ=</BinaryString>
           </Properties>
         </Item>
       </Item>
@@ -36780,7 +36787,8 @@
               <B>0.5411765</B>
             </Color3>
             <float name="Range">26</float>
-            <bool name="Shadows">false</bool>
+            <bool name="Shadows">true</bool>
+            <BinaryString name="Tags">U2hhZG93TGlnaHQ=</BinaryString>
           </Properties>
         </Item>
       </Item>
@@ -38882,7 +38890,8 @@
               <B>0.5411765</B>
             </Color3>
             <float name="Range">22</float>
-            <bool name="Shadows">false</bool>
+            <bool name="Shadows">true</bool>
+            <BinaryString name="Tags">U2hhZG93TGlnaHQ=</BinaryString>
           </Properties>
         </Item>
       </Item>
@@ -40756,7 +40765,8 @@
               <B>0.5411765</B>
             </Color3>
             <float name="Range">22</float>
-            <bool name="Shadows">false</bool>
+            <bool name="Shadows">true</bool>
+            <BinaryString name="Tags">U2hhZG93TGlnaHQ=</BinaryString>
           </Properties>
         </Item>
       </Item>

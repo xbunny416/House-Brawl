@@ -328,7 +328,7 @@ function Furniture.floorLamp(x: number, z: number)
 			Material = "Neon",
 			CanCollide = false,
 		})
-		B.light(bulb, "WarmLight", 18, 1)
+		B.light(bulb, "WarmLight", 18, 1, true)
 	end)
 end
 
@@ -350,7 +350,7 @@ function Furniture.pendant(x: number, y: number, z: number, ceiling: number, ran
 			Material = "Neon",
 			CanCollide = false,
 		})
-		B.light(bulb, "WarmLight", range, 1.3)
+		B.light(bulb, "WarmLight", range, 1.3, true) -- the main lamps cast soft shadows (Future lighting)
 	end)
 end
 
