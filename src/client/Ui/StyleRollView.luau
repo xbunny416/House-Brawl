@@ -1,7 +1,7 @@
 --!strict
 --[[
-	StyleRollView — the style roll page of the Inventory's Styles tab (owner's fix list, 2026-10-19; reference picture
-	docs/reference/style-roll.jpg). Left: the player's style slots (tap to equip, Lock / Unlock; a "+ Style slot"
+	StyleRollView — the style roll page of the Styles screen (StyleRollController; owner's fix list, 2026-10-19;
+	reference picture docs/reference/style-roll.jpg). Left: the player's style slots (tap to equip, Lock / Unlock; a "+ Style slot"
 	card opens the Robux purchase while there is room). Middle: the equipped style (name in its rarity color, rarity,
 	description), the Spin button (free once a day, then Config.Styles.Roll.SpinPrice Scrap), when the free spin
 	comes back, and the pity counter. Right: every rarity with its exact odds and the styles in it — shown before
@@ -32,7 +32,9 @@ local REEL_TIME = 1.4 -- seconds the reel runs at least
 local REEL_START_STEP = 0.05 -- seconds between names at the start, slowing to...
 local REEL_END_STEP = 0.22 -- ...this at the end
 
-export type View = { Frame: Frame, render: () -> () }
+-- render: redraws everything (slots, style, button); tick: just the free-spin countdown (every second while open),
+-- redrawing everything only when the free spin comes back.
+export type View = { Frame: Frame, render: () -> (), tick: () -> () }
 
 local StyleRollView = {}
 
@@ -232,6 +234,18 @@ function StyleRollView.new(parent: Instance, position: UDim2, size: UDim2): View
 		end)
 	end
 
+	local freeShownReady: boolean? = nil -- what the free-spin line last said
+
+	local function showFreeSpin(styles: StyleRules.Styles)
+		local ready = StyleRules.freeSpinReady(styles, today())
+		freeShownReady = ready
+		local resetIn = Formulas.secondsUntilNextDay(Workspace:GetServerTimeNow(), Roll.FreeSpinResetHourUTC)
+		freeLabel.Text = if not freeAllowed()
+			then Localization.format("Roll.Error.PrivateServer")
+			elseif ready then Localization.format("Roll.FreeReady")
+			else Localization.format("Roll.FreeIn", { HudFormat.longClock(resetIn) })
+	end
+
 	local function render()
 		local data = DataController.get()
 		if data == nil or spinning then
@@ -262,11 +276,7 @@ function StyleRollView.new(parent: Instance, position: UDim2, size: UDim2): View
 			else Localization.format("Roll.NoSpin")
 		spinButton.AutoButtonColor = reason == nil
 		spinButton.TextTransparency = if reason == nil then 0 else 0.35
-		local resetIn = Formulas.secondsUntilNextDay(Workspace:GetServerTimeNow(), Roll.FreeSpinResetHourUTC)
-		freeLabel.Text = if not freeAllowed()
-			then Localization.format("Roll.Error.PrivateServer")
-			elseif StyleRules.freeSpinReady(styles, today()) then Localization.format("Roll.FreeReady")
-			else Localization.format("Roll.FreeIn", { HudFormat.longClock(resetIn) })
+		showFreeSpin(styles)
 		local pityArgs: { any } = { styles.Pity, Roll.PityAt, Localization.format(`Rarity.{Roll.PityRarity}`) }
 		pityLabel.Text = Localization.format("Roll.Pity", pityArgs)
 		paidNote.Text = if paidAllowed()
@@ -358,7 +368,19 @@ function StyleRollView.new(parent: Instance, position: UDim2, size: UDim2): View
 		end)
 	end
 
-	return { Frame = frame, render = render }
+	local function tick()
+		local data = DataController.get()
+		if data == nil or spinning then
+			return
+		end
+		if StyleRules.freeSpinReady(data.Styles, today()) ~= freeShownReady then
+			render() -- a new day: the free spin is back, and the Spin button changes with it
+		else
+			showFreeSpin(data.Styles)
+		end
+	end
+
+	return { Frame = frame, render = render, tick = tick }
 end
 
 return StyleRollView

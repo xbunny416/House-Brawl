@@ -27,7 +27,7 @@ local InputController = require(script.Parent:WaitForChild("InputController"))
 local MenuController = require(script.Parent:WaitForChild("MenuController"))
 local SettingsController = require(script.Parent:WaitForChild("SettingsController"))
 
-local MENU_ORDER = 3 -- owner, 2026-10-19: Shop, Inventory, Settings, Quests
+local MENU_ORDER = 4 -- owner, 2026-10-19: Shop, Inventory, Styles, Settings, Quests
 local ROW_HEIGHT = 0.14 -- of a page
 local TABS = { "Visual", "Audio", "Codes", "Guide" }
 local CODE_LENGTH = 24 -- the RedeemCode remote's limit

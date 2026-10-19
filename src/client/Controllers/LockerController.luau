@@ -1,15 +1,13 @@
 --!strict
 --[[
-	LockerController — the Inventory (the Locker renamed by the owner, 2026-10-19; bible §5.3): your fighting styles
-	and the cosmetics you own. Opened from the left-edge Inventory button (MenuController), only outside a fight.
-	Tabs: Styles — the style roll page (Ui/StyleRollView: slots, Spin, odds) — then every cosmetic slot that has
-	items. A cosmetic card shows the name, its rarity and what tapping it does: equip, take off (an equipped
-	cosmetic), or where it comes from (its Scrap price in the Shop, a pass, Premium or a Robux item).
-	The server checks every change (SpinStyle / EquipStyleSlot / LockStyleSlot / EquipCosmetic).
+	LockerController — the Inventory (the Locker renamed by the owner, 2026-10-19; bible §5.3): equip the cosmetics you
+	own. Opened from the left-edge Inventory button (MenuController), only outside a fight. One tab per cosmetic slot
+	that has items. A card shows the name, its rarity and what tapping it does: equip, take off (an equipped
+	cosmetic), or where it comes from (its Scrap price in the Shop, a pass, Premium or a Robux item). Fighting styles
+	have their own screen (StyleRollController, owner 2026-10-19: "style as separate ui").
+	The server checks every change (EquipCosmetic).
 ]]
 local GuiService = game:GetService("GuiService")
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -18,17 +16,14 @@ local CosmeticRules = require(Shared:WaitForChild("CosmeticRules"))
 local Localization = require(Shared:WaitForChild("Localization"))
 local Net = require(Shared:WaitForChild("Net"))
 
-local Ui = script.Parent.Parent:WaitForChild("Ui")
-local Kit = require(Ui:WaitForChild("Kit"))
-local StyleRollView = require(Ui:WaitForChild("StyleRollView"))
+local Kit = require(script.Parent.Parent:WaitForChild("Ui"):WaitForChild("Kit"))
 local DataController = require(script.Parent:WaitForChild("DataController"))
 local InputController = require(script.Parent:WaitForChild("InputController"))
 local MenuController = require(script.Parent:WaitForChild("MenuController"))
 
-local STYLES_TAB = "Styles"
+local MENU_ORDER = 2 -- owner, 2026-10-19: Shop, Inventory, Styles, Settings, Quests
 local CARD_HEIGHT = 74 -- pixels
 local LOCKED_TRANSPARENCY = 0.45
-local TICK_INTERVAL = 1 -- seconds between refreshes of the free-spin countdown
 
 type Card = { Title: string, Detail: string, Status: string, Chosen: boolean, Locked: boolean, Run: (() -> ())? }
 
@@ -38,8 +33,7 @@ local gui: ScreenGui
 local tabs: Frame
 local grid: ScrollingFrame
 local tabButtons: { [string]: TextButton } = {}
-local currentTab = STYLES_TAB
-local styleView: StyleRollView.View
+local currentTab = CosmeticRules.usedSlots()[1]
 
 local function cosmeticCards(slot: string): { Card }
 	local data = DataController.get()
@@ -86,15 +80,7 @@ local function render()
 	for tab, button in tabButtons do
 		Kit.setChosen(button, tab == currentTab)
 	end
-	local onStyles = currentTab == STYLES_TAB
-	styleView.Frame.Visible = onStyles
-	grid.Visible = not onStyles
-	if onStyles then
-		styleView.render()
-		return
-	end
-	local cards = cosmeticCards(currentTab)
-	for order, card in ipairs(cards) do
+	for order, card in ipairs(cosmeticCards(currentTab)) do
 		local button = Kit.button(grid, `{card.Title}\n{card.Detail}\n{card.Status}`, UDim2.new())
 		button.LayoutOrder = order
 		button.Font = Kit.BodyFont
@@ -156,7 +142,6 @@ local function build()
 	tabs.Parent = panel
 	local tabLayout = Kit.list(tabs, Enum.FillDirection.Vertical, UDim.new(0.015, 0))
 	tabLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-	addTab(STYLES_TAB, Localization.format("Locker.Styles"), 0)
 	for order, slot in CosmeticRules.usedSlots() do
 		addTab(slot, Localization.format(`Slot.{slot}`), order)
 	end
@@ -175,29 +160,13 @@ local function build()
 	layout.CellPadding = UDim2.new(0.02, 0, 0, 8)
 	layout.SortOrder = Enum.SortOrder.LayoutOrder
 	layout.Parent = grid
-
-	styleView = StyleRollView.new(panel, grid.Position, grid.Size)
 end
 
 function LockerController.Start(_self: any)
 	build()
-	MenuController.addScreen(Localization.format("Menu.Locker"), 2, gui, onOpen)
+	MenuController.addScreen(Localization.format("Menu.Locker"), MENU_ORDER, gui, onOpen)
 	DataController.Changed:Connect(function(key: string)
-		if gui.Enabled and (key == "Styles" or key == "Cosmetics" or key == "Scrap") then
-			render()
-		end
-	end)
-	local elapsed = 0
-	RunService.Heartbeat:Connect(function(deltaTime: number)
-		elapsed += deltaTime
-		if elapsed >= TICK_INTERVAL and gui.Enabled and currentTab == STYLES_TAB then
-			elapsed = 0
-			styleView.render() -- the free-spin countdown
-		end
-	end)
-	-- Paid spins show once the player's policy is known (PlayerPolicyService).
-	Players.LocalPlayer:GetAttributeChangedSignal("PolicyPaidRandomItems"):Connect(function()
-		if gui.Enabled then
+		if gui.Enabled and key == "Cosmetics" then
 			render()
 		end
 	end)

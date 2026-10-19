@@ -11,7 +11,7 @@
 	    player is subscribed.
 	  * Products: Scrap packs (Scrap), Robux-only cosmetics (Cosmetic = the item, whose Exclusive is "Robux") and the
 	    style slot (StyleSlot: one more slot for the style roll, up to Config.Styles.Roll.Slots.Max; sold on the
-	    Inventory's Styles page, not in the Shop's Robux tab), granted once per purchase (DataService.processReceipt)
+	    Styles screen, not in the Shop's Robux tab), granted once per purchase (DataService.processReceipt)
 	    and kept for good.
 ]]
 export type Pass = { Id: number, PriceRobux: number }

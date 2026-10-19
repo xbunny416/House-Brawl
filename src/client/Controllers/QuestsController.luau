@@ -23,7 +23,7 @@ local Kit = require(Client:WaitForChild("Ui"):WaitForChild("Kit"))
 local DataController = require(script.Parent:WaitForChild("DataController"))
 local MenuController = require(script.Parent:WaitForChild("MenuController"))
 
-local MENU_ORDER = 4 -- owner, 2026-10-19: Shop, Inventory, Settings, Quests
+local MENU_ORDER = 5 -- owner, 2026-10-19: Shop, Inventory, Styles, Settings, Quests
 local TICK_INTERVAL = 1
 local ROW_HEIGHT = 0.17 -- of the list
 

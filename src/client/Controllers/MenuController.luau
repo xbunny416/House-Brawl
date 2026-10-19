@@ -1,7 +1,7 @@
 --!strict
 --[[
-	MenuController — the lobby menu down the left edge (owner, 2026-10-19: Shop, Inventory, Settings, Quests — each
-	screen adds itself with addScreen; the Daily reward has no button, it opens itself and from Quests). One menu
+	MenuController — the lobby menu down the left edge (owner, 2026-10-19: Shop, Inventory, Styles, Settings, Quests —
+	each screen adds itself with addScreen; the Daily reward has no button, it opens itself and from Quests). One menu
 	screen is open at a time. The menu is hidden while the player is fighting in a round, and an open screen closes
 	then, so nothing covers the arena.
 	The Menu action (M / D-pad Up) closes the open screen; otherwise it opens the first screen (the Shop), or on a
@@ -121,7 +121,7 @@ end
 function MenuController.addScreen(text: string?, order: number, screenGui: ScreenGui, onOpen: (any?) -> ()): TextButton?
 	local button: TextButton? = nil
 	if text then
-		local made = Kit.button(ensureBar(), text, UDim2.fromScale(1, 0.16))
+		local made = Kit.button(ensureBar(), text, UDim2.fromScale(1, 0.14))
 		made.LayoutOrder = order
 		made.Activated:Connect(function()
 			MenuController.toggle(screenGui)
