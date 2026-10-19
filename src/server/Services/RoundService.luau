@@ -621,8 +621,12 @@ end
 ---------------------------------------------------------------------------------------------------------------------
 
 -- A spectator asks to watch `targetUserId` (0 = stop). The server streams the area around the target to them.
+-- Spectators are players out of the round (Classic: out of lives) or, while it runs, players in the lobby watching
+-- it (owner's fix list, 2026-10-19); a lobby watcher's character stays in the lobby.
 local function onSpectate(player: Player, targetUserId: number)
-	if targetUserId == 0 or statuses[player] ~= "Spectating" then
+	local status = statuses[player]
+	local mayWatch = status == "Spectating" or (status == "Lobby" and state == "Playing")
+	if targetUserId == 0 or not mayWatch then
 		player.ReplicationFocus = nil
 		return
 	end

@@ -135,6 +135,13 @@ function MenuController.addScreen(text: string?, order: number, screenGui: Scree
 	return button
 end
 
+-- Puts `widget` in the menu column, after the buttons with a lower `order` (e.g. the Game in progress card). It
+-- shows and hides with the menu.
+function MenuController.addWidget(widget: GuiObject, order: number)
+	widget.LayoutOrder = order
+	widget.Parent = ensureBar()
+end
+
 local function onMenu()
 	local first: Screen? = nil
 	for _, screen in screens do

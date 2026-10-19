@@ -15,6 +15,8 @@ Kit.Colors = {
 	Accent = Color3.fromHex("#D9822B"),
 	Button = Color3.fromHex("#3A302A"),
 	Coin = Color3.fromHex("#F2C14E"),
+	Live = Color3.fromHex("#E5484D"), -- the "game in progress" dot
+	Hint = Color3.fromHex("#D0D0D0"), -- the small key hints along the bottom edge
 }
 Kit.TitleFont = Enum.Font.GothamBlack
 Kit.BodyFont = Enum.Font.GothamBold

@@ -298,7 +298,7 @@ local function buildBottom()
 	bottom.Name = "Bottom"
 	bottom.BackgroundTransparency = 1
 	bottom.AnchorPoint = Vector2.new(0.5, 1)
-	bottom.Position = UDim2.fromScale(0.5, 0.975)
+	bottom.Position = UDim2.new(0.5, 0, 0.975, -14) -- the key hints run along the very bottom (HintBarController)
 	bottom.Size = UDim2.fromScale(0.46, 0.1)
 	local limit = Instance.new("UISizeConstraint")
 	limit.MaxSize = Vector2.new(620, 80)
@@ -313,7 +313,7 @@ local function buildBottom()
 	local bar = Instance.new("Frame")
 	bar.Name = "Stamina"
 	bar.AnchorPoint = Vector2.new(0.5, 1)
-	bar.Position = UDim2.fromScale(0.5, 0.865)
+	bar.Position = UDim2.new(0.5, 0, 0.865, -14)
 	bar.Size = UDim2.fromScale(0.3, 0.012)
 	bar.BackgroundColor3 = EMPTY_COLOR
 	bar.BackgroundTransparency = 0.2

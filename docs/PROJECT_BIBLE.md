@@ -276,7 +276,9 @@ AnchorPoint (0.5, 0.5), Scale coordinates (no fixed offsets), UIAspectRatioConst
   Percent (Casual) or HP bar + lives (Classic), held-prop icon, dash cooldown ring. Top-center — round timer, mode
   badge, players alive / score. Kill feed top-right (top-center is the timer and the vote panel). Left edge (Lobby
   only) — a coins + level / XP block, then Shop, Inventory, Settings, Quests (owner, 2026-10-19). Default thumbstick bottom-left.
-- **PC:** same layout, touch buttons hidden, key hints next to HUD items; bottom-right key panel (Run, Dash, the
+- **PC:** same layout, touch buttons hidden, key hints next to HUD items and small light-grey hints along the
+  bottom edge (lobby: Run, Menu and the walk-up prompt in reach; fighting: Punch / hold to charge, Scoreboard;
+  spectating: switch fighter); bottom-right key panel (Run, Dash, the
   style's Ability) with keys and cooldowns, where touch players have their buttons; Tab = round scoreboard
   (replaces Roblox's player list).
 - **Console:** same layout, menus navigable with GuiService.SelectedObject highlights, gamepad glyphs auto-swap.
@@ -298,7 +300,7 @@ AnchorPoint (0.5, 0.5), Scale coordinates (no fixed offsets), UIAspectRatioConst
 
 Third-person follow, zoom 8–30 studs (no first person), Shift Lock allowed on PC and toggled with Right Shift (Left
 Shift is Dash). Camera shake on heavy hits (1 stud + 1.5° tilt, 0.35 s; toggle in Settings). Spectate camera cycles alive
-players.
+players. Lobby players can watch a running round too (the "Game in progress" card under the menu → Watch).
 
 ### 5.3 Screens
 

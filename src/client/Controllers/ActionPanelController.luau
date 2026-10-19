@@ -95,7 +95,7 @@ local function build()
 	panel.Name = "Slots"
 	panel.BackgroundTransparency = 1
 	panel.AnchorPoint = Vector2.new(1, 1)
-	panel.Position = UDim2.fromScale(0.985, 0.975)
+	panel.Position = UDim2.new(0.985, 0, 0.975, -14) -- above the key hints (HintBarController)
 	panel.Size = UDim2.fromScale(0.24, 0.1)
 	local limit = Instance.new("UISizeConstraint")
 	limit.MaxSize = Vector2.new(280, 84)

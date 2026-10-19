@@ -13,6 +13,8 @@ export type TouchButton = {
 	Scale: number, -- size relative to the base button size
 }
 
+export type Hint = { Actions: { string }, Key: string }
+
 type ControlsConfig = {
 	Actions: { string },
 	Keyboard: Bindings,
@@ -25,6 +27,7 @@ type ControlsConfig = {
 		Layouts: { [string]: { TouchButton } },
 	},
 	Prompts: { Keyboard: string, Gamepad: string, MaxDistance: number },
+	Hints: { Lobby: { Hint }, Round: { Hint }, Spectating: { Hint }, PromptAction: string },
 	Camera: {
 		MinZoom: number,
 		MaxZoom: number,
@@ -83,6 +86,21 @@ local Controls: ControlsConfig = {
 	-- Walk-up prompts in the lobby (bartender → Shop, locker booth → Locker): the keys are Grab's, which has nothing
 	-- to grab in the lobby; touch taps the prompt. MaxDistance in studs.
 	Prompts = { Keyboard = "E", Gamepad = "ButtonB", MaxDistance = 12 },
+	-- Small light-grey key hints along the bottom edge (owner's fix list, 2026-10-19; keyboard and gamepad only, touch
+	-- has its buttons): each shows its actions' keys and a GameStrings key, by where the player is (Client/Lib/HintRules).
+	-- Near a walk-up prompt the lobby list adds "[key] <prompt text>"; PromptAction is the action whose keys prompts use.
+	Hints = {
+		Lobby = { { Actions = { "Run" }, Key = "Hint.Run" }, { Actions = { "Menu" }, Key = "Hint.Menu" } },
+		Round = {
+			{ Actions = { "Attack" }, Key = "Hint.Attack" },
+			{ Actions = { "Scoreboard" }, Key = "Hint.Scoreboard" },
+		},
+		Spectating = {
+			{ Actions = { "SpectatePrevious", "SpectateNext" }, Key = "Hint.Spectate" },
+			{ Actions = { "Scoreboard" }, Key = "Hint.Scoreboard" },
+		},
+		PromptAction = "Grab",
+	},
 	Camera = {
 		MinZoom = 8, -- studs; keeps the camera third-person (no first person)
 		MaxZoom = 30,

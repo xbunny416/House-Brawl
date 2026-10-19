@@ -2,8 +2,8 @@
 --[[
 	SoundController — music and sound effects (bible §4.4), from the ids in Config.Audio (0 = silent until picked).
 	  * Music: the lobby track, or the arena's track while this player is in the running round (fighting, respawning,
-	    watching), crossfading over FadeTime; the tension layer on top in the last Round.TensionTime seconds; the
-	    victory sting when a round ends.
+	    spectating, or watching it from the lobby), crossfading over FadeTime; the tension layer on top in the last
+	    Round.TensionTime seconds; the victory sting when a round ends.
 	  * World sounds, heard near where they happen: hits (by the attacker's weapon; heavy hits and thrown props have
 	    their own), parries, dashes, grabs, throws, KOs (boom + a short cheer), explosions, structures smashing (wood,
 	    metal or glass), the Perfect Dodge chime. CrumbleController plays the rumble and collapse (playAt).
@@ -26,6 +26,7 @@ local Client = script.Parent.Parent
 local AudioRules = require(Client:WaitForChild("Lib"):WaitForChild("AudioRules"))
 local DashController = require(script.Parent:WaitForChild("DashController"))
 local SettingsController = require(script.Parent:WaitForChild("SettingsController"))
+local SpectateController = require(script.Parent:WaitForChild("SpectateController"))
 
 local MUSIC_CHECK = 0.5 -- seconds between music checks
 local CHEER_DELAY = 0.35 -- seconds after the KO boom
@@ -136,7 +137,8 @@ end
 
 local function refreshMusic()
 	local state = Workspace:GetAttribute("RoundState")
-	local status = player:GetAttribute("RoundStatus")
+	-- Watching the round from the lobby plays the arena's music, like spectating.
+	local status = if SpectateController.isWatching() then "Spectating" else player:GetAttribute("RoundStatus")
 	local mapId = Workspace:GetAttribute("RoundMap")
 	local track = AudioRules.musicFor(
 		if type(state) == "string" then state else nil,
