@@ -27,7 +27,7 @@ local DataController = require(script.Parent:WaitForChild("DataController"))
 local InputController = require(script.Parent:WaitForChild("InputController"))
 local MenuController = require(script.Parent:WaitForChild("MenuController"))
 
-local MENU_ORDER = 5 -- no button; after Quests, whose tab row it shares
+local MENU_ORDER = 6 -- no button; after Quests, whose tab row it shares
 local TICK_INTERVAL = 1
 local AUTO_OPEN_DELAY = 3 -- seconds after the data loads, so the player sees the lobby first
 

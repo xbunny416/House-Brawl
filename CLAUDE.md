@@ -121,7 +121,8 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
   reads the character attributes `HP` (modes with HP) and `Percent`; listen to `CombatService.KnockedOut` for KOs.
 - **Styles:** styles come from the style roll. Slots, the equipped slot, spins and locks go through
   `Services/StyleService` (`spin`, `equipSlot`, `lockSlot`, `addSlot`, `equippedOf`); the rules (`Shared/StyleRules`:
-  odds, pick, pity, spin checks) are shared with the Inventory's Styles page (`Ui/StyleRollView`). Saved data keeps
+  odds, pick, pity, spin checks) are shared with the Styles screen (`Controllers/StyleRollController` +
+  `Ui/StyleRollView`). Saved data keeps
   `Styles.Equipped` = the equipped slot's style. Combat reads it through `Formulas.resolveAttack`.
 - **Shop:** purchases go through `Services/ShopService` (`Buy` remote → `CosmeticService.grant`; styles aren't sold); what is for sale, prices and the daily rotation are `Shared/ShopRules`, shared with the
   Shop UI so both show the same price.
@@ -141,7 +142,7 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
   always-on Motion layer (lean, air pose) and the in-round Stance come from each character's movement. A style's
   clips are `Config.Styles.List[id].Animations`; an uploaded animation can replace any clip via
   `Config.Animations.AssetIds`.
-- **Lobby menu screens** (Shop, Inventory, Settings, Quests; the Daily reward and the owner's Server menu) register
+- **Lobby menu screens** (Shop, Inventory, Styles, Settings, Quests; the Daily reward and the owner's Server menu) register
   with `Controllers/MenuController.addScreen(text, order, gui, onOpen)`: a left-edge button (none when `text` is nil),
   one screen open at a time, closed while fighting; the Menu action (M / D-pad Up) closes the open screen or opens the
   first one; `open` / `openNamed(name, arg)` pass `arg` to `onOpen` (e.g. a tab). Tabs use `Kit.tabRow`. A lobby
@@ -298,6 +299,7 @@ any errors are fixed before the next item.
 | 2026-10-19 | Owner's fix list 2/6, part 1 — UI: left menu Shop / Inventory / Settings / Quests under a new coins + level block (ProfileController: big coin balance with thousands separators, level · rank, XP bar; the HUD's top-right chip is gone), Settings in tabs (Visual / Audio / Promo code / How to play; the Codes screen folded in, the jukebox opens the Promo code tab), Daily reward without a menu button (pops up on login) sharing a tab row with Quests, "Scrap" shown as "Coins" and the Locker as "Inventory"; MenuController optional buttons + open argument, Kit.tabRow, HudFormat.thousands + spec | #53 |
 | 2026-10-19 | Owner's fix list 2/6, part 2 — UI: "Game in progress" card under the lobby menu (live dot, arena, time left, fighters still in, Watch / Stop watching: the camera follows the round from the lobby through the spectate system, the server streams the arena to lobby watchers, arena music while watching); small light-grey key hints along the bottom edge (keyboard / gamepad: Run + Menu in the lobby and "[E] Shop"-style hints for walk-up prompts in reach, Punch · hold to charge + Scoreboard while fighting, Switch fighter while spectating) from Config.Controls.Hints and the pure Lib/HintRules + spec; bottom HUD bar, stamina bar, key panel and spectate bar moved up 14 px; MenuController.addWidget | #54 |
 | 2026-10-19 | Owner's fix list 3/6 — style roll: styles come from spins instead of levels / the Shop (Slugger Uncommon 70%, Scrapper Rare 25%, Wrecker Legendary 5%, Brawler the default and never rolled; pity: the 50th spin without a Legendary is one); 1 free spin a day, more for 250 Coins (paid random item: odds shown before spinning, paid spins only where PolicyService allows them, none in private servers' free spin); slots: 1 to start, more from the StyleSlot Robux product (up to 4), lockable; Inventory's Styles tab is the roll page (slots, equipped style, reel, odds, pity, free-spin countdown); data v2 (Styles = slots, migration keeps the equipped style), SpinStyle / EquipStyleSlot / LockStyleSlot remotes, Shop's Styles tab removed, dev panel Free spin / Pity next / +1 style slot; StyleRules rewritten + specs | #55 |
+| 2026-10-19 | Style roll as its own screen (owner: "prefer style as separate ui instead of within inventory"): StyleRollController (left-menu "Styles" button, third: Shop, Inventory, Styles, Settings, Quests; a bigger panel), the Inventory is cosmetics only again, StyleRollView gets a countdown-only tick (no rebuild every second), menu buttons a little shorter for five | #PR |
 
 ## Decisions and interpretations
 
@@ -669,8 +671,9 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   items (or can't be read: safe default) the page offers the free spin only and says why; the maturity questionnaire
   must now say "paid random items: yes" (docs/LAUNCH.md). **Data v2:** `Styles` = { Slots, Locked, Active, Equipped
   (= the active slot's style, kept for every reader), Pity, FreeSpinDay }; migration 1 → 2 puts the equipped style in
-  slot 1 and drops the other owned styles (no live players yet). **UI:** the Inventory's Styles tab is the roll page
-  (`Ui/StyleRollView`, like `docs/reference/style-roll.jpg`): slot cards on the left (style in its rarity color,
+  slot 1 and drops the other owned styles (no live players yet). **UI:** the roll page (`Ui/StyleRollView`, like `docs/reference/style-roll.jpg`) is its own **Styles**
+  screen since the owner's "prefer style as separate ui instead of within inventory" (`StyleRollController`: the
+  third left-menu button, a 0.86 × 0.84 panel up to 1200 × 700; it was the Inventory's first tab in #55): slot cards on the left (style in its rarity color,
   EQUIPPED / tap to equip, Lock / Locked, "+ Style slot" with the live Robux price or "Coming soon"), the equipped
   style's name, rarity and description in the middle with the Spin button ("SPIN · FREE" / "SPIN · 250 Coins"), the
   free-spin countdown and the pity line, and the odds list on the right (rarity bars with percentages, each style's

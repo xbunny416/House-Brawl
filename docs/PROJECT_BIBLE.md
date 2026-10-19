@@ -96,7 +96,7 @@ Not used. Long-term goals are levels/ranks, styles, cosmetics and leaderboards.
 
 ### 2.3 Styles (style roll) and Shop (cosmetics only)
 
-Fighting styles come from the **style roll** (owner, 2026-10-19), not from levels or the Shop. Inventory → Styles:
+Fighting styles come from the **style roll** (owner, 2026-10-19), not from levels or the Shop. The Styles screen (left menu):
 1 free spin a day (00:00 UTC), more for 250 Scrap ("Coins") each; a spin puts a random style into the equipped slot
 unless that slot is locked. Odds (shown before every spin): Uncommon 70% (Slugger), Rare 25% (Scrapper), Legendary 5%
 (Wrecker); pity: the 50th spin without a Legendary is a Legendary. Everyone starts with 1 slot holding Brawler; more
@@ -282,7 +282,7 @@ AnchorPoint (0.5, 0.5), Scale coordinates (no fixed offsets), UIAspectRatioConst
   arrangement). Shown only while touch is the player's input. Bottom-center — own
   Percent (Casual) or HP bar + lives (Classic), held-prop icon, dash cooldown ring. Top-center — round timer, mode
   badge, players alive / score. Kill feed top-right (top-center is the timer and the vote panel). Left edge (Lobby
-  only) — a coins + level / XP block, then Shop, Inventory, Settings, Quests (owner, 2026-10-19). Default thumbstick bottom-left.
+  only) — a coins + level / XP block, then Shop, Inventory, Styles, Settings, Quests (owner, 2026-10-19). Default thumbstick bottom-left.
 - **PC:** same layout, touch buttons hidden, key hints next to HUD items and small light-grey hints along the
   bottom edge (lobby: Run, Menu and the walk-up prompt in reach; fighting: Punch / hold to charge, Scoreboard;
   spectating: switch fighter); bottom-right key panel (Run, Dash, the
@@ -312,7 +312,7 @@ players. Lobby players can watch a running round too (the "Game in progress" car
 ### 5.3 Screens
 
 Loading, Lobby HUD (coins + level block, left menu), Map vote, Round HUD, Results / MVP, Spectate, Shop (Daily,
-Cosmetics, Robux), Inventory (the Locker renamed; its Styles tab is the style roll), Daily Reward calendar + Daily Quests (one tab row),
+Cosmetics, Robux), Inventory (the Locker renamed: cosmetics), Styles (the style roll), Daily Reward calendar + Daily Quests (one tab row),
 Settings in tabs (Visual: camera shake, low graphics, button layout — camera sensitivity is Roblox's own setting;
 Audio: music / SFX volume; Promo code; How to play), lobby leaderboard boards, Tutorial overlay, Purchase
 confirmations, Developer test panel.

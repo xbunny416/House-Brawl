@@ -138,8 +138,8 @@ Dev.PityNear,Pity next,Developer panel button: the next style spin is a pity spi
 Dev.StyleSlot,+1 style slot,Developer panel button: what buying a style slot gives,
 Common.Close,Close,Button that closes a panel,
 Menu.Locker,Inventory,Lobby menu button that opens the Inventory,
-Locker.Title,Inventory,Title of the Inventory (equip styles and cosmetics),
-Locker.Styles,Styles,Inventory tab: fighting styles,
+Locker.Title,Inventory,Title of the Inventory (equip cosmetics),
+Menu.Styles,Styles,Lobby menu button and title of the Styles screen (the style roll),
 Roll.Current,CURRENT STYLE,Style roll page: title above the equipped style's name,
 Roll.Equipped,EQUIPPED,Style roll page: the slot whose style you fight with,
 Roll.TapToEquip,Tap to equip,Style roll page: a slot you can switch to,
@@ -270,7 +270,7 @@ Purchase.Done.VIP,VIP unlocked! Enjoy +25% Coins and your gold tags. The Gold Tr
 Purchase.Done.EmotePack,Emote Pack unlocked! Your new victory emotes are in your Inventory.,Notice after buying the Emote Pack pass,
 Purchase.Done.Scrap,+{1} Coins. Thanks for your support!,Notice after buying a Coin pack (amount),+2000 Coins. Thanks for your support!
 Purchase.Done.Cosmetic,{1} is yours! Equip it in your Inventory.,Notice after buying a Robux cosmetic (item name),Inferno is yours! Equip it in your Inventory.
-Purchase.Done.StyleSlot,New style slot! Find it in your Inventory under Styles.,Notice after buying a style slot (Robux),
+Purchase.Done.StyleSlot,New style slot! Find it on the Styles screen.,Notice after buying a style slot (Robux),
 Purchase.SlotsFull,You already have every style slot: +{1} Coins instead.,Notice when a style slot was bought but the player already has the most (Coins instead),You already have every style slot: +1000 Coins instead.
 Tag.VIPChat,[VIP],Chat tag in front of a VIP player's messages,
 Dev.Robux,Robux,Developer panel section: switch perks and get Robux products for testing,
