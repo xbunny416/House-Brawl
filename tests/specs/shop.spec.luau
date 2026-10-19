@@ -1,5 +1,6 @@
 --!strict
--- Shop (step 2.4): what is for sale, the daily rotation and its discount, purchase checks.
+-- Shop (step 2.4): what is for sale, the daily rotation and its discount, purchase checks. Styles aren't sold
+-- (they come from the style roll since 2026-10-19: styles.spec).
 local Roblox = require("../roblox")
 local expect = require("../expect")
 
@@ -11,10 +12,9 @@ local ShopRules = Roblox.require(Shared.ShopRules)
 local Rotation = Config.Cosmetics.DailyRotation
 local DAY = 20000 -- some day in 2024
 
-local function wallet(scrap: number, styles: { [string]: boolean }?, cosmetics: { [string]: boolean }?)
+local function wallet(scrap: number, cosmetics: { [string]: boolean }?)
 	return {
 		Scrap = scrap,
-		Styles = { Owned = styles or { [Config.Styles.Default] = true } },
 		Cosmetics = { Owned = cosmetics or {} },
 	}
 end
@@ -31,12 +31,11 @@ local function regularItem(day: number): string
 end
 
 return {
-	["styles sell for their price; the default style is never sold"] = function()
-		expect.equal(ShopRules.basePrice("Style", "Slugger"), 1500)
-		expect.equal(ShopRules.basePrice("Style", "Scrapper"), 3000)
-		expect.equal(ShopRules.basePrice("Style", "Wrecker"), 6000)
-		expect.equal(ShopRules.basePrice("Style", Config.Styles.Default), nil)
-		expect.equal(ShopRules.basePrice("Style", "Nope"), nil)
+	["styles are never sold (the style roll gives them)"] = function()
+		for id in Config.Styles.List do
+			expect.equal(ShopRules.basePrice("Style", id), nil, id)
+		end
+		expect.equal(table.concat(ShopRules.Kinds, ","), "Cosmetic")
 	end,
 	["cosmetics sell for their price; VIP / Premium exclusives never do"] = function()
 		expect.equal(ShopRules.basePrice("Cosmetic", "ConeHat"), 300)
@@ -94,8 +93,6 @@ return {
 		end
 		local regular = regularItem(DAY)
 		expect.equal(ShopRules.priceOf("Cosmetic", regular, DAY), ShopRules.basePrice("Cosmetic", regular))
-		expect.equal(ShopRules.priceOf("Style", "Slugger", DAY), 1500)
-		expect.equal(ShopRules.isDaily("Style", "Slugger", DAY), false)
 		expect.equal(ShopRules.priceOf("Cosmetic", "GoldTrail", DAY), nil)
 	end,
 	["purchase check: price to pay, or why not"] = function()
@@ -104,16 +101,14 @@ return {
 		local rich = wallet(100000)
 		expect.equal(ShopRules.check(rich, "Cosmetic", regular, DAY, price), price)
 		expect.equal(ShopRules.check(rich, "Cosmetic", regular, DAY), price, "no expected price given")
-		expect.equal(ShopRules.check(rich, "Style", "Wrecker", DAY, 6000), 6000)
 
 		local function reason(...): string?
 			local _, why = ShopRules.check(...)
 			return why
 		end
 		expect.equal(reason(rich, "Cosmetic", "GoldTrail", DAY, 0), "NotForSale")
-		expect.equal(reason(rich, "Style", Config.Styles.Default, DAY, 0), "NotForSale")
-		expect.equal(reason(wallet(100000, nil, { [regular] = true }), "Cosmetic", regular, DAY, price), "Owned")
-		expect.equal(reason(wallet(100000, { Slugger = true }), "Style", "Slugger", DAY, 1500), "Owned")
+		expect.equal(reason(rich, "Style", "Wrecker", DAY, 0), "NotForSale")
+		expect.equal(reason(wallet(100000, { [regular] = true }), "Cosmetic", regular, DAY, price), "Owned")
 		expect.equal(reason(rich, "Cosmetic", regular, DAY, price + 1), "PriceChanged")
 		expect.equal(reason(wallet(price - 1), "Cosmetic", regular, DAY, price), "NotEnoughScrap")
 		expect.equal(ShopRules.check(wallet(price), "Cosmetic", regular, DAY, price), price, "exactly enough")

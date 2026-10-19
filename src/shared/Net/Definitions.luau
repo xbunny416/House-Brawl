@@ -87,8 +87,29 @@ local Definitions: { [string]: Definition } = {
 	-- Client -> server: "I had input lately" (AFK tracking), at most every Round.Participation.ActivityPingInterval.
 	Activity = { Kind = "Event", Direction = "ToServer", Args = {}, RateLimit = { Rate = 1, Burst = 3 } },
 
-	-- Client -> server: equip an owned fighting style (refused while fighting in a round). (styleId: string)
-	EquipStyle = { Kind = "Event", Direction = "ToServer", Args = { Guard.keyOf(Config.Styles.List) } },
+	-- Client -> server: spin the style roll into the equipped slot (Shared/StyleRules). (kind: "Free" | "Paid" — the
+	-- spin the Inventory showed). Returns (ok: boolean, result) — result { Style, Rarity, Pity } or a reason from
+	-- StyleRules.Reasons. One spin at a time: the reel takes a moment on the client.
+	SpinStyle = {
+		Kind = "Function",
+		Direction = "ToServer",
+		Args = { Guard.oneOf({ "Free", "Paid" }) },
+		RateLimit = { Rate = 0.7, Burst = 2 },
+	},
+	-- Client -> server: equip one of your style slots (refused while fighting in a round). (index: number)
+	EquipStyleSlot = {
+		Kind = "Event",
+		Direction = "ToServer",
+		Args = { Guard.integer(1, Config.Styles.Roll.Slots.Max) },
+		RateLimit = { Rate = 4, Burst = 6 },
+	},
+	-- Client -> server: lock or unlock a style slot (a spin never replaces a locked slot). (index: number, locked)
+	LockStyleSlot = {
+		Kind = "Event",
+		Direction = "ToServer",
+		Args = { Guard.integer(1, Config.Styles.Roll.Slots.Max), Guard.boolean },
+		RateLimit = { Rate = 4, Burst = 6 },
+	},
 	-- Client -> server: equip an owned cosmetic in its slot, or nil to take the slot off. (slot: string, itemId: string?)
 	EquipCosmetic = {
 		Kind = "Event",
@@ -98,13 +119,13 @@ local Definitions: { [string]: Definition } = {
 			Guard.optional(Guard.keyOf(Config.Cosmetics.Items)),
 		},
 	},
-	-- Client -> server: buy a style or cosmetic with Scrap. (kind: "Style" | "Cosmetic", id: string, price: number —
+	-- Client -> server: buy a cosmetic with Scrap. (kind: "Cosmetic", id: string, price: number —
 	-- the price the Shop showed; a different price today is refused). Returns (ok: boolean, reason: string?), the
 	-- reason being one of Shared/ShopRules.Reasons.
 	Buy = {
 		Kind = "Function",
 		Direction = "ToServer",
-		Args = { Guard.oneOf({ "Style", "Cosmetic" }), Guard.string(32), Guard.integer(0, 1000000) },
+		Args = { Guard.oneOf({ "Cosmetic" }), Guard.string(32), Guard.integer(0, 1000000) },
 		RateLimit = { Rate = 2, Burst = 4 },
 	},
 	-- Server -> client: the global leaderboards (Shared/LeaderboardRules). (boards: { [key]: { { UserId, Name, Value } } }

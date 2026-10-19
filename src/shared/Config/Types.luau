@@ -47,8 +47,7 @@ export type StyleAbility = {
 
 export type StyleConfig = {
 	Weapon: string,
-	Price: number,
-	UnlockLevel: number,
+	Rarity: string, -- a key of Config.Styles.Roll.RarityColors; rolled with Roll.Odds[Rarity] (none: never rolled)
 	AttackSpeed: number, -- 1 = normal; cooldowns and windups are divided by this
 	-- Scripted animation clips (Shared/Animation/Clips): one per punch-chain hit, the charged punch, and the
 	-- Ability move's clip (styles with an ability).

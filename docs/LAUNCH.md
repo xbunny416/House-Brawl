@@ -25,6 +25,7 @@ Create these, then send the IDs to Claude (or paste them into the files named).
 | Inferno skin | Developer product | 149 R$ | `Products.InfernoSkin.Id` |
 | Lightning Trail | Developer product | 99 R$ | `Products.LightningTrail.Id` |
 | Galaxy Burst KO effect | Developer product | 199 R$ | `Products.GalaxyBurst.Id` |
+| Style slot | Developer product | 99 R$ | `Products.StyleSlot.Id` |
 
 - [ ] Passes need an image (512×512). Products don't.
 - [ ] Optional: a Roblox **group** for the community → `Config.Retention.Group.GroupId` (members get a [Crew] chat
@@ -60,15 +61,16 @@ Create these, then send the IDs to Claude (or paste them into the files named).
   > - Platforms crumble as the round goes on: stay on your feet
   > - Classic (3 lives, last one standing) or Casual (endless respawns, score knock-offs)
   > - 3 arenas: Broken Highway, Junkyard Isles and Neon Motel
-  > - Unlock fighting styles: Slugger, Scrapper and Wrecker with a parry
+  > - Spin for fighting styles: Slugger, Scrapper and the Legendary Wrecker with a parry (free spin every day)
   > - Skins, hats, dash trails, KO effects and victory emotes
   > - Daily rewards, quests, leaderboards and parties with your friends
   >
   > Use code LAUNCH for free Scrap! (rename the code before launch)
 
 - [ ] **Maturity & Compliance questionnaire**: answer it honestly. What the game has: unrealistic, cartoon fighting
-      with no blood or gore; text chat (TextChatService, filtered by Roblox); paid items (passes, products) but **no
-      paid random items** and no trading. This usually lands on a Mild label.
+      with no blood or gore; text chat (TextChatService, filtered by Roblox); paid items (passes, products) and
+      **paid random items: yes** — style spins cost Coins, which can be bought with Robux (the odds are shown in game
+      and paid spins are hidden where Roblox restricts them); no trading. This usually lands on a Mild label.
 - [ ] Social links (optional): Discord / YouTube. The game doesn't show external links in-game (PolicyService rules
       would apply if it did).
 - [ ] Optional: a short trailer or teaser video.

@@ -10,6 +10,7 @@ local ShopRules = Roblox.require(Roblox.game.ReplicatedStorage.Shared.ShopRules)
 local MonetizationRules = Roblox.require(Roblox.game.ReplicatedStorage.Shared.MonetizationRules)
 local DailyRules = Roblox.require(Roblox.game.ReplicatedStorage.Shared.DailyRules)
 local CodeRules = Roblox.require(Roblox.game.ServerScriptService.Server.Codes.CodeRules)
+local StyleRules = Roblox.require(Roblox.game.ReplicatedStorage.Shared.StyleRules)
 local HudFormat = Roblox.require(Roblox.game.StarterPlayer.StarterPlayerScripts.Client.Lib.HudFormat)
 
 local CSV_PATH = "src/localization/GameStrings.csv"
@@ -121,6 +122,12 @@ return {
 		end
 		for rarity in Config.Cosmetics.Rarities do
 			expect.truthy(keys[`Rarity.{rarity}`], `Rarity.{rarity}`)
+		end
+		for rarity in Config.Styles.Roll.RarityColors do
+			expect.truthy(keys[`Rarity.{rarity}`], `Rarity.{rarity}`)
+		end
+		for _, reason in StyleRules.Reasons do
+			expect.truthy(keys[`Roll.Error.{reason}`], `Roll.Error.{reason}`)
 		end
 		for _, item in Config.Cosmetics.Items do
 			local source = item.Exclusive

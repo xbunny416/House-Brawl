@@ -1,10 +1,32 @@
 --!strict
--- Fighting styles: side-grades only (different feel, similar strength). Bible §2.3.
+--[[
+	Fighting styles: side-grades only (different feel, similar strength). Bible §2.3.
+	Styles come from the style roll (owner's fix list, 2026-10-19; Shared/StyleRules, Services/StyleService), not from
+	levels or the Shop: a spin puts a random style into the player's equipped slot. Each style has a Rarity; Roll.Odds
+	gives each rarity's chance in percent (styles of one rarity share it equally) and a rarity missing from Odds is
+	never rolled (the default style: everyone starts with it). Every PityAt-th spin without a PityRarity style is
+	that rarity for sure. One free spin a day (from FreeSpinResetHourUTC); more cost SpinPrice Scrap, which makes
+	them a paid random item (shown odds, hidden where PolicyService restricts them, declared on the maturity form).
+	Players start with Slots.Start slots; more are a Robux product each (Config.Monetization.Products.StyleSlot), up
+	to Slots.Max; a slot bought when the player already has Max gives Slots.OverflowScrap instead.
+]]
 local Types = require(script.Parent.Types)
+
+type RollConfig = {
+	Odds: { [string]: number },
+	RarityOrder: { string },
+	RarityColors: { [string]: string },
+	PityAt: number,
+	PityRarity: string,
+	SpinPrice: number,
+	FreeSpinResetHourUTC: number,
+	Slots: { Start: number, Max: number, OverflowScrap: number },
+}
 
 type StylesConfig = {
 	Default: string,
 	Order: { string },
+	Roll: RollConfig,
 	List: { [string]: Types.StyleConfig },
 	Weapons: { [string]: { Types.AttachedPart } },
 }
@@ -14,11 +36,20 @@ local NO_CHANGE: Types.StyleAttack = { DamageMultiplier = 1, KnockbackMultiplier
 local Styles: StylesConfig = {
 	Default = "Brawler",
 	Order = { "Brawler", "Slugger", "Scrapper", "Wrecker" },
+	Roll = {
+		Odds = { Uncommon = 70, Rare = 25, Legendary = 5 }, -- percent; must add up to 100
+		RarityOrder = { "Common", "Uncommon", "Rare", "Legendary" }, -- most to least common (odds list, colors)
+		RarityColors = { Common = "#B8B8B8", Uncommon = "#5BD16A", Rare = "#4A9BFF", Legendary = "#F2C14E" },
+		PityAt = 50, -- the 50th spin since the last Legendary is a Legendary
+		PityRarity = "Legendary",
+		SpinPrice = 250, -- Scrap per spin after the free one
+		FreeSpinResetHourUTC = 0,
+		Slots = { Start = 1, Max = 4, OverflowScrap = 1000 },
+	},
 	List = {
 		Brawler = {
 			Weapon = "Fists",
-			Price = 0,
-			UnlockLevel = 1,
+			Rarity = "Common",
 			AttackSpeed = 1,
 			Animations = { Punch = { "Jab", "Cross", "Uppercut" }, Charged = "PowerPunch" },
 			Punch = NO_CHANGE,
@@ -27,8 +58,7 @@ local Styles: StylesConfig = {
 		-- Baseball bat: harder hits, longer reach, slower swings.
 		Slugger = {
 			Weapon = "BaseballBat",
-			Price = 1500,
-			UnlockLevel = 5,
+			Rarity = "Uncommon",
 			AttackSpeed = 0.8,
 			Animations = { Punch = { "SwingRight", "SwingLeft", "Smash" }, Charged = "PowerSwing" },
 			Punch = { DamageMultiplier = 1.15, KnockbackMultiplier = 1, ReachBonus = 2 },
@@ -37,8 +67,7 @@ local Styles: StylesConfig = {
 		-- Shovel: wide sweeps, a bit less damage, a stronger charged swing.
 		Scrapper = {
 			Weapon = "Shovel",
-			Price = 3000,
-			UnlockLevel = 12,
+			Rarity = "Rare",
 			AttackSpeed = 1,
 			Animations = { Punch = { "SweepRight", "SweepLeft", "Smash" }, Charged = "PowerSwing" },
 			Punch = {
@@ -52,8 +81,7 @@ local Styles: StylesConfig = {
 		-- Wrench + hubcap shield: the Ability key raises the hubcap for a short parry that reflects knockback.
 		Wrecker = {
 			Weapon = "WrenchAndHubcap",
-			Price = 6000,
-			UnlockLevel = 25,
+			Rarity = "Legendary",
 			AttackSpeed = 1,
 			Animations = { Punch = { "SwingRight", "SwingLeft", "Smash" }, Charged = "PowerSwing", Ability = "Parry" },
 			Punch = { DamageMultiplier = 0.95, KnockbackMultiplier = 1, ReachBonus = 0 },

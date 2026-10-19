@@ -13,7 +13,7 @@ this file in the same PR as the Config change.
 - **Core loop**
   - Every few seconds: punch, charge a power punch, dash-dodge, grab loose props or smash structures for props, throw them to launch
     rivals off the edge.
-  - Per session: win rounds, KO streaks, finish daily quests, earn Scrap and XP to unlock fighting styles and cosmetics.
+  - Per session: win rounds, KO streaks, finish daily quests, earn Scrap and XP; spin for fighting styles and buy cosmetics.
   - Over weeks: level and rank titles, new styles, new cosmetics, leaderboards, new maps, codes, limited-time events.
 - **Engine & tooling:** Roblox Studio + Studio MCP, modern Luau (`--!strict`), Studio AI generation + Creator Store
   assets (no external software).
@@ -29,7 +29,7 @@ this file in the same PR as the Config change.
 ### 2.1 Currencies and rewards
 
 - **Scrap** — the only soft currency. Shown to players as **Coins** (owner, 2026-10-19); code and data keep "Scrap". Earned from KOs, placement, participation, daily rewards, quests, codes. Spent on
-  styles and cosmetics. Robux buys premium cosmetics and Scrap packs. No stat upgrades for sale.
+  style spins and cosmetics. Robux buys premium cosmetics, Scrap packs and style slots. No stat upgrades for sale.
 - **XP** — earned alongside Scrap; drives Level and Rank titles.
 
 | Event (per round) | Scrap | XP |
@@ -94,14 +94,21 @@ this file in the same PR as the Config change.
 
 Not used. Long-term goals are levels/ranks, styles, cosmetics and leaderboards.
 
-### 2.3 Shop (side-grades and cosmetics only)
+### 2.3 Styles (style roll) and Shop (cosmetics only)
 
-| Style | Weapon | Unlock | Changes |
+Fighting styles come from the **style roll** (owner, 2026-10-19), not from levels or the Shop. Inventory → Styles:
+1 free spin a day (00:00 UTC), more for 250 Scrap ("Coins") each; a spin puts a random style into the equipped slot
+unless that slot is locked. Odds (shown before every spin): Uncommon 70% (Slugger), Rare 25% (Scrapper), Legendary 5%
+(Wrecker); pity: the 50th spin without a Legendary is a Legendary. Everyone starts with 1 slot holding Brawler; more
+slots are a Robux product (up to 4); locking a slot is free. Paid spins are a paid random item: hidden where Roblox's
+policy restricts them, and declared on the maturity questionnaire.
+
+| Style | Weapon | Rarity | Changes |
 | --- | --- | --- | --- |
-| Brawler | Fists | Free default | Punch and charged punch as above |
-| Slugger | Baseball bat | 1,500 Scrap or Level 5 | Damage ×1.15, +2 studs reach, attack speed ×0.8 |
-| Scrapper | Shovel | 3,000 Scrap or Level 12 | Wide sweep hitbox 7×4×5, Damage ×0.9, charged punch KB ×1.1 |
-| Wrecker | Wrench + hubcap shield | 6,000 Scrap or Level 25 | Ability key (F / Y / Parry button): a 0.2 s parry (cooldown 1.2 s) — a punch or charged punch landing in it misses and its knockback (not damage) hits the attacker instead; Punch Damage ×0.95 |
+| Brawler | Fists | Common (the default, never rolled) | Punch and charged punch as above |
+| Slugger | Baseball bat | Uncommon (70%) | Damage ×1.15, +2 studs reach, attack speed ×0.8 |
+| Scrapper | Shovel | Rare (25%) | Wide sweep hitbox 7×4×5, Damage ×0.9, charged punch KB ×1.1 |
+| Wrecker | Wrench + hubcap shield | Legendary (5%) | Ability key (F / Y / Parry button): a 0.2 s parry (cooldown 1.2 s) — a punch or charged punch landing in it misses and its knockback (not damage) hits the attacker instead; Punch Damage ×0.95 |
 
 - **Cosmetics** (Scrap or Robux): skins, hats, back items, dash trails, KO effects, victory emotes, name-plate frames.
   Catalog in `Config.Cosmetics.Items` (blockout visuals until the art pass). KO effects burst at the victim for HP KOs
@@ -305,7 +312,7 @@ players. Lobby players can watch a running round too (the "Game in progress" car
 ### 5.3 Screens
 
 Loading, Lobby HUD (coins + level block, left menu), Map vote, Round HUD, Results / MVP, Spectate, Shop (Daily,
-Styles, Cosmetics, Robux), Inventory (the Locker renamed), Daily Reward calendar + Daily Quests (one tab row),
+Cosmetics, Robux), Inventory (the Locker renamed; its Styles tab is the style roll), Daily Reward calendar + Daily Quests (one tab row),
 Settings in tabs (Visual: camera shake, low graphics, button layout — camera sensitivity is Roblox's own setting;
 Audio: music / SFX volume; Promo code; How to play), lobby leaderboard boards, Tutorial overlay, Purchase
 confirmations, Developer test panel.
@@ -336,6 +343,7 @@ confirmations, Developer test panel.
 | Scrap Pack M | Dev product | 149 R$ | 2,000 Scrap |
 | Scrap Pack L | Dev product | 399 R$ | 6,000 Scrap |
 | Premium cosmetics / bundles | Dev product | 99–399 R$ | Skins, KO effects, trails. Launch: Inferno skin 149 R$, Lightning Trail 99 R$, Galaxy Burst KO effect 199 R$ |
+| Style slot | Dev product | 99 R$ | One more style slot for the style roll (up to 4; 1 is free) |
 
 - **Premium perks:** +10% Scrap, one exclusive Premium skin, Premium Payouts via engagement.
 - **How it works (3.1):** the Shop's Robux tab lists the passes, Scrap packs and Robux cosmetics with their live price

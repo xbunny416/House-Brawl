@@ -8,7 +8,8 @@
 	    once it is known to be gone. `has(player, perk)` feeds the VIP / Premium Scrap bonuses (RewardService).
 	  * Developer products: MarketplaceService.ProcessReceipt → DataService.processReceipt (granted once per
 	    PurchaseId, confirmed only after the grant is saved). Scrap packs add Scrap (IAP transaction, sku = product
-	    key); Robux cosmetics grant their item for good.
+	    key); Robux cosmetics grant their item for good; StyleSlot adds a style slot (StyleService.addSlot), or
+	    Config.Styles.Roll.Slots.OverflowScrap when the player already has every slot.
 	  * Clients prompt purchases themselves (the Shop's Robux tab); the server only grants what Roblox confirms, then
 	    sends a Notify thank-you and logs Analytics.robuxPurchase.
 	The developer panel can switch a perk on / off for the session and give a product without a receipt, to test in
@@ -28,6 +29,7 @@ local Retry = require(Shared:WaitForChild("Util"):WaitForChild("Retry"))
 local Analytics = require(script.Parent:WaitForChild("Analytics"))
 local CosmeticService = require(script.Parent:WaitForChild("CosmeticService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
+local StyleService = require(script.Parent:WaitForChild("StyleService"))
 
 type Perks = { [string]: boolean? }
 
@@ -143,6 +145,17 @@ local function give(player: Player, key: string)
 	if cosmetic then
 		assert(CosmeticService.grant(player, cosmetic), "data not loaded")
 		Net.fireClient("Notify", player, "Purchase.Done.Cosmetic", { { Key = `Cosmetic.{cosmetic}.Name` } })
+	end
+	if product.StyleSlot then
+		assert(DataService.get(player), "data not loaded")
+		if StyleService.addSlot(player) then
+			Net.fireClient("Notify", player, "Purchase.Done.StyleSlot")
+		else
+			-- Every slot already (bought twice at once): never charge for nothing.
+			local scrap = Config.Styles.Roll.Slots.OverflowScrap
+			assert(DataService.addScrap(player, scrap, Analytics.Transaction.IAP, key), "data not loaded")
+			Net.fireClient("Notify", player, "Purchase.SlotsFull", { scrap })
+		end
 	end
 	log(`{player.Name} got the {key} product`)
 end

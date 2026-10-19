@@ -16,9 +16,10 @@
 	  SpawnProp (typeId)             a prop in front of them
 	  SpawnDummy                     the practice dummy in front of them (replaces the last one)
 	  SetPercent / SetHealth (n)     their Percent / HP
-	  SetStyle (styleId)             own and equip a fighting style
-	  AllStyles                      own every fighting style
-	  UnlockCosmetics                own every cosmetic (equip them in the Locker)
+	  SetStyle (styleId)             put a fighting style into their equipped slot
+	  FreeSpin                       today's free style spin is ready again
+	  PityNear                       the next style spin is a pity spin (Config.Styles.Roll.PityAt)
+	  UnlockCosmetics                own every cosmetic (equip them in the Inventory)
 	  GiveScrap / GiveXP             Config.Dev.GiveScrap Scrap / Config.Dev.GiveXP XP (level-ups apply)
 	  SetLevel (n)                   set their level (no XP into it)
 	  TogglePerk (perk)              switch VIP / EmotePack / Premium on or off for this session
@@ -119,7 +120,7 @@ local commands: { [string]: Command } = {
 	end,
 	SetStyle = function(player, text)
 		if text then
-			StyleService.equip(player, text, true)
+			StyleService.setStyle(player, text)
 		end
 	end,
 	UnlockCosmetics = function(player)
@@ -136,10 +137,11 @@ local commands: { [string]: Command } = {
 			DataService.setLevel(player, value)
 		end
 	end,
-	AllStyles = function(player)
-		for _, styleId in Config.Styles.Order do
-			StyleService.grant(player, styleId)
-		end
+	FreeSpin = function(player)
+		StyleService.setRollState(player, nil, true)
+	end,
+	PityNear = function(player)
+		StyleService.setRollState(player, Config.Styles.Roll.PityAt - 1)
 	end,
 	TogglePerk = function(player, text)
 		if text then
