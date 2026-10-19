@@ -5,8 +5,8 @@
 
 	  * Join pad: only players standing on the lobby's join pad (QueueZone tag, Server/Round/Queue) and not AFK are
 	    queued; everyone else stays in the lobby (Shop, Locker ...) through the round. Player attribute QueueStatus
-	    ("In" | "AFK" | "Off"), Workspace attribute PlayersQueued. Party members in the lobby are queued with their
-	    leader (PartyService.leaderOf) and start the round on the same platform (Round/SpawnPlan).
+	    ("In" | "AFK" | "Off"), Workspace attribute PlayersQueued. Fighters start spread over the platforms
+	    (Round/SpawnPlan).
 	  * Waiting: fewer than Config.Round.MinPlayers players are queued (Config.Dev.StudioMinPlayers in Studio).
 	  * Voting: up to Maps.VoteChoices enabled maps and every mode are on the ballot (Vote remote; only players on the
 	    pad vote, and stepping off drops your vote); ties are random. Too few on the pad = back to Waiting. In a
@@ -46,7 +46,6 @@ local Analytics = require(script.Parent:WaitForChild("Analytics"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
-local PartyService = require(script.Parent:WaitForChild("PartyService"))
 local PrivateServerService = require(script.Parent:WaitForChild("PrivateServerService"))
 
 export type State = "Waiting" | "Voting" | "Playing" | "Results"
@@ -189,19 +188,8 @@ end
 -- Updates every player's queue status (and the attributes the UI reads). Returns the queued players.
 local function refreshQueue(): { Player }
 	local queued: { Player } = {}
-	local onPads: { [Player]: boolean } = {}
 	for _, player in Players:GetPlayers() do
-		onPads[player] = DataService.get(player) ~= nil and onPad(player)
-	end
-	for _, player in Players:GetPlayers() do
-		local ready = onPads[player]
-		-- Party members in the lobby go in with their leader (owner, 2026-10-18).
-		local leader = if not ready and (statuses[player] or "Lobby") == "Lobby"
-			then PartyService.leaderOf(player)
-			else nil
-		if leader and onPads[leader] and not isAFK(leader) and DataService.get(player) and aliveCharacter(player) then
-			ready = true
-		end
+		local ready = DataService.get(player) ~= nil and onPad(player)
 		local status: Queue.Status = Queue.status(statuses[player] or "Lobby", ready, isAFK(player))
 		queueStatuses[player] = status
 		if player:GetAttribute("QueueStatus") ~= status then
@@ -493,13 +481,17 @@ local function startRound(mapId: string, modeId: string): boolean
 	RoundService.RoundStarted:Fire(modeId, mapId)
 
 	-- Everyone not on the pad stays in the lobby (status "Lobby").
-	-- Parties start on one platform, everyone else spread out (Round/SpawnPlan).
+	-- Fighters start spread over the platforms (Round/SpawnPlan).
 	local spawns = MapService.getArenaMarkers("SpawnPoint")
 	local platforms: { string } = {}
 	for index, spawn in spawns do
 		platforms[index] = platformOf(spawn)
 	end
-	local plan = SpawnPlan.assign(PartyService.groupsOf(participants), platforms, pick)
+	local groups: { { number } } = {}
+	for _, player in participants do
+		table.insert(groups, { player.UserId })
+	end
+	local plan = SpawnPlan.assign(groups, platforms, pick)
 	for _, player in participants do
 		Scoreboard.add(r.Board, player.UserId, player.Name, startedAt)
 		local data = DataService.get(player)

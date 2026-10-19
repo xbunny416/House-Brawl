@@ -88,6 +88,11 @@ local function update(section: Section, ids: { string }, counts: { [string]: num
 	if table.concat(ids, ",") ~= table.concat(section.Options, ",") then
 		rebuild(section, ids)
 	end
+	-- A choice of one is no choice: hide its row (Classic is the only mode).
+	local row = section.Row
+	if row then
+		row.Visible = #ids > 1
+	end
 	for id, button in section.Buttons do
 		local votes = Localization.format("Vote.Votes", { counts[id] or 0 })
 		button.Text = `{Localization.format(section.NameKey(id))}\n{votes}`

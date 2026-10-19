@@ -27,7 +27,9 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
 - **Next: the owner's fix list (2026-10-19)** — read `docs/reference/README.md` (the list, the owner's answers on
   the style roll and lobby furniture, the rules to respect) and look at the reference pictures in `docs/reference/`
   before starting. The owner is doing it in their local CLI session (connected to Studio); a cloud session should
-  not work on it at the same time.
+  not work on it at the same time. Progress: 1/6 cleanup (parties and the Leaderboard screen removed,
+  Classic only, run-only lobby) is done; next the UI rework (left menu, coins, watch-the-match, key hints, Settings
+  tabs with the promo code, daily popup with quests, Shop tabs).
 
 ## How this repo works
 
@@ -286,6 +288,7 @@ any errors are fixed before the next item.
 | 2026-10-18 | 3.10 Settings menu (music / SFX volume − / +, camera shake, low graphics, touch button layout when there is a choice, camera sensitivity note) with a How to play page (rules + controls for the device), loading screen in ReplicatedFirst (title, random tip, waits for the game and the player's data, fades out), Config.Data.VolumeStep, Config.World.Loading | #47 |
 | 2026-10-18 | 3.11 Performance + localization: animation detail levels (other characters posed every frame only up close and in view, every 2–4 frames further / off screen, not past 300 studs; Low Graphics closer), one-time frame-rate check turns Low Graphics on below 40 FPS (GraphicsAutoChecked setting), neon steady under Low Graphics, Config.Performance; specs: no hard-coded UI text, every {n} string has an Example, AnimationLod; unused Notify.Welcome removed | #48 |
 | 2026-10-18 | 3.12 Launch support: docs/LAUNCH.md (publish + game settings, Robux items / group / badges with where each id goes, audio, store page with icon / thumbnail shot list / description draft / maturity notes, translation upload, the bible's pre-launch tests, launch day) and tools/launch-check (lists unset pass / product / group / badge / audio ids and the placeholder code) | #49 |
+| 2026-10-19 | Owner's fix list 1/6 — cleanup: parties deleted (PartyService, Social/Parties, Party screen, party remotes / tags / strings; SpawnPlan kept for spreading fighters), no Leaderboard menu screen (lobby boards only), Classic the only mode (vote map-only, one-choice rows hidden, the two counter mode TVs become news TVs), lobby run-only (punch / charge / ability / dash / grab only while Playing, on the server and the client; touch buttons and key-panel slots hide outside a round); reference notes record the owner's answers | #PR |
 
 ## Decisions and interpretations
 
@@ -598,7 +601,17 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   default screen, shows the title, a random tip (`Tip.1`–`Tip.8`) and "Loading...", stays at least
   `World.Loading.MinTime` = 1.5 s and until `game:IsLoaded()` and the player's `Level` attribute (set when the data
   loads), at most 20 s, then fades out (0.6 s). Its colors repeat Kit's (the client modules aren't loaded yet).
-- **Social (3.7):** parties live in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
+- **Owner's fix list, step 1 — cleanup (2026-10-19):** parties are gone (the owner: "delete parties") — server,
+  client, remotes, tags and strings; `Round/SpawnPlan` stays and spreads every fighter as a group of one. The
+  Leaderboard menu screen is gone ("only the boards in the lobby"). **Classic only**: `Config.Modes.Order` = {
+  Classic } (Casual stays defined, out of the rotation), so the vote is map-only — the vote panel and the private
+  server's Server menu hide a row with one choice, private servers can't pick Casual, and the two counter TVs that
+  were mode-vote screens are now `NewsScreen` TVs (for the "TV news" item). **The lobby is run-only**: CombatService
+  ignores Punch / Charge Start / Ability / Dash and PropService ignores Grab unless the player's `RoundStatus` is
+  `Playing`; the client doesn't send them, hides the touch Attack / Grab / Dash / Ability buttons and the key panel's
+  Dash / Ability slots outside a round (Run stays). The developer panel's practice dummy can only be hit in the arena
+  now (spawn it there during a round). Tip 7 and the How to play rules no longer mention parties or Casual.
+- **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,
   2026-10-18, picked "queue together" + "spawn near each other"): when the leader stands on the join pad, members in
@@ -622,7 +635,8 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   (well inside the DataStore budgets: at most 6 writes per player and 6 reads per 2 min). Nothing is saved from
   private servers. When DataStores fail (Studio without API access, or `UseMockInStudio`) the boards show the players
   in the server and say so. The lobby's three screens (tag `LeaderboardScreen`, attribute `Stat`) show the top 10,
-  switching between all-time and this week every 10 s; the Leaderboard menu screen (5th) shows the top 50 with tabs.
+  switching between all-time and this week every 10 s. (A Leaderboard menu screen with the top 50 existed until the
+  owner's fix list removed it, 2026-10-19.)
   The player's own rank outside the top 50 isn't shown (an OrderedDataStore can't look it up cheaply).
 - **Badges (3.5): skipped for now** (owner, 2026-10-17: "isn't badge have to pay first, and it not necessary rn").
   For later: Roblox lets each experience create a few badges a day for free (more cost Robux); the Config entries
@@ -759,12 +773,9 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **Codes test (Studio):** Codes (menu, or walk up to the jukebox on the west wall) → type `launch` → +250 Scrap;
   again → "already used"; a made-up code → "doesn't exist". Dev panel → Daily → "Reset codes" to use it again. Output
   shows `[Codes]`.
-- **Party test (Studio, 2 players):** Test → Clients and Servers → 2 players. Player1: Party screen → Invite Player2;
-  Player2: Join on the popup. Both see the other's name in blue and `[Party]` in chat. Player1 stands on the join pad
-  while Player2 stays in the lobby: both go into the round, on the same platform. Leave / Remove work from the screen.
-  Output shows `[Party]`. The group perks need a group: put its id in `Config.Retention.Group.GroupId`.
+- **Group perks** need a group: put its id in `Config.Retention.Group.GroupId` ([Crew] chat tag, one-time 150 Scrap).
 - **Leaderboards test (Studio):** with API access off the boards say "this server only" and list you from your stats
-  (lobby screens on the south wall, and the Leaderboard menu); play a round and they update within 2 min. With
+  (lobby screens on the south wall); play a round and they update within 2 min. With
   "Studio Access to API Services" on, scores are saved to the real boards. Output shows `[Leaderboards]`.
 - **Quests test (Studio):** open Quests (menu or walk up to the quest board, west wall): 3 daily quests and the weekly
   one at 0. Play a solo round — KOs, falls and rounds finished count (`[Quests]` in Output when one completes, with a

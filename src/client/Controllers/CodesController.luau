@@ -13,7 +13,7 @@ local Net = require(Shared:WaitForChild("Net"))
 local Kit = require(script.Parent.Parent:WaitForChild("Ui"):WaitForChild("Kit"))
 local MenuController = require(script.Parent:WaitForChild("MenuController"))
 
-local MENU_ORDER = 8 -- after Party
+local MENU_ORDER = 8
 local MAX_LENGTH = 24 -- the RedeemCode remote's limit
 
 local CodesController = {}

@@ -33,8 +33,10 @@ return {
 		expect.equal(PrivateServerRules.isValid("Lives", 5, MAPS), false, "unknown key")
 	end,
 	["saved settings keep valid values and fall back to defaults for the rest"] = function()
-		local settings = PrivateServerRules.sanitize({ Mode = "Casual", Map = "NeonMotel", RoundTime = 300 }, MAPS)
-		expect.equal(settings.Mode, "Casual")
+		local settings = PrivateServerRules.sanitize({ Mode = "Classic", Map = "NeonMotel", RoundTime = 300 }, MAPS)
+		expect.equal(settings.Mode, "Classic")
+		local casual = PrivateServerRules.sanitize({ Mode = "Casual" }, MAPS)
+		expect.equal(casual.Mode, PrivateServerRules.Vote, "Casual is out of the rotation (Classic only)")
 		expect.equal(settings.Map, PrivateServerRules.Vote, "a map no longer enabled")
 		expect.equal(settings.RoundTime, 300)
 		local empty = PrivateServerRules.sanitize(nil, MAPS)

@@ -317,13 +317,14 @@ return {
 			expect.truthy(lobby:FindFirstChild(name, true), name)
 		end
 	end,
-	["lobby: 3 map and 2 mode vote screens"] = function()
-		local counts = { Map = 0, Mode = 0 }
+	["lobby: 3 map vote screens (Classic is the only mode) and 2 news TVs"] = function()
+		local maps = 0
 		for _, screen in tagged(lobby, "VoteScreen") do
-			counts[screen:GetAttribute("VoteKind")] += 1
+			expect.equal(screen:GetAttribute("VoteKind"), "Map")
+			maps += 1
 		end
-		expect.equal(counts.Map, Config.Maps.VoteChoices)
-		expect.equal(counts.Mode, #Config.Modes.Order)
+		expect.equal(maps, Config.Maps.VoteChoices)
+		expect.equal(#tagged(lobby, "NewsScreen"), 2)
 	end,
 	["lobby: one leaderboard per leaderboard stat"] = function()
 		local stats = {}

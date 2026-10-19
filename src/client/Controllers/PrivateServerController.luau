@@ -153,7 +153,9 @@ local function build()
 	body.Parent = panel
 	local layout = Kit.list(body, Enum.FillDirection.Vertical, UDim.new(0.04, 0))
 	layout.VerticalAlignment = Enum.VerticalAlignment.Top
-	addRow(body, "Mode", "PrivateMode", "PrivateServer.Mode", 1)
+	if #Config.Modes.Order > 1 then
+		addRow(body, "Mode", "PrivateMode", "PrivateServer.Mode", 1) -- only when there is a mode to choose
+	end
 	addRow(body, "Map", "PrivateMap", "PrivateServer.Map", 2)
 	addRow(body, "RoundTime", "PrivateRoundTime", "PrivateServer.RoundTime", 3)
 	local percent = math.floor(Config.Economy.PrivateServerRewardScale * 100 + 0.5)
