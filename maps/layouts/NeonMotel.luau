@@ -1,13 +1,14 @@
 --!strict
 --[[
 	Map 3: Neon Motel — sinking motel rooftops over a flooded street at night, flickering retro neon, a pool on one
-	roof (bible §3.1–3.2; Night lighting); twice the first size with four layers (owner, 2026-10-17).
+	roof (bible §3.1–3.2; Night lighting); four times the first size with four layers (owner: 2026-10-17, every platform
+	doubled again 2026-10-20).
 
-	Platforms (studs; X/Z footprint, top height):
-	  Center 112x72 main roof (never falls) with a raised 28x18 roof-access deck (+6, a ramp on each end) ·
-	  East 48x52 pool roof (+1) · West 44x44 sign roof (−1) · North 52x40 roof (−3) · South 48x40 roof (−2) ·
-	  ledges (+6): NE 20x20 water tower, SW 24x16 billboard, NW / SE 20x20 vent roofs · two 18x18 antenna roofs (+12)
-	  beyond the NE / SW ledges · two 28x28 low roofs beyond East (−5) and West (−7).
+	Platforms (studs; X/Z footprint, top height), listed below at the 2026-10-17 size and doubled by Arena.grow:
+	  Center 224x144 main roof (never falls) with a raised 56x36 roof-access deck (+6, a ramp on each end) ·
+	  East 96x104 pool roof (+1) · West 88x88 sign roof (−1) · North 104x80 roof (−3) · South 96x80 roof (−2) ·
+	  ledges (+6): NE 40x40 water tower, SW 48x32 billboard, NW / SE 40x40 vent roofs · two 36x36 antenna roofs (+12)
+	  beyond the NE / SW ledges · two 56x56 low roofs beyond East (−5) and West (−7).
 	  Gaps to the nearest platform: East 10, West 12, North 12, South 11, ledges 8.5 (diagonal), antenna roofs 9.9,
 	  low roofs 10 — all within 8-14, crossable with jump + dash; every climb is at most 6 studs.
 	Same rules as Broken Highway: 16 spawns, 24 loose prop spots, 8 breakable structures, 1 explosive barrel per side
@@ -26,7 +27,7 @@ Layout.Id = "NeonMotel"
 Layout.Lighting = "Night"
 
 local FLICKER = { "NeonFlicker" }
-local POOL = { 20, 24 } -- pool water on the East roof (X, Z)
+local POOL = { 40, 48 } -- pool water on the East roof (X, Z): 20 × 24 until the platforms doubled again (2026-10-20)
 
 -- One platform entry (keeps the list short).
 local function platform(
@@ -54,7 +55,10 @@ end
 local center = platform("Center", "Center", { 0, 0 }, { 112, 72 }, 0, 5, "ConcreteDark", "Slate")
 center.Deck = { Size = { 28, 18 }, Height = 6, Ramp = 12, RampWidth = 12 }
 
-Layout.Platforms = {
+-- Laid out at the 2026-10-17 size; Arena.grow doubles every platform again (owner, 2026-10-20), keeping the gaps.
+local GROWTH = 2
+
+Layout.Platforms = Arena.grow({
 	center,
 	platform("East", "Side", { 90, -4 }, { 48, 52 }, 1, 4, "OffWhite", "Concrete"),
 	platform("West", "Side", { -90, 6 }, { 44, 44 }, -1, 4, "DustyPink", "Concrete"),
@@ -68,67 +72,70 @@ Layout.Platforms = {
 	platform("PeakSW", "Peak", { -102, -74 }, { 18, 18 }, 12, 3, "TealDark", "Slate"),
 	platform("LowEast", "Low", { 138, -4 }, { 28, 28 }, -5, 4, "DustyPink", "Concrete"),
 	platform("LowWest", "Low", { -136, 6 }, { 28, 28 }, -7, 4, "OffWhite", "Concrete"),
-}
+}, GROWTH)
 
-Layout.Contents = {
-	Center = {
-		Spawns = { { -44, -24 }, { 44, -24 }, { -44, 24 }, { 44, 24 }, { 0, -26 }, { 0, 26 } },
-		Props = {
-			{ -28, -14 },
-			{ -10, -22 },
-			{ 18, -14 },
-			{ 32, 4 },
-			{ -32, 4 },
-			{ -14, 16 },
-			{ 10, 24 },
-			{ 34, 14 },
+Layout.Contents = Arena.growContents(
+	{
+		Center = {
+			Spawns = { { -44, -24 }, { 44, -24 }, { -44, 24 }, { 44, 24 }, { 0, -26 }, { 0, 26 } },
+			Props = {
+				{ -28, -14 },
+				{ -10, -22 },
+				{ 18, -14 },
+				{ 32, 4 },
+				{ -32, 4 },
+				{ -14, 16 },
+				{ 10, 24 },
+				{ 34, 14 },
+			},
+			Structures = {
+				{ Type = "VendingMachine", At = { -28, 18 }, Yaw = 180 },
+				{ Type = "IceMachine", At = { 28, -24 }, Yaw = 0 },
+				{ Type = "LawnChairStack", At = { -44, -12 }, Yaw = 90 },
+			},
 		},
-		Structures = {
-			{ Type = "VendingMachine", At = { -28, 18 }, Yaw = 180 },
-			{ Type = "IceMachine", At = { 28, -24 }, Yaw = 0 },
-			{ Type = "LawnChairStack", At = { -44, -12 }, Yaw = 90 },
+		East = {
+			Spawns = { { -16, -18 }, { 16, 18 } },
+			Props = { { -16, 12 }, { 16, -16 }, { 18, 2 } },
+			Explosive = { 0, -20 },
+			Structures = { { Type = "LawnChairStack", At = { 0, 19 }, Yaw = 0 } },
 		},
-	},
-	East = {
-		Spawns = { { -16, -18 }, { 16, 18 } },
-		Props = { { -16, 12 }, { 16, -16 }, { 18, 2 } },
-		Explosive = { 0, -20 },
-		Structures = { { Type = "LawnChairStack", At = { 0, 19 }, Yaw = 0 } },
-	},
-	West = {
-		Spawns = { { -10, -14 }, { 14, 12 } },
-		Props = { { 12, -12 }, { -12, 10 }, { 0, 18 } },
-		Explosive = { 2, 0 },
-		Structures = { { Type = "IceMachine", At = { -12, -2 }, Yaw = 90 } },
-	},
-	North = {
-		Spawns = { { -18, -10 }, { 18, 10 } },
-		Props = { { 14, -10 }, { -14, 10 } },
-		Explosive = { 0, 0 },
-		Structures = { { Type = "VendingMachine", At = { -20, 4 }, Yaw = 90 } },
-	},
-	South = {
-		Spawns = { { 18, -10 }, { -18, 10 } },
-		Props = { { -12, -10 }, { 12, 10 } },
-		Explosive = { 0, 0 },
-	},
-	LedgeNE = { Props = { { -5, -5 } } },
-	LedgeSW = { Props = { { 3, 3 } } },
-	LedgeNW = { Props = { { -4, -5 } } },
-	LedgeSE = { Props = { { 4, 5 } } },
-	LowEast = {
-		Spawns = { { -6, -6 } },
-		Props = { { 6, 6 } },
-		Explosive = { 8, -8 },
-		Structures = { { Type = "IceMachine", At = { -7, 8 }, Yaw = 0 } },
-	},
-	LowWest = {
-		Spawns = { { 6, 6 } },
-		Props = { { -6, -6 } },
-		Explosive = { -8, 8 },
-		Structures = { { Type = "LawnChairStack", At = { 7, -8 }, Yaw = 0 } },
-	},
-} :: { [string]: Contents }
+		West = {
+			Spawns = { { -10, -14 }, { 14, 12 } },
+			Props = { { 12, -12 }, { -12, 10 }, { 0, 18 } },
+			Explosive = { 2, 0 },
+			Structures = { { Type = "IceMachine", At = { -12, -2 }, Yaw = 90 } },
+		},
+		North = {
+			Spawns = { { -18, -10 }, { 18, 10 } },
+			Props = { { 14, -10 }, { -14, 10 } },
+			Explosive = { 0, 0 },
+			Structures = { { Type = "VendingMachine", At = { -20, 4 }, Yaw = 90 } },
+		},
+		South = {
+			Spawns = { { 18, -10 }, { -18, 10 } },
+			Props = { { -12, -10 }, { 12, 10 } },
+			Explosive = { 0, 0 },
+		},
+		LedgeNE = { Props = { { -5, -5 } } },
+		LedgeSW = { Props = { { 3, 3 } } },
+		LedgeNW = { Props = { { -4, -5 } } },
+		LedgeSE = { Props = { { 4, 5 } } },
+		LowEast = {
+			Spawns = { { -6, -6 } },
+			Props = { { 6, 6 } },
+			Explosive = { 8, -8 },
+			Structures = { { Type = "IceMachine", At = { -7, 8 }, Yaw = 0 } },
+		},
+		LowWest = {
+			Spawns = { { 6, 6 } },
+			Props = { { -6, -6 } },
+			Explosive = { -8, 8 },
+			Structures = { { Type = "LawnChairStack", At = { 7, -8 }, Yaw = 0 } },
+		},
+	} :: { [string]: Contents },
+	GROWTH
+)
 
 function Layout.killY(): number
 	return Arena.killY(Layout.Platforms)
@@ -167,8 +174,11 @@ local function building(platform: Platform)
 	end
 end
 
--- A low roof edge (knockback carries over it) with a neon tube on top.
-local function parapet(from: { number }, to: { number }, neon: string)
+-- A low roof edge (knockback carries over it) with a neon tube on top. `from` / `to` were laid out for the
+-- 2026-10-17 roofs, so they grow with the platforms (GROWTH).
+local function parapet(laidFrom: { number }, laidTo: { number }, neon: string)
+	local from = { laidFrom[1] * GROWTH, laidFrom[2] * GROWTH }
+	local to = { laidTo[1] * GROWTH, laidTo[2] * GROWTH }
 	local length = math.max(math.abs(to[1] - from[1]), math.abs(to[2] - from[2]))
 	local alongX = math.abs(to[1] - from[1]) >= math.abs(to[2] - from[2])
 	local center = { (from[1] + to[1]) / 2, (from[2] + to[2]) / 2 }
@@ -232,8 +242,8 @@ local function acUnit(at: { number })
 end
 
 local function centerDecor()
-	-- Laid out for the first, half-size roof: spread over the bigger one (sizes stay).
-	B.spread(2, function()
+	-- Laid out for the first roof, a quarter of today's: spread over the bigger one (sizes stay).
+	B.spread(2 * GROWTH, function()
 		acUnit({ 20, -8 })
 		acUnit({ -24, 0 })
 		roofLamp({ 27, 17 })
@@ -373,7 +383,7 @@ local function northDecor()
 end
 
 local function southDecor()
-	B.spread(2, function()
+	B.spread(2 * GROWTH, function()
 		roofLamp({ -11, -9 })
 		B.part({
 			Name = "Skylight",
@@ -450,8 +460,10 @@ end
 
 -- A small roof with an AC unit and a lamp (the NW / SE ledges). `side` mirrors it.
 local function ventRoof(side: number)
-	acUnit({ 4 * side, -4 * side })
-	roofLamp({ -7 * side, 7 * side })
+	B.spread(GROWTH, function() -- laid out for the 2026-10-17 ledges
+		acUnit({ 4 * side, -4 * side })
+		roofLamp({ -7 * side, 7 * side })
+	end)
 end
 
 -- A radio antenna on a high roof corner, its red light blinking (the antenna roofs).
@@ -488,7 +500,7 @@ local function decorate(platform: Platform)
 	elseif platform.Id == "West" then
 		signDecor(platform)
 	elseif platform.Id == "North" then
-		B.spread(2, northDecor) -- laid out for the first, half-size roof
+		B.spread(2 * GROWTH, northDecor) -- laid out for the first roof, a quarter of today's
 	elseif platform.Id == "South" then
 		southDecor()
 	elseif platform.Id == "LedgeNE" then
@@ -502,7 +514,9 @@ local function decorate(platform: Platform)
 	elseif platform.Kind == "Peak" then
 		antenna(platform)
 	elseif platform.Kind == "Low" then
-		roofLamp({ 11 * math.sign(platform.Center[1]), 11 })
+		B.spread(GROWTH, function()
+			roofLamp({ 11 * math.sign(platform.Center[1]), 11 })
+		end)
 	end
 end
 
@@ -510,7 +524,7 @@ local function scenery(killY: number)
 	-- The flooded street far below.
 	B.part({
 		Name = "FloodWater",
-		Size = { 1400, 1, 1400 },
+		Size = { 2800, 1, 2800 },
 		Position = { 0, killY - 25, 0 },
 		Color = "TealDark",
 		Material = "Glass",
@@ -519,7 +533,7 @@ local function scenery(killY: number)
 		CastShadow = false,
 	})
 	-- Dark buildings around the motel, half sunk, each with a neon sign on the side facing the arena (positions laid
-	-- out for the first, half-size arena, so doubled).
+	-- out for the first arena, a quarter of today's, so × 2 × GROWTH).
 	for index, block in
 		{
 			{ -130, 40, 40, 70, 30 },
@@ -530,7 +544,7 @@ local function scenery(killY: number)
 			{ -140, -90, 34, 64, 28 },
 		}
 	do
-		local x, z, height = block[1] * 2, block[2] * 2, block[4]
+		local x, z, height = block[1] * 2 * GROWTH, block[2] * 2 * GROWTH, block[4]
 		local faceZ = if z > 0 then -block[5] / 2 - 0.3 else block[5] / 2 + 0.3
 		B.part({
 			Name = `Tower{index}`,

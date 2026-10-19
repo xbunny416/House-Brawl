@@ -1,13 +1,13 @@
 --!strict
 --[[
-	Map 2: Junkyard Isles — stacked car and container islands over toxic sludge (bible §3.1–3.2), at dusk; twice the
-	first size with four layers (owner, 2026-10-17).
+	Map 2: Junkyard Isles — stacked car and container islands over toxic sludge (bible §3.1–3.2), at dusk; four times
+	the first size with four layers (owner: 2026-10-17, every platform doubled again 2026-10-20).
 
-	Platforms (studs; X/Z footprint, top height):
-	  Center 96x96 scrap heap (never falls) with a raised 28x20 scrap deck (+6, a ramp on each end) ·
-	  East 40x56 container stack (+3) · West 44x44 car pile · North 48x40 crane barge (−2) · South 56x36 barge (−1) ·
-	  four 20x20 tire-stack ledges (+6) · two 18x18 tire towers (+12) beyond the NE / SW ledges · two 28x28 junk
-	  rafts beyond West (−6) and South (−7).
+	Platforms (studs; X/Z footprint, top height), listed below at the 2026-10-17 size and doubled by Arena.grow:
+	  Center 192x192 scrap heap (never falls) with a raised 56x40 scrap deck (+6, a ramp on each end) ·
+	  East 80x112 container stack (+3) · West 88x88 car pile · North 96x80 crane barge (−2) · South 112x72 barge
+	  (−1) · four 40x40 tire-stack ledges (+6) · two 36x36 tire towers (+12) beyond the NE / SW ledges · two 56x56
+	  junk rafts beyond West (−6) and South (−7).
 	  Gaps to the nearest platform: East 11, West 11, North 12, South 12, ledges 8.5 (diagonal), towers 9.9, rafts 10
 	  — all within 8-14, crossable with jump + dash; every climb is at most 6 studs.
 	Same rules as Broken Highway: 16 spawns, 24 loose prop spots, 8 breakable structures, 1 explosive barrel per side
@@ -51,7 +51,10 @@ end
 local center = platform("Center", "Center", { 0, 0 }, { 96, 96 }, 0, 4, "RustDark", "CorrodedMetal")
 center.Deck = { Size = { 28, 20 }, Height = 6, Ramp = 12, RampWidth = 12 }
 
-Layout.Platforms = {
+-- Laid out at the 2026-10-17 size; Arena.grow doubles every platform again (owner, 2026-10-20), keeping the gaps.
+local GROWTH = 2
+
+Layout.Platforms = Arena.grow({
 	center,
 	platform("East", "Side", { 79, 0 }, { 40, 56 }, 3, 6, "Teal", "CorrodedMetal"),
 	platform("West", "Side", { -81, 8 }, { 44, 44 }, 0, 4, "RustOrange", "CorrodedMetal"),
@@ -65,67 +68,70 @@ Layout.Platforms = {
 	platform("PeakSW", "Peak", { -90, -90 }, { 18, 18 }, 12, 3, "Black", "SmoothPlastic"),
 	platform("LowWest", "Low", { -127, 8 }, { 28, 28 }, -6, 3, "TealDark", "Metal"),
 	platform("LowSouth", "Low", { 8, -120 }, { 28, 28 }, -7, 3, "RustOrange", "Metal"),
-}
+}, GROWTH)
 
-Layout.Contents = {
-	Center = {
-		Spawns = { { -36, -36 }, { 36, -36 }, { -36, 36 }, { 36, 36 }, { 0, -30 }, { 0, 30 } },
-		Props = {
-			{ -30, -16 },
-			{ -8, -24 },
-			{ 16, -16 },
-			{ 34, 4 },
-			{ -34, 4 },
-			{ -16, 20 },
-			{ 12, 28 },
-			{ 28, 16 },
+Layout.Contents = Arena.growContents(
+	{
+		Center = {
+			Spawns = { { -36, -36 }, { 36, -36 }, { -36, 36 }, { 36, 36 }, { 0, -30 }, { 0, 30 } },
+			Props = {
+				{ -30, -16 },
+				{ -8, -24 },
+				{ 16, -16 },
+				{ 34, 4 },
+				{ -34, 4 },
+				{ -16, 20 },
+				{ 12, 28 },
+				{ 28, 16 },
+			},
+			Structures = {
+				{ Type = "CrushedCarStack", At = { -24, 30 }, Yaw = 20 },
+				{ Type = "ScrapPile", At = { 20, -36 }, Yaw = 35 },
+				{ Type = "WreckedCar", At = { -40, -26 }, Yaw = 75 },
+			},
 		},
-		Structures = {
-			{ Type = "CrushedCarStack", At = { -24, 30 }, Yaw = 20 },
-			{ Type = "ScrapPile", At = { 20, -36 }, Yaw = 35 },
-			{ Type = "WreckedCar", At = { -40, -26 }, Yaw = 75 },
+		East = {
+			Spawns = { { -8, -18 }, { 8, 18 } },
+			Props = { { -10, 10 }, { 8, -8 }, { -10, -4 } },
+			Explosive = { 0, 0 },
+			Structures = { { Type = "WreckedCar", At = { 8, -20 }, Yaw = 90 } },
 		},
-	},
-	East = {
-		Spawns = { { -8, -18 }, { 8, 18 } },
-		Props = { { -10, 10 }, { 8, -8 }, { -10, -4 } },
-		Explosive = { 0, 0 },
-		Structures = { { Type = "WreckedCar", At = { 8, -20 }, Yaw = 90 } },
-	},
-	West = {
-		Spawns = { { -12, -14 }, { 14, 14 } },
-		Props = { { 12, -10 }, { -14, 6 }, { 0, 16 } },
-		Explosive = { 2, 0 },
-		Structures = { { Type = "CrushedCarStack", At = { -4, -2 }, Yaw = 90 } },
-	},
-	North = {
-		Spawns = { { -16, -10 }, { 16, 10 } },
-		Props = { { 12, -10 }, { -12, 10 } },
-		Explosive = { 0, 0 },
-		Structures = { { Type = "ScrapPile", At = { -18, 4 }, Yaw = 10 } },
-	},
-	South = {
-		Spawns = { { -20, -8 }, { 20, 8 } },
-		Props = { { -8, 8 }, { 10, -8 } },
-		Explosive = { 0, 0 },
-	},
-	LedgeNE = { Props = { { -4, -4 } } },
-	LedgeNW = { Props = { { 4, -4 } } },
-	LedgeSE = { Props = { { -4, 4 } } },
-	LedgeSW = { Props = { { 4, 4 } } },
-	LowWest = {
-		Spawns = { { 6, -6 } },
-		Props = { { -6, 6 } },
-		Explosive = { -8, -8 },
-		Structures = { { Type = "ScrapPile", At = { 6, 7 }, Yaw = 0 } },
-	},
-	LowSouth = {
-		Spawns = { { -6, 6 } },
-		Props = { { 6, -6 } },
-		Explosive = { 8, 8 },
-		Structures = { { Type = "CrushedCarStack", At = { -6, -7 }, Yaw = 0 } },
-	},
-} :: { [string]: Contents }
+		West = {
+			Spawns = { { -12, -14 }, { 14, 14 } },
+			Props = { { 12, -10 }, { -14, 6 }, { 0, 16 } },
+			Explosive = { 2, 0 },
+			Structures = { { Type = "CrushedCarStack", At = { -4, -2 }, Yaw = 90 } },
+		},
+		North = {
+			Spawns = { { -16, -10 }, { 16, 10 } },
+			Props = { { 12, -10 }, { -12, 10 } },
+			Explosive = { 0, 0 },
+			Structures = { { Type = "ScrapPile", At = { -18, 4 }, Yaw = 10 } },
+		},
+		South = {
+			Spawns = { { -20, -8 }, { 20, 8 } },
+			Props = { { -8, 8 }, { 10, -8 } },
+			Explosive = { 0, 0 },
+		},
+		LedgeNE = { Props = { { -4, -4 } } },
+		LedgeNW = { Props = { { 4, -4 } } },
+		LedgeSE = { Props = { { -4, 4 } } },
+		LedgeSW = { Props = { { 4, 4 } } },
+		LowWest = {
+			Spawns = { { 6, -6 } },
+			Props = { { -6, 6 } },
+			Explosive = { -8, -8 },
+			Structures = { { Type = "ScrapPile", At = { 6, 7 }, Yaw = 0 } },
+		},
+		LowSouth = {
+			Spawns = { { -6, 6 } },
+			Props = { { 6, -6 } },
+			Explosive = { 8, 8 },
+			Structures = { { Type = "CrushedCarStack", At = { -6, -7 }, Yaw = 0 } },
+		},
+	} :: { [string]: Contents },
+	GROWTH
+)
 
 function Layout.killY(): number
 	return Arena.killY(Layout.Platforms)
@@ -242,19 +248,24 @@ local function carPileDecor()
 	end
 end
 
-local function craneDecor()
+-- Laid out for the first island; `scale` spreads it over today's (the arm grows so it still reaches from the mast
+-- out over the centre island).
+local function craneDecor(scale: number)
 	-- Mast on the north-west corner, arm reaching out over the centre island, magnet hanging from it.
+	local mastX, mastZ = -10 * scale, 8 * scale
+	local armLength = 32 * scale
+	local armEnd = mastZ + 1 - armLength -- the arm runs from the mast toward the centre island (south)
 	B.part({
 		Name = "CraneMast",
 		Size = { 1.6, 24, 1.6 },
-		Position = { -10, 12, 8 },
+		Position = { mastX, 12, mastZ },
 		Color = "LaneYellow",
 		Material = "Metal",
 	})
 	B.part({
 		Name = "CraneArm",
-		Size = { 1.2, 1.2, 32 },
-		Position = { -10, 23.4, -7 },
+		Size = { 1.2, 1.2, armLength },
+		Position = { mastX, 23.4, (mastZ + 1 + armEnd) / 2 },
 		Color = "LaneYellow",
 		Material = "Metal",
 		CanCollide = false,
@@ -262,14 +273,14 @@ local function craneDecor()
 	B.part({
 		Name = "CraneCable",
 		Size = { 0.2, 7, 0.2 },
-		Position = { -10, 19.3, -21 },
+		Position = { mastX, 19.3, armEnd + 2 },
 		Color = "Black",
 		CanCollide = false,
 	})
 	B.part({
 		Name = "Magnet",
 		Size = { 1, 5, 5 },
-		Position = { -10, 15.3, -21 },
+		Position = { mastX, 15.3, armEnd + 2 },
 		Rotation = { 0, 0, 90 },
 		Shape = "Cylinder",
 		Color = "MetalDark",
@@ -281,7 +292,7 @@ local function craneDecor()
 		B.part({
 			Name = "Bollard",
 			Size = { 0.8, 1.2, 1.2 },
-			Position = { corner[1], 0.4, corner[2] },
+			Position = { corner[1] * scale, 0.4, corner[2] * scale },
 			Rotation = { 0, 0, 90 },
 			Shape = "Cylinder",
 			Color = "Black",
@@ -333,15 +344,15 @@ local function decorate(platform: Platform)
 	if platform.Kind ~= "Ledge" and platform.Kind ~= "Peak" then
 		underside(platform, platform.Color)
 	end
-	-- Decor laid out for the first, half-size islands spreads over the bigger ones (B.spread).
+	-- Decor laid out for the first islands (a quarter of today's) spreads over the bigger ones (B.spread).
 	if platform.Id == "Center" then
-		B.spread(2, centerDecor)
+		B.spread(2 * GROWTH, centerDecor)
 	elseif platform.Id == "East" then
 		containerDecor(platform)
 	elseif platform.Id == "West" then
-		B.spread(2, carPileDecor)
+		B.spread(2 * GROWTH, carPileDecor)
 	elseif platform.Id == "North" then
-		B.spread(2, craneDecor)
+		craneDecor(2 * GROWTH)
 	elseif platform.Id == "South" or platform.Kind == "Low" then
 		bargeDecor(platform)
 	else
@@ -350,10 +361,11 @@ local function decorate(platform: Platform)
 end
 
 local function scenery(killY: number)
-	-- Toxic sludge far below, with junk mounds poking out of it (laid out for the half-size arena: B.spread).
+	-- Toxic sludge far below, with junk mounds poking out of it (laid out for the first arena, a quarter of today's:
+	-- B.spread).
 	B.part({
 		Name = "Sludge",
-		Size = { 1400, 1, 1400 },
+		Size = { 2800, 1, 2800 },
 		Position = { 0, killY - 30, 0 },
 		Color = "ToxicGreen",
 		Material = "Neon",
@@ -361,7 +373,7 @@ local function scenery(killY: number)
 		CanCollide = false,
 		CastShadow = false,
 	})
-	B.spread(2, function()
+	B.spread(2 * GROWTH, function()
 		for index, mound in
 			{
 				{ -120, 80, 60, 40 },

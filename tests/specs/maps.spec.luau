@@ -73,13 +73,13 @@ return {
 			expect.equal(found.Model:GetAttribute("MapId"), mapId)
 		end
 	end,
-	["broken highway: platform sizes from the bible (twice the first arena)"] = function()
+	["broken highway: platform sizes (4× the first arena: doubled 2026-10-17 and again 2026-10-20)"] = function()
 		local sizes = {
-			Center = { 120, 80 },
-			Side = { 48, 48 },
-			Ledge = { 24, 24 },
-			Peak = { 20, 20 },
-			Low = { 28, 28 },
+			Center = { 240, 160 },
+			Side = { 96, 96 },
+			Ledge = { 48, 48 },
+			Peak = { 40, 40 },
+			Low = { 56, 56 },
 		}
 		for _, platform in BrokenHighway.Platforms do
 			local expectedSize = sizes[platform.Kind]

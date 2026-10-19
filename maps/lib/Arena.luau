@@ -7,6 +7,8 @@
 	(Center and Sides), the mid level (Ledges, and the centre's raised Deck with a ramp on each end) and the high
 	level (Peaks, about 6 above a ledge). Each climb is at most 6 studs, so every platform can be reached with a jump
 	(+ dash across a gap).
+	A layout can list its platforms and contents at one size and grow them (Arena.grow / growContents: every platform
+	`factor` times bigger, every gap kept; owner, 2026-10-20: "double every platform").
 	A layout lists its Platforms and their Contents (spawns, prop spots, an explosive barrel, structures) and passes
 	a `decorate(platform)` callback that adds its own parts on each platform, positioned from the platform's top
 	centre.
@@ -69,6 +71,92 @@ function Arena.deckBounds(deck: Deck): { number }
 	local halfX = deck.Size[1] / 2 + deck.Ramp
 	local halfZ = math.max(deck.Size[2], deck.RampWidth) / 2
 	return { offset[1] - halfX, offset[1] + halfX, offset[2] - halfZ, offset[2] + halfZ }
+end
+
+-- The edge-to-edge gap between two platforms on the floor plan (0 when their footprints overlap).
+function Arena.gap(a: Platform, b: Platform): number
+	local gapX = math.max(0, math.abs(a.Center[1] - b.Center[1]) - (a.Size[1] + b.Size[1]) / 2)
+	local gapZ = math.max(0, math.abs(a.Center[2] - b.Center[2]) - (a.Size[2] + b.Size[2]) / 2)
+	return math.sqrt(gapX * gapX + gapZ * gapZ)
+end
+
+--[[
+	Grows every platform `factor` times wider and longer (owner, 2026-10-20: "double every platform") while keeping each
+	gap the same, so every jump still works. Each platform is reached from the nearest one listed before it (the centre
+	comes first and stays at the origin); along an axis where the two are apart, the child moves out by exactly what
+	both grew, and along an axis where they overlap, its offset scales with them. Heights stay; a deck grows with its
+	platform (its height and the climb stay the same).
+]]
+function Arena.grow(platforms: { Platform }, factor: number): { Platform }
+	local grown: { Platform } = {}
+	for index, platform in platforms do
+		local copy = table.clone(platform)
+		copy.Size = { platform.Size[1] * factor, platform.Size[2] * factor }
+		local deck = platform.Deck
+		if deck then
+			local offset = deck.Offset
+			copy.Deck = {
+				Size = { deck.Size[1] * factor, deck.Size[2] * factor },
+				Height = deck.Height,
+				Ramp = deck.Ramp * factor,
+				RampWidth = deck.RampWidth * factor,
+				Offset = if offset then { offset[1] * factor, offset[2] * factor } else nil,
+			}
+		end
+		local parentIndex, nearest = nil, math.huge
+		for earlier = 1, index - 1 do
+			local gap = Arena.gap(platforms[earlier], platform)
+			if gap < nearest then
+				parentIndex, nearest = earlier, gap
+			end
+		end
+		if parentIndex then
+			local parent, grownParent = platforms[parentIndex], grown[parentIndex]
+			local center: { number } = {}
+			for axis = 1, 2 do
+				local offset = platform.Center[axis] - parent.Center[axis]
+				local halves = (platform.Size[axis] + parent.Size[axis]) / 2
+				center[axis] = grownParent.Center[axis]
+					+ if math.abs(offset) >= halves
+						then offset + math.sign(offset) * halves * (factor - 1)
+						else offset * factor
+			end
+			copy.Center = center
+		else
+			copy.Center = { platform.Center[1] * factor, platform.Center[2] * factor }
+		end
+		grown[index] = copy
+	end
+	return grown
+end
+
+-- The platforms' contents with every spot `factor` times further from its platform's centre (sizes stay).
+function Arena.growContents(contents: { [string]: Contents }, factor: number): { [string]: Contents }
+	local function scaled(spot: Spot): Spot
+		return { spot[1] * factor, spot[2] * factor }
+	end
+	local grown: { [string]: Contents } = {}
+	for id, entry in contents do
+		local spawns: { Spot } = {}
+		for _, spot in entry.Spawns or {} do
+			table.insert(spawns, scaled(spot))
+		end
+		local props: { Spot } = {}
+		for _, spot in entry.Props or {} do
+			table.insert(props, scaled(spot))
+		end
+		local structures = {}
+		for _, structure in entry.Structures or {} do
+			table.insert(structures, { Type = structure.Type, At = scaled(structure.At), Yaw = structure.Yaw })
+		end
+		grown[id] = {
+			Spawns = if entry.Spawns then spawns else nil,
+			Props = if entry.Props then props else nil,
+			Explosive = if entry.Explosive then scaled(entry.Explosive) else nil,
+			Structures = if entry.Structures then structures else nil,
+		}
+	end
+	return grown
 end
 
 -- Yaw that points a marker's front (-Z) at the arena centre.

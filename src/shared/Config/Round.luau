@@ -31,5 +31,8 @@ return {
 		WarningTime = 3, -- flash + shake before the platform falls
 		MinPlatformsRemaining = 2, -- including the central platform, which never falls
 		FallTime = 4, -- seconds the falling platform takes before it is removed
+		-- The arena closes in: the next platform comes from the outer ring, those within RingWidth studs of the farthest
+		-- one from the centre (owner's fix list, 2026-10-19).
+		RingWidth = 40,
 	},
 }
