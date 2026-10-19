@@ -43,12 +43,10 @@ return {
 	Shade = "#F3F0E6", -- lamp shades
 	Leaf = "#6FA556",
 	Carpet = "#D8D4CB",
-	Mattress = "#E9E5DC",
-	Blanket = "#3E6B3B",
-	BlanketRed = "#5C1C17",
-	Cabinet = "#EEEBE4",
-	Countertop = "#2B2D31",
-	VendRed = "#C9302C",
+	Red = "#C9302C", -- pins on the quest board
 	Cream = "#F0E2C0", -- leaderboard titles
 	BoardDark = "#1C1C1F",
+	SofaDark = "#561713", -- piping and buttons
+	WoodMid = "#6B3F28", -- moldings
+	Soil = "#3B2A1E",
 }

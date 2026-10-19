@@ -145,16 +145,16 @@ Not used. No pets, eggs, or paid random items.
 
 ### 3.2 Visual & spatial guidelines
 
-**Lobby (The Hideout):** an enclosed hideout lounge (owner's changes: a closed space, not the open Rust Diner
-rooftop, no Training Yard, 2026-10-16; 50% bigger — 138 × 102 studs, 28 high — and furnished like the reference
-pictures, 2026-10-19). Grey-green plaster walls over dark wood wainscoting with a gold rail, dark wood pillars with
-white wall lamps, wood beams, a light carpet (wood planks in the bar). North — the bar counter with the Shop NPC (the
-bartender), bar stools, bottle shelves, map vote CRT TVs hanging over the bar and news TVs on the counter ends, the
+**Lobby (The Hideout):** an enclosed hideout bar (owner's changes: a closed space, not the open Rust Diner rooftop,
+no Training Yard, 2026-10-16; 25% bigger — 115 × 85 studs, 26 high — in the style of the reference pictures with
+detailed furniture, 2026-10-19). Grey-green plaster walls over dark wood wainscoting with a gold rail, dark wood pillars with
+white wall lamps, wood beams, a light carpet (wood planks in the bar). North — the marble-topped bar counter with the Shop NPC
+(the bartender), bar stools, a mirrored back bar with bottle shelves, map vote CRT TVs hanging over the bar and news TVs on the counter ends, the
 "JUNKYARD BRAWL" sign; booths in both corners. East — the steel ARENA door with the glowing join pad. West — Locker
-booth, Codes jukebox, the cork quest board, a kitchen counter (sink, microwave, coffee machine) and two metal bunk
-beds. South — three tall dark leaderboard boards, the spawns, vending machines and the street door. Middle — the
-lounge (dark rug with a gold ring, round black marble table on a gold base, red sofa and two armchairs, floor lamps
-with white shades, potted topiaries), a pool table and high tables with stools. Every sofa, armchair, booth bench and
+booth, Codes jukebox, the cork quest board. South — three tall dark leaderboard boards, the spawns and the street
+door. Middle — the
+lounge (dark rug with a gold ring, round black marble table on a gold base, red tufted sofa and two armchairs, floor
+lamps with white drum shades, potted topiaries), a pool table and high tables with stools. Every sofa, armchair, booth bench and
 stool can be sat on: walk up and press Sit (E / gamepad B / tap); jump to stand up. Walk up to the bartender for the Shop and into the locker booth for the Inventory (a prompt: E / gamepad B /
 tap); both also open from the left-edge menu.
 

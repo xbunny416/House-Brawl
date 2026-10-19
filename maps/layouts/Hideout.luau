@@ -1,112 +1,49 @@
 --!strict
 --[[
-	Lobby: "The Hideout" — an enclosed hideout lounge (owner's choices: a closed space instead of the open Rust Diner
-	rooftop, 2026-10-16; 50% bigger and furnished like the reference pictures in docs/reference, 2026-10-19).
+	Lobby: "The Hideout" — an enclosed hideout bar (owner's choices: a closed space instead of the open Rust Diner
+	rooftop, 2026-10-16; 25% bigger and in the style of the reference pictures in docs/reference — wood, gold trim,
+	warm lamps, a red sofa corner — with detailed furniture instead of plain blocks, 2026-10-19).
 
-	Walls: grey-green plaster over dark wood wainscoting with a gold rail, dark wood pillars with white wall lamps,
-	wood beams under a dark ceiling. Floor: a light carpet, wood planks in the bar.
-	North: the bar — counter (Shop) with the bartender (Shop NPC), bottle shelves, map vote TVs hanging over the bar,
-	news TVs on the counter ends, the title sign, bar stools. Booths in both north corners.
+	Walls: grey-green plaster over dark wood wainscoting (framed panels, a gold rail), dark wood pillars with gold bands
+	and wall lamps, wood beams with gold strips under a dark ceiling. Floor: a light carpet, wood planks in the bar.
+	North: the bar — marble-topped counter (Shop) with the bartender (Shop NPC), stools, a mirrored back bar with
+	shelves of bottles, map vote TVs hanging over the bar, news TVs on the counter ends, the title sign. Booths with
+	tufted benches in both north corners.
 	East: the steel ARENA door with the join pad in front of it (QueueZone: only players standing on it are taken into
 	the next round), barrels, a dartboard.
-	West: Locker booth (Inventory), Codes jukebox, the cork quest board, a kitchen counter (sink, microwave, coffee
-	machine) and two bunk beds in the south-west corner.
-	South: three tall leaderboard boards, the spawn pads, vending machines and the street door.
-	Middle: the lounge — a dark rug with a gold ring, a round black marble table on a gold base, a red sofa and two
-	armchairs, floor lamps, potted topiaries — plus a pool table and high tables with stools.
-	Seats (sofas, armchairs, booths, stools) are LobbySeat-tagged Seats: walk up and press the Sit prompt.
+	West: Locker booth (Inventory), Codes jukebox, the cork quest board.
+	South: three tall leaderboard boards, the spawn pads, the street door.
+	Middle: the lounge — a rug with a gold ring, a round black marble table, a red tufted sofa and two armchairs, floor
+	lamps, topiaries — a pool table and high tables with stools. Furniture comes from maps/lib/Furniture.
+	Seats (sofas, armchairs, booth benches, stools) are LobbySeat-tagged Seats: walk up and press the Sit prompt.
 	Interactive objects carry CollectionService tags so code can attach prompts and UI.
 ]]
 local B = require("../lib/Builder")
+local F = require("../lib/Furniture")
 
 local Layout = {}
 
 Layout.Id = "Hideout"
 Layout.Lighting = "Dusk"
 
-local INNER = { 138, 102 } -- X, Z: floor space inside the walls (92 × 68 until 2026-10-19: 50% bigger)
+-- X, Z: floor space inside the walls (92 × 68 until 2026-10-19; 138 × 102 for a day, "too big"; now 1.25×).
+local INNER = { 115, 85 }
 local HALF_X, HALF_Z = INNER[1] / 2, INNER[2] / 2
-local HEIGHT = 28 -- floor to ceiling
+local HEIGHT = 26 -- floor to ceiling
 local WALL = 2
 local KILL_DEPTH = 40 -- falling this far below the floor returns you to a spawn
 local WAINSCOT = 6 -- height of the wood panelling
-local BAR_DEPTH = 40 -- the wood floor in front of the north wall
+local BAR_DEPTH = 32 -- the wood floor in front of the north wall
+local PILLARS_X = { -38, 38 } -- pillars on the north / south walls
+local PILLARS_Z = { -34, -17, 17, 34 } -- pillars on the east / west walls
 
 -- Join pad in front of the ARENA door (east wall).
 local PAD_SIZE = { 14, 18 } -- X, Z
 local PAD_X = HALF_X - 2 - PAD_SIZE[1] / 2
 
--- Unit vectors (X, Z) for a facing; "right" is the facing turned a quarter clockwise seen from above.
-local FORWARD: { [string]: { number } } = { North = { 0, 1 }, South = { 0, -1 }, East = { 1, 0 }, West = { -1, 0 } }
-
--- World X / Z of a point `lx` to the right and `lz` forward of (x, z) for something facing `facing`.
-local function place(x: number, z: number, facing: string, lx: number, lz: number): (number, number)
-	local f = FORWARD[facing]
-	return x + f[2] * lx + f[1] * lz, z - f[1] * lx + f[2] * lz
-end
-
--- A flat disc lying on the floor (or on a table): a cylinder with its axis turned up.
-local function disc(
-	name: string,
-	x: number,
-	y: number,
-	z: number,
-	diameter: number,
-	thickness: number,
-	colorName: string,
-	material: string?
-)
-	return B.part({
-		Name = name,
-		Size = { thickness, diameter, diameter },
-		Position = { x, y, z },
-		Rotation = { 0, 0, 90 },
-		Shape = "Cylinder",
-		Color = colorName,
-		Material = material or "SmoothPlastic",
-		CanCollide = false,
-		CastShadow = false,
-	})
-end
-
 ---------------------------------------------------------------------------------------------------------------------
 -- Room
 ---------------------------------------------------------------------------------------------------------------------
-
--- A dark wood pillar against a wall with a small white wall lamp; `lit` adds a soft light.
-local function pillar(x: number, z: number, facing: string, lit: boolean)
-	B.model("Pillar", function()
-		B.part({
-			Name = "Post",
-			Size = { 2.4, HEIGHT, 2.4 },
-			Position = { x, HEIGHT / 2, z },
-			Color = "WoodDark",
-			Material = "Wood",
-			CastShadow = false,
-		})
-		local lampX, lampZ = place(x, z, facing, 0, 1.6)
-		B.part({
-			Name = "LampArm",
-			Size = { 0.3, 0.3, 1.2 },
-			Position = { lampX, 12, lampZ },
-			Rotation = B.yaw(facing),
-			Color = "Gold",
-			Material = "Metal",
-			CanCollide = false,
-		})
-		local shade = B.part({
-			Name = "WallLamp",
-			Size = { 1.3, 1.5, 1.3 },
-			Position = { lampX, 12.9, lampZ },
-			Color = "Shade",
-			Material = "SmoothPlastic",
-			CanCollide = false,
-		})
-		if lit then
-			B.light(shade, "WarmLight", 14, 0.7)
-		end
-	end)
-end
 
 local function shell()
 	B.slab({
@@ -134,6 +71,15 @@ local function shell()
 		CanCollide = false,
 		CastShadow = false,
 	})
+	B.part({
+		Name = "FloorEdge",
+		Size = { INNER[1], 0.12, 0.4 },
+		Position = { 0, 0.06, HALF_Z - BAR_DEPTH },
+		Color = "Gold",
+		Material = "Metal",
+		CanCollide = false,
+		CastShadow = false,
+	})
 	local wallY = (HEIGHT + 4) / 2 - 2 -- from below the floor slab up to the ceiling
 	for _, wall in
 		{
@@ -152,50 +98,28 @@ local function shell()
 			CastShadow = true,
 		})
 	end
-	-- Wainscoting: dark wood up to WAINSCOT, raised panels, a gold rail on top.
-	for _, side in
+	-- Wainscoting on every wall, facing into the room.
+	F.wainscot(0, HALF_Z, "South", INNER[1], WAINSCOT)
+	F.wainscot(0, -HALF_Z, "North", INNER[1], WAINSCOT)
+	F.wainscot(HALF_X, 0, "West", INNER[2], WAINSCOT)
+	F.wainscot(-HALF_X, 0, "East", INNER[2], WAINSCOT)
+	-- Crown molding where the walls meet the ceiling.
+	for _, crown in
 		{
-			{ length = INNER[1], x = 0, z = HALF_Z - 0.25, alongX = true },
-			{ length = INNER[1], x = 0, z = -HALF_Z + 0.25, alongX = true },
-			{ length = INNER[2], x = HALF_X - 0.25, z = 0, alongX = false },
-			{ length = INNER[2], x = -HALF_X + 0.25, z = 0, alongX = false },
+			{ size = { INNER[1], 0.8, 0.8 }, pos = { 0, HALF_Z - 0.4 } },
+			{ size = { INNER[1], 0.8, 0.8 }, pos = { 0, -HALF_Z + 0.4 } },
+			{ size = { 0.8, 0.8, INNER[2] }, pos = { HALF_X - 0.4, 0 } },
+			{ size = { 0.8, 0.8, INNER[2] }, pos = { -HALF_X + 0.4, 0 } },
 		}
 	do
-		local function size(along: number, height: number, depth: number): { number }
-			return if side.alongX then { along, height, depth } else { depth, height, along }
-		end
-		local inward = if side.alongX then -math.sign(side.z) else -math.sign(side.x)
 		B.part({
-			Name = "Wainscot",
-			Size = size(side.length, WAINSCOT, 0.5),
-			Position = { side.x, WAINSCOT / 2, side.z },
+			Name = "Crown",
+			Size = crown.size,
+			Position = { crown.pos[1], HEIGHT - 0.4, crown.pos[2] },
 			Color = "WoodDark",
 			Material = "Wood",
 			CastShadow = false,
 		})
-		B.part({
-			Name = "GoldRail",
-			Size = size(side.length, 0.35, 0.8),
-			Position = { side.x, WAINSCOT + 0.1, side.z },
-			Color = "Gold",
-			Material = "Metal",
-			CastShadow = false,
-		})
-		local count = math.floor(side.length / 10)
-		for index = 1, count do
-			local along = -side.length / 2 + (index - 0.5) * side.length / count
-			local x = if side.alongX then along else side.x + inward * 0.3
-			local z = if side.alongX then side.z + inward * 0.3 else along
-			B.part({
-				Name = "Panel",
-				Size = size(side.length / count - 2, WAINSCOT - 2.2, 0.2),
-				Position = { x, WAINSCOT / 2, z },
-				Color = "Brick",
-				Material = "Wood",
-				CanCollide = false,
-				CastShadow = false,
-			})
-		end
 	end
 	B.part({
 		Name = "Ceiling",
@@ -205,7 +129,8 @@ local function shell()
 		Material = "Plaster",
 		CastShadow = true,
 	})
-	for _, z in { -34, -17, 0, 17, 34 } do
+	-- Wood beams with a gold strip down each lower edge.
+	for _, z in { -28, -14, 0, 14, 28 } do
 		B.part({
 			Name = "Beam",
 			Size = { INNER[1], 1.6, 1.4 },
@@ -213,412 +138,34 @@ local function shell()
 			Color = "WoodDark",
 			Material = "Wood",
 		})
+		for _, side in { -1, 1 } do
+			B.part({
+				Name = "BeamStrip",
+				Size = { INNER[1], 0.12, 0.12 },
+				Position = { 0, HEIGHT - 1.62, z + side * 0.64 },
+				Color = "Gold",
+				Material = "Metal",
+				CanCollide = false,
+				CastShadow = false,
+			})
+		end
 	end
 	-- Pillars along the walls; the east / west ones carry lit wall lamps.
-	for _, z in { -34, -17, 17, 34 } do
-		pillar(HALF_X - 1.2, z, "West", true)
-		pillar(-HALF_X + 1.2, z, "East", true)
+	for _, z in PILLARS_Z do
+		F.pillar(HALF_X - 1.2, z, "West", HEIGHT, true)
+		F.pillar(-HALF_X + 1.2, z, "East", HEIGHT, true)
 	end
-	for _, x in { -46, 46 } do
-		pillar(x, HALF_Z - 1.2, "South", false)
-		pillar(x, -HALF_Z + 1.2, "North", false)
+	for _, x in PILLARS_X do
+		F.pillar(x, HALF_Z - 1.2, "South", HEIGHT, false)
+		F.pillar(x, -HALF_Z + 1.2, "North", HEIGHT, false)
 	end
-end
-
--- A lamp hanging from the ceiling: gold shade, dim amber bulb, warm light.
-local function lamp(at: { number }, lightColor: string, range: number)
-	B.model("Lamp", function()
-		B.part({
-			Name = "Cord",
-			Size = { 0.15, HEIGHT - at[2], 0.15 },
-			Position = { at[1], (HEIGHT + at[2]) / 2, at[3] },
-			Color = "Black",
-			CanCollide = false,
-		})
-		B.part({
-			Name = "Shade",
-			Size = { 1.2, 2.6, 2.6 },
-			Position = { at[1], at[2], at[3] },
-			Rotation = { 0, 0, 90 },
-			Shape = "Cylinder",
-			Color = "Gold",
-			Material = "Metal",
-			CanCollide = false,
-		})
-		local bulb = B.part({
-			Name = "Bulb",
-			Size = { 0.9, 0.9, 0.9 },
-			Position = { at[1], at[2] - 0.7, at[3] },
-			Shape = "Ball",
-			Color = "Amber",
-			Material = "Neon",
-			CanCollide = false,
-		})
-		B.light(bulb, lightColor, range, 1.3)
-	end)
-end
-
----------------------------------------------------------------------------------------------------------------------
--- Furniture (the reference pictures' style)
----------------------------------------------------------------------------------------------------------------------
-
---[[
-	A sofa (or an armchair with seats = 1, or a booth bench) at (x, z) whose sitters look `facing`: a base on short gold
-	legs, one Seat cushion per seat, a back and two arms.
-]]
-local function sofa(name: string, x: number, z: number, facing: string, seats: number, colorName: string)
-	local width = seats * 2.8 + 1.2
-	local yaw = B.yaw(facing)
-	B.model(name, function()
-		local function piece(partName: string, size: { number }, lx: number, y: number, lz: number)
-			local px, pz = place(x, z, facing, lx, lz)
-			B.part({
-				Name = partName,
-				Size = size,
-				Position = { px, y, pz },
-				Rotation = yaw,
-				Color = colorName,
-				Material = "Fabric",
-			})
-		end
-		piece("Base", { width, 1.2, 3.4 }, 0, 0.9, 0)
-		piece("Back", { width - 1.2, 2.8, 0.9 }, 0, 2.9, -1.25)
-		for _, side in { -1, 1 } do
-			piece("Arm", { 0.6, 1.7, 3.4 }, side * (width / 2 - 0.3), 2.35, 0)
-			for _, end_ in { -1, 1 } do
-				local lx, lz = place(x, z, facing, side * (width / 2 - 0.4), end_ * 1.3)
-				B.part({
-					Name = "Leg",
-					Size = { 0.4, 0.3, 0.4 },
-					Position = { lx, 0.15, lz },
-					Color = "Gold",
-					Material = "Metal",
-				})
-			end
-		end
-		for index = 1, seats do
-			local sx, sz = place(x, z, facing, (index - (seats + 1) / 2) * 2.8, 0.3)
-			B.seat({
-				Name = `Cushion{index}`,
-				Size = { 2.7, 0.7, 2.6 },
-				Position = { sx, 1.85, sz },
-				Rotation = yaw,
-				Color = colorName,
-				Material = "Fabric",
-			})
-		end
-	end)
-end
-
--- A round black marble table on a gold pedestal.
-local function coffeeTable(x: number, z: number)
-	B.model("CoffeeTable", function()
-		B.part({
-			Name = "Top",
-			Size = { 0.4, 6.5, 6.5 },
-			Position = { x, 2.4, z },
-			Rotation = { 0, 0, 90 },
-			Shape = "Cylinder",
-			Color = "Marble",
-			Material = "Marble",
-		})
-		B.part({
-			Name = "Pedestal",
-			Size = { 2, 0.7, 0.7 },
-			Position = { x, 1.2, z },
-			Rotation = { 0, 0, 90 },
-			Shape = "Cylinder",
-			Color = "Gold",
-			Material = "Metal",
-		})
-		disc("Foot", x, 0.25, z, 3.2, 0.3, "Gold", "Metal")
-	end)
-end
-
--- A dark rug with a gold ring around the table.
-local function rug(x: number, z: number, sizeX: number, sizeZ: number)
-	B.part({
-		Name = "Rug",
-		Size = { sizeX, 0.1, sizeZ },
-		Position = { x, 0.12, z },
-		Color = "Rug",
-		Material = "Carpet",
-		CanCollide = false,
-		CastShadow = false,
-	})
-	disc("RugRing", x, 0.15, z, 14, 0.1, "Gold", "Fabric")
-	disc("RugInner", x, 0.17, z, 12, 0.1, "Rug", "Carpet")
-end
-
--- A floor lamp: black foot, thin gold pole, white shade that lights the corner.
-local function floorLamp(x: number, z: number)
-	B.model("FloorLamp", function()
-		disc("Foot", x, 0.15, z, 1.8, 0.3, "Black")
-		B.part({
-			Name = "Pole",
-			Size = { 0.25, 7.4, 0.25 },
-			Position = { x, 3.9, z },
-			Color = "Gold",
-			Material = "Metal",
-			CanCollide = false,
-		})
-		local shade = B.part({
-			Name = "Shade",
-			Size = { 1.8, 2.4, 2.4 },
-			Position = { x, 8.1, z },
-			Rotation = { 0, 0, 90 },
-			Shape = "Cylinder",
-			Color = "Shade",
-			Material = "SmoothPlastic",
-			CanCollide = false,
-		})
-		B.light(shade, "WarmLight", 18, 1)
-	end)
-end
-
--- A potted topiary: black pot with a gold rim, a short trunk, a ball of leaves.
-local function plant(x: number, z: number)
-	B.model("Plant", function()
-		B.part({
-			Name = "Pot",
-			Size = { 2.4, 3, 3 },
-			Position = { x, 1.2, z },
-			Rotation = { 0, 0, 90 },
-			Shape = "Cylinder",
-			Color = "Black",
-			Material = "SmoothPlastic",
-		})
-		disc("Rim", x, 2.45, z, 3.2, 0.2, "Gold", "Metal")
-		B.part({
-			Name = "Trunk",
-			Size = { 0.4, 3, 0.4 },
-			Position = { x, 3.9, z },
-			Color = "Wood",
-			Material = "Wood",
-			CanCollide = false,
-		})
-		B.part({
-			Name = "Leaves",
-			Size = { 4.6, 4.6, 4.6 },
-			Position = { x, 7.2, z },
-			Shape = "Ball",
-			Color = "Leaf",
-			Material = "LeafyGrass",
-			CanCollide = false,
-		})
-	end)
-end
-
--- A vending machine against a wall, front facing `facing`: dark body, red sign, colorful shelves behind glass.
-local function vendingMachine(name: string, x: number, z: number, facing: string)
-	local yaw = B.yaw(facing)
-	B.model(name, function()
-		local function piece(
-			partName: string,
-			size: { number },
-			lx: number,
-			y: number,
-			lz: number,
-			colorName: string,
-			material: string?,
-			neon: boolean?
-		)
-			local px, pz = place(x, z, facing, lx, lz)
-			return B.part({
-				Name = partName,
-				Size = size,
-				Position = { px, y, pz },
-				Rotation = yaw,
-				Color = colorName,
-				Material = if neon then "Neon" else material or "SmoothPlastic",
-				CanCollide = partName == "Body",
-			})
-		end
-		piece("Body", { 5, 9, 3.4 }, 0, 4.5, 0, "Black", "Metal")
-		piece("Sign", { 4.6, 1.2, 0.2 }, 0, 8.1, 1.75, "VendRed")
-		local glow = piece("SignLight", { 3.8, 0.6, 0.1 }, 0, 8.1, 1.88, "OffWhite", nil, true)
-		B.light(glow, "OffWhite", 10, 0.6)
-		piece("Glass", { 3.2, 5.6, 0.1 }, -0.7, 4.6, 1.75, "Glass", "Glass")
-		for row = 1, 4 do
-			for column = 1, 4 do
-				local colors = { "NeonPink", "LaneYellow", "NeonTeal", "VendRed", "Leaf" }
-				piece(
-					`Snack{row}{column}`,
-					{ 0.6, 0.9, 0.5 },
-					-1.85 + column * 0.7,
-					2.3 + row * 1.25,
-					1.4,
-					colors[(row + column) % #colors + 1]
-				)
-			end
-		end
-		piece("Keypad", { 0.9, 2, 0.15 }, 1.75, 5.4, 1.75, "MetalDark", "Metal")
-	end)
-end
-
--- A black metal bunk bed against the south wall (long side along X).
-local function bunkBed(name: string, x: number, z: number, blanket: string)
-	B.model(name, function()
-		for _, dx in { -4.4, 4.4 } do
-			for _, dz in { -2, 2 } do
-				B.part({
-					Name = "Post",
-					Size = { 0.5, 12, 0.5 },
-					Position = { x + dx, 6, z + dz },
-					Color = "Black",
-					Material = "Metal",
-				})
-			end
-		end
-		for _, y in { 2.4, 7.8 } do
-			B.part({
-				Name = "Frame",
-				Size = { 9.2, 0.5, 4.4 },
-				Position = { x, y - 0.6, z },
-				Color = "Black",
-				Material = "Metal",
-			})
-			B.part({
-				Name = "Mattress",
-				Size = { 8.6, 1, 4 },
-				Position = { x, y + 0.15, z },
-				Color = "Mattress",
-				Material = "Fabric",
-			})
-			B.part({
-				Name = "Blanket",
-				Size = { 5.8, 0.3, 4.1 },
-				Position = { x + 1.3, y + 0.8, z },
-				Color = blanket,
-				Material = "Fabric",
-				CanCollide = false,
-			})
-			B.part({
-				Name = "Pillow",
-				Size = { 1.8, 0.7, 3 },
-				Position = { x - 3.2, y + 0.95, z },
-				Color = "OffWhite",
-				Material = "Fabric",
-				CanCollide = false,
-			})
-		end
-		B.part({
-			Name = "Rail",
-			Size = { 9.2, 0.3, 0.3 },
-			Position = { x, 10, z + 2 },
-			Color = "Black",
-			Material = "Metal",
-			CanCollide = false,
-		})
-		for index = 1, 4 do
-			B.part({
-				Name = "Rung",
-				Size = { 0.25, 0.25, 1.6 },
-				Position = { x + 4.4, 2.4 + index * 1.4, z + 2.9 },
-				Color = "MetalDark",
-				Material = "Metal",
-				CanCollide = false,
-			})
-		end
-		for _, dz in { 2.1, 3.7 } do
-			B.part({
-				Name = "LadderSide",
-				Size = { 0.25, 8, 0.25 },
-				Position = { x + 4.4, 5.6, z + dz },
-				Color = "MetalDark",
-				Material = "Metal",
-				CanCollide = false,
-			})
-		end
-	end)
-end
-
--- A kitchen counter along the west wall: white cabinets, dark top, sink, microwave, coffee machine.
-local function kitchen(x: number, zFrom: number, zTo: number)
-	local length = zTo - zFrom
-	local z = (zFrom + zTo) / 2
-	B.model("Kitchen", function()
-		B.part({
-			Name = "Cabinets",
-			Size = { 3, 3.6, length },
-			Position = { x, 1.8, z },
-			Color = "Cabinet",
-			Material = "SmoothPlastic",
-		})
-		for index = 1, math.floor(length / 3) do
-			B.part({
-				Name = "Handle",
-				Size = { 0.2, 1.2, 0.2 },
-				Position = { x + 1.55, 2.2, zFrom + (index - 0.5) * 3 },
-				Color = "Metal",
-				Material = "Metal",
-				CanCollide = false,
-			})
-		end
-		B.part({
-			Name = "Top",
-			Size = { 3.4, 0.4, length + 0.4 },
-			Position = { x, 3.8, z },
-			Color = "Countertop",
-			Material = "Granite",
-		})
-		B.part({
-			Name = "Sink",
-			Size = { 2, 0.15, 3 },
-			Position = { x, 4.05, zFrom + 4 },
-			Color = "Metal",
-			Material = "Metal",
-			CanCollide = false,
-		})
-		B.part({
-			Name = "Faucet",
-			Size = { 0.3, 1.6, 0.3 },
-			Position = { x - 1.2, 4.8, zFrom + 4 },
-			Color = "Metal",
-			Material = "Metal",
-			CanCollide = false,
-		})
-		B.part({
-			Name = "Microwave",
-			Size = { 2.4, 1.6, 3 },
-			Position = { x - 0.2, 4.8, zFrom + 9 },
-			Color = "Black",
-			Material = "Metal",
-		})
-		B.part({
-			Name = "MicrowaveDoor",
-			Size = { 0.1, 1.1, 2 },
-			Position = { x + 1.05, 4.8, zFrom + 8.7 },
-			Color = "Glass",
-			Material = "Glass",
-			CanCollide = false,
-		})
-		B.part({
-			Name = "CoffeeMachine",
-			Size = { 2, 2.8, 1.8 },
-			Position = { x - 0.3, 5.4, zFrom + 13 },
-			Color = "Black",
-			Material = "SmoothPlastic",
-		})
-		B.part({
-			Name = "CoffeePot",
-			Size = { 1, 0.9, 0.9 },
-			Position = { x + 0.4, 4.6, zFrom + 13 },
-			Rotation = { 0, 0, 90 },
-			Shape = "Cylinder",
-			Color = "Glass",
-			Material = "Glass",
-			Transparency = 0.3,
-			CanCollide = false,
-		})
-	end)
 end
 
 ---------------------------------------------------------------------------------------------------------------------
 -- Gameplay spots
 ---------------------------------------------------------------------------------------------------------------------
 
--- An old CRT TV: dark casing, glowing screen that lights the bar a little.
+-- An old CRT TV: a dark casing with a bezel, knobs and a speaker grille, a glowing screen that lights the bar a little.
 local function tv(name: string, at: { number }, size: { number }, voteKind: string, index: number)
 	B.model(name, function()
 		B.part({
@@ -628,10 +175,13 @@ local function tv(name: string, at: { number }, size: { number }, voteKind: stri
 			Color = "MetalDark",
 			Material = "SmoothPlastic",
 		})
+		local front = at[3] - size[3] / 2
+		local screenW, screenH = size[1] * 0.72, size[2] * 0.72
+		local screenX = at[1] - size[1] * 0.08
 		local screen = B.part({
 			Name = "Screen",
-			Size = { size[1] * 0.8, size[2] * 0.75, 0.2 },
-			Position = { at[1], at[2] + 0.2, at[3] - size[3] / 2 - 0.1 },
+			Size = { screenW, screenH, 0.2 },
+			Position = { screenX, at[2] + 0.1, front - 0.1 },
 			Color = "CrtGlow",
 			Material = "Neon",
 			-- "News" TVs show the lobby news (the mode vote TVs until Classic became the only mode, 2026-10-19).
@@ -639,14 +189,54 @@ local function tv(name: string, at: { number }, size: { number }, voteKind: stri
 			Attributes = { VoteKind = voteKind, Index = index },
 		})
 		B.light(screen, "CrtGlow", 10, 0.8)
+		B.part({
+			Name = "Bezel",
+			Size = { screenW + 0.5, screenH + 0.5, 0.1 },
+			Position = { screenX, at[2] + 0.1, front - 0.02 },
+			Color = "Black",
+			Material = "SmoothPlastic",
+			CanCollide = false,
+		})
+		local panelX = at[1] + size[1] / 2 - size[1] * 0.1
+		for knob = 1, 2 do
+			B.part({
+				Name = "Knob",
+				Size = { 0.2, 0.55, 0.55 },
+				Position = { panelX, at[2] + 0.9 - knob * 0.9, front - 0.1 },
+				Rotation = { 0, 90, 0 },
+				Shape = "Cylinder",
+				Color = "Metal",
+				Material = "Metal",
+				CanCollide = false,
+			})
+		end
+		for slot = 1, 3 do
+			B.part({
+				Name = "Grille",
+				Size = { 0.6, 0.08, 0.05 },
+				Position = { panelX, at[2] - size[2] / 2 + 0.4 + slot * 0.25, front - 0.03 },
+				Color = "Black",
+				Material = "SmoothPlastic",
+				CanCollide = false,
+			})
+		end
 		for _, side in { -1, 1 } do
 			B.part({
 				Name = "Antenna",
-				Size = { 0.2, 3, 0.2 },
+				Size = { 0.15, 3, 0.15 },
 				Position = { at[1] + side * 0.8, at[2] + size[2] / 2 + 1.3, at[3] },
 				Rotation = { 0, 0, side * -25 },
 				Color = "Metal",
 				Material = "Metal",
+			})
+			B.part({
+				Name = "AntennaTip",
+				Size = { 0.3, 0.3, 0.3 },
+				Position = { at[1] + side * 1.43, at[2] + size[2] / 2 + 2.66, at[3] },
+				Shape = "Ball",
+				Color = "Metal",
+				Material = "Metal",
+				CanCollide = false,
 			})
 		end
 	end)
@@ -654,51 +244,108 @@ end
 
 local function bar()
 	local wallZ = HALF_Z
-	local width = 48
+	local width = 44
 	B.sign({
 		Name = "TitleSign",
-		Size = { 46, 5, 0.6 },
-		Position = { 0, 23, wallZ - 0.6 },
+		Size = { 40, 4.6, 0.6 },
+		Position = { 0, 21.5, wallZ - 0.9 },
 		Color = "Black",
 		Material = "SmoothPlastic",
 		Key = "Lobby.Sign.Title",
 		TextColor = "NeonPink",
 		Glow = true,
 	})
-	-- Back bar: cabinet, shelves and bottles.
+	-- Back bar: a framed mirror, gold shelves on brackets, bottles, a cabinet with framed doors.
 	B.part({
-		Name = "BackCabinet",
-		Size = { width, 4, 2.4 },
-		Position = { 0, 2, wallZ - 1.7 },
-		Color = "WoodDark",
-		Material = "Wood",
+		Name = "BackMirror",
+		Size = { width - 2, 9.5, 0.2 },
+		Position = { 0, 10.75, wallZ - 0.65 },
+		Color = "Glass",
+		Material = "Glass",
+		Transparency = 0.35,
+		CanCollide = false,
 	})
-	for row, y in { 7.5, 10.5, 13.5 } do
+	for _, edge in
+		{
+			{ size = { width, 0.6, 0.5 }, at = { 0, 15.8 } },
+			{ size = { 0.6, 10.6, 0.5 }, at = { -width / 2 + 0.7, 10.75 } },
+			{ size = { 0.6, 10.6, 0.5 }, at = { width / 2 - 0.7, 10.75 } },
+		}
+	do
 		B.part({
-			Name = "Shelf",
-			Size = { width, 0.3, 1.6 },
-			Position = { 0, y, wallZ - 1.3 },
+			Name = "MirrorFrame",
+			Size = edge.size,
+			Position = { edge.at[1], edge.at[2], wallZ - 0.75 },
 			Color = "Gold",
 			Material = "Metal",
 		})
-		for index = 1, 16 do
-			local colors = { "Bottle", "Amber", "Glass", "NeonTeal" }
+	end
+	B.part({
+		Name = "BackCabinet",
+		Size = { width, 5.5, 2.6 },
+		Position = { 0, 2.75, wallZ - 1.8 },
+		Color = "WoodDark",
+		Material = "Wood",
+	})
+	B.part({
+		Name = "BackCabinetTop",
+		Size = { width + 0.4, 0.35, 3 },
+		Position = { 0, 5.65, wallZ - 1.8 },
+		Color = "Marble",
+		Material = "Marble",
+	})
+	for index = 1, 8 do
+		local x = -width / 2 + (index - 0.5) * width / 8
+		B.part({
+			Name = "CabinetDoor",
+			Size = { width / 8 - 1, 3.8, 0.15 },
+			Position = { x, 2.7, wallZ - 3.15 },
+			Color = "WoodMid",
+			Material = "Wood",
+			CanCollide = false,
+		})
+		B.part({
+			Name = "DoorKnob",
+			Size = { 0.3, 0.3, 0.3 },
+			Position = { x + (if index % 2 == 0 then -1.6 else 1.6), 3, wallZ - 3.3 },
+			Shape = "Ball",
+			Color = "Gold",
+			Material = "Metal",
+			CanCollide = false,
+		})
+	end
+	local colors = { "Bottle", "Amber", "Glass", "NeonTeal", "DustyPink" }
+	for row, y in { 7.6, 10.6, 13.6 } do
+		B.part({
+			Name = "Shelf",
+			Size = { width - 3, 0.3, 1.8 },
+			Position = { 0, y, wallZ - 1.4 },
+			Color = "Gold",
+			Material = "Metal",
+		})
+		for _, x in { -14, 0, 14 } do
 			B.part({
-				Name = "Bottle",
-				Size = { 1.4, 0.55, 0.55 },
-				Position = { -22.5 + (index - 1) * 3, y + 0.85, wallZ - 1.3 },
-				Rotation = { 0, 0, 90 },
-				Shape = "Cylinder",
-				Color = colors[(index + row) % #colors + 1],
-				Material = "Glass",
-				Transparency = 0.15,
+				Name = "Bracket",
+				Size = { 0.25, 0.9, 1.4 },
+				Position = { x, y - 0.6, wallZ - 1.2 },
+				Color = "Gold",
+				Material = "Metal",
 				CanCollide = false,
 			})
 		end
+		for index = 1, 13 do
+			F.bottle(
+				-18.75 + (index - 1) * 3.1,
+				y + 0.15,
+				wallZ - 1.4,
+				colors[(index + row) % #colors + 1],
+				(index + row) % 3 == 0
+			)
+		end
 	end
 
-	-- The counter (Shop).
-	local counterZ = wallZ - 12
+	-- The counter (Shop): framed wood front, marble top with a rounded front edge, gold foot rail on brackets.
+	local counterZ = wallZ - 11
 	B.part({
 		Name = "CounterBase",
 		Size = { width, 3.5, 3 },
@@ -707,26 +354,70 @@ local function bar()
 		Material = "WoodPlanks",
 		Tags = { "ShopCounter" },
 	})
+	for index = 1, 6 do
+		local x = -width / 2 + (index - 0.5) * width / 6
+		B.part({
+			Name = "CounterPanel",
+			Size = { width / 6 - 1.4, 2.2, 0.15 },
+			Position = { x, 1.85, counterZ - 1.55 },
+			Color = "Brick",
+			Material = "Wood",
+			CanCollide = false,
+		})
+		for _, edge in
+			{
+				{ size = { width / 6 - 1, 0.2, 0.15 }, y = 3.05 },
+				{ size = { width / 6 - 1, 0.2, 0.15 }, y = 0.65 },
+			}
+		do
+			B.part({
+				Name = "CounterMolding",
+				Size = edge.size,
+				Position = { x, edge.y, counterZ - 1.6 },
+				Color = "WoodMid",
+				Material = "Wood",
+				CanCollide = false,
+			})
+		end
+	end
 	B.part({
 		Name = "CounterTop",
-		Size = { width + 1, 0.4, 4 },
-		Position = { 0, 3.7, counterZ },
+		Size = { width + 1, 0.4, 3.6 },
+		Position = { 0, 3.7, counterZ + 0.2 },
+		Color = "Marble",
+		Material = "Marble",
+	})
+	B.part({
+		Name = "CounterEdge",
+		Size = { width + 1, 0.55, 0.55 },
+		Position = { 0, 3.68, counterZ - 1.75 },
+		Shape = "Cylinder",
 		Color = "Marble",
 		Material = "Marble",
 	})
 	B.part({
 		Name = "FootRail",
 		Size = { width, 0.35, 0.35 },
-		Position = { 0, 0.7, counterZ - 2 },
+		Position = { 0, 0.75, counterZ - 2.1 },
 		Shape = "Cylinder",
 		Color = "Gold",
 		Material = "Metal",
 		CanCollide = false,
 	})
+	for index = 1, 5 do
+		B.part({
+			Name = "RailBracket",
+			Size = { 0.2, 0.7, 0.6 },
+			Position = { -width / 2 + 2 + (index - 1) * (width - 4) / 4, 0.55, counterZ - 1.8 },
+			Color = "Gold",
+			Material = "Metal",
+			CanCollide = false,
+		})
+	end
 	B.sign({
-		Name = "ShopSign",
-		Size = { 10, 2, 0.2 },
-		Position = { 0, 1.9, counterZ - 1.6 },
+		Name = "ShopSign", -- over the back bar, under the title sign
+		Size = { 12, 1.6, 0.2 },
+		Position = { 0, 17.3, wallZ - 0.8 },
 		Color = "Black",
 		Material = "SmoothPlastic",
 		Key = "Lobby.Sign.Shop",
@@ -734,38 +425,23 @@ local function bar()
 		Glow = true,
 	})
 	-- Bar stools: sit facing the counter.
-	for index = 1, 8 do
-		local x = -21 + (index - 1) * 6
-		B.part({
-			Name = `StoolPole{index}`,
-			Size = { 0.6, 2.2, 0.6 },
-			Position = { x, 1.1, counterZ - 4 },
-			Color = "Gold",
-			Material = "Metal",
-		})
-		B.seat({
-			Name = `Stool{index}`,
-			Size = { 2, 0.5, 2 },
-			Position = { x, 2.45, counterZ - 4 },
-			Rotation = B.yaw("North"),
-			Color = "Sofa",
-			Material = "Leather",
-		})
+	for index = 1, 7 do
+		F.stool(`BarStool{index}`, -18 + (index - 1) * 6, counterZ - 4.2, "North", 2.1, "Sofa")
 	end
 
 	-- Map vote TVs hang over the bar; news TVs stand on the counter ends.
-	for index, x in { -16, 0, 16 } do
-		tv(`MapTV{index}`, { x, 15, counterZ }, { 8, 6.5, 5 }, "Map", index)
+	for index, x in { -15, 0, 15 } do
+		tv(`MapTV{index}`, { x, 14, counterZ }, { 8, 6.5, 5 }, "Map", index)
 		B.part({
 			Name = "TVMount",
-			Size = { 0.4, HEIGHT - 18.25, 0.4 },
-			Position = { x, (HEIGHT + 18.25) / 2, counterZ },
-			Color = "MetalDark",
+			Size = { 0.4, HEIGHT - 17.25, 0.4 },
+			Position = { x, (HEIGHT + 17.25) / 2, counterZ },
+			Color = "Gold",
 			Material = "Metal",
 			CanCollide = false,
 		})
 	end
-	for index, x in { -21.5, 21.5 } do
+	for index, x in { -19.5, 19.5 } do
 		tv(`NewsTV{index}`, { x, 5.9, counterZ }, { 5, 4, 4 }, "News", index)
 	end
 
@@ -777,6 +453,7 @@ local function bar()
 		end
 		B.part({ Name = "Torso", Size = { 2.4, 2.6, 1.2 }, Position = { 0, 3.9, npcZ }, Color = "Black" })
 		B.part({ Name = "Apron", Size = { 2, 2.4, 0.1 }, Position = { 0, 3.7, npcZ - 0.65 }, Color = "OffWhite" })
+		B.part({ Name = "BowTie", Size = { 0.9, 0.35, 0.15 }, Position = { 0, 5, npcZ - 0.68 }, Color = "Sofa" })
 		for _, x in { -1.6, 1.6 } do
 			B.part({ Name = "Arm", Size = { 0.8, 2.4, 0.8 }, Position = { x, 3.9, npcZ }, Color = "DustyPink" })
 		end
@@ -791,8 +468,8 @@ local function bar()
 	end, { Role = "Shop" }):AddTag("ShopNPC")
 
 	-- Between the TVs, not in front of them.
-	for _, x in { -8, 8 } do
-		lamp({ x, 19.5, counterZ - 5 }, "WarmLight", 28)
+	for _, x in { -7.5, 7.5 } do
+		F.pendant(x, 18.5, counterZ - 5, HEIGHT, 26)
 	end
 end
 
@@ -824,6 +501,17 @@ local function arenaDoor()
 				Color = "LaneYellow",
 				Material = "Metal",
 			})
+			for rivet = 1, 5 do
+				B.part({
+					Name = "Rivet",
+					Size = { 0.3, 0.3, 0.3 },
+					Position = { x - 0.95, rivet * 2.6, side * (PAD_SIZE[2] / 2 + 0.6) },
+					Shape = "Ball",
+					Color = "MetalDark",
+					Material = "Metal",
+					CanCollide = false,
+				})
+			end
 		end
 		B.part({
 			Name = "Lintel",
@@ -909,16 +597,30 @@ local function arenaDoor()
 			Color = if index == 1 then "RustOrange" else "Teal",
 			Material = "CorrodedMetal",
 		})
+		for _, y in { 0.9, 3.1 } do
+			B.part({
+				Name = "BarrelHoop",
+				Size = { 0.2, 2.75, 2.75 },
+				Position = { HALF_X - 2.2, y, z },
+				Rotation = { 0, 0, 90 },
+				Shape = "Cylinder",
+				Color = "MetalDark",
+				Material = "Metal",
+				CanCollide = false,
+			})
+		end
 	end
-	B.part({
-		Name = "Dartboard",
-		Size = { 0.3, 2.6, 2.6 },
-		Position = { HALF_X - 0.2, 9, 26 },
-		Shape = "Cylinder",
-		Color = "Black",
-		Material = "SmoothPlastic",
-		CanCollide = false,
-	})
+	for index, ring in { { 2.6, "Black" }, { 2, "OffWhite" }, { 1.3, "Sofa" }, { 0.5, "Black" } } do
+		B.part({
+			Name = `Dartboard{index}`,
+			Size = { 0.1 + index * 0.05, ring[1], ring[1] },
+			Position = { HALF_X - 0.6, 9, 26 },
+			Shape = "Cylinder",
+			Color = ring[2],
+			Material = "SmoothPlastic",
+			CanCollide = false,
+		})
+	end
 end
 
 local function locker()
@@ -939,15 +641,49 @@ local function locker()
 				Color = "WoodDark",
 				Material = "Wood",
 			})
+			B.part({
+				Name = "SideTrim",
+				Size = { 10, 0.25, 1.1 },
+				Position = { x, 6.1, z + side * 6 },
+				Color = "Gold",
+				Material = "Metal",
+				CanCollide = false,
+			})
 		end
-		B.part({ Name = "Top", Size = { 12, 1, 14 }, Position = { x, 10.5, z }, Color = "Gold", Material = "Metal" })
+		B.part({ Name = "Top", Size = { 12, 1, 14 }, Position = { x, 10.5, z }, Color = "WoodDark", Material = "Wood" })
+		B.part({
+			Name = "TopTrim",
+			Size = { 12.2, 0.25, 14.2 },
+			Position = { x, 10, z },
+			Color = "Gold",
+			Material = "Metal",
+		})
 		for index = 1, 5 do
+			local doorZ = z + (index - 3) * 2.2
 			B.part({
 				Name = "LockerDoor",
-				Size = { 1.6, 7, 2 },
-				Position = { x - 4.2, 3.5, z + (index - 3) * 2.2 },
+				Size = { 0.4, 7, 2 },
+				Position = { x - 4.8, 3.6, doorZ },
 				Color = if index % 2 == 0 then "Teal" else "TealDark",
-				Material = "DiamondPlate",
+				Material = "Metal",
+			})
+			for vent = 1, 3 do
+				B.part({
+					Name = "Vent",
+					Size = { 0.1, 0.12, 1.2 },
+					Position = { x - 4.57, 6.2 - vent * 0.3, doorZ },
+					Color = "Black",
+					Material = "Metal",
+					CanCollide = false,
+				})
+			end
+			B.part({
+				Name = "Handle",
+				Size = { 0.2, 0.9, 0.2 },
+				Position = { x - 4.5, 3.6, doorZ + 0.6 },
+				Color = "Gold",
+				Material = "Metal",
+				CanCollide = false,
 			})
 		end
 		B.sign({
@@ -969,28 +705,54 @@ local function jukebox()
 	B.model("CodesJukebox", function()
 		local body = B.part({
 			Name = "Body",
-			Size = { 5, 7, 3.5 },
-			Position = { x, 3.5, z },
+			Size = { 5, 6, 3.5 },
+			Position = { x, 3, z },
 			Rotation = B.yaw("East"),
 			Color = "RustDark",
 			Material = "SmoothPlastic",
+		})
+		B.part({
+			Name = "Arch",
+			Size = { 3.5, 5, 5 }, -- a cylinder front to back: the rounded top
+			Position = { x, 6, z },
+			Shape = "Cylinder",
+			Color = "RustDark",
+			Material = "SmoothPlastic",
+		})
+		B.part({
+			Name = "ArchGlass",
+			Size = { 0.2, 3.6, 3.6 },
+			Position = { x + 1.8, 6, z },
+			Shape = "Cylinder",
+			Color = "NeonOrange",
+			Material = "Neon",
+			Transparency = 0.3,
+			CanCollide = false,
 		})
 		for index, color in { "NeonPink", "NeonTeal", "NeonOrange" } do
 			B.part({
 				Name = "Stripe",
 				Size = { 4.2, 0.3, 0.2 },
-				Position = { x + 1.85, 1.5 + index * 1.4, z },
+				Position = { x + 1.85, 0.8 + index * 1.2, z },
 				Rotation = B.yaw("East"),
 				Color = color,
 				Material = "Neon",
 				CanCollide = false,
 			})
 		end
+		B.part({
+			Name = "Grille",
+			Size = { 0.15, 1.2, 3 },
+			Position = { x + 1.8, 0.7, z },
+			Color = "Gold",
+			Material = "Metal",
+			CanCollide = false,
+		})
 		B.light(body, "NeonPink", 12, 1.5)
 		B.sign({
 			Name = "CodesSign",
 			Size = { 6, 1.6, 0.4 },
-			Position = { x + 0.5, 8.4, z },
+			Position = { x + 0.5, 9.8, z },
 			Rotation = B.yaw("East"),
 			Color = "Black",
 			Material = "SmoothPlastic",
@@ -1001,9 +763,9 @@ local function jukebox()
 	end):AddTag("CodesJukebox")
 end
 
--- The quest board: a framed cork board with pinned notes (like the bunk corner reference).
+-- The quest board: a framed cork board with pinned notes.
 local function questBoard()
-	local x, z = -HALF_X + 0.8, -6
+	local x, z = -HALF_X + 0.8, -8
 	B.model("QuestBoard", function()
 		B.part({
 			Name = "Frame",
@@ -1033,7 +795,7 @@ local function questBoard()
 				Name = `Pin{index}`,
 				Size = { 0.2, 0.3, 0.3 },
 				Position = { x + 0.45, 9.6 + note[2], z + note[1] },
-				Color = "VendRed",
+				Color = "Red",
 				Material = "SmoothPlastic",
 				CanCollide = false,
 			})
@@ -1051,36 +813,57 @@ local function questBoard()
 	end):AddTag("QuestBoard")
 end
 
--- Three tall dark leaderboard boards on the south wall (reference: leaderboard-boards.png): a cream title with a thin
--- gold underline over the screen the leaderboard rows are drawn on (LeaderboardController).
+-- Three tall dark leaderboard boards on the south wall (reference: leaderboard-boards.png): a wood frame with gold
+-- corners, a cream title with a thin gold underline, and the screen the rows are drawn on (LeaderboardController).
 local function leaderboards()
 	local z = -HALF_Z + 0.5
 	for index, board in
 		{
-			{ x = -22, stat = "Wins" },
+			{ x = -20, stat = "Wins" },
 			{ x = 0, stat = "KOs" },
-			{ x = 22, stat = "Level" },
+			{ x = 20, stat = "Level" },
 		}
 	do
 		B.model(`Leaderboard{board.stat}`, function()
 			B.part({
 				Name = "Frame",
-				Size = { 17, 22, 1 },
-				Position = { board.x, 13, z },
+				Size = { 17, 21, 1 },
+				Position = { board.x, 12.5, z },
 				Color = "BoardDark",
 				Material = "SmoothPlastic",
 			})
-			B.part({
-				Name = "Cap",
-				Size = { 17.6, 0.6, 1.4 },
-				Position = { board.x, 24.2, z + 0.1 },
-				Color = "WoodDark",
-				Material = "Wood",
-			})
+			for _, edge in
+				{
+					{ size = { 17.6, 0.6, 1.3 }, at = { 0, 23.2 } },
+					{ size = { 17.6, 0.6, 1.3 }, at = { 0, 1.8 } },
+					{ size = { 0.6, 21.4, 1.3 }, at = { -8.8, 12.5 } },
+					{ size = { 0.6, 21.4, 1.3 }, at = { 8.8, 12.5 } },
+				}
+			do
+				B.part({
+					Name = "FrameWood",
+					Size = edge.size,
+					Position = { board.x + edge.at[1], edge.at[2], z + 0.15 },
+					Color = "WoodDark",
+					Material = "Wood",
+				})
+			end
+			for _, cx in { -8.8, 8.8 } do
+				for _, cy in { 1.8, 23.2 } do
+					B.part({
+						Name = "Corner",
+						Size = { 0.9, 0.9, 0.2 },
+						Position = { board.x + cx, cy, z + 0.85 },
+						Color = "Gold",
+						Material = "Metal",
+						CanCollide = false,
+					})
+				end
+			end
 			B.sign({
 				Name = "Title",
 				Size = { 15.5, 2.4, 0.2 },
-				Position = { board.x, 21.8, z + 0.6 },
+				Position = { board.x, 21.1, z + 0.6 },
 				Rotation = B.yaw("North"),
 				Color = "BoardDark",
 				Material = "SmoothPlastic",
@@ -1091,7 +874,7 @@ local function leaderboards()
 			B.part({
 				Name = "Underline",
 				Size = { 10, 0.15, 0.2 },
-				Position = { board.x, 20.4, z + 0.65 },
+				Position = { board.x, 19.7, z + 0.65 },
 				Color = "Gold",
 				Material = "Neon",
 				CanCollide = false,
@@ -1099,8 +882,8 @@ local function leaderboards()
 			})
 			B.part({
 				Name = "Screen",
-				Size = { 15.5, 17, 0.2 },
-				Position = { board.x, 11.3, z + 0.6 },
+				Size = { 15.5, 16.2, 0.2 },
+				Position = { board.x, 11, z + 0.6 },
 				Rotation = B.yaw("North"),
 				Color = "BoardDark",
 				Material = "SmoothPlastic",
@@ -1116,152 +899,117 @@ local function spawns()
 		B.spawnLocation({
 			Name = `LobbySpawn{index}`,
 			Size = { 6, 1, 6 },
-			Position = { x, 0.5, -HALF_Z + 15 },
+			Position = { x, 0.5, -HALF_Z + 13 },
 			Rotation = B.yaw("North"), -- players spawn facing the bar
 			Color = "Teal",
 			Material = "SmoothPlastic",
 			Tags = { "LobbySpawn" },
 		})
 	end
-	lamp({ 0, 20, -HALF_Z + 15 }, "WarmLight", 30)
-	-- The street door the crew comes in through (decor), with vending machines and a plant beside it.
+	F.pendant(0, 18, -HALF_Z + 13, HEIGHT, 30)
+	-- The street door the crew comes in through (decor): a panelled door in a wood frame with a lamp over it.
+	local doorX = 46
 	B.part({
 		Name = "StreetDoor",
 		Size = { 7, 10, 0.4 },
-		Position = { 54, 5, -HALF_Z + 0.2 },
+		Position = { doorX, 5, -HALF_Z + 0.7 },
 		Color = "TealDark",
 		Material = "Metal",
 	})
+	for _, y in { 2.8, 7.2 } do
+		B.part({
+			Name = "DoorPanel",
+			Size = { 5.4, 3.4, 0.15 },
+			Position = { doorX, y, -HALF_Z + 0.95 },
+			Color = "Teal",
+			Material = "Metal",
+			CanCollide = false,
+		})
+	end
 	B.part({
-		Name = "StreetDoorLight",
-		Size = { 1.6, 0.6, 0.8 },
-		Position = { 54, 11, -HALF_Z + 0.4 },
-		Color = "LaneYellow",
-		Material = "Neon",
+		Name = "DoorHandle",
+		Size = { 0.3, 0.3, 0.4 },
+		Position = { doorX + 2.6, 5, -HALF_Z + 1.1 },
+		Shape = "Ball",
+		Color = "Gold",
+		Material = "Metal",
 		CanCollide = false,
 	})
-	vendingMachine("VendingMachine1", 36, -HALF_Z + 2.2, "North")
-	vendingMachine("VendingMachine2", 42, -HALF_Z + 2.2, "North")
-	plant(49, -HALF_Z + 3)
-end
-
--- Booths in the north corners: a table between two benches that face each other.
-local function booth(name: string, x: number, z: number)
-	B.model(name, function()
+	for _, side in { -1, 1 } do
 		B.part({
-			Name = "Table",
-			Size = { 6, 0.4, 3.4 },
-			Position = { x, 3, z },
-			Color = "Marble",
-			Material = "Marble",
-		})
-		B.part({ Name = "TableLeg", Size = { 0.6, 3, 0.6 }, Position = { x, 1.5, z }, Color = "Gold" })
-	end)
-	sofa(`{name}BenchSouth`, x, z - 3.6, "North", 2, "Sofa")
-	sofa(`{name}BenchNorth`, x, z + 3.6, "South", 2, "Sofa")
-	lamp({ x, 16, z }, "WarmLight", 22)
-end
-
-local function lounge()
-	-- The sitting area (reference: lobby-lounge.jpg).
-	local rugX, rugZ = -32, -8
-	rug(rugX, rugZ, 34, 26)
-	coffeeTable(rugX, rugZ)
-	sofa("Sofa", rugX, rugZ - 8.5, "North", 3, "Sofa")
-	sofa("ArmchairWest", rugX - 12, rugZ + 1, "East", 1, "Sofa")
-	sofa("ArmchairEast", rugX + 12, rugZ + 1, "West", 1, "Sofa")
-	floorLamp(rugX - 9, rugZ - 10)
-	floorLamp(rugX + 9, rugZ - 10)
-	plant(rugX - 19, rugZ - 12)
-	plant(rugX + 19, rugZ + 13)
-	lamp({ rugX, 18, rugZ }, "WarmLight", 30)
-
-	-- The bunk corner (reference: lobby-bunk-corner.jpg): kitchen on the west wall, bunks against the south wall.
-	kitchen(-HALF_X + 2.1, -32.5, -18.5) -- between two wall pillars
-	bunkBed("BunkBed1", -60, -HALF_Z + 2.6, "Blanket")
-	bunkBed("BunkBed2", -36, -HALF_Z + 2.6, "BlanketRed")
-	lamp({ -52, 18, -38 }, "WarmLight", 24)
-
-	-- Pool table with its own lamp.
-	local poolX, poolZ = 24, -10
-	B.model("PoolTable", function()
-		B.part({
-			Name = "Body",
-			Size = { 14, 2.8, 8 },
-			Position = { poolX, 1.4, poolZ },
+			Name = "DoorFrame",
+			Size = { 0.8, 11, 1 },
+			Position = { doorX + side * 3.9, 5.5, -HALF_Z + 0.5 },
 			Color = "WoodDark",
 			Material = "Wood",
 		})
-		B.part({
-			Name = "Felt",
-			Size = { 13, 0.2, 7 },
-			Position = { poolX, 2.9, poolZ },
-			Color = "Felt",
-			Material = "Fabric",
-		})
-		for index, ball in { { -3, 1, "NeonOrange" }, { -2, -1.5, "OffWhite" }, { 2, 0.5, "Black" }, { 4, -1, "Teal" } } do
-			B.part({
-				Name = `Ball{index}`,
-				Size = { 0.6, 0.6, 0.6 },
-				Position = { poolX + ball[1], 3.3, poolZ + ball[2] },
-				Shape = "Ball",
-				Color = ball[3],
-				CanCollide = false,
-			})
-		end
-	end)
-	lamp({ poolX, 15, poolZ }, "WarmLight", 24)
-
-	-- High tables with stools between the lounge and the arena door.
-	for index, spot in { { 16, 16 }, { 34, 16 } } do
-		B.model(`HighTable{index}`, function()
-			B.part({
-				Name = "Top",
-				Size = { 0.3, 3.4, 3.4 },
-				Position = { spot[1], 3.8, spot[2] },
-				Rotation = { 0, 0, 90 },
-				Shape = "Cylinder",
-				Color = "Marble",
-				Material = "Marble",
-			})
-			B.part({
-				Name = "Pole",
-				Size = { 0.5, 3.7, 0.5 },
-				Position = { spot[1], 1.85, spot[2] },
-				Color = "Gold",
-				Material = "Metal",
-			})
-		end)
-		for side, facing in { "East", "West" } do
-			local x = spot[1] + (if side == 1 then -2.8 else 2.8)
-			B.part({
-				Name = `HighStoolPole{index}{side}`,
-				Size = { 0.5, 2.2, 0.5 },
-				Position = { x, 1.1, spot[2] },
-				Color = "Gold",
-				Material = "Metal",
-			})
-			B.seat({
-				Name = `HighStool{index}{side}`,
-				Size = { 1.9, 0.5, 1.9 },
-				Position = { x, 2.45, spot[2] },
-				Rotation = B.yaw(facing),
-				Color = "Sofa",
-				Material = "Leather",
-			})
-		end
 	end
-	lamp({ 25, 19, 16 }, "WarmLight", 26)
-	plant(6, 24)
+	B.part({
+		Name = "DoorHead",
+		Size = { 8.6, 0.8, 1 },
+		Position = { doorX, 10.6, -HALF_Z + 0.5 },
+		Color = "WoodDark",
+		Material = "Wood",
+	})
+	F.sconce(doorX, 12.5, -HALF_Z + 0.1, "North", true)
+	F.plant(31, -HALF_Z + 3)
+end
 
-	booth("BoothWest", -54, HALF_Z - 9)
-	booth("BoothEast", 52, HALF_Z - 9)
+-- Booths in the north corners: a marble table between two tufted benches that face each other.
+local function booth(name: string, x: number, z: number)
+	F.boothTable(`{name}Table`, x, z)
+	F.sofa(
+		`{name}BenchSouth`,
+		x,
+		z - 3.8,
+		"North",
+		{ Seats = 2, Color = "Sofa", Material = "Leather", TallBack = true }
+	)
+	F.sofa(
+		`{name}BenchNorth`,
+		x,
+		z + 3.8,
+		"South",
+		{ Seats = 2, Color = "Sofa", Material = "Leather", TallBack = true }
+	)
+	F.pendant(x, 15, z, HEIGHT, 22)
+end
+
+local function lounge()
+	-- The sitting area: a rug with a gold ring, a black marble table, a red tufted sofa and two armchairs.
+	local rugX, rugZ = -27, -6
+	F.rug(rugX, rugZ, 30, 24, 15)
+	F.roundTable("CoffeeTable", rugX, rugZ, 6.5, 2.4)
+	F.sofa("Sofa", rugX, rugZ - 8, "North", { Seats = 3, Color = "Sofa" })
+	F.sofa("ArmchairWest", rugX - 11.5, rugZ + 0.5, "East", { Seats = 1, Color = "Sofa" })
+	F.sofa("ArmchairEast", rugX + 11.5, rugZ + 0.5, "West", { Seats = 1, Color = "Sofa" })
+	F.floorLamp(rugX - 9, rugZ - 9.5)
+	F.floorLamp(rugX + 9, rugZ - 9.5)
+	F.plant(rugX - 17, rugZ - 11)
+	F.plant(rugX + 17, rugZ + 12)
+	F.pendant(rugX, 17, rugZ, HEIGHT, 30)
+
+	-- Pool table with its own lamp.
+	F.poolTable(20, -8, "South")
+	F.pendant(20, 14, -8, HEIGHT, 24)
+
+	-- High tables with stools between the bar and the arena door.
+	for index, spot in { { 14, 13 }, { 29, 13 } } do
+		F.roundTable(`HighTable{index}`, spot[1], spot[2], 3.4, 3.9)
+		F.stool(`HighStool{index}West`, spot[1] - 2.9, spot[2], "East", 2.1, "Sofa")
+		F.stool(`HighStool{index}East`, spot[1] + 2.9, spot[2], "West", 2.1, "Sofa")
+	end
+	F.pendant(21.5, 18, 13, HEIGHT, 26)
+	F.plant(4, 20)
+
+	booth("BoothWest", -41.5, HALF_Z - 8.5) -- clear of the locker booth and the north wall pillars
+	booth("BoothEast", 41.5, HALF_Z - 8.5)
 
 	-- Crates: the hideout's junk, in the south-east corner.
 	for index, crate in
 		{
 			{ HALF_X - 3, -HALF_Z + 3, 4 },
-			{ HALF_X - 3, -HALF_Z + 7.5, 3 },
+			{ HALF_X - 8, -HALF_Z + 7.5, 3 },
 			{ HALF_X - 7.5, -HALF_Z + 3, 3 },
 			{ HALF_X - 3.2, -HALF_Z + 3, 2.5, 4 },
 		}

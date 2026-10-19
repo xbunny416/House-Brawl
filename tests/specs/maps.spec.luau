@@ -335,9 +335,9 @@ return {
 			expect.truthy(stats[stat], `leaderboard {stat}`)
 		end
 	end,
-	["lobby: 50% bigger than the first Hideout (92 × 68 → 138 × 102)"] = function()
-		expect.equal(Hideout.Inner[1], 138)
-		expect.equal(Hideout.Inner[2], 102)
+	["lobby: 25% bigger than the first Hideout (92 × 68 → 115 × 85; 138 × 102 was too big)"] = function()
+		expect.equal(Hideout.Inner[1], 115)
+		expect.equal(Hideout.Inner[2], 85)
 		local north = lobby:FindFirstChild("NorthWall", true)
 		expect.near(north.Size.X, Hideout.Inner[1] + 4, 0.001, "north wall spans the room")
 	end,
