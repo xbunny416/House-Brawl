@@ -1,8 +1,9 @@
 --!strict
 --[[
 	CrumbleService — crumbling platforms (bible §3.2). From Round.Crumble.StartTime seconds into a round, every
-	Interval seconds one random outer platform (CanFall attribute) gets a WarningTime warning, then stops being solid
-	(everyone and everything on it falls) and is removed after FallTime. The center never falls and at least
+	Interval seconds one platform that can fall (CanFall attribute) gets a WarningTime warning, then stops being solid
+	(everyone and everything on it falls) and is removed after FallTime. The arena closes in: the platform comes from
+	the outer ring, the ones farthest from the arena's centre (Crumble.RingWidth). The center never falls and at least
 	MinPlatformsRemaining platforms always stay (Server/Round/CrumbleRules).
 	Attributes: Crumbling = true when the warning starts (its spawn points and prop spots stop being used,
 	MapService.getArenaMarkers), Falling = true when it gives way. Clients draw the red flash, the shake and the
@@ -65,11 +66,15 @@ end
 local function standingPlatforms(): ({ CrumbleRules.Platform }, { [string]: Model })
 	local entries: { CrumbleRules.Platform } = {}
 	local byId: { [string]: Model } = {}
+	local origin = Config.Maps.ArenaOrigin
 	for _, platform in MapService.getPlatforms() do
+		local position = platform:GetPivot().Position
 		table.insert(entries, {
 			Id = platform.Name,
 			CanFall = platform:GetAttribute("CanFall") == true,
 			Fallen = platform:GetAttribute("Crumbling") == true,
+			-- On the ground plane, from the arena's centre (where the centre platform is built).
+			Distance = Vector2.new(position.X - origin[1], position.Z - origin[3]).Magnitude,
 		})
 		byId[platform.Name] = platform
 	end

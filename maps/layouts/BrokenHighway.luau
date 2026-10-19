@@ -1,12 +1,12 @@
 --!strict
 --[[
-	Map 1: Broken Highway — shattered overpass chunks over a toxic void (bible §3.2), twice the first size with four
-	layers (owner, 2026-10-17).
+	Map 1: Broken Highway — shattered overpass chunks over a toxic void (bible §3.2), four times the first size with four
+	layers (owner: twice the size with more layers 2026-10-17, every platform doubled again 2026-10-20).
 
-	Platforms (studs; X/Z footprint, top height):
-	  Center 120x80 (never falls) with a raised 36x20 overpass deck (+6, a ramp on each end) ·
-	  East/West/North/South 48x48 · four 24x24 corner ledges (+6) · two 20x20 peaks (+12) beyond the NE / SW
-	  ledges · two 28x28 low slabs beyond East (−4) and West (−6).
+	Platforms (studs; X/Z footprint, top height), listed below at the 2026-10-17 size and doubled by Arena.grow:
+	  Center 240x160 (never falls) with a raised 72x40 overpass deck (+6, a ramp on each end) ·
+	  East/West/North/South 96x96 · four 48x48 corner ledges (+6) · two 40x40 peaks (+12) beyond the NE / SW
+	  ledges · two 56x56 low slabs beyond East (−4) and West (−6).
 	  Gaps to the nearest platform: East 11, West 9, North 12, South 10, ledges / peaks 9.9 (diagonal), lows 10 — all
 	  within 8-14, crossable with jump + dash; every climb is at most 6 studs.
 	Gameplay markers ride on their platform so they fall with it: 16 spawns, 24 loose prop spots,
@@ -49,7 +49,10 @@ end
 local center = platform("Center", "Center", { 0, 0 }, { 120, 80 }, 0, 4, "Asphalt", "Asphalt")
 center.Deck = { Size = { 36, 20 }, Height = 6, Ramp = 12, RampWidth = 12 }
 
-Layout.Platforms = {
+-- Laid out at the 2026-10-17 size; Arena.grow doubles every platform again (owner, 2026-10-20), keeping the gaps.
+local GROWTH = 2
+
+Layout.Platforms = Arena.grow({
 	center,
 	platform("East", "Side", { 95, 0 }, { 48, 48 }, 2, 3, "Asphalt", "Asphalt"),
 	platform("West", "Side", { -93, 0 }, { 48, 48 }, 0, 3, "Asphalt", "Asphalt"),
@@ -63,67 +66,70 @@ Layout.Platforms = {
 	platform("PeakSW", "Peak", { -108, -88 }, { 20, 20 }, 12, 2, "SignGreen", "Metal"),
 	platform("LowEast", "Low", { 143, 0 }, { 28, 28 }, -4, 3, "AsphaltDark", "Asphalt"),
 	platform("LowWest", "Low", { -141, 0 }, { 28, 28 }, -6, 3, "AsphaltDark", "Asphalt"),
-}
+}, GROWTH)
 
-Layout.Contents = {
-	Center = {
-		Spawns = { { -48, -28 }, { 48, -28 }, { -48, 28 }, { 48, 28 }, { 0, -30 }, { 0, 30 } },
-		Props = {
-			{ -32, -20 },
-			{ -12, -24 },
-			{ 16, -20 },
-			{ 36, -8 },
-			{ -36, 8 },
-			{ -16, 22 },
-			{ 12, 26 },
-			{ 32, 18 },
+Layout.Contents = Arena.growContents(
+	{
+		Center = {
+			Spawns = { { -48, -28 }, { 48, -28 }, { -48, 28 }, { 48, 28 }, { 0, -30 }, { 0, 30 } },
+			Props = {
+				{ -32, -20 },
+				{ -12, -24 },
+				{ 16, -20 },
+				{ 36, -8 },
+				{ -36, 8 },
+				{ -16, 22 },
+				{ 12, 26 },
+				{ 32, 18 },
+			},
+			Structures = {
+				{ Type = "WreckedCar", At = { -30, 20 }, Yaw = 15 },
+				{ Type = "VendingMachine", At = { 28, -28 }, Yaw = 180 },
+				{ Type = "RoadBarrierStack", At = { -46, 0 }, Yaw = 90 },
+			},
 		},
-		Structures = {
-			{ Type = "WreckedCar", At = { -30, 20 }, Yaw = 15 },
-			{ Type = "VendingMachine", At = { 28, -28 }, Yaw = 180 },
-			{ Type = "RoadBarrierStack", At = { -46, 0 }, Yaw = 90 },
+		East = {
+			Spawns = { { -12, -16 }, { 12, 16 } },
+			Props = { { -12, 12 }, { 4, -14 }, { 16, -4 } },
+			Explosive = { 0, 0 },
+			Structures = { { Type = "RoadBarrierStack", At = { 14, 6 }, Yaw = 90 } },
 		},
-	},
-	East = {
-		Spawns = { { -12, -16 }, { 12, 16 } },
-		Props = { { -12, 12 }, { 4, -14 }, { 16, -4 } },
-		Explosive = { 0, 0 },
-		Structures = { { Type = "RoadBarrierStack", At = { 14, 6 }, Yaw = 90 } },
-	},
-	West = {
-		Spawns = { { -12, -16 }, { 16, 16 } },
-		Props = { { 12, -8 }, { -18, -4 }, { 0, 14 } },
-		Explosive = { 4, -16 },
-		Structures = { { Type = "WreckedCar", At = { -4, 6 }, Yaw = 90 } },
-	},
-	North = {
-		Spawns = { { -14, -12 }, { 14, 14 } },
-		Props = { { 12, -10 }, { -12, 12 } },
-		Explosive = { 0, 0 },
-		Structures = { { Type = "VendingMachine", At = { -16, 0 }, Yaw = 90 } },
-	},
-	South = {
-		Spawns = { { 14, 12 }, { -14, -14 } },
-		Props = { { -12, 10 }, { 12, -10 } },
-		Explosive = { 0, 0 },
-		Structures = { { Type = "RoadBarrierStack", At = { -14, 0 }, Yaw = 0 } },
-	},
-	LedgeNE = { Props = { { -6, -6 } } },
-	LedgeNW = { Props = { { 6, -6 } } },
-	LedgeSE = { Props = { { -6, 6 } } },
-	LedgeSW = { Props = { { 6, 6 } } },
-	LowEast = {
-		Spawns = { { -6, -6 } },
-		Props = { { 6, 8 } },
-		Explosive = { 8, -8 },
-		Structures = { { Type = "WreckedCar", At = { -7, 7 }, Yaw = 0 } },
-	},
-	LowWest = {
-		Spawns = { { 6, 6 } },
-		Props = { { -6, -8 } },
-		Explosive = { -8, 8 },
-	},
-} :: { [string]: Contents }
+		West = {
+			Spawns = { { -12, -16 }, { 16, 16 } },
+			Props = { { 12, -8 }, { -18, -4 }, { 0, 14 } },
+			Explosive = { 4, -16 },
+			Structures = { { Type = "WreckedCar", At = { -4, 6 }, Yaw = 90 } },
+		},
+		North = {
+			Spawns = { { -14, -12 }, { 14, 14 } },
+			Props = { { 12, -10 }, { -12, 12 } },
+			Explosive = { 0, 0 },
+			Structures = { { Type = "VendingMachine", At = { -16, 0 }, Yaw = 90 } },
+		},
+		South = {
+			Spawns = { { 14, 12 }, { -14, -14 } },
+			Props = { { -12, 10 }, { 12, -10 } },
+			Explosive = { 0, 0 },
+			Structures = { { Type = "RoadBarrierStack", At = { -14, 0 }, Yaw = 0 } },
+		},
+		LedgeNE = { Props = { { -6, -6 } } },
+		LedgeNW = { Props = { { 6, -6 } } },
+		LedgeSE = { Props = { { -6, 6 } } },
+		LedgeSW = { Props = { { 6, 6 } } },
+		LowEast = {
+			Spawns = { { -6, -6 } },
+			Props = { { 6, 8 } },
+			Explosive = { 8, -8 },
+			Structures = { { Type = "WreckedCar", At = { -7, 7 }, Yaw = 0 } },
+		},
+		LowWest = {
+			Spawns = { { 6, 6 } },
+			Props = { { -6, -8 } },
+			Explosive = { -8, 8 },
+		},
+	} :: { [string]: Contents },
+	GROWTH
+)
 
 -- Lowest platform bottom (relative to the arena origin) minus the kill depth.
 function Layout.killY(): number
@@ -153,12 +159,12 @@ local function centerDecor(platform: Platform)
 			CanCollide = false,
 		})
 	end
-	-- Low guardrail stubs: knockback still carries players over them.
+	-- Low guardrail stubs: knockback still carries players over them (laid out for the 2026-10-17 deck: × GROWTH).
 	for _, rail in
 		{
-			{ from = 20, to = 44, z = halfZ - 0.6 },
-			{ from = -44, to = -24, z = -halfZ + 0.6 },
-			{ from = -16, to = 0, z = halfZ - 0.6 },
+			{ from = 20 * GROWTH, to = 44 * GROWTH, z = halfZ - 0.6 },
+			{ from = -44 * GROWTH, to = -24 * GROWTH, z = -halfZ + 0.6 },
+			{ from = -16 * GROWTH, to = 0, z = halfZ - 0.6 },
 		}
 	do
 		local length = rail.to - rail.from
@@ -179,20 +185,22 @@ local function centerDecor(platform: Platform)
 			})
 		end
 	end
-	-- Cracks.
-	for _, crack in
-		{ { -8, 0, -18, 25 }, { 24, 0, 18, -40 }, { -40, 0, -4, 70 }, { 44, 0, -16, 10 }, { -24, 0, 30, -60 } }
-	do
-		B.part({
-			Name = "Crack",
-			Size = { 6, 0.08, 0.3 },
-			Position = { crack[1], 0.04, crack[3] },
-			Rotation = { 0, crack[4], 0 },
-			Color = "AsphaltDark",
-			Material = "SmoothPlastic",
-			CanCollide = false,
-		})
-	end
+	-- Cracks (laid out for the 2026-10-17 deck: spread).
+	B.spread(GROWTH, function()
+		for _, crack in
+			{ { -8, 0, -18, 25 }, { 24, 0, 18, -40 }, { -40, 0, -4, 70 }, { 44, 0, -16, 10 }, { -24, 0, 30, -60 } }
+		do
+			B.part({
+				Name = "Crack",
+				Size = { 6, 0.08, 0.3 },
+				Position = { crack[1], 0.04, crack[3] },
+				Rotation = { 0, crack[4], 0 },
+				Color = "AsphaltDark",
+				Material = "SmoothPlastic",
+				CanCollide = false,
+			})
+		end
+	end)
 end
 
 local function exitSign(at: { number }, facing: string)
@@ -230,7 +238,7 @@ local function decorate(platform: Platform)
 	if platform.Kind ~= "Ledge" and platform.Kind ~= "Peak" then
 		local diameter = if platform.Kind == "Center" then 10 else 6
 		local length = if platform.Kind == "Center" then 56 else 36
-		local offsets = if platform.Kind == "Center" then { -36, 0, 36 } else { 0 }
+		local offsets = if platform.Kind == "Center" then { -36 * GROWTH, 0, 36 * GROWTH } else { 0 }
 		for _, offset in offsets do
 			B.part({
 				Name = "Pillar",
@@ -259,8 +267,8 @@ local function decorate(platform: Platform)
 end
 
 local function scenery(killY: number)
-	-- Floating debris chunks around the arena (laid out for the first, half-size arena).
-	B.spread(2, function()
+	-- Floating debris chunks around the arena (laid out for the first arena, a quarter of today's).
+	B.spread(2 * GROWTH, function()
 		for index, chunk in
 			{
 				{ -95, -18, 40, 22, 14, 12 },
@@ -284,7 +292,7 @@ local function scenery(killY: number)
 	-- Toxic sludge far below: the green glow under the arena.
 	B.part({
 		Name = "Sludge",
-		Size = { 1400, 1, 1400 },
+		Size = { 2800, 1, 2800 },
 		Position = { 0, killY - 30, 0 },
 		Color = "ToxicGreen",
 		Material = "Neon",

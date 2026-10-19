@@ -32,8 +32,8 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   coins + level block, Settings tabs with the promo code, Daily reward + Quests tabs, "Coins" and "Inventory" on
   screen) is done; part 2 (Game in progress card with Watch, bottom-edge key hints) is done; 3/6 the style roll is
   done (owner-side: create the StyleSlot product, declare paid random items on the maturity form); 4/6 part 1 (the
-  lobby 25% bigger, the reference's style with detailed furniture, seats) is done; part 2 (TV news, leaderboard board look) is done; next 5/6
-  the arenas doubled again with the crumble closing in toward the centre.
+  lobby 25% bigger, the reference's style with detailed furniture, seats) is done; part 2 (TV news, leaderboard board look) is done; 5/6 (every
+  arena platform doubled again, the crumble closing in toward the centre) is done; next 6/6 the lobby spin wheel.
 
 ## How this repo works
 
@@ -308,6 +308,7 @@ any errors are fixed before the next item.
 | 2026-10-19 | Lighting fix (owner: "no technology in lighting"): Roblox replaced Lighting.Technology with LightingStyle, so the project sets LightingStyle = Realistic (the Future look) instead | #61 |
 | 2026-10-19 | Owner's fix list 4/6, part 2 — lobby news TVs (NewsController: a "JUNKYARD NEWS" channel on both NewsScreen TVs — red banner with a blinking LIVE dot, a headline every 8 s with a burst of static, a scrolling ticker, CRT scanlines; 12 fun headlines mixed with live news: the last winner, today's daily deal, the Wins leader; pure Lib/NewsRules + spec; Config.World.News) and leaderboard rows like the reference (rank · headshot · name · value with thousands separators; top 3 in gold / silver / bronze outlines; headshots cached; HudFormat.medal + spec) | #62 |
 | 2026-10-20 | The three big bar TVs get screens too (owner: "about 3 big tv, screen only show in 2 small"): NewsController draws the news channel on the VoteScreen TVs as well, and over it the round when there is one — during the map vote each TV shows one map of the ballot with its votes and the time left (VoteState), during a round the middle TV shows the live match (arena, time left, fighters still in) | #63 |
+| 2026-10-20 | Owner's fix list 5/6 — arenas: every platform doubled again (owner picked "double every platform" over an outer ring) by Arena.grow, which keeps every gap and climb (a platform moves out from the one it is reached from by exactly what both grew), contents spread with them (Arena.growContents), decor spread to match (crane arm rebuilt to reach), sludge / flood 2800 wide; Broken Highway centre 240 × 160, arenas about 580 studs across; the crumble closes in: CrumbleRules picks from the outer ring (within Round.Crumble.RingWidth = 40 studs of the farthest standing platform from the arena centre) | #64 |
 
 ## Decisions and interpretations
 
@@ -753,6 +754,23 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   show the same news channel, with a screen over it when there is a round to show: during the map vote TV n shows map
   n of the ballot (`VoteState`, sent to everyone) with its votes and "Stand on the ARENA pad to vote · time left";
   during a round the middle TV shows "LIVE MATCH", the arena, time left and fighters still in, and how to watch.
+- **Owner's fix list, step 5 — bigger arenas, closing crumble (2026-10-20):** asked how to make the maps "2× bigger"
+  again, the owner picked "double every platform" (over adding an outer ring of platforms). Each layout still lists its
+  platforms at the 2026-10-17 size; `Arena.grow(platforms, 2)` doubles every platform (and its deck: size, ramp length,
+  ramp width, offset; height stays 6) and moves it away from the platform it is reached from (the nearest one listed
+  before it) by exactly what the two grew along each axis where they are apart, scaling the offset along an axis where
+  they overlap — so every gap (8–14) and every climb (≤ 6) is unchanged and the maps spec's gap / height / reachability
+  checks pass as before. `Arena.growContents` doubles every spawn, prop, barrel and structure spot's distance from its
+  platform's centre (structures keep their size). Decor written for the first arena now spreads ×4 (`2 * GROWTH`), the
+  2026-10-17-size parts (Broken Highway's guardrails, cracks and pillars, Neon Motel's parapets, vent roofs and low-roof
+  lamps) ×2, the Neon Motel pool is 40 × 48, the Junkyard crane is rebuilt so its arm reaches from the mast over the
+  centre island at any size, and the sludge / flood water below is 2800 wide. Sizes: Broken Highway's centre 240 × 160,
+  sides 96 × 96, ledges 48 × 48, peaks 40 × 40, lows 56 × 56; the arenas are about 450–590 studs across (still well away
+  from the lobby). **Crumble closing in:** `CrumbleRules.pick` takes a random platform from the outer ring — the standing
+  platforms within `Round.Crumble.RingWidth` = 40 studs of the farthest one from the arena centre (`CrumbleService`
+  passes each platform's flat distance from `Maps.ArenaOrigin`) — so the far peaks and lows fall first, then the ledges
+  and sides, and the centre last. Timing is unchanged (from 1:00, every 20 s, 2 platforms always remain), so a 4:00 round
+  still drops most of the outer platforms. Not playtested: whether 4:00 and 16 spawns suit the bigger maps.
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,
