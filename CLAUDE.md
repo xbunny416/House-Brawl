@@ -31,8 +31,8 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   Classic only, run-only lobby) is done; 2/6 UI rework, part 1 (left menu Shop / Inventory / Settings / Quests,
   coins + level block, Settings tabs with the promo code, Daily reward + Quests tabs, "Coins" and "Inventory" on
   screen) is done; part 2 (Game in progress card with Watch, bottom-edge key hints) is done; 3/6 the style roll is
-  done (owner-side: create the StyleSlot product, declare paid random items on the maturity form); next 4/6 the
-  bigger lobby (furniture, seats, TV news, board look).
+  done (owner-side: create the StyleSlot product, declare paid random items on the maturity form); 4/6 part 1 (the
+  lobby 50% bigger, reference furniture, seats) is done; next part 2 (TV news, leaderboard board look).
 
 ## How this repo works
 
@@ -301,6 +301,7 @@ any errors are fixed before the next item.
 | 2026-10-19 | Owner's fix list 3/6 — style roll: styles come from spins instead of levels / the Shop (Slugger Uncommon 70%, Scrapper Rare 25%, Wrecker Legendary 5%, Brawler the default and never rolled; pity: the 50th spin without a Legendary is one); 1 free spin a day, more for 250 Coins (paid random item: odds shown before spinning, paid spins only where PolicyService allows them, none in private servers' free spin); slots: 1 to start, more from the StyleSlot Robux product (up to 4), lockable; Inventory's Styles tab is the roll page (slots, equipped style, reel, odds, pity, free-spin countdown); data v2 (Styles = slots, migration keeps the equipped style), SpinStyle / EquipStyleSlot / LockStyleSlot remotes, Shop's Styles tab removed, dev panel Free spin / Pity next / +1 style slot; StyleRules rewritten + specs | #55 |
 | 2026-10-19 | Style roll as its own screen (owner: "prefer style as separate ui instead of within inventory"): StyleRollController (left-menu "Styles" button, third: Shop, Inventory, Styles, Settings, Quests; a bigger panel), the Inventory is cosmetics only again, StyleRollView gets a countdown-only tick (no rebuild every second), menu buttons a little shorter for five | #56 |
 | 2026-10-19 | Victory emotes removed (owner: "remove victory emotes"): the VictoryEmote cosmetic slot and its 8 items (Flex, Junk Dance, Taunt, Champion and the Emote Pack's Robot, Salute, Air Guitar, Backflip), their clips, the winner's emote after a round and the equip preview, `Animations.EmoteDelay`, and the Emote Pack game pass (it only sold emotes); data v3 drops owned / equipped emotes; strings, specs and docs updated | #57 |
+| 2026-10-19 | Owner's fix list 4/6, part 1 — lobby: The Hideout 50% bigger (138 × 102, 28 high) and rebuilt in the reference furniture style (plaster over dark wood wainscoting with a gold rail, wood pillars with wall lamps, carpet; lounge with rug + gold ring, black marble table, red sofa + armchairs, floor lamps, topiaries; bunk corner with metal bunk beds and a kitchen counter; vending machines; tall dark leaderboard boards with cream titles and a gold underline; marble bar and tables); 25 LobbySeat Seats (sofas, armchairs, booth benches, bar and high-table stools) with a Sit prompt (SeatController) → Sit remote → SeatService; Builder.seat, palette colors, maps spec checks size and seats | #PR |
 
 ## Decisions and interpretations
 
@@ -692,6 +693,24 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   `Cosmetics.Owned` and `Cosmetics.Equipped.VictoryEmote`. The pose sampler still allows equal key times (the snap
   that the Backflip used), now tested with a small made-up clip. Older decisions below that mention emotes or the
   Emote Pack describe what was built then.
+- **Owner's fix list, step 4 part 1 — the bigger lobby (2026-10-19):** "lobby 50% bigger", "rebuilt in code in the
+  reference style" (docs/reference: lobby-lounge.jpg, lobby-bunk-corner.jpg) and "sit on chairs / couches". The room
+  is 138 × 102 studs (was 92 × 68) and 28 high (was 22); every area kept its place (bar north, ARENA door + join pad
+  east, Inventory / Codes / Quests west, leaderboards + spawns south) and the same tags, so prompts, the queue and the
+  boards work unchanged; the join pad keeps its 14 × 18 size. The look follows the pictures, built from parts:
+  plaster walls over dark wood wainscoting with a gold rail and raised panels, dark wood pillars with white wall lamps
+  (lit on the east / west walls), wood ceiling beams, a light carpet (wood planks in the bar); the lounge has a dark
+  rug with a gold ring, a round black marble table on a gold base, a red 3-seat sofa and two armchairs, two floor lamps
+  with white shades and potted topiaries; the bunk corner has two black metal bunk beds and a kitchen counter (sink,
+  microwave, coffee machine) next to the cork quest board; two vending machines stand by the street door. The old
+  brick walls and neon trim are gone; signs still glow. **Seats:** `Builder.seat` makes `Seat`s tagged `LobbySeat`
+  with CanTouch off (bumping into a sofa never sits you down; a sofa cushion, booth bench seat or stool is a square
+  block turned only around Y, because a sitter stands along the seat's up axis). `SeatController` puts a Sit prompt on
+  each (within `Controls.Prompts.SitDistance` = 7 studs; hidden while taken, while you sit, with a menu open or while
+  fighting) and sends `Sit`; `SeatService` sits you down if it is a free lobby seat, you're alive, not sitting, not
+  fighting, and within SitDistance + `SitTolerance` (4). Jump to stand up. Seats are never on the join pad, so a
+  sitting player is never taken into a round. 25 seats: 3 sofa + 2 armchair cushions, 8 booth seats, 8 bar stools,
+  4 high-table stools. Not playtested yet: brightness (Dusk preset + ~30 warm lights), sitting heights.
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,

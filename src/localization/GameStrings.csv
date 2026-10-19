@@ -343,6 +343,7 @@ Codes.Error.PrivateServer,Codes can only be used in public servers.,Code refused
 Codes.Error.NotLoaded,Your data is still loading. Try again in a moment.,Code refused,
 Codes.Error.TryAgain,Something went wrong. Try again.,Code check failed (no answer from the server),
 Prompt.Codes,Promo code,Walk-up prompt at the lobby jukebox: opens Settings on the Promo code tab,
+Prompt.Sit,Sit,Walk-up prompt on a lobby seat (sofa / armchair / stool): sit down (jump to stand up),
 Prompt.Codes.Object,Jukebox,Walk-up prompt at the lobby jukebox: what it is,
 Dev.ResetCodes,Reset codes,Developer panel button: forget the codes you have used,
 Dev.TargetTitle,Target,Developer panel section: who the player buttons act on,
