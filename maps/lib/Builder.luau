@@ -26,6 +26,7 @@ export type PartSpec = {
 	Size: Vec,
 	Position: Vec,
 	Rotation: Vec?,
+	Yaw: number?, -- degrees around Y applied before Rotation (furniture turned as a whole: maps/lib/Furniture)
 	Color: string,
 	Material: string?,
 	Shape: string?, -- "Block" (default), "Cylinder" (axis along X), "Ball", "Wedge"
@@ -60,9 +61,12 @@ local function spread(): number
 	return spreadStack[#spreadStack]
 end
 
-local function cframe(position: Vec, rotation: Vec?): any
+local function cframe(position: Vec, rotation: Vec?, yaw: number?): any
 	local o, s = origin(), spread()
 	local cf = CFrame.new(position[1] * s + o[1], position[2] + o[2], position[3] * s + o[3])
+	if yaw then
+		cf = cf * CFrame.Angles(0, math.rad(yaw), 0)
+	end
 	if rotation then
 		cf = cf * CFrame.Angles(math.rad(rotation[1]), math.rad(rotation[2]), math.rad(rotation[3]))
 	end
@@ -73,7 +77,7 @@ local function applyCommon(instance: any, spec: PartSpec)
 	instance.Name = spec.Name or "Part"
 	instance.Anchored = true
 	instance.Size = Vector3.new(spec.Size[1], spec.Size[2], spec.Size[3])
-	instance.CFrame = cframe(spec.Position, spec.Rotation)
+	instance.CFrame = cframe(spec.Position, spec.Rotation, spec.Yaw)
 	instance.Color = color(spec.Color)
 	instance.Material = (Enum.Material :: any)[spec.Material or "SmoothPlastic"]
 	instance.TopSurface = Enum.SurfaceType.Smooth
