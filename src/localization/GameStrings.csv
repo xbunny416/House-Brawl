@@ -327,8 +327,24 @@ Prompt.Quests.Object,Quest board,Walk-up prompt at the lobby quest board: what i
 Dev.FinishQuest,Finish quest,Developer panel button: complete your next unfinished quest,
 Leaderboard.AllTime,All-time,Leaderboard period: scores since the start,
 Leaderboard.Weekly,This week,Leaderboard period: scores since Monday,
-Leaderboard.Row,{1}. {2} — {3},"Leaderboard row (rank, display name, score)",1. Alex — 342
 Leaderboard.Empty,No scores yet. Be the first!,Leaderboard with no entries,
+News.Header,JUNKYARD NEWS,Banner on the lobby news TVs,
+News.Live,LIVE,"Lobby news TVs: the blinking ""live"" mark",
+News.Winner,BREAKING: {1} wins on {2}!,"Lobby news: the last round's winner and the arena",BREAKING: Alex wins on Neon Motel!
+News.Deal,At the bar today: {1} for {2} Coins,"Lobby news: one of today's daily deals (item, price)",At the bar today: Cone Hat for 240 Coins
+News.Leader,{1} tops the Wins board with {2} wins,"Lobby news: the all-time Wins leader and their wins","Alex tops the Wins board with 1,204 wins"
+News.1,Local crate survives another round. Experts baffled.,Lobby news TVs: a fun headline,
+News.2,Explosive barrel denies all involvement.,Lobby news TVs: a fun headline,
+News.3,Bartender reminds everyone: no punching in the lobby.,Lobby news TVs: a fun headline,
+News.4,Study confirms: chairs hurt when thrown.,Lobby news TVs: a fun headline,
+News.5,"Broken Highway still broken, says city council.",Lobby news TVs: a fun headline,
+News.6,Neon Motel pool reopens. Still no water.,Lobby news TVs: a fun headline,
+News.7,"Junkyard Isles sludge rated ""mostly safe"".",Lobby news TVs: a fun headline,
+News.8,Wrecker parries a mosquito. Mosquito now in orbit.,Lobby news TVs: a fun headline,
+News.9,Record number of fighters fall off platforms this week.,Lobby news TVs: a fun headline,
+News.10,Reminder: the floor is not lava. The void is.,Lobby news TVs: a fun headline,
+News.11,Perfect Dodge spotted in the wild. Crowd goes mild.,Lobby news TVs: a fun headline,
+News.12,Raccoons declare hubcaps fine dining.,Lobby news TVs: a fun headline,
 Tag.GroupChat,[Crew],Chat tag in front of messages from members of the game's Roblox group,
 Group.Reward,Thanks for joining the group! +{1} Coins,Notice: the one-time group join reward was paid (Coins),Thanks for joining the group! +150 Coins
 Codes.Placeholder,Enter a code,Placeholder text in the code box,

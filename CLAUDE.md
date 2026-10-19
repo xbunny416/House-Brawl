@@ -32,7 +32,8 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   coins + level block, Settings tabs with the promo code, Daily reward + Quests tabs, "Coins" and "Inventory" on
   screen) is done; part 2 (Game in progress card with Watch, bottom-edge key hints) is done; 3/6 the style roll is
   done (owner-side: create the StyleSlot product, declare paid random items on the maturity form); 4/6 part 1 (the
-  lobby 25% bigger, the reference's style with detailed furniture, seats) is done; next part 2 (TV news, leaderboard board look).
+  lobby 25% bigger, the reference's style with detailed furniture, seats) is done; part 2 (TV news, leaderboard board look) is done; next 5/6
+  the arenas doubled again with the crumble closing in toward the centre.
 
 ## How this repo works
 
@@ -305,6 +306,7 @@ any errors are fixed before the next item.
 | 2026-10-19 | Lobby redo (owner: "design like the ref, not copied into Studio … too blocky, no detail like the ref … lobby too big, shrink a little"): 115 × 85 × 26 (1.25× the first Hideout); the copied bunk beds, kitchen counter and vending machines are gone; new maps/lib/Furniture builds detailed pieces from parts (tufted sofas with rolled arms and piping, booth benches with channel tufting, round-seat stools, marble tables with gold rims, drum-shade floor lamps, stepped-dome pendants, wall sconces, pillars with gold bands, framed wainscot panels, bottles with necks and caps, a pool table with pockets); mirrored back bar, framed counter, crown molding, gold-strip beams, TV bezels / knobs, leaderboard wood frames; Builder `Yaw`; 24 seats | #59 |
 | 2026-10-19 | Future lighting (owner: "yes switch to future lighting"): `default.project.json` sets Lighting.LightingStyle = Realistic (the old Technology = Future, #60; Studio no longer shows Technology) and GlobalShadows; the lobby's 10 main lamps (pendants, floor lamps) cast soft shadows (`Builder.light` shadows flag, tagged ShadowLight; the maps spec caps them at 12), Low Graphics turns those shadows off too (VfxController) | #60 |
 | 2026-10-19 | Lighting fix (owner: "no technology in lighting"): Roblox replaced Lighting.Technology with LightingStyle, so the project sets LightingStyle = Realistic (the Future look) instead | #61 |
+| 2026-10-19 | Owner's fix list 4/6, part 2 — lobby news TVs (NewsController: a "JUNKYARD NEWS" channel on both NewsScreen TVs — red banner with a blinking LIVE dot, a headline every 8 s with a burst of static, a scrolling ticker, CRT scanlines; 12 fun headlines mixed with live news: the last winner, today's daily deal, the Wins leader; pure Lib/NewsRules + spec; Config.World.News) and leaderboard rows like the reference (rank · headshot · name · value with thousands separators; top 3 in gold / silver / bronze outlines; headshots cached; HudFormat.medal + spec) | #PR |
 
 ## Decisions and interpretations
 
@@ -734,6 +736,18 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   spec fails above 12, since shadowed lights cost frame time. Low Graphics now also turns those lamp shadows off on
   that client (`VfxController`, along with `GlobalShadows`). Roblox scales the lighting down by itself on weak
   devices. If `rojo serve` doesn't change it in an open place, set Lighting → LightingStyle → Realistic by hand once.
+- **Owner's fix list, step 4 part 2 — TV news and the board look (2026-10-19):** "TV showing fun news" and the
+  reference's leaderboard boards. **News** (`NewsController`): both `NewsScreen` TVs (the counter ends) show the same
+  "JUNKYARD NEWS" channel drawn on a SurfaceGui: a red banner with a blinking LIVE dot, a big headline that changes every
+  `World.News.Interval` = 8 s after 0.15 s of static, a ticker of every headline scrolling at `TickerSpeed` = 40 px/s,
+  and faint scanlines. Headlines (`Client/Lib/NewsRules`) are the 12 fun stories `News.1`–`News.12` with a live story
+  after each of the first ones: the last round's winner and arena (`RoundResults`), one of today's daily deals with
+  its price (ShopRules), the all-time Wins leader (`Leaderboards`); nothing updates while the player is fighting.
+  **Boards** (`LeaderboardController`): the title is the map's cream sign with a gold underline (part 1); each row is
+  rank · round avatar headshot (`GetUserThumbnailAsync`, cached, none for Studio test players) · name · value with
+  thousands separators (right-aligned); the top 3 rows are taller with rounded outlines and gold / silver / bronze rank
+  numbers and values (`HudFormat.medal`, `Kit.Colors.Gold` / `Silver` / `Bronze`), rows 4–10 plain; your own name is
+  in the accent color; a small "All time" / "This week" line on top. `Leaderboard.Row` is gone.
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,
