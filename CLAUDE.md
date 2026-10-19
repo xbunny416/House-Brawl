@@ -24,6 +24,10 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   tested on a phone). 3.12 Launch support: `docs/LAUNCH.md` (owner's checklist) and `lune run tools/launch-check`.
   **Phase 3 is done in code; what's left is owner-side** (see docs/LAUNCH.md) plus playtests and fixes. The place must be published (File → Publish to
   Roblox) for DataStores to work in Studio.
+- **Next: the owner's fix list (2026-10-19)** — read `docs/reference/README.md` (the list, the owner's answers on
+  the style roll and lobby furniture, the rules to respect) and look at the reference pictures in `docs/reference/`
+  before starting. The owner is doing it in their local CLI session (connected to Studio); a cloud session should
+  not work on it at the same time.
 
 ## How this repo works
 
