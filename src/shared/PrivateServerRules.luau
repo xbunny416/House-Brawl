@@ -24,7 +24,7 @@ end
 
 function PrivateServerRules.isValid(key: string, value: unknown, enabledMaps: { string }): boolean
 	if key == "Mode" then
-		return type(value) == "string" and (value == VOTE or Config.Modes.List[value] ~= nil)
+		return type(value) == "string" and (value == VOTE or table.find(Config.Modes.Order, value) ~= nil)
 	elseif key == "Map" then
 		return type(value) == "string" and (value == VOTE or table.find(enabledMaps, value) ~= nil)
 	elseif key == "RoundTime" then

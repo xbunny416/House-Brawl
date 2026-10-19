@@ -2993,7 +2993,7 @@
     </Item>
     <Item class="Model" referent="101">
       <Properties>
-        <string name="Name">ModeTV1</string>
+        <string name="Name">NewsTV1</string>
       </Properties>
       <Item class="Part" referent="102">
         <Properties>
@@ -3029,7 +3029,7 @@
         <Properties>
           <string name="Name">Screen</string>
           <bool name="Anchored">true</bool>
-          <BinaryString name="AttributesSerialize">AgAAAAUAAABJbmRleAUAAIA/CAAAAFZvdGVLaW5kAgQAAABNb2Rl</BinaryString>
+          <BinaryString name="AttributesSerialize">AgAAAAUAAABJbmRleAUAAIA/CAAAAFZvdGVLaW5kAgQAAABOZXdz</BinaryString>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
             <X>-15</X>
@@ -3054,7 +3054,7 @@
             <Y>3</Y>
             <Z>0.19999695</Z>
           </Vector3>
-          <BinaryString name="Tags">Vm90ZVNjcmVlbg==</BinaryString>
+          <BinaryString name="Tags">TmV3c1NjcmVlbg==</BinaryString>
           <token name="TopSurface">0</token>
         </Properties>
         <Item class="PointLight" referent="104">
@@ -3136,7 +3136,7 @@
     </Item>
     <Item class="Model" referent="107">
       <Properties>
-        <string name="Name">ModeTV2</string>
+        <string name="Name">NewsTV2</string>
       </Properties>
       <Item class="Part" referent="108">
         <Properties>
@@ -3172,7 +3172,7 @@
         <Properties>
           <string name="Name">Screen</string>
           <bool name="Anchored">true</bool>
-          <BinaryString name="AttributesSerialize">AgAAAAUAAABJbmRleAUAAABACAAAAFZvdGVLaW5kAgQAAABNb2Rl</BinaryString>
+          <BinaryString name="AttributesSerialize">AgAAAAUAAABJbmRleAUAAABACAAAAFZvdGVLaW5kAgQAAABOZXdz</BinaryString>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
             <X>15</X>
@@ -3197,7 +3197,7 @@
             <Y>3</Y>
             <Z>0.19999695</Z>
           </Vector3>
-          <BinaryString name="Tags">Vm90ZVNjcmVlbg==</BinaryString>
+          <BinaryString name="Tags">TmV3c1NjcmVlbg==</BinaryString>
           <token name="TopSurface">0</token>
         </Properties>
         <Item class="PointLight" referent="110">

@@ -5,6 +5,7 @@
 	  * Run (Left Shift / left stick): lit while running; dimmed when stamina is too low to start.
 	  * Dash (Q / RB): fills as the cooldown runs out; dimmed when stamina is below a dash's cost.
 	  * Ability (F / Y): only for styles that have one (Wrecker: Parry), filled from the server's AbilityReadyAt.
+	Dash and Ability show only while fighting in a round: the lobby is run-only (owner, 2026-10-19).
 	Shown with keyboard / mouse and gamepad; on touch the action buttons sit in that corner instead (and the bottom
 	bar keeps its dash ring). Hidden while spectating.
 ]]
@@ -131,13 +132,17 @@ local function refresh()
 	setFill(slots.Run, staminaLeft / staminaConfig.Max)
 	setDimmed(slots.Run, not running and staminaLeft < staminaConfig.RunResume)
 
+	-- Dash and Ability only in a round (the lobby is run-only).
+	local fighting = status == "Playing"
+	slots.Dash.Frame.Visible = fighting
+
 	-- Dash: the cooldown, dimmed below a dash's stamina cost.
 	setFill(slots.Dash, HudFormat.dashFill(DashController.cooldownLeft(), Config.Combat.Dash.Cooldown))
 	setDimmed(slots.Dash, staminaLeft < staminaConfig.DashCost)
 
 	-- Ability: only for styles that have one.
 	local ability = equippedAbility()
-	slots.Ability.Frame.Visible = ability ~= nil
+	slots.Ability.Frame.Visible = fighting and ability ~= nil
 	if ability then
 		local readyAt = character and character:GetAttribute("AbilityReadyAt")
 		local left = if type(readyAt) == "number" then readyAt - Workspace:GetServerTimeNow() else 0

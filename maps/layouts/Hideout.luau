@@ -177,7 +177,8 @@ local function tv(name: string, at: { number }, size: { number }, voteKind: stri
 			Position = { at[1], at[2] + 0.2, at[3] - size[3] / 2 - 0.1 },
 			Color = "CrtGlow",
 			Material = "Neon",
-			Tags = { "VoteScreen" },
+			-- "News" TVs show the lobby news (the mode vote TVs until Classic became the only mode, 2026-10-19).
+			Tags = { if voteKind == "News" then "NewsScreen" else "VoteScreen" },
 			Attributes = { VoteKind = voteKind, Index = index },
 		})
 		B.light(screen, "CrtGlow", 10, 0.8)
@@ -309,7 +310,7 @@ local function bar()
 		})
 	end
 	for index, x in { -15, 15 } do
-		tv(`ModeTV{index}`, { x, 5.9, counterZ }, { 5, 4, 4 }, "Mode", index)
+		tv(`NewsTV{index}`, { x, 5.9, counterZ }, { 5, 4, 4 }, "News", index)
 	end
 
 	-- Placeholder Shop NPC (the bartender) behind the counter.

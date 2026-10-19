@@ -633,6 +633,9 @@ function PropService.Init(_self: any)
 			drop(player)
 			return
 		end
+		if player:GetAttribute("RoundStatus") ~= "Playing" then
+			return -- the lobby is run-only (owner, 2026-10-19)
+		end
 		local character = player.Character
 		local root = rootOf(character)
 		if character == nil or root == nil or not CombatService.canAct(character) then

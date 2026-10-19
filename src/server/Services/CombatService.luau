@@ -664,7 +664,16 @@ local function intercepted(player: Player, attack: Formulas.AttackName, facing: 
 	return handler ~= nil and handler(player, attack, facing, position)
 end
 
+-- Fighting moves (punch, charge, ability, dash) only work in a running round: the lobby is run-only (owner,
+-- 2026-10-19). RoundService sets RoundStatus.
+local function inRound(player: Player): boolean
+	return player:GetAttribute("RoundStatus") == "Playing"
+end
+
 local function onPunch(player: Player, facing: Vector3?, position: Vector3?)
+	if not inRound(player) then
+		return
+	end
 	local character, fighter = fighterOf(player)
 	if character == nil or fighter == nil or intercepted(player, "Punch", facing, position) then
 		return
@@ -704,7 +713,7 @@ local function onCharge(player: Player, phase: string)
 	end
 	local now = os.clock()
 	if phase == "Start" then
-		if not intercepted(player, "Charged") and Fighter.startCharge(fighter, now) then
+		if inRound(player) and not intercepted(player, "Charged") and Fighter.startCharge(fighter, now) then
 			setCharging(character, true)
 			removeShieldVisual(character) -- attacking ended the spawn shield
 		end
@@ -741,6 +750,9 @@ end
 
 -- The Ability key: the equipped style's move (Wrecker: a parry). Styles without one ignore it.
 local function onAbility(player: Player)
+	if not inRound(player) then
+		return
+	end
 	local character, fighter = fighterOf(player)
 	local styleId = styleOf(player)
 	local style = Config.Styles.List[styleId]
@@ -792,6 +804,9 @@ end
 -- The client already moved its character; the server only grants the invulnerability and spends the stamina
 -- (cooldown, hitstun and stamina checked).
 local function onDash(player: Player)
+	if not inRound(player) then
+		return
+	end
 	local character, fighter = fighterOf(player)
 	if character == nil or fighter == nil then
 		return

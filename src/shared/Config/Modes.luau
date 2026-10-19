@@ -10,7 +10,9 @@ type ModesConfig = {
 
 local Modes: ModesConfig = {
 	Default = "Classic",
-	Order = { "Classic", "Casual" },
+	-- Modes in the vote. Classic only (owner, 2026-10-19: "Classic mode only, no mode vote"); Casual stays defined
+	-- below and can come back by adding it here.
+	Order = { "Classic" },
 	List = {
 		-- 100 HP, 3 lives. Percent = (MaxHealth - HP) * HealthToPercent. Last fighter standing wins;
 		-- at time-out most KOs wins (tiebreak: fewest falls).

@@ -64,14 +64,18 @@ this file in the same PR as the Config change.
 
 ### Modes and round rules
 
+- **Classic is the only mode** (owner, 2026-10-19: "Classic mode only, no mode vote"); the vote is map-only.
+  Casual stays in Config, out of the rotation.
 - **Classic:** 100 HP, 3 lives (stocks). Lose a life at 0 HP or by falling below KillY. Last fighter standing wins; at
   time-out most KOs wins (tiebreak: fewest falls) among the fighters still in, who all rank above the eliminated
   (eliminated later = higher).
 - **Casual:** no HP, unlimited respawns. Score = KOs − falls. Highest score at time-out wins (tiebreak: more KOs, then
   fewer falls). Equal records share a placement.
 - Every KO you take is a fall (also resetting your character in the arena; the last attacker still gets the KO).
-- Round 4:00 (owner, 2026-10-17; was 3:00). Intermission/vote 15 s (up to 3 enabled maps + both modes; ties random). Respawn delay 3 s. Spawn
+- Round 4:00 (owner, 2026-10-17; was 3:00). Intermission/vote 15 s (up to 3 enabled maps; ties random). Respawn delay 3 s. Spawn
   shield 2 s (breaks if you attack). Results 8 s. A round needs 2 active players; AFK players sit out the next round.
+- **The lobby is run-only** (owner, 2026-10-19): punch, charged punch, ability, dash and grab only work while fighting
+  in a round.
 
 ### Attacks
 
@@ -365,12 +369,10 @@ panel.
   (500 structures), Survivor (win Classic without losing a life), Level 10 / 25 / 50 / 100.
 - **Leaderboards:** global all-time and weekly Wins, KOs, Level (OrderedDataStore; weekly Level = levels gained that
   week; weeks start on Monday); in-server scoreboard; lobby billboards (top 10, switching between all-time and this
-  week) and a Leaderboard screen (top 50). Scores from private servers are not saved.
-- **Social:** party system (up to 4), friend bonus +10% XP per friend in server (max +30%), group join reward
-  150 Scrap + group chat tag. Parties are formed in a server from the Party screen (invite → Join / No popup);
-  members go into a round with their leader (when the leader stands on the join pad) and start on the same platform
-  (owner, 2026-10-18); party members see each other's names in the party color and a [Party] tag in chat. Group
-  members get a [Crew] chat tag; the 150 Scrap is paid once, in a public server.
+  week); no Leaderboard menu screen (owner, 2026-10-19). Scores from private servers are not saved.
+- **Social:** friend bonus +10% XP per friend in server (max +30%), group join reward 150 Scrap + group chat tag
+  ([Crew]; the Scrap is paid once, in a public server). The party system was built in 3.7 and removed on 2026-10-19
+  (owner). No reward for liking or favoriting the game (Roblox doesn't allow it).
 - **Codes & events:** one-use codes validated on the server (stored in the server-only ServerConfig; Scrap and / or
   a cosmetic, optional expiry; redeemed on the Codes screen or at the lobby jukebox; not in private servers); seasonal map remixes, double-Scrap
   weekends, event-only cosmetics.

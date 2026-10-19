@@ -20,6 +20,15 @@ game's own code and parts; never copy models or assets out of another game.
   stays the default). Rolling replaces the level unlocks. More styles may come later.
 - **Lobby furniture:** rebuilt in code (in the map layout) in the reference style.
 
+## Owner's answers in the CLI session (2026-10-19)
+
+- **Map size:** double the arenas again (they were already 2× the first size since 2026-10-17).
+- **Extra style slots:** bought with Robux (a developer product each); locking a slot is free.
+- **Lobby spin wheel:** 1 free spin a day plus extra spins for Scrap — so it is a paid random item: exact odds on the
+  wheel, hidden where Roblox restricts paid random items, declared on the maturity questionnaire.
+- **Order of work:** cleanup + UI first, then the style roll, the bigger lobby (furniture, seats, TV news, board look),
+  the crumble closing in, the spin wheel.
+
 ## Rules to respect
 
 - **Paid random items:** Scrap can be bought with Robux, so Roblox counts Scrap spins (style roll, a paid spin wheel)

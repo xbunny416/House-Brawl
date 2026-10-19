@@ -68,8 +68,8 @@ local function push(root: BasePart, direction: Vector3)
 end
 
 local function onActionBegan(action: string)
-	if action ~= "Dash" then
-		return
+	if action ~= "Dash" or player:GetAttribute("RoundStatus") ~= "Playing" then
+		return -- dashing only in a round: the lobby is run-only
 	end
 	local character = player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")

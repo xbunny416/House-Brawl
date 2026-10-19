@@ -5,6 +5,8 @@
 	    -> Charge "Start"; let go -> Charge "Release" (the charged punch). A press that throws a held prop never
 	    charges. Ability pressed -> Ability (the equipped style's move, e.g. the Wrecker parry). The server decides
 	    everything else (cooldowns, hits, damage, knockback).
+	  * Fighting only happens in a running round: the lobby is run-only (owner, 2026-10-19), so outside one nothing is
+	    sent and the touch Attack / Grab / Dash / Ability buttons hide (Run stays).
 	  * Shows the touch Ability button only for styles that have an ability, labelled with its move.
 	  * Runs the knockback the server sends for the local character (clients simulate their own character).
 	  * Shakes the camera on heavy hits taken or landed.
@@ -26,6 +28,11 @@ local CombatController = {}
 local player = Players.LocalPlayer
 local charging = false
 local pressCount = 0 -- tells a held press apart from a newer one
+
+-- True while the local player is fighting in the round (RoundService's RoundStatus).
+function CombatController.inRound(): boolean
+	return player:GetAttribute("RoundStatus") == "Playing"
+end
 
 local function onAttackPressed()
 	pressCount += 1
@@ -51,6 +58,9 @@ local function onAttackPressed()
 end
 
 local function onActionBegan(action: string)
+	if not CombatController.inRound() then
+		return
+	end
 	if action == "Attack" then
 		onAttackPressed()
 	elseif action == "Ability" then
@@ -65,12 +75,16 @@ local function onActionEnded(action: string)
 	end
 end
 
--- The touch Ability button: only for a style with an ability, labelled with what it does.
-local function refreshAbilityButton()
+-- The touch fighting buttons: shown only in a round; Ability only for a style with one, labelled with what it does.
+local function refreshButtons()
+	local fighting = CombatController.inRound()
+	for _, action in { "Attack", "Grab", "Dash" } do
+		InputController.setVisible(action, fighting)
+	end
 	local data = DataController.get()
 	local style = data and Config.Styles.List[data.Styles.Equipped]
 	local ability = style and style.Ability
-	InputController.setVisible("Ability", ability ~= nil)
+	InputController.setVisible("Ability", fighting and ability ~= nil)
 	InputController.setLabel("Ability", if ability then "Controls.Parry" else nil)
 end
 
@@ -101,12 +115,13 @@ function CombatController.Init(_self: any)
 end
 
 function CombatController.Start(_self: any)
-	refreshAbilityButton()
+	refreshButtons()
 	DataController.Changed:Connect(function(key: string)
 		if key == "Styles" then
-			refreshAbilityButton()
+			refreshButtons()
 		end
 	end)
+	player:GetAttributeChangedSignal("RoundStatus"):Connect(refreshButtons)
 end
 
 return CombatController

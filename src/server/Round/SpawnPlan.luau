@@ -1,16 +1,16 @@
 --!strict
 --[[
 	SpawnPlan — where each fighter starts a round (pure). Spawn points are grouped by the platform they stand on.
-	Parties (owner, 2026-10-18: "spawn near each other") start on one platform: the biggest groups first, each on the
-	platform with the most free points (members that don't fit fall back to the solo rule). Solo fighters spread out:
-	each takes a free point on the platform with the most free points left. When there are more fighters than points,
-	points are reused.
+	A group (parties used this until they were removed on 2026-10-19; RoundService now puts every fighter in a group
+	of one) starts on one platform: the biggest groups first, each on the platform with the most free points (members
+	that don't fit fall back to the solo rule). Solo fighters spread out: each takes a free point on the platform with
+	the most free points left. When there are more fighters than points, points are reused.
 ]]
 local SpawnPlan = {}
 
 --[[
-	`groups`: lists of UserIds (a party, or one solo fighter each). `platforms`: the platform of each spawn point (by
-	index). `pick(n)` returns a random 1..n. Returns the spawn point index for every UserId.
+	`groups`: lists of UserIds (one fighter each, or a group to keep together). `platforms`: the platform of each
+	spawn point (by index). `pick(n)` returns a random 1..n. Returns the spawn point index for every UserId.
 ]]
 function SpawnPlan.assign(groups: { { number } }, platforms: { string }, pick: (number) -> number): { [number]: number }
 	local plan: { [number]: number } = {}
