@@ -1,8 +1,8 @@
 --!strict
 --[[
 	ShopRules — what the Shop sells and what it costs (pure; shared so the Shop shows the price the server charges).
-	Styles sell for Config.Styles.List[id].Price (the default style is free and never sold). Cosmetics sell for their
-	Price, except Exclusive (VIP / Premium) and Robux-only items, which are never sold for Scrap.
+	Cosmetics sell for their Price, except Exclusive (VIP / Premium) and Robux-only items, which are never sold for
+	Scrap. Fighting styles aren't sold: they come from the style roll (Shared/StyleRules, since 2026-10-19).
 	Daily rotation (Config.Cosmetics.DailyRotation): every day (UTC, from ResetHourUTC) the same Count cosmetics are
 	picked for every player and server — a shuffle of the cosmetics for sale seeded by the day number — and sell at
 	Discount off.
@@ -10,16 +10,15 @@
 local Config = require(script.Parent.Config)
 local CosmeticRules = require(script.Parent.CosmeticRules)
 local Formulas = require(script.Parent.Formulas)
-local StyleRules = require(script.Parent.StyleRules)
 local DataTemplate = require(script.Parent.Data.Template)
 
--- The player's saved data (a purchase reads Scrap, Styles.Owned and Cosmetics.Owned).
+-- The player's saved data (a purchase reads Scrap and Cosmetics.Owned).
 type Wallet = DataTemplate.PlayerData
 
 local ShopRules = {}
 
 -- Item kinds the Buy remote takes.
-ShopRules.Kinds = { "Style", "Cosmetic" }
+ShopRules.Kinds = { "Cosmetic" }
 -- Why a purchase was refused; the Shop shows "Shop.Error.<Reason>". TryAgain is the client's own (no answer).
 ShopRules.Reasons = { "NotForSale", "Owned", "NotEnoughScrap", "PriceChanged", "NotLoaded", "TryAgain" }
 
@@ -35,12 +34,7 @@ end
 
 -- The Scrap price before any discount, or nil if the item is not sold for Scrap.
 function ShopRules.basePrice(kind: string, id: string): number?
-	if kind == "Style" then
-		local style = Config.Styles.List[id]
-		if style and id ~= Config.Styles.Default and style.Price > 0 then
-			return style.Price
-		end
-	elseif kind == "Cosmetic" then
+	if kind == "Cosmetic" then
 		local item = Config.Cosmetics.Items[id]
 		local rarity = item and Config.Cosmetics.Rarities[item.Rarity]
 		if item and rarity and item.Exclusive == nil and not rarity.RobuxOnly and item.Price > 0 then
@@ -98,10 +92,7 @@ function ShopRules.priceOf(kind: string, id: string, day: number): number?
 	return price
 end
 
-function ShopRules.owns(wallet: Wallet, kind: string, id: string): boolean
-	if kind == "Style" then
-		return StyleRules.owns(wallet.Styles.Owned, id)
-	end
+function ShopRules.owns(wallet: Wallet, _kind: string, id: string): boolean
 	return CosmeticRules.owns(wallet.Cosmetics.Owned, id)
 end
 

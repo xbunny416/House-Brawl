@@ -1,9 +1,10 @@
 --!strict
 --[[
-	ShopService — buying fighting styles and cosmetics with Scrap (bible §2.3). The Buy remote (kind, id, price shown)
+	ShopService — buying cosmetics with Scrap (bible §2.3; styles come from the style roll since 2026-10-19, see
+	StyleService). The Buy remote (kind, id, price shown)
 	is checked with Shared/ShopRules against the player's saved data and today's daily rotation (os.time, UTC); then
-	the Scrap is spent (DataService.spendScrap: analytics sink, sku "Style.<id>" / "Cosmetic.<id>") and the item is
-	granted through StyleService / CosmeticService. Buying never equips: the Shop offers Equip after a purchase.
+	the Scrap is spent (DataService.spendScrap: analytics sink, sku "Cosmetic.<id>") and the item is
+	granted through CosmeticService. Buying never equips: the Shop offers Equip after a purchase.
 	Robux items (game passes, Scrap packs, Robux cosmetics) are bought through Roblox prompts (MonetizationService).
 ]]
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -16,7 +17,6 @@ local ShopRules = require(Shared:WaitForChild("ShopRules"))
 local Analytics = require(script.Parent:WaitForChild("Analytics"))
 local CosmeticService = require(script.Parent:WaitForChild("CosmeticService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
-local StyleService = require(script.Parent:WaitForChild("StyleService"))
 
 local ShopService = {}
 
@@ -44,11 +44,7 @@ function ShopService.buy(player: Player, kind: string, itemId: string, expectedP
 	if not DataService.spendScrap(player, price, Analytics.Transaction.Shop, `{kind}.{itemId}`) then
 		return false, "NotEnoughScrap"
 	end
-	if kind == "Style" then
-		StyleService.grant(player, itemId)
-	else
-		CosmeticService.grant(player, itemId)
-	end
+	CosmeticService.grant(player, itemId)
 	Analytics.shopPurchase(player, kind, itemId, price, ShopRules.isDaily(kind, itemId, day))
 	log(`{player.Name} bought {kind} {itemId} for {price} Scrap`)
 	return true, nil

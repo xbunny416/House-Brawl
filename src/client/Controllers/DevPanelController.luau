@@ -169,13 +169,15 @@ local function buildSections()
 	for _, styleId in Config.Styles.Order do
 		table.insert(styles, command(Localization.format(`Style.{styleId}.Name`), "SetStyle", styleId))
 	end
+	table.insert(styles, command(Localization.format("Dev.FreeSpin"), "FreeSpin"))
+	table.insert(styles, command(Localization.format("Dev.PityNear"), "PityNear"))
+	table.insert(styles, command(Localization.format("Dev.StyleSlot"), "GiveProduct", "StyleSlot"))
 	table.insert(styles, command(Localization.format("Dev.UnlockCosmetics"), "UnlockCosmetics"))
 	table.insert(styles, command(Localization.format("Dev.GiveScrap", { Config.Dev.GiveScrap }), "GiveScrap"))
 	section("Dev.Style", styles)
 
 	local progress: { Button } = {
 		command(Localization.format("Dev.GiveXP", { Config.Dev.GiveXP }), "GiveXP"),
-		command(Localization.format("Dev.AllStyles"), "AllStyles"),
 	}
 	for _, level in Config.Dev.LevelPresets do
 		table.insert(progress, command(Localization.format("Common.Level", { level }), "SetLevel", nil, level))

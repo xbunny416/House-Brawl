@@ -51,7 +51,10 @@ return {
 	end,
 	["Robux products: whole Scrap amounts or a Robux cosmetic, priced inside the premium range"] = function()
 		for key, product in Monetization.Products do
-			expect.truthy((product.Scrap ~= nil) ~= (product.Cosmetic ~= nil), `{key}: Scrap or a cosmetic`)
+			local gives = (if product.Scrap then 1 else 0)
+				+ (if product.Cosmetic then 1 else 0)
+				+ (if product.StyleSlot then 1 else 0)
+			expect.equal(gives, 1, `{key}: Scrap, a cosmetic or a style slot`)
 			if product.Scrap then
 				expect.truthy(product.Scrap > 0 and product.Scrap == math.floor(product.Scrap), `{key} Scrap`)
 			end
@@ -65,13 +68,13 @@ return {
 			end
 		end
 	end,
-	["the Robux tab lists every pass and product once"] = function()
+	["the Robux tab lists every pass and product once (the style slot is sold on the Styles page)"] = function()
 		local order = Monetization.RobuxOrder
 		for key in Monetization.GamePasses do
 			expect.equal(count(order, key), 1, key)
 		end
-		for key in Monetization.Products do
-			expect.equal(count(order, key), 1, key)
+		for key, product in Monetization.Products do
+			expect.equal(count(order, key), if product.StyleSlot then 0 else 1, key)
 		end
 		local offers = MonetizationRules.offers()
 		expect.equal(#offers, #order)

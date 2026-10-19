@@ -50,13 +50,24 @@ export type QuestData = { Day: number, Week: number, Daily: QuestProgress, Weekl
 -- the player had when they first played that week.
 export type LeaderboardWeek = { Week: number, Wins: number, KOs: number, StartLevel: number }
 
+-- Fighting styles (Shared/StyleRules): the style in each slot the player has (slot 1 is everyone's; more are bought
+-- with Robux), which slots are locked (a spin never replaces them), the equipped slot, and the roll's state.
+export type StyleData = {
+	Slots: { string },
+	Locked: { boolean },
+	Active: number, -- the equipped slot
+	Equipped: string, -- = Slots[Active], for everything that reads the equipped style
+	Pity: number, -- spins since the last Config.Styles.Roll.PityRarity style
+	FreeSpinDay: number, -- day of the last free spin (days as for Daily; -1 = never)
+}
+
 export type PlayerData = {
 	Version: number,
 	Scrap: number,
 	Level: number,
 	XP: number, -- XP into the current level
 	Stats: Stats,
-	Styles: { Owned: { [string]: boolean }, Equipped: string },
+	Styles: StyleData,
 	Cosmetics: { Owned: { [string]: boolean }, Equipped: { [string]: string } },
 	Titles: { Owned: { [string]: boolean }, Equipped: string },
 	Tutorial: { Completed: boolean, Step: number },
@@ -70,9 +81,17 @@ export type PlayerData = {
 	Codes: { [string]: boolean }, -- redeem codes this player has used (ServerConfig.Codes keys)
 }
 
-local VERSION = 1
+local VERSION = 2 -- 2: styles in slots (the style roll) instead of owned styles
 
 local defaultStyle = Config.Styles.Default
+
+-- Everyone starts with Config.Styles.Roll.Slots.Start slots holding the default style, unlocked.
+local startSlots: { string } = {}
+local startLocks: { boolean } = {}
+for _ = 1, Config.Styles.Roll.Slots.Start do
+	table.insert(startSlots, defaultStyle)
+	table.insert(startLocks, false)
+end
 
 local Template: PlayerData = {
 	Version = VERSION,
@@ -91,7 +110,14 @@ local Template: PlayerData = {
 		RoundsPlayed = 0,
 		RoundsCompleted = 0,
 	},
-	Styles = { Owned = { [defaultStyle] = true }, Equipped = defaultStyle },
+	Styles = {
+		Slots = startSlots,
+		Locked = startLocks,
+		Active = 1,
+		Equipped = defaultStyle,
+		Pity = 0,
+		FreeSpinDay = -1,
+	},
 	Cosmetics = { Owned = {}, Equipped = {} },
 	Titles = { Owned = {}, Equipped = "" },
 	Tutorial = { Completed = false, Step = 0 },

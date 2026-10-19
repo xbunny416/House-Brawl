@@ -30,8 +30,9 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   not work on it at the same time. Progress: 1/6 cleanup (parties and the Leaderboard screen removed,
   Classic only, run-only lobby) is done; 2/6 UI rework, part 1 (left menu Shop / Inventory / Settings / Quests,
   coins + level block, Settings tabs with the promo code, Daily reward + Quests tabs, "Coins" and "Inventory" on
-  screen) is done; part 2 (Game in progress card with Watch, bottom-edge key hints) is done; next 3/6 the style
-  roll.
+  screen) is done; part 2 (Game in progress card with Watch, bottom-edge key hints) is done; 3/6 the style roll is
+  done (owner-side: create the StyleSlot product, declare paid random items on the maturity form); next 4/6 the
+  bigger lobby (furniture, seats, TV news, board look).
 
 ## How this repo works
 
@@ -118,11 +119,11 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
 - **Combat:** every hit goes through `Services/CombatService`, which owns one `Server/Combat/Fighter` per combatant
   (player characters register automatically; anything else, like the dummy, calls `CombatService.register`). UI
   reads the character attributes `HP` (modes with HP) and `Percent`; listen to `CombatService.KnockedOut` for KOs.
-- **Styles:** ownership and the equipped style go through `Services/StyleService` (`equip`, `equippedOf`); the rules
-  (`Shared/StyleRules`: owns, unlockedAt) are shared with UI. Combat reads the equipped style through
-  `Formulas.resolveAttack`.
-- **Shop:** purchases go through `Services/ShopService` (`Buy` remote → `StyleService.grant` /
-  `CosmeticService.grant`); what is for sale, prices and the daily rotation are `Shared/ShopRules`, shared with the
+- **Styles:** styles come from the style roll. Slots, the equipped slot, spins and locks go through
+  `Services/StyleService` (`spin`, `equipSlot`, `lockSlot`, `addSlot`, `equippedOf`); the rules (`Shared/StyleRules`:
+  odds, pick, pity, spin checks) are shared with the Inventory's Styles page (`Ui/StyleRollView`). Saved data keeps
+  `Styles.Equipped` = the equipped slot's style. Combat reads it through `Formulas.resolveAttack`.
+- **Shop:** purchases go through `Services/ShopService` (`Buy` remote → `CosmeticService.grant`; styles aren't sold); what is for sale, prices and the daily rotation are `Shared/ShopRules`, shared with the
   Shop UI so both show the same price.
 - **Robux:** Robux purchases go through `Services/MonetizationService`, the only place that sets
   `MarketplaceService.ProcessReceipt` (products are granted with `DataService.processReceipt`, once per PurchaseId).
@@ -296,6 +297,7 @@ any errors are fixed before the next item.
 | 2026-10-19 | Owner's fix list 1/6 — cleanup: parties deleted (PartyService, Social/Parties, Party screen, party remotes / tags / strings; SpawnPlan kept for spreading fighters), no Leaderboard menu screen (lobby boards only), Classic the only mode (vote map-only, one-choice rows hidden, the two counter mode TVs become news TVs), lobby run-only (punch / charge / ability / dash / grab only while Playing, on the server and the client; touch buttons and key-panel slots hide outside a round); reference notes record the owner's answers | #52 |
 | 2026-10-19 | Owner's fix list 2/6, part 1 — UI: left menu Shop / Inventory / Settings / Quests under a new coins + level block (ProfileController: big coin balance with thousands separators, level · rank, XP bar; the HUD's top-right chip is gone), Settings in tabs (Visual / Audio / Promo code / How to play; the Codes screen folded in, the jukebox opens the Promo code tab), Daily reward without a menu button (pops up on login) sharing a tab row with Quests, "Scrap" shown as "Coins" and the Locker as "Inventory"; MenuController optional buttons + open argument, Kit.tabRow, HudFormat.thousands + spec | #53 |
 | 2026-10-19 | Owner's fix list 2/6, part 2 — UI: "Game in progress" card under the lobby menu (live dot, arena, time left, fighters still in, Watch / Stop watching: the camera follows the round from the lobby through the spectate system, the server streams the arena to lobby watchers, arena music while watching); small light-grey key hints along the bottom edge (keyboard / gamepad: Run + Menu in the lobby and "[E] Shop"-style hints for walk-up prompts in reach, Punch · hold to charge + Scoreboard while fighting, Switch fighter while spectating) from Config.Controls.Hints and the pure Lib/HintRules + spec; bottom HUD bar, stamina bar, key panel and spectate bar moved up 14 px; MenuController.addWidget | #54 |
+| 2026-10-19 | Owner's fix list 3/6 — style roll: styles come from spins instead of levels / the Shop (Slugger Uncommon 70%, Scrapper Rare 25%, Wrecker Legendary 5%, Brawler the default and never rolled; pity: the 50th spin without a Legendary is one); 1 free spin a day, more for 250 Coins (paid random item: odds shown before spinning, paid spins only where PolicyService allows them, none in private servers' free spin); slots: 1 to start, more from the StyleSlot Robux product (up to 4), lockable; Inventory's Styles tab is the roll page (slots, equipped style, reel, odds, pity, free-spin countdown); data v2 (Styles = slots, migration keeps the equipped style), SpinStyle / EquipStyleSlot / LockStyleSlot remotes, Shop's Styles tab removed, dev panel Free spin / Pity next / +1 style slot; StyleRules rewritten + specs | #55 |
 
 ## Decisions and interpretations
 
@@ -391,7 +393,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   bends a throw toward a fighter within 15° / 80 studs of the facing (Angle 0 turns it off). Broken Highway's pillars
   now belong to their platform models, so they sink with a crumbling platform instead of staying behind. The owner
   re-tested and reported "all clear".
-- **Fighting styles (2.2):** the equipped style's numbers have applied since 1.6 (`Formulas.resolveAttack`). New: the
+- **Fighting styles (2.2; since 2026-10-19 styles come from the style roll — see "Owner's fix list, step 3"):** the equipped style's numbers have applied since 1.6 (`Formulas.resolveAttack`). New: the
   Wrecker parry — the Ability key opens a 0.2 s window (its own 1.2 s cooldown; it was on Shove until 2026-10-17); a
   punch or charged punch landing in it misses and its knockback (no damage) goes back onto the attacker from the parrier, credited to the parrier and
   scaled by ReflectMultiplier (source "Parry", so it can't be parried back). Thrown props and blasts are not parried.
@@ -650,6 +652,33 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   are already on the bottom-right key panel, and "[E] Grab" by a prop in the bottom bar); spectating or watching =
   "Switch fighter" (Z + X), Scoreboard. To make room, the bottom HUD bar, the stamina bar, the key panel and the
   spectate bar sit 14 px higher.
+- **Owner's fix list, step 3 — style roll (2026-10-19):** the owner's answers (README): "a spin costs Scrap, plus 1
+  free spin a day; a pity counter guarantees the rarest style", "a roll replaces the style in the active slot … a slot
+  can be locked", "one equip slot to start", "extra style slots are bought with Robux", "Slugger = Uncommon, Scrapper =
+  Rare, Wrecker = Legendary (Brawler stays the default)", "rolling replaces the level unlocks". Numbers (my picks, all
+  `Config.Styles.Roll`): odds Uncommon 70 / Rare 25 / Legendary 5 % (styles of one rarity would share it equally);
+  `PityAt` 50 (the 50th spin since the last Legendary is a Legendary; the counter shows "Pity: n / 50"); `SpinPrice`
+  250 Coins, so a Legendary costs about 20 spins = 5,000 Coins on average (Wrecker was 6,000 in the Shop); free spin
+  resets at 00:00 UTC; `Slots` Start 1, Max 4, `OverflowScrap` 1000 (a slot bought when already at 4 — two purchases at
+  once — pays Coins instead, never nothing). Brawler (Common) isn't in the odds: everyone starts with it and new slots
+  hold it. The roll is server-side (`StyleService.spin`: `Random`, `StyleRules.pick`), checked in this order: not
+  while fighting, the equipped slot isn't locked, then Free = today's free spin unused and not a private server
+  (nothing is earned there), Paid = `PlayerPolicyService.allows(player, "PaidRandomItems")` and enough Coins
+  (`spendScrap`, Shop sink, sku "StyleSpin"); analytics `StyleSpin` (kind, style, rarity). **Paid random item rules**
+  (README): every outcome and its exact odds are on the page before a spin; where the policy restricts paid random
+  items (or can't be read: safe default) the page offers the free spin only and says why; the maturity questionnaire
+  must now say "paid random items: yes" (docs/LAUNCH.md). **Data v2:** `Styles` = { Slots, Locked, Active, Equipped
+  (= the active slot's style, kept for every reader), Pity, FreeSpinDay }; migration 1 → 2 puts the equipped style in
+  slot 1 and drops the other owned styles (no live players yet). **UI:** the Inventory's Styles tab is the roll page
+  (`Ui/StyleRollView`, like `docs/reference/style-roll.jpg`): slot cards on the left (style in its rarity color,
+  EQUIPPED / tap to equip, Lock / Locked, "+ Style slot" with the live Robux price or "Coming soon"), the equipped
+  style's name, rarity and description in the middle with the Spin button ("SPIN · FREE" / "SPIN · 250 Coins"), the
+  free-spin countdown and the pity line, and the odds list on the right (rarity bars with percentages, each style's
+  own chance). A spin runs a 1.4 s reel through the style names that slows down and lands on the server's answer
+  ("You rolled Wrecker!", "Pity! …"). The Shop's Styles tab, level unlocks, `UnlockLevel` and style prices are gone;
+  `EquipStyle` became `EquipStyleSlot`. Developer panel (Styles + items): style buttons put that style in the
+  equipped slot, "Free spin", "Pity next" (pity = PityAt − 1), "+1 style slot" (the product's grant, overflow
+  included); "All styles" is gone.
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,

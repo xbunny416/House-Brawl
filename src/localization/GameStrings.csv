@@ -131,17 +131,46 @@ Dev.ToggleLowGraphics,Low gfx on/off,Developer panel button: switch the Low Grap
 Results.Reward,+{1} Coins  ·  +{2} XP,What the local player earned in the round,+65 Coins  ·  +140 XP
 Results.LevelUp,Level up! Level {1},Shown on the results panel after leveling up,Level up! Level 13
 Results.NewRank,New rank: {1},Shown on the results panel when the rank title changes,New rank: Raider
-Dev.Style,Style + unlocks,"Developer panel section: own and equip a style, own every cosmetic, give Coins",
+Dev.Style,Styles + items,"Developer panel section: put a style in the equipped slot, style roll tests, own every cosmetic, give Coins",
 Dev.UnlockCosmetics,All cosmetics,Developer panel button: own every cosmetic,
+Dev.FreeSpin,Free spin,Developer panel button: today's free style spin is ready again,
+Dev.PityNear,Pity next,Developer panel button: the next style spin is a pity spin,
+Dev.StyleSlot,+1 style slot,Developer panel button: what buying a style slot gives,
 Common.Close,Close,Button that closes a panel,
 Menu.Locker,Inventory,Lobby menu button that opens the Inventory,
 Locker.Title,Inventory,Title of the Inventory (equip styles and cosmetics),
 Locker.Styles,Styles,Inventory tab: fighting styles,
-Locker.Equipped,Equipped,Inventory card: this is the equipped style,
+Roll.Current,CURRENT STYLE,Style roll page: title above the equipped style's name,
+Roll.Equipped,EQUIPPED,Style roll page: the slot whose style you fight with,
+Roll.TapToEquip,Tap to equip,Style roll page: a slot you can switch to,
+Roll.Lock,Lock,Style roll page: button that locks a slot (a spin can't replace a locked slot),
+Roll.Locked,Locked,Style roll page: a locked slot (tap to unlock),
+Roll.NewSlot,+ Style slot,Style roll page: buy one more style slot (Robux),
+Roll.SpinFree,SPIN · FREE,Style roll page: the Spin button while today's free spin is ready,
+Roll.SpinPaid,SPIN · {1} Coins,Style roll page: the Spin button for a paid spin (price),SPIN · 250 Coins
+Roll.NoSpin,No spins left today,Style roll page: Spin button when the free spin is used and paid spins aren't available,
+Roll.Spinning,Spinning...,Style roll page: Spin button while the reel runs,
+Roll.FreeReady,Free spin ready!,Style roll page: today's free spin can be used,
+Roll.FreeIn,Next free spin in {1},Style roll page: time until the free spin comes back (h:mm:ss),Next free spin in 5:12:09
+Roll.Pity,Pity: {1} / {2} · {3} for sure at {2},"Style roll page: spins since the last style of the pity rarity, the spin that guarantees one, the rarity",Pity: 11 / 50 · Legendary for sure at 50
+Roll.Info,A spin replaces the style in your equipped slot. Lock a slot to keep its style.,Style roll page: how spins work,
+Roll.Odds,Odds,Style roll page: title of the odds list,
+Roll.Tier,{1} ({2}%),"Style roll page: a rarity and its chance per spin",Uncommon (70%)
+Roll.StyleChance,{1} {2}%,"Style roll page: a style and its chance per spin",Slugger 70%
+Roll.PaidNote,"After the free spin, each spin costs {1} Coins.",Style roll page: the price of a paid spin,"After the free spin, each spin costs 250 Coins."
+Roll.Got,You rolled {1}!,Style roll page: what the spin landed on,You rolled Wrecker!
+Roll.GotPity,Pity! You rolled {1}!,Style roll page: the spin was guaranteed by the pity counter,Pity! You rolled Wrecker!
+Roll.Error.NotLoaded,Your data is still loading. Try again in a moment.,Spin refused,
+Roll.Error.Fighting,You can't change styles during a fight.,Spin refused,
+Roll.Error.SlotLocked,This slot is locked. Unlock it or equip another slot to spin.,Spin refused,
+Roll.Error.NoFreeSpin,Today's free spin is used. Come back tomorrow!,Spin refused,
+Roll.Error.NotEnoughScrap,Not enough Coins for a spin.,Spin refused,
+Roll.Error.NotAllowed,Paid spins aren't available where you play. Your free spin comes back every day.,Spin refused / note: paid random items are restricted in the player's region,
+Roll.Error.PrivateServer,Free spins only work in public servers.,Spin refused in a private server (nothing is earned there),
+Roll.Error.TryAgain,Something went wrong. Try again.,Spin failed (no answer from the server),
 Locker.EquippedRemovable,Equipped · tap to take off,Inventory card: the equipped cosmetic (tapping removes it),
 Locker.Equip,Equip,Inventory card: tap to equip,
 Locker.Price,{1} Coins,Inventory card: price of an item not owned yet,1500 Coins
-Locker.UnlockStyle,Level {1} or {2} Coins,"Inventory card: how a style unlocks (level, Coins price)",Level 12 or 3000 Coins
 Locker.VIPOnly,VIP only,Inventory card: item that comes with the VIP pass,
 Locker.PremiumOnly,Premium only,Inventory card: item that comes with Roblox Premium,
 Slot.Skin,Skins,Inventory tab: cosmetic slot,
@@ -151,8 +180,10 @@ Slot.DashTrail,Dash trails,Inventory tab: cosmetic slot,
 Slot.KOEffect,KO effects,Inventory tab: cosmetic slot,
 Slot.VictoryEmote,Victory emotes,Inventory tab: cosmetic slot,
 Slot.NameplateFrame,Name plates,Inventory tab: cosmetic slot,
-Rarity.Common,Common,Cosmetic rarity,
-Rarity.Rare,Rare,Cosmetic rarity,
+Rarity.Common,Common,Rarity of a cosmetic or a fighting style,
+Rarity.Uncommon,Uncommon,Rarity of a fighting style,
+Rarity.Rare,Rare,Rarity of a cosmetic or a fighting style,
+Rarity.Legendary,Legendary,Rarity of a fighting style (the rarest),
 Rarity.Premium,Premium,Cosmetic rarity (Robux / perks),
 Cosmetic.RustBucket.Name,Rust Bucket,Skin name,
 Cosmetic.ScrapMetal.Name,Scrap Metal,Skin name,
@@ -188,15 +219,12 @@ Slot.DashTrail.One,Dash trail,Cosmetic slot name for one item,
 Slot.KOEffect.One,KO effect,Cosmetic slot name for one item,
 Slot.VictoryEmote.One,Victory emote,Cosmetic slot name for one item,
 Slot.NameplateFrame.One,Name plate,Cosmetic slot name for one item,
-Shop.Title,Shop,Title of the Shop (buy styles and cosmetics with Coins),
+Shop.Title,Shop,Title of the Shop (buy cosmetics with Coins),
 Shop.Daily,Daily deals,Shop tab: today's discounted cosmetics,
-Shop.Styles,Styles,Shop tab: fighting styles,
 Shop.DailyInfo,{1}% off today · new deals in {2},"Shop: daily discount and time until the deals change (hours:minutes:seconds)",20% off today · new deals in 5:12:09
-Shop.StylesInfo,Styles also unlock for free when you reach their level.,Shop: note above the styles,
 Shop.CosmeticsInfo,Equip what you own in your Inventory.,Shop: note above the cosmetics,
 Shop.Owned,Owned,Shop card: the player already owns this,
 Shop.DealPrice,{1} Coins (was {2}),Shop card: discounted price and the normal price,320 Coins (was 400)
-Shop.StylePrice,{1} Coins or Level {2},"Shop card: style price, or the level that unlocks it for free",1500 Coins or Level 5
 Shop.NotForSale,Not for sale,Shop card: item that cannot be bought with Coins,
 Shop.ItemDetail,{1} · {2},"Shop card: item type and rarity",Hat · Common
 Shop.Confirm,Buy {1} for {2} Coins? You have {3} Coins.,"Purchase confirmation (item name, price, the player's Coins)",Buy Cone Hat for 300 Coins? You have 1250 Coins.
@@ -242,6 +270,8 @@ Purchase.Done.VIP,VIP unlocked! Enjoy +25% Coins and your gold tags. The Gold Tr
 Purchase.Done.EmotePack,Emote Pack unlocked! Your new victory emotes are in your Inventory.,Notice after buying the Emote Pack pass,
 Purchase.Done.Scrap,+{1} Coins. Thanks for your support!,Notice after buying a Coin pack (amount),+2000 Coins. Thanks for your support!
 Purchase.Done.Cosmetic,{1} is yours! Equip it in your Inventory.,Notice after buying a Robux cosmetic (item name),Inferno is yours! Equip it in your Inventory.
+Purchase.Done.StyleSlot,New style slot! Find it in your Inventory under Styles.,Notice after buying a style slot (Robux),
+Purchase.SlotsFull,You already have every style slot: +{1} Coins instead.,Notice when a style slot was bought but the player already has the most (Coins instead),You already have every style slot: +1000 Coins instead.
 Tag.VIPChat,[VIP],Chat tag in front of a VIP player's messages,
 Dev.Robux,Robux,Developer panel section: switch perks and get Robux products for testing,
 Dev.TogglePerk,{1} on/off,Developer panel button: switch a perk (VIP / Emote Pack / Premium) on or off,VIP on/off
@@ -334,7 +364,6 @@ Dev.Target,Target: {1},Developer panel button: the player the buttons act on (ta
 Dev.TargetMe,Me,Developer panel: you are the target,
 Dev.Progress,Progress,"Developer panel section: XP, level and styles",
 Dev.GiveXP,+{1} XP,Developer panel button: give XP (level-ups apply),+1000 XP
-Dev.AllStyles,All styles,Developer panel button: own every fighting style,
 Menu.Settings,Settings,Lobby menu button that opens the Settings screen,
 Settings.Title,Settings,Title of the Settings screen,
 Settings.Tab.Visual,Visual,Settings tab: camera shake / graphics / button layout,
@@ -366,7 +395,7 @@ Tip.2,Dash right before a hit lands for a Perfect Dodge.,Loading screen tip,
 Tip.3,Hold Punch to charge a power punch.,Loading screen tip,
 Tip.4,"The more damage someone has, the further they fly.",Loading screen tip,
 Tip.5,Outer platforms crumble during the round — stay near the centre.,Loading screen tip,
-Tip.6,Claim your daily reward every day for bigger rewards.,Loading screen tip,
+Tip.6,Come back every day: a daily reward and a free style spin wait for you.,Loading screen tip,
 Tip.7,Run with Shift (or the Run button): it uses stamina.,Loading screen tip,
 Tip.8,Throw props from far away to knock rivals off.,Loading screen tip,
 Performance.LowGraphicsOn,Low graphics turned on for smoother play. Change it any time in Settings.,Notice: the game switched on Low Graphics because the frame rate was low,

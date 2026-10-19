@@ -34,10 +34,30 @@ return {
 	["template version matches VERSION"] = function()
 		expect.equal(DataTemplate.Template.Version, DataTemplate.VERSION)
 	end,
-	["new players own and equip the default style"] = function()
+	["new players start with the default style in their starting slots, slot 1 equipped"] = function()
 		local styles = DataTemplate.Template.Styles
 		expect.equal(styles.Equipped, Config.Styles.Default)
-		expect.equal(styles.Owned[Config.Styles.Default], true)
+		expect.equal(#styles.Slots, Config.Styles.Roll.Slots.Start)
+		expect.equal(#styles.Locked, Config.Styles.Roll.Slots.Start)
+		expect.equal(styles.Slots[1], Config.Styles.Default)
+		expect.equal(styles.Active, 1)
+		expect.equal(styles.Pity, 0)
+		expect.equal(styles.FreeSpinDay, -1)
+	end,
+	["migration 1 → 2: the equipped style goes into slot 1, owned styles are dropped"] = function()
+		local data: { [string]: any } = {
+			Version = 1,
+			Styles = { Owned = { Brawler = true, Wrecker = true, Slugger = true }, Equipped = "Wrecker" },
+		}
+		expect.equal(Migrations.run(data, 2), true)
+		expect.equal(data.Styles.Owned, nil)
+		expect.equal(data.Styles.Slots[1], "Wrecker")
+		expect.equal(data.Styles.Equipped, "Wrecker")
+		expect.equal(data.Styles.Active, 1)
+		expect.equal(data.Styles.Locked[1], false)
+		local gone: { [string]: any } = { Version = 1, Styles = { Owned = {}, Equipped = "Removed" } }
+		Migrations.run(gone, 2)
+		expect.equal(gone.Styles.Equipped, Config.Styles.Default, "a style that no longer exists falls back")
 	end,
 	["new players start at level 1 with starting Scrap and zeroed stats"] = function()
 		local template = DataTemplate.Template

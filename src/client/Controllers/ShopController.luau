@@ -1,8 +1,9 @@
 --!strict
 --[[
-	ShopController — the Shop (bible §2.3 / §5.3): buy fighting styles and cosmetics with Scrap. Opened from the
-	left-edge Shop button (MenuController; the Menu action opens it first), only outside a fight. Tabs: Daily deals
-	(today's cosmetics at a discount and the time until they change), Styles, then every cosmetic slot. Tapping an
+	ShopController — the Shop (bible §2.3 / §5.3): buy cosmetics with Scrap (fighting styles come from the style roll
+	in the Inventory since 2026-10-19). Opened from the left-edge Shop button (MenuController; the Menu action opens it
+	first), only outside a fight. Tabs: Daily deals (today's cosmetics at a discount and the time until they change),
+	then every cosmetic slot. Tapping an
 	item you can buy opens a confirmation with the price and your Scrap; Buy asks the server (Buy remote), which
 	checks everything again (Shared/ShopRules). After a purchase, Equip puts the item on at once.
 	The Robux tab (bible §7, Shared/MonetizationRules) lists the game passes, Scrap packs and Robux cosmetics with their
@@ -25,7 +26,6 @@ local Localization = require(Shared:WaitForChild("Localization"))
 local MonetizationRules = require(Shared:WaitForChild("MonetizationRules"))
 local Net = require(Shared:WaitForChild("Net"))
 local ShopRules = require(Shared:WaitForChild("ShopRules"))
-local StyleRules = require(Shared:WaitForChild("StyleRules"))
 
 local Client = script.Parent.Parent
 local HudFormat = require(Client:WaitForChild("Lib"):WaitForChild("HudFormat"))
@@ -35,7 +35,6 @@ local InputController = require(script.Parent:WaitForChild("InputController"))
 local MenuController = require(script.Parent:WaitForChild("MenuController"))
 
 local DAILY_TAB = "Daily"
-local STYLES_TAB = "Styles"
 local ROBUX_TAB = "Robux"
 local ROBUX_TAB_ORDER = 100 -- after every cosmetic slot
 local CARD_HEIGHT = 74 -- pixels
@@ -227,23 +226,6 @@ local function cosmeticCard(itemId: string, owned: { [string]: boolean }, day: n
 	}
 end
 
-local function styleCard(styleId: string, owned: { [string]: boolean }, day: number): Card
-	local style = Config.Styles.List[styleId]
-	local name = Localization.format(`Style.{styleId}.Name`)
-	local price = ShopRules.priceOf("Style", styleId, day)
-	local isOwned = StyleRules.owns(owned, styleId)
-	return {
-		Title = name,
-		Detail = Localization.format(`Style.{styleId}.Desc`),
-		Status = if isOwned
-			then Localization.format("Shop.Owned")
-			elseif price then Localization.format("Shop.StylePrice", { price, style.UnlockLevel })
-			else Localization.format("Shop.NotForSale"),
-		Dimmed = isOwned or price == nil,
-		Offer = if price and not isOwned then { Kind = "Style", Id = styleId, Price = price, Name = name } else nil,
-	}
-end
-
 local function cardsFor(tab: string, day: number): { Card }
 	local data = DataController.get()
 	local cards: { Card } = {}
@@ -253,10 +235,6 @@ local function cardsFor(tab: string, day: number): { Card }
 	if tab == DAILY_TAB then
 		for _, itemId in ShopRules.dailyItems(day) do
 			table.insert(cards, cosmeticCard(itemId, data.Cosmetics.Owned, day, true))
-		end
-	elseif tab == STYLES_TAB then
-		for _, styleId in Config.Styles.Order do
-			table.insert(cards, styleCard(styleId, data.Styles.Owned, day))
 		end
 	elseif tab == ROBUX_TAB then
 		return robuxCards(data.Cosmetics.Owned)
@@ -271,8 +249,6 @@ end
 local function infoText(): string
 	if currentTab == DAILY_TAB then
 		return dailyInfo()
-	elseif currentTab == STYLES_TAB then
-		return Localization.format("Shop.StylesInfo")
 	elseif currentTab == ROBUX_TAB then
 		return Localization.format("Shop.RobuxInfo")
 	end
@@ -305,11 +281,7 @@ local function closeDialog()
 end
 
 local function equip(offer: Offer)
-	if offer.Kind == "Style" then
-		Net.fire("EquipStyle", offer.Id)
-	else
-		Net.fire("EquipCosmetic", Config.Cosmetics.Items[offer.Id].Slot, offer.Id)
-	end
+	Net.fire("EquipCosmetic", Config.Cosmetics.Items[offer.Id].Slot, offer.Id)
 	closeDialog()
 end
 
@@ -482,9 +454,8 @@ local function build()
 	local tabLayout = Kit.list(tabs, Enum.FillDirection.Vertical, UDim.new(0.015, 0))
 	tabLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 	addTab(DAILY_TAB, Localization.format("Shop.Daily"), 0)
-	addTab(STYLES_TAB, Localization.format("Shop.Styles"), 1)
 	for order, slot in CosmeticRules.usedSlots() do
-		addTab(slot, Localization.format(`Slot.{slot}`), order + 1)
+		addTab(slot, Localization.format(`Slot.{slot}`), order)
 	end
 	addTab(ROBUX_TAB, Localization.format("Shop.Robux"), ROBUX_TAB_ORDER)
 
@@ -515,7 +486,7 @@ function ShopController.Start(_self: any)
 	build()
 	MenuController.addScreen(Localization.format("Menu.Shop"), 1, gui, onOpen)
 	DataController.Changed:Connect(function(key: string)
-		if gui.Enabled and (key == "Scrap" or key == "Styles" or key == "Cosmetics" or key == "Level") then
+		if gui.Enabled and (key == "Scrap" or key == "Cosmetics" or key == "Level") then
 			render()
 		end
 	end)

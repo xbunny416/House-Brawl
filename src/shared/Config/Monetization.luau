@@ -9,11 +9,13 @@
 	    tag and chat tag in VIPColor.
 	  * Roblox Premium (not sold here) unlocks the cosmetics whose Exclusive is "Premium" and +10% Scrap while the
 	    player is subscribed.
-	  * Products: Scrap packs (Scrap) and Robux-only cosmetics (Cosmetic = the item, whose Exclusive is "Robux"),
-	    granted once per purchase (DataService.processReceipt) and kept for good.
+	  * Products: Scrap packs (Scrap), Robux-only cosmetics (Cosmetic = the item, whose Exclusive is "Robux") and the
+	    style slot (StyleSlot: one more slot for the style roll, up to Config.Styles.Roll.Slots.Max; sold on the
+	    Inventory's Styles page, not in the Shop's Robux tab), granted once per purchase (DataService.processReceipt)
+	    and kept for good.
 ]]
 export type Pass = { Id: number, PriceRobux: number }
-export type Product = { Id: number, PriceRobux: number, Scrap: number?, Cosmetic: string? }
+export type Product = { Id: number, PriceRobux: number, Scrap: number?, Cosmetic: string?, StyleSlot: boolean? }
 
 type MonetizationConfig = {
 	GamePasses: { [string]: Pass },
@@ -38,6 +40,8 @@ local Monetization: MonetizationConfig = {
 		InfernoSkin = { Id = 0, PriceRobux = 149, Cosmetic = "Inferno" },
 		LightningTrail = { Id = 0, PriceRobux = 99, Cosmetic = "LightningTrail" },
 		GalaxyBurst = { Id = 0, PriceRobux = 199, Cosmetic = "GalaxyBurst" },
+		-- One more style slot (owner, 2026-10-19: extra style slots are bought with Robux).
+		StyleSlot = { Id = 0, PriceRobux = 99, StyleSlot = true },
 	},
 	-- The Shop's Robux tab, in this order (game pass and product keys).
 	RobuxOrder = {
