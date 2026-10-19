@@ -199,8 +199,8 @@ machine (HP 80) ×3, lawn chair stack (HP 60) ×3.
   off-white, neon accents. Materials: SmoothPlastic, Metal, CorrodedMetal, Concrete, Neon (sparingly). Chunky comic
   shapes.
 - Late-afternoon dusk, orange sky, dusty haze (Atmosphere density ~0.35), light fog, faint toxic-green glow from below.
-  Neon Motel is night. Lighting technology: **Future** (owner, 2026-10-19; set in `default.project.json`): local lights
-  light and shade properly; in the lobby the hanging and floor lamps cast soft shadows.
+  Neon Motel is night. Lighting: **LightingStyle Realistic** (Roblox's Future look; owner, 2026-10-19;
+  set in `default.project.json`): local lights light and shade properly; in the lobby the hanging and floor lamps cast soft shadows.
 - Low draw calls (reuse meshes, no high-tri unions, CastShadow off on small props), cap 40 active props per arena,
   "Low Graphics" setting disables particles, post-effects and shadows (the sun's and the lobby lamps'). StreamingEnabled ON (target 256, min 128). Arena
   platforms use ModelStreamingMode = Persistent.
