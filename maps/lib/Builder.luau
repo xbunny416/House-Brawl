@@ -161,6 +161,17 @@ function Builder.part(spec: PartSpec): any
 	return instance
 end
 
+-- A Seat players can sit on, built like a part (Shape works too). Tagged LobbySeat: a client prompt asks the server
+-- to sit you down (SeatService). CanTouch is off, so walking into it never sits you down by accident.
+function Builder.seat(spec: PartSpec): any
+	local seat = Instance.new("Seat")
+	seat.Shape = (Enum.PartType :: any)[spec.Shape or "Block"]
+	applyCommon(seat, spec)
+	seat.CanTouch = false
+	seat:AddTag("LobbySeat")
+	return seat
+end
+
 -- A SpawnLocation (neutral, no spawn forcefield) built like a part.
 function Builder.spawnLocation(spec: PartSpec): any
 	local spawn = Instance.new("SpawnLocation")

@@ -84,6 +84,13 @@ local Definitions: { [string]: Definition } = {
 	RoundResults = { Kind = "Event", Direction = "ToClient" },
 	-- Client -> server: spectate this player (UserId), or 0 to stop. Only while the sender is spectating.
 	Spectate = { Kind = "Event", Direction = "ToServer", Args = { Guard.integer(0, 2 ^ 53) } },
+	-- Client -> server: sit on a lobby seat (a LobbySeat-tagged Seat; SeatService checks it). (seat: Seat)
+	Sit = {
+		Kind = "Event",
+		Direction = "ToServer",
+		Args = { Guard.instance("Seat") },
+		RateLimit = { Rate = 2, Burst = 3 },
+	},
 	-- Client -> server: "I had input lately" (AFK tracking), at most every Round.Participation.ActivityPingInterval.
 	Activity = { Kind = "Event", Direction = "ToServer", Args = {}, RateLimit = { Rate = 1, Burst = 3 } },
 

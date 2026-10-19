@@ -26,7 +26,7 @@ type ControlsConfig = {
 		Gap: number,
 		Layouts: { [string]: { TouchButton } },
 	},
-	Prompts: { Keyboard: string, Gamepad: string, MaxDistance: number },
+	Prompts: { Keyboard: string, Gamepad: string, MaxDistance: number, SitDistance: number, SitTolerance: number },
 	Hints: { Lobby: { Hint }, Round: { Hint }, Spectating: { Hint }, PromptAction: string },
 	Camera: {
 		MinZoom: number,
@@ -85,7 +85,8 @@ local Controls: ControlsConfig = {
 	},
 	-- Walk-up prompts in the lobby (bartender → Shop, locker booth → Locker): the keys are Grab's, which has nothing
 	-- to grab in the lobby; touch taps the prompt. MaxDistance in studs.
-	Prompts = { Keyboard = "E", Gamepad = "ButtonB", MaxDistance = 12 },
+	-- SitDistance: how close a lobby seat's Sit prompt shows (studs); the server allows SitTolerance more (lag).
+	Prompts = { Keyboard = "E", Gamepad = "ButtonB", MaxDistance = 12, SitDistance = 7, SitTolerance = 4 },
 	-- Small light-grey key hints along the bottom edge (owner's fix list, 2026-10-19; keyboard and gamepad only, touch
 	-- has its buttons): each shows its actions' keys and a GameStrings key, by where the player is (Client/Lib/HintRules).
 	-- Near a walk-up prompt the lobby list adds "[key] <prompt text>"; PromptAction is the action whose keys prompts use.

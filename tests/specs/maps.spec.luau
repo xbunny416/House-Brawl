@@ -335,6 +335,31 @@ return {
 			expect.truthy(stats[stat], `leaderboard {stat}`)
 		end
 	end,
+	["lobby: 50% bigger than the first Hideout (92 × 68 → 138 × 102)"] = function()
+		expect.equal(Hideout.Inner[1], 138)
+		expect.equal(Hideout.Inner[2], 102)
+		local north = lobby:FindFirstChild("NorthWall", true)
+		expect.near(north.Size.X, Hideout.Inner[1] + 4, 0.001, "north wall spans the room")
+	end,
+	["lobby: seats are upright, untouchable LobbySeat Seats inside the room, off the join pad"] = function()
+		local seats = tagged(lobby, "LobbySeat")
+		expect.truthy(#seats >= 20, `{#seats} seats`)
+		local origin = Config.Maps.LobbyOrigin
+		local pad = Hideout.JoinPad
+		for _, seat in seats do
+			expect.equal(seat.ClassName, "Seat", seat.Name)
+			expect.equal(seat.CanTouch, false, `{seat.Name} sits people down on touch`)
+			expect.near(seat.CFrame.UpVector.Y, 1, 0.001, `{seat.Name} is not upright`)
+			local x, z = seat.CFrame.Position.X - origin[1], seat.CFrame.Position.Z - origin[3]
+			expect.truthy(
+				math.abs(x) < Hideout.Inner[1] / 2 and math.abs(z) < Hideout.Inner[2] / 2,
+				`{seat.Name} outside`
+			)
+			local onPad = math.abs(x - pad.Center[1]) < pad.Size[1] / 2
+				and math.abs(z - pad.Center[2]) < pad.Size[2] / 2
+			expect.equal(onPad, false, `{seat.Name} on the join pad`)
+		end
+	end,
 	["lobby: KillY sits below the floor"] = function()
 		expect.equal(lobby:GetAttribute("KillY"), Config.Maps.LobbyOrigin[2] - 40)
 	end,

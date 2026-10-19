@@ -138,19 +138,24 @@ Not used. No pets, eggs, or paid random items.
 
 | Zone | Description |
 | --- | --- |
-| Lobby — "The Hideout" (enclosed hideout bar) | Shop (bar counter), Locker booth (Inventory), Quest board, leaderboards, join pad |
+| Lobby — "The Hideout" (enclosed hideout lounge) | Shop (bar counter), Locker booth (Inventory), Quest board, leaderboards, join pad, seats |
 | Map 1 — Broken Highway | Shattered overpass chunks, abandoned cars, road signs |
 | Map 2 — Junkyard Isles | Stacked car and container islands over toxic sludge |
 | Map 3 — Neon Motel | Sinking motel rooftops, flickering retro neon, pool on one roof |
 
 ### 3.2 Visual & spatial guidelines
 
-**Lobby (The Hideout):** an enclosed hideout bar (owner's change, 2026-10-16: a closed space, not the open Rust
-Diner rooftop; no Training Yard). North — the bar counter with the Shop NPC (the bartender), bottle shelves, map vote
-CRT TVs hanging over the bar and mode vote TVs on the counter ends, big neon "JUNKYARD BRAWL" sign. East — the steel
-ARENA door with the glowing join pad. West — Locker booth, Codes jukebox, Quest board (cork board). South —
-leaderboard screens and the spawns. Pool table, booths, high tables, crates and hanging lamps; brick walls, steel
-beams, neon trim. Walk up to the bartender for the Shop and into the locker booth for the Inventory (a prompt: E / gamepad B /
+**Lobby (The Hideout):** an enclosed hideout lounge (owner's changes: a closed space, not the open Rust Diner
+rooftop, no Training Yard, 2026-10-16; 50% bigger — 138 × 102 studs, 28 high — and furnished like the reference
+pictures, 2026-10-19). Grey-green plaster walls over dark wood wainscoting with a gold rail, dark wood pillars with
+white wall lamps, wood beams, a light carpet (wood planks in the bar). North — the bar counter with the Shop NPC (the
+bartender), bar stools, bottle shelves, map vote CRT TVs hanging over the bar and news TVs on the counter ends, the
+"JUNKYARD BRAWL" sign; booths in both corners. East — the steel ARENA door with the glowing join pad. West — Locker
+booth, Codes jukebox, the cork quest board, a kitchen counter (sink, microwave, coffee machine) and two metal bunk
+beds. South — three tall dark leaderboard boards, the spawns, vending machines and the street door. Middle — the
+lounge (dark rug with a gold ring, round black marble table on a gold base, red sofa and two armchairs, floor lamps
+with white shades, potted topiaries), a pool table and high tables with stools. Every sofa, armchair, booth bench and
+stool can be sat on: walk up and press Sit (E / gamepad B / tap); jump to stand up. Walk up to the bartender for the Shop and into the locker booth for the Inventory (a prompt: E / gamepad B /
 tap); both also open from the left-edge menu.
 
 **Broken Highway arena:**

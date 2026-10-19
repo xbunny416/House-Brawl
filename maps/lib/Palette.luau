@@ -33,4 +33,22 @@ return {
 	Bottle = "#3E7A4A",
 	Amber = "#C8781E",
 	CrtGlow = "#4A8C96", -- a lit old TV screen
+	-- The lobby's lounge style (owner's reference pictures, 2026-10-19).
+	Plaster = "#5C6762", -- grey-green upper walls
+	WoodDark = "#4A2A1C", -- wainscot panels, pillars, beams
+	Gold = "#D9B44A", -- trim, lamp poles, table bases
+	Marble = "#141416",
+	Rug = "#1E3B3C",
+	Sofa = "#7E2420",
+	Shade = "#F3F0E6", -- lamp shades
+	Leaf = "#6FA556",
+	Carpet = "#D8D4CB",
+	Mattress = "#E9E5DC",
+	Blanket = "#3E6B3B",
+	BlanketRed = "#5C1C17",
+	Cabinet = "#EEEBE4",
+	Countertop = "#2B2D31",
+	VendRed = "#C9302C",
+	Cream = "#F0E2C0", -- leaderboard titles
+	BoardDark = "#1C1C1F",
 }
