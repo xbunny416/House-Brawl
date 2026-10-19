@@ -79,6 +79,11 @@ function HudFormat.thousands(value: number): string
 	return if whole < 0 then "-" .. grouped else grouped
 end
 
+-- The medal a leaderboard rank shows: "Gold" / "Silver" / "Bronze" for the top 3, nil below.
+function HudFormat.medal(rank: number): string?
+	return ({ "Gold", "Silver", "Bronze" })[rank]
+end
+
 -- The color a Percent is shown in.
 function HudFormat.percentColor(percent: number): Rgb
 	if percent <= STOPS[1].at then

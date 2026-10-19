@@ -44,6 +44,12 @@ return {
 		expect.equal(HudFormat.longClock(86400), "24:00:00")
 		expect.equal(HudFormat.longClock(-1), "0:00:00")
 	end,
+	["leaderboard medals: gold, silver, bronze for the top 3"] = function()
+		expect.equal(HudFormat.medal(1), "Gold")
+		expect.equal(HudFormat.medal(2), "Silver")
+		expect.equal(HudFormat.medal(3), "Bronze")
+		expect.equal(HudFormat.medal(4), nil)
+	end,
 	["thousands: groups of three digits, whole part, minus sign kept"] = function()
 		expect.equal(HudFormat.thousands(0), "0")
 		expect.equal(HudFormat.thousands(999), "999")

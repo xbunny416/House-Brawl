@@ -17,6 +17,12 @@ Kit.Colors = {
 	Coin = Color3.fromHex("#F2C14E"),
 	Live = Color3.fromHex("#E5484D"), -- the "game in progress" dot
 	Hint = Color3.fromHex("#D0D0D0"), -- the small key hints along the bottom edge
+	-- Leaderboard boards (reference: docs/reference/leaderboard-boards.png).
+	Gold = Color3.fromHex("#E8C04A"),
+	Silver = Color3.fromHex("#C9CED6"),
+	Bronze = Color3.fromHex("#D08A4E"),
+	Cream = Color3.fromHex("#F0E2C0"),
+	BoardRow = Color3.fromHex("#26262B"),
 }
 Kit.TitleFont = Enum.Font.GothamBlack
 Kit.BodyFont = Enum.Font.GothamBold
