@@ -33,7 +33,9 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   screen) is done; part 2 (Game in progress card with Watch, bottom-edge key hints) is done; 3/6 the style roll is
   done (owner-side: create the StyleSlot product, declare paid random items on the maturity form); 4/6 part 1 (the
   lobby 25% bigger, the reference's style with detailed furniture, seats) is done; part 2 (TV news, leaderboard board look) is done; 5/6 (every
-  arena platform doubled again, the crumble closing in toward the centre) is done; next 6/6 the lobby spin wheel.
+  arena platform doubled again, the crumble closing in toward the centre) is done; 6/6 the lobby spin wheel is done — **the fix list is
+  complete** (left: the optional bartender phrases and lobby minigames; owner-side: the StyleSlot product, the maturity
+  form's paid random items, playtests).
 
 ## How this repo works
 
@@ -309,6 +311,7 @@ any errors are fixed before the next item.
 | 2026-10-19 | Owner's fix list 4/6, part 2 — lobby news TVs (NewsController: a "JUNKYARD NEWS" channel on both NewsScreen TVs — red banner with a blinking LIVE dot, a headline every 8 s with a burst of static, a scrolling ticker, CRT scanlines; 12 fun headlines mixed with live news: the last winner, today's daily deal, the Wins leader; pure Lib/NewsRules + spec; Config.World.News) and leaderboard rows like the reference (rank · headshot · name · value with thousands separators; top 3 in gold / silver / bronze outlines; headshots cached; HudFormat.medal + spec) | #62 |
 | 2026-10-20 | The three big bar TVs get screens too (owner: "about 3 big tv, screen only show in 2 small"): NewsController draws the news channel on the VoteScreen TVs as well, and over it the round when there is one — during the map vote each TV shows one map of the ballot with its votes and the time left (VoteState), during a round the middle TV shows the live match (arena, time left, fighters still in) | #63 |
 | 2026-10-20 | Owner's fix list 5/6 — arenas: every platform doubled again (owner picked "double every platform" over an outer ring) by Arena.grow, which keeps every gap and climb (a platform moves out from the one it is reached from by exactly what both grew), contents spread with them (Arena.growContents), decor spread to match (crane arm rebuilt to reach), sludge / flood 2800 wide; Broken Highway centre 240 × 160, arenas about 580 studs across; the crumble closes in: CrumbleRules picks from the outer ring (within Round.Crumble.RingWidth = 40 studs of the farthest standing platform from the arena centre) | #64 |
+| 2026-10-20 | Owner's fix list 6/6 — lobby spin wheel: a wheel on the west wall (pie slices from wedges, painted and turned on every client to each spin's prize: WheelSpun), its screen (walk-up prompt, and a third tab next to Daily reward / Quests: prizes with exact odds, Spin, free-spin countdown, a highlight that lands on the prize), WheelService (1 free spin a day, more for 200 Coins where PolicyService allows paid random items, none in private servers or while fighting; prizes Coins / XP / a bonus free style spin / a random unowned cosmetic), pure WheelRules + spec, Config.Retention.Wheel, data Wheel + Styles.BonusSpins (the style roll uses them after the day's free spin), DataService reconciles again after migrations, Builder `Axes`, dev "Wheel spin" | #PR |
 
 ## Decisions and interpretations
 
@@ -771,6 +774,28 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   passes each platform's flat distance from `Maps.ArenaOrigin`) — so the far peaks and lows fall first, then the ledges
   and sides, and the centre last. Timing is unchanged (from 1:00, every 20 s, 2 platforms always remain), so a 4:00 round
   still drops most of the outer platforms. Not playtested: whether 4:00 and 16 spawns suit the bigger maps.
+- **Owner's fix list, step 6 — the lobby spin wheel (2026-10-20):** the owner's answer: "1 free spin a day plus extra
+  spins for Scrap" (a paid random item: exact odds, hidden where restricted, declared on the maturity form). My picks
+  (`Config.Retention.Wheel`, all tunable): 200 Coins a paid spin; prizes in wheel order with exact chances — 50 Coins
+  30%, 150 XP 15%, 100 Coins 20%, a free style spin 10%, 250 Coins 12%, a random cosmetic 5%, 500 Coins 6%, 1,000 Coins
+  2% (about 180 Coins' worth on average, a mild Coins sink). **Server** (`WheelService`, `SpinWheel` remote): checks in
+  order: not a private server (nothing is earned there), not fighting, then Free = `Wheel.FreeDay` before today (UTC),
+  Paid = `PlayerPolicyService.allows(player, "PaidRandomItems")` and enough Coins (`spendScrap`, Shop sink, sku
+  "WheelSpin"); rolls with `Random` (`WheelRules.pick`) and pays: Coins (`addScrap`, Gameplay, sku "Wheel.<id>"), XP
+  (`addXP`), StyleSpin (`Styles.BonusSpins` + 1: the style roll's free spin is ready while there are bonus spins, after
+  the day's own one), Cosmetic (`WheelRules.cosmeticFor`: a random one sold for Coins the player doesn't own, else
+  `CosmeticFallbackScrap` = 500); analytics `WheelSpin` (kind, prize, cosmetic); `WheelSpun` (index, name) to every
+  client. **Lobby** (`maps/layouts/Hideout`, west wall between two pillars, z −25.5): a wood backboard with a gold rim, a
+  pointer and a "SPIN TO WIN" sign; the `Rotor` holds a black face, 8 pie slices (each two right-angled wedges placed
+  with `Builder` part `Axes`, attribute `Segment`), gold pegs and a hub. `WheelController` paints the slices in the prize
+  colours and, on every `WheelSpun`, turns each Rotor about its hub's axis (4 s, 4 turns, ease-out) so the prize lands
+  under the pointer. **Screen** (`WheelController`, opened by the walk-up prompt on the Backboard and as the third tab of
+  the Daily reward / Quests tab row; no menu button): on the right so the wheel stays in view; every prize with its colour
+  and exact chance, the Spin button (SPIN · FREE / SPIN · 200 Coins / no free spin left), the free-spin countdown, the
+  paid-spin price or why paid spins aren't offered, and a highlight that runs down the list and lands on the server's
+  answer ("You won 250 Coins!"). Data: `Wheel = { FreeDay }`, `Styles.BonusSpins` (new template fields; `DataService`
+  now reconciles again after migrations so a rebuilt table gets fields added later). Dev panel → Daily → "Wheel spin"
+  makes today's free spin ready again. docs/LAUNCH.md's maturity note now names wheel spins too.
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,

@@ -105,6 +105,7 @@ local function loadProfile(player: Player)
 		player:Kick(Localization.format("Data.LoadFailed"))
 		return
 	end
+	profile:Reconcile() -- again: a migration may rebuild a table without fields added to the template after it
 
 	profile.OnSessionEnd:Connect(function()
 		-- Only reached while still registered when the session was ended from outside (e.g. another server

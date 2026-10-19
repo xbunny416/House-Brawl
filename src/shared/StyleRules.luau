@@ -7,8 +7,9 @@
 	  * Odds: each rarity in Roll.Odds has that chance in percent, shared equally by its styles; rarities missing from
 	    Odds (the default style's) are never rolled. Pity: the PityAt-th spin since the last PityRarity style is one
 	    for sure.
-	  * One free spin a day (FreeSpinDay, days from FreeSpinResetHourUTC); more cost SpinPrice Scrap. Paid spins are a
-	    paid random item: the server only allows them where PolicyService does (PaidAllowed).
+	  * One free spin a day (FreeSpinDay, days from FreeSpinResetHourUTC), plus BonusSpins won on the lobby spin wheel
+	    (used once the day's free spin is gone); more cost SpinPrice Scrap. Paid spins are a paid random item: the
+	    server only allows them where PolicyService does (PaidAllowed).
 ]]
 local Config = require(script.Parent.Config)
 local DataTemplate = require(script.Parent.Data.Template)
@@ -111,8 +112,9 @@ function StyleRules.dayAt(unixTime: number): number
 	return Formulas.dayNumber(unixTime, Roll.FreeSpinResetHourUTC)
 end
 
+-- True if a free spin is there: today's, or a bonus spin from the lobby spin wheel.
 function StyleRules.freeSpinReady(styles: Styles, day: number): boolean
-	return styles.FreeSpinDay < day
+	return styles.FreeSpinDay < day or (styles.BonusSpins or 0) > 0
 end
 
 -- The equipped style: the active slot's, or the default style if that slot holds nothing known.
@@ -159,7 +161,11 @@ function StyleRules.applySpin(styles: Styles, kind: string, day: number, styleId
 	styles.Equipped = styleId
 	styles.Pity = StyleRules.nextPity(styles.Pity, styleId)
 	if kind == "Free" then
-		styles.FreeSpinDay = day
+		if styles.FreeSpinDay < day then
+			styles.FreeSpinDay = day -- today's free spin first
+		else
+			styles.BonusSpins = math.max((styles.BonusSpins or 0) - 1, 0)
+		end
 	end
 end
 
