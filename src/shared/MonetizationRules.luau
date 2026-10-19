@@ -2,7 +2,7 @@
 --[[
 	MonetizationRules — what Robux and Roblox Premium unlock (pure; shared so the Shop agrees with the server).
 	Bible §7, Config.Monetization.
-	  * Perks are things a player has or not: the game passes (VIP, EmotePack) and Roblox Premium. A cosmetic whose
+	  * Perks are things a player has or not: the VIP game pass and Roblox Premium. A cosmetic whose
 	    Exclusive is a perk is owned while the player has it; `ownershipChanges` lists what to grant and what to take
 	    back once the perks are known (an unknown perk — a failed web call, an id of 0 — changes nothing).
 	  * Robux cosmetics (Exclusive "Robux") come from the developer product whose Cosmetic names them and stay owned.
@@ -11,7 +11,7 @@
 ]]
 local Config = require(script.Parent.Config)
 
-export type Perk = "VIP" | "EmotePack" | "Premium"
+export type Perk = "VIP" | "Premium"
 export type Offer = {
 	Key: string,
 	Kind: "Pass" | "Product",
@@ -23,7 +23,7 @@ export type Offer = {
 
 local MonetizationRules = {}
 
-MonetizationRules.Perks = { "VIP", "EmotePack", "Premium" } :: { Perk }
+MonetizationRules.Perks = { "VIP", "Premium" } :: { Perk }
 
 function MonetizationRules.isPerk(name: string): boolean
 	return table.find(MonetizationRules.Perks, name :: Perk) ~= nil

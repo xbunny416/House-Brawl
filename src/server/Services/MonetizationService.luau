@@ -1,11 +1,11 @@
 --!strict
 --[[
 	MonetizationService — Robux purchases and perks (bible §7; Config.Monetization, Shared/MonetizationRules).
-	  * Perks: the VIP and Emote Pack game passes (UserOwnsGamePassAsync once the player's data loads, retried; and
+	  * Perks: the VIP game pass (UserOwnsGamePassAsync once the player's data loads, retried; and
 	    PromptGamePassPurchaseFinished for a pass bought in this server) and Roblox Premium (MembershipType, and
-	    PlayerMembershipChanged). Each perk is a Player attribute (VIP / EmotePack / Premium: Shop, name and chat
-	    tags) and keeps its exclusive cosmetics owned: granted while the perk is there, taken back (and unequipped)
-	    once it is known to be gone. `has(player, perk)` feeds the VIP / Premium Scrap bonuses (RewardService).
+	    PlayerMembershipChanged). Each perk is a Player attribute (VIP / Premium: Shop, name and chat tags) and keeps
+	    its exclusive cosmetics owned: granted while the perk is there, taken back (and unequipped) once it is known
+	    to be gone. `has(player, perk)` feeds the VIP / Premium Scrap bonuses (RewardService).
 	  * Developer products: MarketplaceService.ProcessReceipt → DataService.processReceipt (granted once per
 	    PurchaseId, confirmed only after the grant is saved). Scrap packs add Scrap (IAP transaction, sku = product
 	    key); Robux cosmetics grant their item for good; StyleSlot adds a style slot (StyleService.addSlot), or

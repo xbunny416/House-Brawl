@@ -23,16 +23,12 @@ end
 return {
 	["bible §7 prices and contents"] = function()
 		expect.equal(Monetization.GamePasses.VIP.PriceRobux, 299)
-		expect.equal(Monetization.GamePasses.EmotePack.PriceRobux, 149)
+		expect.equal(Monetization.GamePasses.EmotePack, nil, "the Emote Pack went with the victory emotes")
 		expect.equal(Monetization.Products.ScrapPackS.Scrap, 500)
 		expect.equal(Monetization.Products.ScrapPackM.Scrap, 2000)
 		expect.equal(Monetization.Products.ScrapPackL.Scrap, 6000)
 		expect.equal(Config.Economy.Bonuses.VIPScrap, 0.25)
 		expect.equal(Config.Economy.Bonuses.PremiumScrap, 0.1)
-		expect.equal(#MonetizationRules.itemsFrom("EmotePack"), 4, "the Emote Pack's 4 emotes")
-		for _, id in MonetizationRules.itemsFrom("EmotePack") do
-			expect.equal(Config.Cosmetics.Items[id].Slot, "VictoryEmote", id)
-		end
 		expect.truthy(table.find(MonetizationRules.itemsFrom("VIP"), "GoldTrail"), "VIP gold dash trail")
 		expect.truthy(table.find(MonetizationRules.itemsFrom("Premium"), "PremiumGold"), "Premium skin")
 	end,
@@ -118,11 +114,9 @@ return {
 		grant, revoke = MonetizationRules.ownershipChanges({ GoldTrail = true, PremiumGold = true }, {})
 		expect.equal(#grant + #revoke, 0, "nothing known yet")
 
-		grant, revoke = MonetizationRules.ownershipChanges({ Inferno = true }, { VIP = false, EmotePack = false })
+		grant, revoke = MonetizationRules.ownershipChanges({ Inferno = true }, { VIP = false, Premium = false })
 		expect.equal(#revoke, 0, "Robux cosmetics are kept")
 
-		grant = MonetizationRules.ownershipChanges({ Robot = true }, { EmotePack = true })
-		expect.equal(#grant, 3, "only the missing emotes")
 		grant, revoke = MonetizationRules.ownershipChanges({}, { Premium = true, VIP = false })
 		expect.equal(table.concat(grant, ","), "PremiumGold")
 		expect.equal(#revoke, 0)

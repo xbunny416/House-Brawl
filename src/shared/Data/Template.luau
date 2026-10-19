@@ -81,7 +81,7 @@ export type PlayerData = {
 	Codes: { [string]: boolean }, -- redeem codes this player has used (ServerConfig.Codes keys)
 }
 
-local VERSION = 2 -- 2: styles in slots (the style roll) instead of owned styles
+local VERSION = 3 -- 2: styles in slots (the style roll) instead of owned styles; 3: victory emotes removed
 
 local defaultStyle = Config.Styles.Default
 

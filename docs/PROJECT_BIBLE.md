@@ -110,11 +110,12 @@ policy restricts them, and declared on the maturity questionnaire.
 | Scrapper | Shovel | Rare (25%) | Wide sweep hitbox 7×4×5, Damage ×0.9, charged punch KB ×1.1 |
 | Wrecker | Wrench + hubcap shield | Legendary (5%) | Ability key (F / Y / Parry button): a 0.2 s parry (cooldown 1.2 s) — a punch or charged punch landing in it misses and its knockback (not damage) hits the attacker instead; Punch Damage ×0.95 |
 
-- **Cosmetics** (Scrap or Robux): skins, hats, back items, dash trails, KO effects, victory emotes, name-plate frames.
+- **Cosmetics** (Scrap or Robux): skins, hats, back items, dash trails, KO effects, name-plate frames (victory emotes
+  were removed by the owner, 2026-10-19).
   Catalog in `Config.Cosmetics.Items` (blockout visuals until the art pass). KO effects burst at the victim for HP KOs
-  and around the scorer for ring-outs. Victory emotes play once animations exist (2.6). Equipped in the Inventory.
+  and around the scorer for ring-outs. Equipped in the Inventory.
   Common 300–800 Scrap; Rare 1,200–2,500 Scrap; Premium = Robux only (sold as developer products, or coming with the
-  VIP / Emote Pack passes or Roblox Premium: §7).
+  VIP pass or Roblox Premium: §7).
 - **Daily rotating shop:** 4 cosmetics rotate every 24 h (UTC) and sell at 20% off (`DailyRotation.Discount`); the
   picks are the same for everyone (seeded by the day). Every Scrap item is always buyable in its own tab; exclusive
   VIP / Premium items never sell for Scrap.
@@ -240,19 +241,18 @@ machine (HP 80) ×3, lawn chair stack (HP 60) ×3.
 - Props: folding chair, wooden crate, tire, bucket, CRT TV, oil barrel, explosive barrel, fridge, car door, traffic
   cone.
 - Structures: wrecked car, vending machine, road barrier stack, broken road signs, billboards.
-- Launch cosmetics: 6 skins, 6 hats, 4 dash trails, 4 KO effects, 4 victory emotes.
+- Launch cosmetics: 6 skins, 6 hats, 4 dash trails, 4 KO effects.
 
 ### 4.2 Animation (R15; Creator Store, Animation Capture, or scripted)
 
 Punch chain jab/cross/uppercut (0.3 s each); charge wind-up + charged punch or swing (0.5 s); bat/shovel/wrench swings (0.45 s);
 Dash lean (0.25 s); Grab crouch-lift (0.3 s) + carry idle/walk loop; overhead Throw (0.4 s); hit reaction / launched
-tumble (0.6 s, loops in hitstun); 4 victory emotes (2 s).
+tumble (0.6 s, loops in hitstun).
 
 Built as **scripted** R15 poses (step 2.6): keyframed joint angles blended over Roblox's default walk / idle
 animations on every client, triggered by the server when an action really happens. Weapon styles chain two swings
 and an overhead smash (Scrapper's shovel sweeps low); the Wrecker's Ability is a parry pose with the hubcap; the
-tumble backflips through the whole hitstun. The round winner plays their victory emote back in the lobby; equipping
-an emote previews it. Attacks wind up, strike with a small overshoot and hold; landed hits freeze attacker and
+tumble backflips through the whole hitstun. Attacks wind up, strike with a small overshoot and hold; landed hits freeze attacker and
 victim for a few frames (hit-stop); bodies lean into their movement, tuck up in the air, raise a guard when standing
 still in a round, and recoil away from where a hit came from. Any clip can later be replaced by an uploaded
 animation (Config.Animations.AssetIds).
@@ -338,7 +338,6 @@ confirmations, Developer test panel.
 | Item | Type | Price | Contents |
 | --- | --- | --- | --- |
 | VIP | Game pass | 299 R$ | +25% Scrap, gold name tag + chat tag, exclusive gold dash trail |
-| Emote Pack | Game pass | 149 R$ | 4 extra victory emotes: Robot, Salute, Air Guitar, Backflip |
 | Scrap Pack S | Dev product | 49 R$ | 500 Scrap |
 | Scrap Pack M | Dev product | 149 R$ | 2,000 Scrap |
 | Scrap Pack L | Dev product | 399 R$ | 6,000 Scrap |

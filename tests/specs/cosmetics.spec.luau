@@ -21,13 +21,14 @@ local function isEnumItem(enum: any, name: string): boolean
 end
 
 return {
-	["launch catalog: 6 skins, 6 hats, 4 dash trails, 4 KO effects, 4 victory emotes (plus Robux / Emote Pack items)"] = function()
-		-- Robux cosmetics and the Emote Pack's emotes (bible §7) come on top of the launch catalog (§4.1).
+	["launch catalog: 6 skins, 6 hats, 4 dash trails, 4 KO effects (plus Robux items); no victory emotes"] = function()
+		-- Robux cosmetics (bible §7) come on top of the launch catalog (§4.1). Victory emotes were removed (owner,
+		-- 2026-10-19).
 		local function launchItems(slot: string): number
 			local total = 0
 			for _, id in CosmeticRules.itemsIn(slot) do
 				local source = Cosmetics.Items[id].Exclusive
-				if source ~= "Robux" and source ~= "EmotePack" then
+				if source ~= "Robux" then
 					total += 1
 				end
 			end
@@ -37,7 +38,7 @@ return {
 		expect.equal(launchItems("Hat"), 6)
 		expect.equal(launchItems("DashTrail"), 4)
 		expect.equal(launchItems("KOEffect"), 4)
-		expect.equal(launchItems("VictoryEmote"), 4)
+		expect.equal(table.find(Cosmetics.Slots, "VictoryEmote"), nil, "no victory emote slot")
 	end,
 	["every item has a known slot and rarity; Scrap prices sit inside their rarity's range"] = function()
 		for id, item in Cosmetics.Items do
@@ -66,8 +67,6 @@ return {
 					expect.truthy(isEnumItem(roblox.Enum.PartType, part.Shape or "Block"), `{id} {part.Name} shape`)
 					expect.truthy(isHex(part.Color), `{id} {part.Name} color`)
 				end
-			elseif item.Slot == "VictoryEmote" then
-				expect.truthy(item.Emote, `{id} emote`)
 			end
 			for _, color in item.Colors or {} do
 				expect.truthy(isHex(color), `{id} color {color}`)

@@ -69,18 +69,17 @@ export type AttachedPart = {
 	Color: string, -- hex
 }
 
-export type CosmeticSlot = "Skin" | "Hat" | "BackItem" | "DashTrail" | "KOEffect" | "VictoryEmote" | "NameplateFrame"
+export type CosmeticSlot = "Skin" | "Hat" | "BackItem" | "DashTrail" | "KOEffect" | "NameplateFrame"
 
 export type CosmeticItem = {
 	Slot: CosmeticSlot,
 	Rarity: string, -- a key of Config.Cosmetics.Rarities
 	Price: number, -- Scrap (0 for exclusive / Robux items)
-	-- Never sold for Scrap. "VIP" / "EmotePack": comes with that game pass; "Premium": with Roblox Premium (while
+	-- Never sold for Scrap. "VIP": comes with that game pass; "Premium": with Roblox Premium (while
 	-- subscribed); "Robux": sold as the developer product whose Cosmetic is this item (Config.Monetization.Products).
 	Exclusive: string?,
 	Colors: { string }?, -- Skin: head, torso, arms, legs; DashTrail: start → end; KOEffect: particle colors
 	Parts: { AttachedPart }?, -- Hat / BackItem
-	Emote: string?, -- VictoryEmote: which emote animation plays (step 2.6)
 }
 
 export type ModeConfig = {

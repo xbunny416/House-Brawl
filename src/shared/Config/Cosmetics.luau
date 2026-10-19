@@ -1,7 +1,8 @@
 --!strict
 --[[
 	Cosmetic slots, rarity pricing, the daily rotating shop and the item catalog. Bible §2.3 / §4.1 (launch: 6 skins,
-	6 hats, 4 dash trails, 4 KO effects, 4 victory emotes) plus §7 (Robux-only items, the Emote Pack's 4 emotes).
+	6 hats, 4 dash trails, 4 KO effects; the victory emotes were removed by the owner, 2026-10-19) plus §7 (Robux-only
+	items).
 	Visuals are blockout data until the art pass: skins are body colors, hats are welded parts, trails / KO effects are
 	colors. Names come from "Cosmetic.<Id>.Name".
 ]]
@@ -41,7 +42,7 @@ local NO_TURN = { 0, 0, 0 }
 local UPRIGHT = { 0, 0, 90 } -- turns a cylinder's axis (X) to point up
 
 local Cosmetics: CosmeticsConfig = {
-	Slots = { "Skin", "Hat", "BackItem", "DashTrail", "KOEffect", "VictoryEmote", "NameplateFrame" },
+	Slots = { "Skin", "Hat", "BackItem", "DashTrail", "KOEffect", "NameplateFrame" },
 	Rarities = {
 		Common = { MinPrice = 300, MaxPrice = 800, RobuxOnly = false },
 		Rare = { MinPrice = 1200, MaxPrice = 2500, RobuxOnly = false },
@@ -183,29 +184,6 @@ local Cosmetics: CosmeticsConfig = {
 			Price = 0,
 			Exclusive = "Robux", -- Monetization.Products.GalaxyBurst
 			Colors = { "#7C4DFF", "#E040FB", "#FFFFFF" },
-		},
-
-		-- Victory emotes: the round winner plays one back in the lobby (Shared/Animation/Clips).
-		Flex = { Slot = "VictoryEmote", Rarity = "Common", Price = 500, Emote = "Flex" },
-		JunkDance = { Slot = "VictoryEmote", Rarity = "Common", Price = 800, Emote = "JunkDance" },
-		Taunt = { Slot = "VictoryEmote", Rarity = "Rare", Price = 1500, Emote = "Taunt" },
-		Champion = { Slot = "VictoryEmote", Rarity = "Rare", Price = 2000, Emote = "Champion" },
-		-- The Emote Pack game pass (bible §7: 4 extra victory emotes).
-		Robot = { Slot = "VictoryEmote", Rarity = "Premium", Price = 0, Exclusive = "EmotePack", Emote = "Robot" },
-		Salute = { Slot = "VictoryEmote", Rarity = "Premium", Price = 0, Exclusive = "EmotePack", Emote = "Salute" },
-		AirGuitar = {
-			Slot = "VictoryEmote",
-			Rarity = "Premium",
-			Price = 0,
-			Exclusive = "EmotePack",
-			Emote = "AirGuitar",
-		},
-		Backflip = {
-			Slot = "VictoryEmote",
-			Rarity = "Premium",
-			Price = 0,
-			Exclusive = "EmotePack",
-			Emote = "Backflip",
 		},
 	},
 }

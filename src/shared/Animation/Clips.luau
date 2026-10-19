@@ -3,12 +3,12 @@
 	Clips — the scripted R15 animations (bible §4.2), as pose keys for Shared/Animation/Pose (degrees: X forward /
 	back, Y turn left, Z out to the side; Root offsets in studs, −Z is forward). Lengths follow the bible: punch-chain
 	hits 0.3 s, weapon swings 0.45 s, charged punch / swing 0.5 s, Dash 0.25 s, Grab 0.3 s, Throw 0.4 s, hit
-	reactions / tumble 0.6 s (the tumble loops through a hitstun), victory emotes 2 s. Carry, Charge and Stance loop.
+	reactions / tumble 0.6 s (the tumble loops through a hitstun). Carry, Charge and Stance loop.
 	Every attack is built the same way so it reads as a hit: a short wind-up the other way ("Out"), a fast strike that
 	overshoots and settles ("Back"), a hold, then a smooth recovery; the whole body joins in (the hips turn, the
 	root lunges and dips, the head follows, a foot steps). Hits recoil away from the attacker (HitFront / HitBack /
-	HitLeft / HitRight). Which clips a style uses: Config.Styles.List[id].Animations. Victory emotes: the cosmetic's
-	Emote field.
+	HitLeft / HitRight). Which clips a style uses: Config.Styles.List[id].Animations. (Victory emotes were removed
+	by the owner, 2026-10-19.)
 ]]
 local Pose = require(script.Parent.Pose)
 
@@ -175,19 +175,6 @@ local function recoil(pitch: number, roll: number, push: number): Clip
 	}
 end
 
--- One beat of a dance / cheer, repeated: `poses` alternate every `beat` seconds over `duration`.
-local function beats(poses: { PoseMap }, beat: number, duration: number): Clip
-	local keys: { Pose.Key } = { { T = 0, Pose = {} } }
-	local t, index = beat, 1
-	while t < duration - beat * 0.5 do
-		table.insert(keys, { T = t, Pose = poses[index], Ease = "Out" })
-		index = index % #poses + 1
-		t += beat
-	end
-	table.insert(keys, { T = duration, Pose = {} })
-	return { Duration = duration, Keys = keys }
-end
-
 local TUCK: PoseMap = {
 	RightShoulder = { 120, 0, 60 },
 	LeftShoulder = { 120, 0, -60 },
@@ -198,33 +185,6 @@ local TUCK: PoseMap = {
 	RightKnee = { -90, 0, 0 },
 	LeftKnee = { -90, 0, 0 },
 	Neck = { -20, 0, 0 },
-}
-
--- Right hand to the brow, chest out, chin up (Salute emote).
-local SALUTE: PoseMap = {
-	RightShoulder = { 95, 0, 50 },
-	RightElbow = { 140, 0, 0 },
-	LeftShoulder = { 0, 0, -5 },
-	Waist = { 6, 0, 0 },
-	Neck = { 8, 0, 0 },
-}
-
--- Leaning back on bent knees, left hand out on an invisible guitar neck (AirGuitar emote; the right hand strums).
-local AIR_GUITAR: PoseMap = {
-	LeftShoulder = { 75, 0, -35 },
-	LeftElbow = { 30, 0, 0 },
-	Waist = { 12, 0, 0 },
-	Neck = { 15, 0, 0 },
-	RightKnee = { -30, 0, 0 },
-	LeftKnee = { -30, 0, 0 },
-	Root = { 0, 0, 0, 0, -0.4, 0 },
-}
-
--- Arms up after a landing (Backflip emote).
-local TA_DA: PoseMap = {
-	RightShoulder = { 160, 0, 45 },
-	LeftShoulder = { 160, 0, -45 },
-	Neck = { 12, 0, 0 },
 }
 
 local Clips: { [string]: Clip } = {
@@ -588,177 +548,6 @@ local Clips: { [string]: Clip } = {
 			{ T = 0, Pose = with(TUCK, { Root = { 0, 0, 0 } }) },
 			{ T = 0.3, Pose = with(TUCK, { Root = { 180, 0, 0 } }) },
 			{ T = 0.6, Pose = with(TUCK, { Root = { 360, 0, 0 } }) },
-		},
-	},
-
-	-- Victory emotes (2 s each), played by the round winner (and as a preview when equipped in the Locker).
-	Flex = beats({
-		{
-			RightShoulder = { 10, 0, 95 },
-			LeftShoulder = { 10, 0, -95 },
-			RightElbow = { 125, 0, 0 },
-			LeftElbow = { 125, 0, 0 },
-			Waist = { 8, 20, 0 },
-			Root = { 0, 0, 0, 0, -0.25, 0 },
-		},
-		{
-			RightShoulder = { 20, 0, 85 },
-			LeftShoulder = { 20, 0, -85 },
-			RightElbow = { 140, 0, 0 },
-			LeftElbow = { 140, 0, 0 },
-			Waist = { 8, -20, 0 },
-			Neck = { 10, 0, 0 },
-			Root = { 0, 0, 0, 0, 0, 0 },
-		},
-	}, 0.45, 2),
-	JunkDance = beats({
-		{
-			RightShoulder = { 160, 0, 20 },
-			LeftShoulder = { 25, 0, -30 },
-			RightElbow = { 30, 0, 0 },
-			Waist = { 0, 25, 0 },
-			Root = { 0, 0, 10, 0, -0.35, 0 },
-			RightKnee = { -30, 0, 0 },
-			LeftHip = { 20, 0, 0 },
-		},
-		{
-			RightShoulder = { 25, 0, 30 },
-			LeftShoulder = { 160, 0, -20 },
-			LeftElbow = { 30, 0, 0 },
-			Waist = { 0, -25, 0 },
-			Root = { 0, 0, -10, 0, 0, 0 },
-			LeftKnee = { -30, 0, 0 },
-			RightHip = { 20, 0, 0 },
-		},
-	}, 0.25, 2),
-	Taunt = beats({
-		{ RightShoulder = { 90, 10, 0 }, RightElbow = { 0, 0, 0 }, Waist = { 12, 0, 0 }, Neck = { 12, 0, 0 } },
-		{ RightShoulder = { 90, 10, 0 }, RightElbow = { 90, 0, 0 }, Waist = { 14, 5, 0 }, Neck = { 14, 10, 0 } },
-	}, 0.3, 2),
-	Champion = beats({
-		{
-			RightShoulder = { 175, 0, 30 },
-			LeftShoulder = { 175, 0, -30 },
-			RightElbow = { 10, 0, 0 },
-			LeftElbow = { 10, 0, 0 },
-			Neck = { 18, 0, 0 },
-			Root = { 0, 0, 0, 0, 0.8, 0 },
-		},
-		{
-			RightShoulder = { 160, 0, 40 },
-			LeftShoulder = { 160, 0, -40 },
-			RightElbow = { 30, 0, 0 },
-			LeftElbow = { 30, 0, 0 },
-			Neck = { 10, 0, 0 },
-			Root = { 0, 0, 0, 0, -0.3, 0 },
-			RightKnee = { -35, 0, 0 },
-			LeftKnee = { -35, 0, 0 },
-		},
-	}, 0.3, 2),
-
-	-- Emote Pack victory emotes (2 s each).
-	Robot = beats({
-		{
-			RightShoulder = { 90, 0, 0 },
-			RightElbow = { 90, 0, 0 },
-			LeftShoulder = { 0, 0, -10 },
-			LeftElbow = { 90, 0, 0 },
-			Waist = { 0, 20, 0 },
-			Neck = { 0, 35, 0 },
-		},
-		{
-			RightShoulder = { 0, 0, 10 },
-			RightElbow = { 90, 0, 0 },
-			LeftShoulder = { 90, 0, 0 },
-			LeftElbow = { 90, 0, 0 },
-			Waist = { 0, -20, 0 },
-			Neck = { 0, -35, 0 },
-		},
-		{
-			RightShoulder = { 0, 0, 90 },
-			RightElbow = { 90, 0, 0 },
-			LeftShoulder = { 0, 0, -90 },
-			LeftElbow = { 90, 0, 0 },
-			Root = { 0, 0, 0, 0, -0.25, 0 },
-		},
-	}, 0.33, 2),
-	Salute = {
-		Duration = 2,
-		Keys = {
-			{ T = 0, Pose = {} },
-			{ T = 0.3, Pose = SALUTE, Ease = "Back" },
-			{ T = 1.6, Pose = SALUTE },
-			{ T = 2, Pose = {} },
-		},
-	},
-	AirGuitar = beats({
-		with(AIR_GUITAR, { RightShoulder = { 45, 0, 20 }, RightElbow = { 75, 0, 0 } }),
-		with(AIR_GUITAR, {
-			RightShoulder = { 20, 0, 20 },
-			RightElbow = { 100, 0, 0 },
-			Neck = { 22, 0, 0 },
-			Root = { 0, 0, 0, 0, -0.3, 0 },
-		}),
-	}, 0.15, 2),
-	-- A standing backflip: the root turns 0 → 180, snaps to the same angle as −180 at the top (so the clip ends at 0
-	-- and blends out without spinning back), then −180 → 0 by the landing.
-	Backflip = {
-		Duration = 2,
-		Keys = {
-			{ T = 0, Pose = {} },
-			{
-				T = 0.3,
-				Ease = "Out",
-				Pose = {
-					RightShoulder = { -35, 0, 15 },
-					LeftShoulder = { -35, 0, -15 },
-					RightHip = { 45, 0, 0 },
-					LeftHip = { 45, 0, 0 },
-					RightKnee = { -70, 0, 0 },
-					LeftKnee = { -70, 0, 0 },
-					Root = { -12, 0, 0, 0, -0.9, 0 },
-				},
-			},
-			{
-				T = 0.5,
-				Ease = "Out",
-				Pose = {
-					RightShoulder = { 170, 0, 20 },
-					LeftShoulder = { 170, 0, -20 },
-					Root = { 70, 0, 0, 0, 1.6, 0 },
-				},
-			},
-			{ T = 0.75, Ease = "Linear", Pose = with(TUCK, { Root = { 180, 0, 0, 0, 2.6, 0 } }) },
-			{ T = 0.75, Pose = with(TUCK, { Root = { -180, 0, 0, 0, 2.6, 0 } }) },
-			{
-				T = 1,
-				Ease = "Linear",
-				Pose = {
-					RightShoulder = { 120, 0, 40 },
-					LeftShoulder = { 120, 0, -40 },
-					RightHip = { 30, 0, 0 },
-					LeftHip = { 30, 0, 0 },
-					RightKnee = { -30, 0, 0 },
-					LeftKnee = { -30, 0, 0 },
-					Root = { -60, 0, 0, 0, 1.2, 0 },
-				},
-			},
-			{
-				T = 1.15,
-				Ease = "Out",
-				Pose = {
-					RightShoulder = { 60, 0, 40 },
-					LeftShoulder = { 60, 0, -40 },
-					RightHip = { 45, 0, 0 },
-					LeftHip = { 45, 0, 0 },
-					RightKnee = { -60, 0, 0 },
-					LeftKnee = { -60, 0, 0 },
-					Root = { -10, 0, 0, 0, -0.8, 0 },
-				},
-			},
-			{ T = 1.5, Ease = "Back", Pose = TA_DA },
-			{ T = 1.8, Pose = TA_DA },
-			{ T = 2, Pose = {} },
 		},
 	},
 }

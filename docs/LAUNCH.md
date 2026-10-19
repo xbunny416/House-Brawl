@@ -20,7 +20,6 @@ Create these, then send the IDs to Claude (or paste them into the files named).
 | Item | Type | Price | Goes in |
 | --- | --- | --- | --- |
 | VIP | Game pass | 299 R$ | `Config.Monetization.GamePasses.VIP.Id` |
-| Emote Pack | Game pass | 149 R$ | `GamePasses.EmotePack.Id` |
 | Scrap Pack S / M / L | Developer products | 49 / 149 / 399 R$ | `Products.ScrapPackS/M/L.Id` |
 | Inferno skin | Developer product | 149 R$ | `Products.InfernoSkin.Id` |
 | Lightning Trail | Developer product | 99 R$ | `Products.LightningTrail.Id` |
@@ -62,7 +61,7 @@ Create these, then send the IDs to Claude (or paste them into the files named).
   > - Classic (3 lives, last one standing) or Casual (endless respawns, score knock-offs)
   > - 3 arenas: Broken Highway, Junkyard Isles and Neon Motel
   > - Spin for fighting styles: Slugger, Scrapper and the Legendary Wrecker with a parry (free spin every day)
-  > - Skins, hats, dash trails, KO effects and victory emotes
+  > - Skins, hats, dash trails and KO effects
   > - Daily rewards, quests, leaderboards and parties with your friends
   >
   > Use code LAUNCH for free Scrap! (rename the code before launch)
