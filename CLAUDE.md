@@ -317,6 +317,7 @@ any errors are fixed before the next item.
 | 2026-10-20 | Lobby arm wrestling (owner: "arm wrestling first"): a table in the middle of the Hideout (Furniture.armWrestleTable: wood top with a gold edge and centre line, elbow pads, pin pads, grip pegs, two stools facing each other; ArmWrestleTable / ArmWrestleSeat tags, Side attribute), ArmWrestleService on pure ArmWrestleRules (both seated → 3 s countdown → 15 s pull; each ArmWrestleTap moves the hands 0.05, capped at 10 presses a second; a pin or the side ahead wins; result 3 s, then a rematch while both stay; standing up cancels; table champion + streak), table and character attributes, ArmWrestleController (a board over the table for everyone; a panel for the wrestlers with the Attack key or a touch PUSH button), the seated arm pose (Shared/Animation/ArmWrestle, an AnimationController layer), "Arm wrestle" on the seat prompt, ArmWrestleWins stat (not in private servers or against the bot), dev "Arm wrestle bot", the bartender's 13th idle line; specs | #68 |
 | 2026-10-20 | Lobby chess (owner: "continue with chess"): a chess table on the bar's wood floor (Furniture.chessTable: wood table with a gold edge, a 64-square board with a SquareSize attribute, stools; ChessTable / ChessSeat tags), pure ChessRules (every rule of chess; perft-tested) and ChessMatch (seats, clocks 5:00 + 3 s, resign / draw offers, every result, rematch after 10 s), ChessService (ChessMove / ChessAction, table attributes), ChessController (3D pieces from parts on the lobby board with last-move / check marks, a board over the table, the board screen: tokens with chess symbols, tap to select and move, promotion picker, clocks, Resign / draw buttons, gamepad selection), "Play chess" on the seat prompt, ChessWins stat, dev "Chess bot", the bartender's 14th idle line; specs | #69 |
 | 2026-10-20 | Review of the new lobby features (owner's pick): chess blocks jumping mid-game (standing up loses, so a stray Space / gamepad A / touch jump would have lost the game; resign to leave), the chess bot waits its 1 s on every turn (a rematch with the bot as White moved at once), the arm-wrestling and chess tables drop their client-built boards and pieces when the lobby streams out (nothing doubled when it streams back), the arm-wrestling countdown never shows 0 | #70 |
+| 2026-10-20 | Detailed props and structures (owner: "more detail in every item", first part of the arena rebuild): Shared/ItemShapes (pure data: every prop type — chair, bucket, tyre, cone, crate, TV, barrel, explosive barrel, fridge, car door, vending chunk — and Broken Highway's wrecked car, vending machine and road barrier stack, 8–40 parts each) and Server/Visuals/ItemDetail (welds them onto the item's box, which turns invisible and keeps doing all the colliding); structures darken every part as they lose HP, a lit barrel's paint glows; items spec (every shape inside its box) | #PR |
 
 ## Decisions and interpretations
 
@@ -896,6 +897,25 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   table leaves (`GetInstanceRemovedSignal`: the lobby streams out during a round, streaming radius 256, arenas 800
   studs away).   the table. Not checked in Studio yet: whether the chess symbols render on every device (if they show as boxes,
   set `PieceLetters = true`), the 3D pieces' look, and the board screen on a phone.
+- **Detailed props and structures (owner, 2026-10-20: "improve map … more detail in every item"):** the first part of
+  the arena rebuild (the owner picked one arena first, Broken Highway, with moving parts). Each item keeps its Config
+  box as an invisible part that does everything a rule touches — collisions, attack boxes and explosions,
+  grabbing (distance to its edge), carrying (the hold weld is found by name), throwing (a fresh server-owned copy,
+  dressed again), physics, despawning, structures falling with their platform — and `Server/Visuals/ItemDetail.dress`
+  welds the look onto it: massless parts with CanCollide / CanTouch / CanQuery off (named "Detail"; parts under 1
+  cubic stud cast no shadow). The look is pure data in `Shared/ItemShapes` (Shape, Size, At from the item's centre
+  with −Z its front, Turn, Upright / Facing for cylinders, a colour or a Tint of the item's colour, material,
+  transparency, reflectance, Lit) and `ItemShapes.offset` places a shape; the items spec checks every corner of
+  every shape is inside the item's box (0.2 studs of slack), so what you see is what you hit. Props (all 11): a folding
+  chair, a bucket with rim / bands / handle, a tyre with treads, rim, hub and lug nuts, a striped traffic cone, a crate
+  with edge beams and braces, a CRT TV with screen, knobs and antenna, steel drums with hoops / lid / bung (the
+  explosive one adds a yellow hazard band and black diamonds, and its paint — `Lit` — glows when lit:
+  `ItemDetail.light`), a fridge with two doors and handles, a car door with its window and mirror, a vending machine
+  chunk with shelves, cans and a glass shard. Structures (Broken Highway's, the others come with their arenas): the
+  wrecked car (body, hood, trunk, caved roof on pillars, glass, three wheels and a bare drum, bumpers, lights,
+  grille, rust), the vending machine (cabinet, lit sign, glass front over 16 cans on 4 shelves, buttons, coin slot,
+  pickup bin) and the road barrier stack (two barriers with reflective panels and amber lamps). Damage now darkens
+  every visible part of a structure (`Structure.Paint`).
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,
@@ -1023,8 +1043,9 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **All screens are plain first versions** (`src/client/Ui/Kit`: HUD, vote, results, spectate bar, scoreboard); the
   art / VFX passes restyle them. The lobby's CRT-TV vote screens from the bible are an art-pass item. The dash ring
   fills bottom-to-top (a true radial ring needs an image asset).
-- **Props are plain blocks** (size / material / color from `Config.Props.Types`) until the art pass; a lit barrel turns
-  Neon, explosions are a client-drawn cartoon blast (2.7). Carry pose and throw animation
+- **Props and structures are detailed** (since 2026-10-20, `Shared/ItemShapes`): the box from `Config.Props.Types` /
+  `Config.Structures.Types` still does all the colliding and turns invisible; Junkyard Isles' and Neon Motel's structures
+  keep their plain box until those arenas' rebuilds. A lit barrel glows, explosions are a client-drawn cartoon blast (2.7). Carry pose and throw animation
   are scripted clips (2.6). Flights are simulated by the server (props are server-owned while flying), so throws
   look slightly delayed on high ping.
 - **Camera sensitivity** is saved and validated but not used or shown: Roblox does not let scripts change mouse /

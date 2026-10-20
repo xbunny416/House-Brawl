@@ -26,6 +26,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local Formulas = require(Shared:WaitForChild("Formulas"))
+local ItemShapes = require(Shared:WaitForChild("ItemShapes"))
 local Net = require(Shared:WaitForChild("Net"))
 local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
 
@@ -33,6 +34,7 @@ local Server = script.Parent.Parent
 local Carrier = require(Server:WaitForChild("Props"):WaitForChild("Carrier"))
 local Animate = require(Server:WaitForChild("Visuals"):WaitForChild("Animate"))
 local Effects = require(Server:WaitForChild("Visuals"):WaitForChild("Effects"))
+local ItemDetail = require(Server:WaitForChild("Visuals"):WaitForChild("ItemDetail"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
 
@@ -256,6 +258,8 @@ local function makeProp(typeId: string, center: CFrame, zone: Zone, spot: Spot?)
 	part.CFrame = center
 	part:SetAttribute("PropType", typeId)
 	part:AddTag(PROP_TAG)
+	-- Its detailed look (Shared/ItemShapes), welded on; the box itself still does the colliding and turns invisible.
+	ItemDetail.dress(part, ItemShapes.Props[typeId], part.Color, part.Material)
 	local prop: Prop = {
 		Part = part,
 		TypeId = typeId,
@@ -359,7 +363,7 @@ local function light(prop: Prop, igniter: Player?)
 	end
 	prop.FuseAt = os.clock() + (Config.Props.Classes.Explosive.FuseTime or 0)
 	prop.Igniter = igniter
-	prop.Part.Material = Enum.Material.Neon
+	ItemDetail.light(prop.Part)
 	prop.Part:SetAttribute("Lit", true)
 	log(`{prop.TypeId} lit{if igniter then ` by {igniter.Name}` else ""}`)
 end
@@ -463,7 +467,7 @@ local function throw(player: Player, facing: Vector3?, position: Vector3?): bool
 	local prop = makeProp(held.TypeId, start, held.Zone, nil)
 	if held.FuseAt and prop then
 		prop.FuseAt, prop.Igniter = held.FuseAt, held.Igniter
-		prop.Part.Material = Enum.Material.Neon
+		ItemDetail.light(prop.Part)
 		prop.Part:SetAttribute("Lit", true)
 	end
 	held.Part:Destroy()
