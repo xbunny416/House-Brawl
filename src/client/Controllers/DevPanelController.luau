@@ -155,6 +155,7 @@ local function buildSections()
 	end
 	table.insert(props, command(Localization.format("Dev.SpawnDummy"), "SpawnDummy"))
 	table.insert(props, command(Localization.format("Dev.ArmWrestleBot"), "ArmWrestleBot"))
+	table.insert(props, command(Localization.format("Dev.ChessBot"), "ChessBot"))
 	section("Dev.SpawnProp", props)
 
 	local me: { Button } = {}

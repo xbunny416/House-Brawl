@@ -34,7 +34,7 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   done (owner-side: create the StyleSlot product, declare paid random items on the maturity form); 4/6 part 1 (the
   lobby 25% bigger, the reference's style with detailed furniture, seats) is done; part 2 (TV news, leaderboard board look) is done; 5/6 (every
   arena platform doubled again, the crumble closing in toward the centre) is done; 6/6 the lobby spin wheel is done — **the fix list is
-  complete** (the bartender is now a real character who talks, 2026-10-20; arm wrestling is built, not playtested; left: the optional chess minigame; owner-side: the StyleSlot product, the maturity
+  complete** (the bartender is now a real character who talks, 2026-10-20; arm wrestling and chess are built, not playtested — nothing left on the list; owner-side: the StyleSlot product, the maturity
   form's paid random items, playtests).
 
 ## How this repo works
@@ -315,6 +315,7 @@ any errors are fixed before the next item.
 | 2026-10-20 | Bartender as a real character (owner: "bartender no animation, just make it look like an NPC, not just blocks"): NpcService builds an R15 character (`Players:CreateHumanoidModelFromDescription`) on the ShopNPC model's invisible Spot behind the counter, root anchored, no name / health bar, not a fighter; built-in look (white shirt, dark vest, trousers and shoes, skin head and hands, welded apron, bow tie, round bandana, moustache, default face) or the avatar of `Config.World.Bartender.UserId`; the block figure is gone, the Shop prompt keeps its invisible Torso anchor; maps + config specs | #66 |
 | 2026-10-20 | Bartender phrases (owner's fix list; no animation): speech bubbles over the bartender that only the local player sees (BartenderController: pops in, types out, shrinks away) — a greeting on walking up (once per 90 s), a Won / Lost line after a round you fought in, idle tips and jokes every 15–28 s while near, a Shop line on opening the Shop near the bar and a Thanks line after a Coins purchase there; 34 lines in 6 pools (`Bartender.<Pool>.<n>`), pure Lib/BartenderRules + spec, `Config.World.Bartender.Talk`, `MenuController.openName`, `ShopController.Bought` | #67 |
 | 2026-10-20 | Lobby arm wrestling (owner: "arm wrestling first"): a table in the middle of the Hideout (Furniture.armWrestleTable: wood top with a gold edge and centre line, elbow pads, pin pads, grip pegs, two stools facing each other; ArmWrestleTable / ArmWrestleSeat tags, Side attribute), ArmWrestleService on pure ArmWrestleRules (both seated → 3 s countdown → 15 s pull; each ArmWrestleTap moves the hands 0.05, capped at 10 presses a second; a pin or the side ahead wins; result 3 s, then a rematch while both stay; standing up cancels; table champion + streak), table and character attributes, ArmWrestleController (a board over the table for everyone; a panel for the wrestlers with the Attack key or a touch PUSH button), the seated arm pose (Shared/Animation/ArmWrestle, an AnimationController layer), "Arm wrestle" on the seat prompt, ArmWrestleWins stat (not in private servers or against the bot), dev "Arm wrestle bot", the bartender's 13th idle line; specs | #68 |
+| 2026-10-20 | Lobby chess (owner: "continue with chess"): a chess table on the bar's wood floor (Furniture.chessTable: wood table with a gold edge, a 64-square board with a SquareSize attribute, stools; ChessTable / ChessSeat tags), pure ChessRules (every rule of chess; perft-tested) and ChessMatch (seats, clocks 5:00 + 3 s, resign / draw offers, every result, rematch after 10 s), ChessService (ChessMove / ChessAction, table attributes), ChessController (3D pieces from parts on the lobby board with last-move / check marks, a board over the table, the board screen: tokens with chess symbols, tap to select and move, promotion picker, clocks, Resign / draw buttons, gamepad selection), "Play chess" on the seat prompt, ChessWins stat, dev "Chess bot", the bartender's 14th idle line; specs | #PR |
 
 ## Decisions and interpretations
 
@@ -821,7 +822,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   once; staying near brings an Idle line every `IdleEvery` 15–28 s, never over a line still showing; opening the Shop
   near the bar (`MenuController.openName()` turns "Shop") says a Shop line and a Coins purchase there
   (`ShopController.Bought`) a Thanks line. A line stays 2.5 s + 0.05 s a character, 3–7 s (`ReadTime`). Pools and
-  sizes: Greet 6, Idle 13 (the 13th, about the arm-wrestling table, came with it; tips: the centre never falls, the crumble eats the edges, barrels, Perfect Dodge, charging,
+  sizes: Greet 6, Idle 14 (the 13th and 14th, about the arm-wrestling and chess tables, came with them; tips: the centre never falls, the crumble eats the edges, barrels, Perfect Dodge, charging,
   percent; the wheel, daily deals, the jukebox's promo codes; jokes), Shop 4, Thanks 4, Won 4, Lost 4 — strings
   `Bartender.<Pool>.<n>` (a spec checks every pool has exactly its count). No alcohol: the bar serves root beer.
 - **Lobby arm wrestling (owner, 2026-10-20: "arm wrestling first", of the optional "chess and arm-wrestling minigames"):**
@@ -858,6 +859,38 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   animation still plays under it. Developer panel → Spawn → "Arm wrestle bot": sit at the table first; a practice bot
   takes the empty seat (no character) and presses `Dev.ArmWrestleBotTaps` = 6 times a second; it leaves when you stand
   up. The bartender has a 13th idle line pointing at the table.
+- **Lobby chess (owner, 2026-10-20: "continue with chess"):** my picks, in `Config.World.Chess` (tunable): 5 minutes a side
+  plus 3 seconds a move (a lobby game can't stall: an idle player's flag falls), the west seat always plays White
+  (switch seats to switch colours), a rematch starts `NewGameDelay` = 10 s after a game while both stay, and no Coins at
+  stake — a win counts toward the new `ChessWins` stat (not in private servers, not against the bot). **Rules**
+  (pure `Shared/ChessRules`, shared by server and client): 64-square boards (index = rank × 8 + file + 1), FEN in and
+  out, every rule (castling not out of / through / into check, en passant, promotion to Q / R / B / N, check,
+  checkmate, stalemate, insufficient material, the 50-move rule, threefold repetition by position key); `chess.spec`
+  checks it against the standard perft counts (start position to depth 3, Kiwipete to 2, positions 3 and 4 to 3,
+  position 5 to 2). **Game flow** (pure `Shared/ChessMatch`): Waiting → Playing as soon as both seats are taken →
+  Over; clocks run on the side to move (`Clocks` + `TurnStartedAt`, `Increment` per move); results Checkmate,
+  Resigned, Time (a draw when the other side can't mate), Left (standing up mid-game loses), Stalemate,
+  Insufficient, FiftyMoves, Repetition, Agreed (a draw offer lapses when the other side moves instead). **Server**
+  (`ChessService`): one match per table, the seats' `Occupant`, `ChessMove` (from, to, promotion; checked against the
+  legal moves) and `ChessAction` (Resign / OfferDraw / AcceptDraw) from the seated players, a 0.2 s tick; table
+  attributes `State`, `Fen`, `Player1` / `Player2` (seats), `White` / `Black` (the game's players, kept after one stands
+  up), `Clock1` / `Clock2`, `TurnStartedAt`, `LastMove`, `Check`, `DrawOffer`, `Result`, `Winner`, `EndsAt`. **Lobby**
+  (`maps/layouts/Hideout` `CHESS` = (−22, 15), on a rug under a pendant — the lobby's 12th shadow-casting lamp, the
+  maps spec's cap): `Furniture.chessTable` — a dark wood table with a gold edge on a pedestal, a wood-framed board
+  (`Board` part, `SquareSize` 0.55) of 64 squares (palette `ChessLight` / `ChessDark`, a1 dark, ranks toward +X,
+  files a → h toward +Z), two stools facing each other along X (`ChessSeat`, `Side`, still `LobbySeat`s: the prompt
+  says "Play chess"). **Client** (`ChessController`): the pieces on the lobby board for everyone — built from parts
+  (pawn, rook with merlons, knight facing the other side, bishop, queen, king with a cross; cream / dark), only
+  changed squares rebuilt — with the last move tinted and a checked king marked red; a board over the table (CHESS,
+  White vs Black, both clocks, whose move / check / the result); and for the two players the board screen (the board
+  from their side, pieces as cream / dark tokens with the outline chess symbols ♔♕♖♗♘♙ — none of them an emoji —
+  or letters with `PieceLetters`; tap a piece for its moves: dots, rings on captures; tap the square; a promotion
+  picker; coordinates on the edge squares; both clocks, red under 20 s; status: your move / they're thinking / check
+  / their draw offer / the result and the next game's countdown; Resign (tap twice) and Offer / Accept draw; a
+  gamepad starts on your king). Developer panel → Spawn → "Chess bot": sit at the table first; a bot takes the other
+  seat and plays a random legal move `Dev.ChessBotDelay` = 1 s after yours. The bartender's 14th idle line points at
+  the table. Not checked in Studio yet: whether the chess symbols render on every device (if they show as boxes,
+  set `PieceLetters = true`), the 3D pieces' look, and the board screen on a phone.
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,

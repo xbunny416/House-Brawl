@@ -25,7 +25,7 @@ return {
 			GreetCooldown = 90,
 			IdleEvery = { Min = 15, Max = 28 },
 			ReadTime = { Base = 2.5, PerCharacter = 0.05, Min = 3, Max = 7 },
-			Lines = { Greet = 6, Idle = 13, Shop = 4, Thanks = 4, Won = 4, Lost = 4 },
+			Lines = { Greet = 6, Idle = 14, Shop = 4, Thanks = 4, Won = 4, Lost = 4 },
 		},
 	},
 	-- Arm wrestling at the lobby table (ArmWrestleService, Shared/ArmWrestleRules). When both seats are taken a
@@ -35,4 +35,11 @@ return {
 	-- even = a draw). The result shows ResultTime seconds, then the next match starts while both stay seated. Nothing
 	-- is paid: a win counts toward the ArmWrestleWins stat and the table champion's streak.
 	ArmWrestle = { CountdownTime = 3, PullTime = 15, ResultTime = 3, PushPerTap = 0.05, TapRate = 10, TapBurst = 3 },
+	-- Chess at the lobby table (ChessService, Shared/ChessMatch, Shared/ChessRules). A game starts as soon as both seats
+	-- are taken: the west seat plays White. Each side has TimePerSide seconds plus Increment after each move; running
+	-- out loses (a draw if the other side can't checkmate). Standing up loses; resigning, draw offers and every draw rule
+	-- of chess apply. NewGameDelay seconds after a game the next one starts while both stay seated. Nothing is paid: a
+	-- win counts toward the ChessWins stat. PieceLetters shows K Q R B N P on the board screen instead of the chess
+	-- symbols (in case a device lacks them).
+	Chess = { TimePerSide = 300, Increment = 3, NewGameDelay = 10, PieceLetters = false },
 }

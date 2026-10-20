@@ -42,8 +42,13 @@ local function addPrompt(instance: Instance)
 	local config = Config.Controls.Prompts
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = PROMPT_NAME
-	-- The arm-wrestling table's seats (ArmWrestleService) say what sitting there starts.
-	prompt.ActionText = Localization.format(if seat:HasTag("ArmWrestleSeat") then "Prompt.ArmWrestle" else "Prompt.Sit")
+	-- The arm-wrestling and chess tables' seats (ArmWrestleService, ChessService) say what sitting there starts.
+	prompt.ActionText = Localization.format(
+		if seat:HasTag("ArmWrestleSeat")
+			then "Prompt.ArmWrestle"
+			elseif seat:HasTag("ChessSeat") then "Prompt.Chess"
+			else "Prompt.Sit"
+	)
 	prompt.KeyboardKeyCode = (Enum.KeyCode :: any)[config.Keyboard]
 	prompt.GamepadKeyCode = (Enum.KeyCode :: any)[config.Gamepad]
 	prompt.MaxActivationDistance = config.SitDistance

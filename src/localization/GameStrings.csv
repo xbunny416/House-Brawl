@@ -283,6 +283,7 @@ Bartender.Idle.10,Daily deals change every day. Don't sleep on them.,Lobby barte
 Bartender.Idle.11,Got a promo code? Try the jukebox. Don't ask me how it works.,Lobby bartender's speech bubble: chatter while you stand near the bar (the jukebox opens the promo code screen),
 Bartender.Idle.12,I used to fight in the arena. Then I took a chair to the knee.,Lobby bartender's speech bubble: chatter while you stand near the bar (a joke),
 Bartender.Idle.13,"Think you've got a strong arm? The arm-wrestling table's free.",Lobby bartender's speech bubble: chatter while you stand near the bar (the arm-wrestling table in the middle of the room),
+Bartender.Idle.14,Fancy a game of chess? The board's by the bar. Loser buys the root beer.,Lobby bartender's speech bubble: chatter while you stand near the bar (the chess table on the bar's wood floor),
 Bartender.Shop.1,What'll it be?,Lobby bartender's speech bubble: you opened the Shop near the bar,
 Bartender.Shop.2,Take a look. Everything's fresh off the scrap heap.,Lobby bartender's speech bubble: you opened the Shop near the bar,
 Bartender.Shop.3,Today's deals are cheaper. Don't tell the boss.,Lobby bartender's speech bubble: you opened the Shop near the bar (the daily deals tab),
@@ -318,6 +319,42 @@ ArmWrestle.Bot,Practice bot,Arm wrestling: the developer panel's practice oppone
 ArmWrestle.Someone,Someone,Arm wrestling: a wrestler whose name isn't known (they left),
 Prompt.ArmWrestle,Arm wrestle,Walk-up prompt on a seat at the lobby's arm-wrestling table: sit down to arm wrestle (jump to stand up),
 Dev.ArmWrestleBot,Arm wrestle bot,Developer panel button: a practice opponent sits down opposite you at the arm-wrestling table (sit there first),
+Chess.Title,CHESS,Board over the lobby's chess table: its title,
+Chess.Empty,Sit down to play chess,Board over the chess table: nobody is sitting there,
+Chess.WaitingFor,{1} is waiting for an opponent,Board over the chess table: one player sits there (their name),Alex is waiting for an opponent
+Chess.Versus,{1} vs {2},"Board over the chess table: who plays White, who plays Black",Alex vs Sam
+Chess.ToMove,{1} to move,Chess: whose turn it is (a name),Alex to move
+Chess.CheckFor,Check! {1} to move,Board over the chess table: the side to move is in check (a name),Check! Sam to move
+Chess.Check,Check!,Chess board screen: your king (or theirs) is in check,
+Chess.YourMove,Your move,Chess board screen: it is your turn,
+Chess.TheirMove,{1} is thinking…,Chess board screen: it is the other player's turn (their name),Sam is thinking…
+Chess.White,White,Chess: the side playing the white pieces,
+Chess.Black,Black,Chess: the side playing the black pieces,
+Chess.You,You,Chess board screen: the local player,
+Chess.PlayerColor,{1} · {2},"Chess board screen: a player and their colour (name, White / Black)",Sam · Black
+Chess.Resign,Resign,Chess board screen button: give up the game (tap twice),
+Chess.ResignSure,Sure? Tap again,Chess board screen button: the second tap resigns,
+Chess.OfferDraw,Offer draw,Chess board screen button: offer the other player a draw,
+Chess.DrawOffered,Draw offered,Chess board screen button: your draw offer is waiting for an answer,
+Chess.AcceptDraw,Accept draw,Chess board screen button: accept the other player's draw offer,
+Chess.TheyOfferDraw,{1} offers a draw,Chess board screen: the other player offered a draw (their name),Sam offers a draw
+Chess.Promote,Promote to:,Chess board screen: pick the piece a pawn becomes on the last rank,
+Chess.NewGame,New game in {1}s,Chess board screen: seconds until the next game starts,New game in 8s
+Chess.WaitingYou,Waiting for an opponent… jump to stand up,Chess board screen: sitting at the table alone,
+Chess.Bot,Chess bot,Chess: the developer panel's practice opponent (testing only),
+Chess.Someone,Someone,Chess: a player whose name isn't known (they left),
+Chess.Result.Checkmate,Checkmate! {1} wins,Chess: the game ended in checkmate (the winner),Checkmate! Alex wins
+Chess.Result.Resigned,{1} wins: {2} resigned,"Chess: the game ended by resignation (winner, the one who resigned)",Alex wins: Sam resigned
+Chess.Result.Time,{1} wins on time,Chess: the other player's clock ran out (the winner),Alex wins on time
+Chess.Result.TimeDraw,"Draw: time ran out, but nobody could checkmate",Chess: a clock ran out but the other side had too few pieces to win,
+Chess.Result.Left,{1} wins: {2} left the table,"Chess: a player stood up mid-game (winner, the one who left)",Alex wins: Sam left the table
+Chess.Result.Stalemate,Draw: stalemate,Chess: the side to move has no legal move and isn't in check,
+Chess.Result.Insufficient,Draw: not enough pieces to checkmate,Chess: neither side can ever checkmate,
+Chess.Result.FiftyMoves,Draw: 50 moves without a capture or a pawn move,Chess: the fifty-move rule,
+Chess.Result.Repetition,Draw: the same position three times,Chess: threefold repetition,
+Chess.Result.Agreed,Draw agreed,Chess: both players agreed to a draw,
+Prompt.Chess,Play chess,Walk-up prompt on a seat at the lobby's chess table: sit down to play (jump to stand up),
+Dev.ChessBot,Chess bot,Developer panel button: a practice opponent sits down opposite you at the chess table (sit there first),
 Prompt.Locker,Inventory,Walk-up prompt in the lobby locker booth: opens the Inventory,
 Prompt.Locker.Object,Locker booth,Walk-up prompt in the lobby locker booth: what it is,
 Menu.Server,Server,Lobby menu button that opens the private server settings (only the private server's owner sees it),

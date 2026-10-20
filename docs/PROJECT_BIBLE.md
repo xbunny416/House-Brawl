@@ -163,7 +163,12 @@ lamps with white drum shades, potted topiaries), a pool table and high tables wi
 arm-wrestling table in the open middle of the room (two stools facing each other: sit down opposite someone, wait out
 a 3-second countdown, then mash Attack — or tap PUSH on a phone — to push the clasped hands over to your side; a pin
 wins at once, otherwise whoever is ahead after 15 seconds; a board over the table shows the match and the table
-champion's wins in a row; no Coins at stake, wins count toward a lifetime arm-wrestling stat). Every sofa,
+champion's wins in a row; no Coins at stake, wins count toward a lifetime arm-wrestling stat); the chess table on
+the bar's wood floor west of the high tables (sit down opposite someone: the west seat plays White; a board screen
+shows the game from your side — tap a piece to see where it can go, tap the square to move; full chess rules, 5
+minutes each plus 3 seconds a move, resign or offer a draw; the pieces stand on the lobby board for everyone to watch,
+with a board over the table showing the players, clocks and result; a new game starts 10 seconds after one ends while
+both stay; no Coins at stake, wins count toward a lifetime chess stat). Every sofa,
 armchair, booth bench and
 stool can be sat on: walk up and press Sit (E / gamepad B / tap); jump to stand up. Walk up to the bartender for the Shop and into the locker booth for the Inventory (a prompt: E / gamepad B /
 tap); both also open from the left-edge menu.

@@ -26,4 +26,6 @@ return {
 	LevelPresets = { 1, 5, 12, 25, 50 },
 	-- The panel's "Arm wrestle bot": presses a second the bot makes at the arm-wrestling table (a quick human makes 6-8).
 	ArmWrestleBotTaps = 6,
+	-- The panel's "Chess bot": seconds the bot waits before each move (it plays a random legal move).
+	ChessBotDelay = 1,
 }

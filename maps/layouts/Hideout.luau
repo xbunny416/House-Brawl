@@ -1162,6 +1162,16 @@ local function armWrestle()
 	F.pendant(x, 15, z, HEIGHT, 22)
 end
 
+-- The chess table (ChessService) on the bar's wood floor, west of the high tables, on a rug under its own lamp.
+-- White sits on the west stool.
+local CHESS = { -22, 15 }
+local function chess()
+	local x, z = CHESS[1], CHESS[2]
+	F.rug(x, z, 13, 10, 8)
+	F.chessTable("ChessTable", x, z, 3, 1.4)
+	F.pendant(x, 15, z, HEIGHT, 22)
+end
+
 -- Builds the lobby at `origin` (world position of the floor's top centre).
 function Layout.build(origin: { number }): any
 	return B.root("Lobby", function()
@@ -1177,6 +1187,7 @@ function Layout.build(origin: { number }): any
 			spawns()
 			lounge()
 			armWrestle()
+			chess()
 		end)
 	end, {
 		MapId = Layout.Id,
@@ -1189,5 +1200,6 @@ end
 Layout.Inner = INNER
 Layout.JoinPad = { Size = PAD_SIZE, Center = { PAD_X, 0 } }
 Layout.ArmWrestle = ARM_WRESTLE
+Layout.Chess = CHESS
 
 return Layout

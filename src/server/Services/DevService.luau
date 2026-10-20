@@ -16,6 +16,7 @@
 	  SpawnProp (typeId)             a prop in front of them
 	  SpawnDummy                     the practice dummy in front of them (replaces the last one)
 	  ArmWrestleBot                  a practice bot in the empty seat of their arm-wrestling table (sit down first)
+	  ChessBot                       a practice bot in the empty seat of their chess table (sit down first)
 	  SetPercent / SetHealth (n)     their Percent / HP
 	  SetStyle (styleId)             put a fighting style into their equipped slot
 	  FreeSpin                       today's free style spin is ready again
@@ -44,6 +45,7 @@ local Server = script.Parent.Parent
 local DevRules = require(Server:WaitForChild("Dev"):WaitForChild("DevRules"))
 local Analytics = require(script.Parent:WaitForChild("Analytics"))
 local ArmWrestleService = require(script.Parent:WaitForChild("ArmWrestleService"))
+local ChessService = require(script.Parent:WaitForChild("ChessService"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local CodeService = require(script.Parent:WaitForChild("CodeService"))
 local CosmeticService = require(script.Parent:WaitForChild("CosmeticService"))
@@ -112,6 +114,9 @@ local commands: { [string]: Command } = {
 	end,
 	ArmWrestleBot = function(player)
 		ArmWrestleService.addBot(player)
+	end,
+	ChessBot = function(player)
+		ChessService.addBot(player)
 	end,
 	SetPercent = function(player, _text, value)
 		local character = player.Character

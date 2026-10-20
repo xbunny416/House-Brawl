@@ -24,6 +24,12 @@ Kit.Colors = {
 	Cream = Color3.fromHex("#F0E2C0"),
 	BoardRow = Color3.fromHex("#26262B"),
 	Rival = Color3.fromHex("#3FA7B5"), -- the other side at the arm-wrestling table (your side is Accent)
+	-- The chess board screen (ChessController): squares like the lobby board's, the pieces as cream / dark tokens.
+	ChessLight = Color3.fromHex("#E8D3AE"),
+	ChessDark = Color3.fromHex("#8E5A3A"),
+	ChessMark = Color3.fromHex("#F2C14E"), -- the last move and the selected piece
+	ChessWhite = Color3.fromHex("#F4EEDC"),
+	ChessBlack = Color3.fromHex("#26221F"),
 }
 Kit.TitleFont = Enum.Font.GothamBlack
 Kit.BodyFont = Enum.Font.GothamBold
