@@ -436,29 +436,28 @@ TV.OneVote,1 vote,Big lobby TV: one vote for this map,
 TV.VoteHint,Stand on the ARENA pad to vote · {1},Big lobby TV during the map vote: how to vote and the time left,Stand on the ARENA pad to vote · 0:12
 TV.Live,LIVE MATCH,Big lobby TV banner while a round runs,
 TV.Watch,Watch it: Game in progress → Watch,Big lobby TV during a round: how to watch it from the lobby,
-Wheel.Tab,Spin wheel,"Tab on the Daily reward / Quests / Spin wheel screens",
-Wheel.Odds,Prizes and odds,Spin wheel screen: title of the prize list (every prize with its exact chance),
-Wheel.Percent,{1}%,Spin wheel screen: a prize's chance per spin,30%
-Wheel.XP,{1} XP,Spin wheel prize: XP,150 XP
-Wheel.StyleSpin,Free style spin,Spin wheel prize: one extra free spin of the style roll,
-Wheel.Cosmetic,Random cosmetic,Spin wheel prize: a random cosmetic the player doesn't own yet,
-Wheel.SpinFree,SPIN · FREE,Spin wheel screen: the Spin button while today's free spin is ready,
-Wheel.SpinPaid,SPIN · {1} Coins,Spin wheel screen: the Spin button for a paid spin (price),SPIN · 200 Coins
-Wheel.NoSpin,No free spin left today,Spin wheel screen: Spin button when the free spin is used and paid spins aren't available,
-Wheel.Spinning,Spinning...,Spin wheel screen: Spin button while the wheel turns,
-Wheel.FreeReady,Free spin ready!,Spin wheel screen: today's free spin can be used,
-Wheel.FreeIn,Next free spin in {1},Spin wheel screen: time until the free spin comes back (h:mm:ss),Next free spin in 5:12:09
-Wheel.PaidNote,"After the free spin, each spin costs {1} Coins.",Spin wheel screen: the price of a paid spin,"After the free spin, each spin costs 200 Coins."
-Wheel.Won,You won {1}!,Spin wheel screen: what the spin won,You won 250 Coins!
+Wheel.Percent,{1}%,Lobby spin wheel: a prize's exact chance per spin (written on its slice),30%
+Wheel.Slice.Coins,Coins,Lobby spin wheel slice: under the amount of a Coins prize,
+Wheel.Slice.XP,XP,Lobby spin wheel slice: under the amount of an XP prize,
+Wheel.Slice.StyleSpin,Style spin,Lobby spin wheel slice: under "+1" (one extra free spin of the style roll),
+Wheel.Slice.Cosmetic,Cosmetic,Lobby spin wheel slice: under "?" (a random cosmetic the player doesn't own yet),
+Wheel.XP,{1} XP,Spin wheel prize in a notice: XP,150 XP
+Wheel.StyleSpin,a free style spin,"Spin wheel prize in a notice (""You won a free style spin!"")",
+Wheel.Cosmetic,a random cosmetic,"Spin wheel prize in a notice (""You won a random cosmetic!"")",
+Wheel.FreeIn,Next free spin in {1},Spin wheel button prompt: time until the free spin comes back (h:mm:ss),Next free spin in 5:12:09
+Wheel.Won,You won {1}!,Notice when the lobby wheel lands on your spin's prize,You won 250 Coins!
 Wheel.Error.NotLoaded,Your data is still loading. Try again in a moment.,Wheel spin refused,
 Wheel.Error.Fighting,You can't spin the wheel during a fight.,Wheel spin refused,
+Wheel.Error.Busy,The wheel is still turning. Wait a moment.,Wheel spin refused: another spin is still turning (one spin at a time),
 Wheel.Error.NoFreeSpin,Today's free spin is used. Come back tomorrow!,Wheel spin refused,
 Wheel.Error.NotEnoughScrap,Not enough Coins for a spin.,Wheel spin refused,
 Wheel.Error.NotAllowed,Paid spins aren't available where you play. Your free spin comes back every day.,Wheel spin refused / note: paid random items are restricted in the player's region,
 Wheel.Error.PrivateServer,The wheel only works in public servers.,Wheel spin refused in a private server (nothing is earned there),
 Wheel.Error.TryAgain,Something went wrong. Try again.,Wheel spin failed (no answer from the server),
-Prompt.Wheel,Spin,Walk-up prompt at the lobby spin wheel: opens the wheel screen,
-Prompt.Wheel.Object,Spin wheel,Walk-up prompt at the lobby spin wheel: what it is,
+Prompt.Wheel,Spin,Spin wheel button prompt in a private server (pressing says why the wheel doesn't work there),
+Prompt.Wheel.Free,Free spin,Spin wheel button prompt: spins with today's free spin,
+Prompt.Wheel.Paid,Spin · {1} Coins,Spin wheel button prompt (held): a paid spin for this price,Spin · 200 Coins
+Prompt.Wheel.Object,Spin wheel,Spin wheel button prompt: what it is,
 Dev.WheelFree,Wheel spin,Developer panel button: today's free spin on the lobby wheel is ready again,
 Tag.GroupChat,[Crew],Chat tag in front of messages from members of the game's Roblox group,
 Group.Reward,Thanks for joining the group! +{1} Coins,Notice: the one-time group join reward was paid (Coins),Thanks for joining the group! +150 Coins

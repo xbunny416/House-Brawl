@@ -1,8 +1,9 @@
 --!strict
 --[[
 	WheelRules — the lobby spin wheel (owner's fix list, 2026-10-19: "a spin wheel … 1 free spin a day plus extra spins
-	for Scrap"; Config.Retention.Wheel). Pure, shared so the wheel screen shows the same odds, prices and answers as
+	for Scrap"; Config.Retention.Wheel). Pure, shared so the lobby wheel shows the same odds, prices and answers as
 	the server (Services/WheelService).
+	  * One spin at a time: the wheel turns Wheel.SpinTime and shows its prize Wheel.NextSpinDelay before the next.
 	  * One free spin a day (Wheel.FreeDay, days from FreeSpinResetHourUTC); more cost SpinPrice Scrap. Paid spins are a
 	    paid random item: only where PolicyService allows them (PaidAllowed). No spins in private servers (nothing is
 	    earned there) or while fighting.
@@ -17,6 +18,7 @@ local ShopRules = require(script.Parent.ShopRules)
 export type Checks = {
 	Allowed: boolean, -- spins pay out here (not a private server)
 	Fighting: boolean, -- in a round
+	Busy: boolean?, -- the wheel is still turning (or showing its prize) from the last spin
 	PaidAllowed: boolean, -- PolicyService allows paid random items for this player
 }
 
@@ -26,9 +28,9 @@ local WheelRules = {}
 
 WheelRules.Kinds = { "Free", "Paid" }
 WheelRules.PrizeKinds = { "Coins", "XP", "StyleSpin", "Cosmetic" }
--- Why a spin was refused; the wheel screen shows "Wheel.Error.<Reason>". TryAgain is the client's own (no answer).
+-- Why a spin was refused; the spinner gets a notice "Wheel.Error.<Reason>". TryAgain is the client's own (no answer).
 WheelRules.Reasons =
-	{ "NotLoaded", "Fighting", "NoFreeSpin", "NotEnoughScrap", "NotAllowed", "PrivateServer", "TryAgain" }
+	{ "NotLoaded", "Fighting", "Busy", "NoFreeSpin", "NotEnoughScrap", "NotAllowed", "PrivateServer", "TryAgain" }
 
 function WheelRules.dayAt(unixTime: number): number
 	return Formulas.dayNumber(unixTime, Wheel.FreeSpinResetHourUTC)
@@ -62,6 +64,8 @@ function WheelRules.checkSpin(
 		return "PrivateServer"
 	elseif checks.Fighting then
 		return "Fighting"
+	elseif checks.Busy then
+		return "Busy"
 	elseif kind == "Free" then
 		return if WheelRules.freeSpinReady(wheel, day) then nil else "NoFreeSpin"
 	elseif kind == "Paid" then

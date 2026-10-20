@@ -28,6 +28,9 @@ type RetentionConfig = {
 	Group: { GroupId: number, Scrap: number, RecheckInterval: number },
 	Wheel: {
 		SpinPrice: number,
+		PaidHoldTime: number,
+		SpinTime: number,
+		NextSpinDelay: number,
 		FreeSpinResetHourUTC: number,
 		CosmeticFallbackScrap: number,
 		Prizes: { WheelPrize },
@@ -101,9 +104,14 @@ local Retention: RetentionConfig = {
 	-- The lobby spin wheel (owner's fix list, 2026-10-19: "1 free spin a day plus extra spins for Scrap"). Paid spins
 	-- are a paid random item: every prize and its exact Percent show before a spin, they are offered only where
 	-- PolicyService allows paid random items, and the maturity questionnaire declares them. Percents add up to 100;
-	-- the segments go round the wheel in this order. Nothing in private servers (nothing is earned there).
+	-- the segments go round the wheel in this order (each slice shows its prize and Percent). Nothing in private
+	-- servers (nothing is earned there). Since 2026-10-20 there is no wheel screen: players walk up and press the button in
+	-- front of the wheel (owner: "no click UI, have to walk to spin").
 	Wheel = {
 		SpinPrice = 200, -- Scrap per spin after the day's free one
+		PaidHoldTime = 1, -- seconds the button is held for a paid spin (so a stray press never spends Coins)
+		SpinTime = 4, -- seconds the wheel turns before it lands
+		NextSpinDelay = 2, -- seconds after it lands before anyone can spin again (one spin at a time)
 		FreeSpinResetHourUTC = 0,
 		CosmeticFallbackScrap = 500, -- the Cosmetic prize when the player owns every cosmetic sold for Scrap
 		Prizes = {

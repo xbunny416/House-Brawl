@@ -159,7 +159,7 @@ booth, Codes jukebox, the cork quest board. South — three tall dark leaderboar
 avatar headshot, name and value with thousands separators, the top 3 outlined in gold / silver / bronze), the spawns
 and the street door. Middle — the
 lounge (dark rug with a gold ring, round black marble table on a gold base, red tufted sofa and two armchairs, floor
-lamps with white drum shades, potted topiaries), a pool table and high tables with stools; the spin wheel on the west wall (walk up and press E); the
+lamps with white drum shades, potted topiaries), a pool table and high tables with stools; the spin wheel on the west wall (walk up and press the red button in front of it; each slice shows its prize and chance); the
 arm-wrestling table in the open middle of the room (two stools facing each other: sit down opposite someone, wait out
 a 3-second countdown, then mash Attack — or tap PUSH on a phone — to push the clasped hands over to your side; a pin
 wins at once, otherwise whoever is ahead after 15 seconds; the wrestlers' panel shows the match and, between matches,
@@ -378,7 +378,7 @@ players. Lobby players can watch a running round too (the "Game in progress" car
 ### 5.3 Screens
 
 Loading, Lobby HUD (coins + level block, left menu), Map vote, Round HUD, Results / MVP, Spectate, Shop (Daily,
-Cosmetics, Robux), Inventory (the Locker renamed: cosmetics), Styles (the style roll), Daily Reward calendar + Daily Quests + Spin wheel (one tab row),
+Cosmetics, Robux), Inventory (the Locker renamed: cosmetics), Styles (the style roll), Daily Reward calendar + Daily Quests (one tab row),
 Settings in tabs (Visual: camera shake, low graphics, button layout — camera sensitivity is Roblox's own setting;
 Audio: music / SFX volume; Promo code; How to play), lobby leaderboard boards, Tutorial overlay, Purchase
 confirmations, Developer test panel.
@@ -435,7 +435,9 @@ confirmations, Developer test panel.
   for 200 Scrap ("Coins") each where Roblox allows paid random items. Prizes and exact odds (shown before every spin):
   50 Coins 30%, 150 XP 15%, 100 Coins 20%, a free style spin 10%, 250 Coins 12%, a random cosmetic not owned yet 5%
   (500 Coins if every Scrap cosmetic is owned), 500 Coins 6%, 1,000 Coins 2%. The wheel in the lobby turns for
-  everyone and lands on each spin's prize. Nothing in private servers; declared on the maturity questionnaire.
+  everyone and lands on each spin's prize. No screen (owner, 2026-10-20): every slice shows its prize and exact chance,
+  you spin with the big red button in front of the wheel (a paid spin is held 1 s), one spin at a time, and the
+  winner's slice blinks. Nothing in private servers; declared on the maturity questionnaire.
 - **Login streak (7 days):** 50 / 75 / 100 / 150 / 200 / 250 Scrap, Day 7 = weekly rotating cosmetic (one of the
   cosmetics sold for Scrap, the same for everyone that week; 300 Scrap instead if already owned). Missing a day
   resets to Day 1. Claimed on the Daily reward screen (it opens by itself when a reward is waiting, and is a tab of Quests).

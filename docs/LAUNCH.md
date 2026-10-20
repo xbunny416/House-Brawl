@@ -69,7 +69,8 @@ Create these, then send the IDs to Claude (or paste them into the files named).
 - [ ] **Maturity & Compliance questionnaire**: answer it honestly. What the game has: unrealistic, cartoon fighting
       with no blood or gore; text chat (TextChatService, filtered by Roblox); paid items (passes, products) and
       **paid random items: yes** — style spins and lobby spin-wheel spins cost Coins, which can be bought with Robux
-      (every outcome and its exact odds are shown in game before a spin, and paid spins are hidden where Roblox
+      (every outcome and its exact odds are shown in game before a spin — on the Styles screen and on every slice of
+      the lobby wheel — and paid spins are hidden where Roblox
       restricts them); no trading. This usually lands on a Mild label.
 - [ ] Social links (optional): Discord / YouTube. The game doesn't show external links in-game (PolicyService rules
       would apply if it did).

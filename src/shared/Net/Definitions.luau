@@ -128,7 +128,7 @@ local Definitions: { [string]: Definition } = {
 		RateLimit = { Rate = 0.5, Burst = 2 },
 	},
 	-- Server -> all clients: someone spun the wheel, so every client turns the lobby wheel to the prize.
-	-- (index: number — in Config.Retention.Wheel.Prizes, name: string — who spun)
+	-- (index: number — in Config.Retention.Wheel.Prizes, name: string — who spun, userId: number)
 	WheelSpun = { Kind = "Event", Direction = "ToClient" },
 	-- Client -> server: equip one of your style slots (refused while fighting in a round). (index: number)
 	EquipStyleSlot = {

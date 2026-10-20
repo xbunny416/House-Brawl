@@ -819,15 +819,18 @@ end
 --[[
 	The spin wheel on the west wall (owner's fix list, 2026-10-19: "a spin wheel"). A wood backboard with a gold rim,
 	and a Rotor: a black face, WHEEL_SEGMENTS pie slices (each two wedges; attribute Segment = its prize's index, the
-	client paints them in the prize colours from Config.Retention.Wheel and turns the Rotor to each spin's prize), a gold
-	hub and pegs. Slice 1 starts under the pointer at the top; slices go round toward +Z (south). The prompt that opens
-	the wheel screen sits on the Backboard (LobbyPromptController).
+	client paints them in the prize colours from Config.Retention.Wheel and turns the Rotor to each spin's prize), an
+	invisible Label on each slice (same Segment; facing the room, its up pointing out to the rim: the client writes the
+	prize and its chance on it), a gold hub and pegs. Slice 1 starts under the pointer at the top; slices go round toward
+	+Z (south). In front, on the mat, the SpinButton: a post with a big red Button that carries the spin prompt
+	(WheelController; since 2026-10-20 there is no wheel screen — owner: "no click UI, have to walk to spin"). The model
+	streams in whole (Atomic), so the client always finds every slice and label.
 ]]
 local WHEEL_SEGMENTS = 8 -- one per prize in Config.Retention.Wheel.Prizes (the maps spec checks)
 local function spinWheel()
 	local centerX, centerY, centerZ = -HALF_X + 2, 11, -25.5 -- between the wall pillars at z -17 and -34
 	local radius = 6.5
-	B.model("SpinWheel", function()
+	local wheel = B.model("SpinWheel", function()
 		B.part({
 			Name = "Backboard",
 			Size = { 0.5, radius * 2 + 1.6, radius * 2 + 1.6 },
@@ -901,6 +904,18 @@ local function spinWheel()
 						Attributes = { Segment = index },
 					})
 				end
+				-- The prize label: across the slice at mid-radius, facing the room (+X), its up toward the rim.
+				B.part({
+					Name = "Label",
+					Size = { 3.2, 3.4, 0.05 },
+					Position = { centerX - 0.32, centerY + 4.4 * up[2], centerZ + 4.4 * up[3] },
+					Axes = { Right = { 0, -up[3], up[2] }, Up = up },
+					Color = "Black",
+					Transparency = 1,
+					CanCollide = false,
+					CastShadow = false,
+					Attributes = { Segment = index },
+				})
 				B.part({
 					Name = "Peg",
 					Size = { 0.45, 0.45, 0.45 },
@@ -926,7 +941,32 @@ local function spinWheel()
 			})
 			B.light(hub, "WarmLight", 12, 0.6)
 		end)
-	end):AddTag("SpinWheel")
+		-- The spin button on the mat: a base, a wood post, a gold housing and the big red Button (the prompt's part).
+		B.model("SpinButton", function()
+			local x = centerX + 4
+			for _, piece in
+				{
+					{ "Base", { 0.3, 2.4, 2.4 }, 0.15, "Gold", "Metal", true },
+					{ "Post", { 3, 0.7, 0.7 }, 1.8, "WoodDark", "Wood", true },
+					{ "Housing", { 0.5, 1.8, 1.8 }, 3.55, "Gold", "Metal", true },
+					{ "Button", { 0.45, 1.3, 1.3 }, 4, "Red", "SmoothPlastic", false },
+				}
+			do
+				B.part({
+					Name = piece[1],
+					Size = piece[2],
+					Position = { x, piece[3], centerZ },
+					Rotation = { 0, 0, 90 },
+					Shape = "Cylinder",
+					Color = piece[4],
+					Material = piece[5],
+					CanCollide = piece[6],
+				})
+			end
+		end)
+	end)
+	wheel.ModelStreamingMode = B.Enum.ModelStreamingMode.Atomic
+	wheel:AddTag("SpinWheel")
 	-- A red mat in front of it.
 	B.part({
 		Name = "WheelMat",
