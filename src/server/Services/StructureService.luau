@@ -14,11 +14,13 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
+local ItemShapes = require(Shared:WaitForChild("ItemShapes"))
 local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
 
 local Server = script.Parent.Parent
 local StructureRules = require(Server:WaitForChild("Structures"):WaitForChild("StructureRules"))
 local Effects = require(Server:WaitForChild("Visuals"):WaitForChild("Effects"))
+local ItemDetail = require(Server:WaitForChild("Visuals"):WaitForChild("ItemDetail"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local PrivateServerService = require(script.Parent:WaitForChild("PrivateServerService"))
@@ -31,6 +33,7 @@ type Structure = {
 	Part: BasePart,
 	Marker: BasePart,
 	BaseColor: Color3,
+	Paint: { [BasePart]: Color3 }, -- every visible part and its undamaged colour (darkened as it loses HP)
 	State: StructureRules.State,
 }
 
@@ -73,13 +76,21 @@ local function build(typeId: string, marker: BasePart)
 	part.CFrame = marker.CFrame * CFrame.new(0, (part.Size.Y - marker.Size.Y) / 2, 0)
 	part.Parent = model
 	model.PrimaryPart = part
+	-- Its detailed look (Shared/ItemShapes), welded on; the box itself still takes the hits and turns invisible.
+	local paint: { [BasePart]: Color3 } = {}
+	local details = ItemDetail.dress(part, ItemShapes.Structures[typeId], part.Color, part.Material)
+	local painted: { BasePart } = if #details > 0 then details else { part }
+	for _, detail in painted do
+		paint[detail] = detail.Color
+	end
 	local state = StructureRules.new(typeId)
 	model:SetAttribute("StructureType", typeId)
 	model:SetAttribute("HP", state.Health)
 	model:SetAttribute("MaxHP", state.MaxHealth)
 	model:AddTag(STRUCTURE_TAG)
 	model.Parent = parent
-	structures[model] = { Model = model, Part = part, Marker = marker, BaseColor = part.Color, State = state }
+	structures[model] =
+		{ Model = model, Part = part, Marker = marker, BaseColor = part.Color, Paint = paint, State = state }
 end
 
 local function breakStructure(structure: Structure, attacker: Player?)
@@ -136,7 +147,9 @@ function StructureService.damage(model: Model, amount: number, attacker: Player?
 	end
 	model:SetAttribute("HP", state.Health)
 	local lost = 1 - state.Health / state.MaxHealth
-	structure.Part.Color = structure.BaseColor:Lerp(Color3.new(0, 0, 0), lost * DAMAGED_DARKEN)
+	for part, color in structure.Paint do
+		part.Color = color:Lerp(Color3.new(0, 0, 0), lost * DAMAGED_DARKEN)
+	end
 end
 
 -- The structure a part belongs to, if any.
