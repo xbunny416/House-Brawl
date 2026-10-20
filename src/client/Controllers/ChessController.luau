@@ -4,14 +4,13 @@
 	attributes and sends the seated player's moves).
 	  * The pieces on the lobby board, for everyone: built here from parts on each square (Board part + SquareSize,
 	    see Furniture.chessTable) from the table's Fen, with the last move and a king in check marked on the board.
-	  * Over every table, for everyone: a board with CHESS, who plays White and Black with their clocks, and whose move
-	    it is / check / how the game ended / the next game's countdown.
 	  * For the two players, the board screen: the board from their own side (White at the bottom for White), the
 	    pieces as cream / dark tokens with the chess symbols (Config.World.Chess.PieceLetters shows letters instead),
 	    the last move tinted. On your move, tap or click one of your pieces to see where it can go (dots, rings on
 	    captures), then the square to move there; a pawn reaching the end asks which piece it becomes. Both clocks,
 	    whose move it is, Resign (tap twice) and Offer / Accept draw. Moves go to the server (ChessMove) which checks
 	    them; the legal moves shown come from the same Shared/ChessRules.
+	(No floating board over the table: the owner, 2026-10-20: "remove floating label on minigame".)
 ]]
 local CollectionService = game:GetService("CollectionService")
 local ContextActionService = game:GetService("ContextActionService")
@@ -36,8 +35,6 @@ local InputController = require(script.Parent:WaitForChild("InputController"))
 local TABLE_TAG = "ChessTable"
 local SEAT_TAG = "ChessSeat"
 local REFRESH_INTERVAL = 0.1
-local BOARD_HEIGHT = 7 -- studs from the table top up to the board over the table
-local BOARD_DISTANCE = 70 -- studs the board over the table shows from
 local PIECE_LIFT = 0.02 -- studs from the board frame's top to the squares' top
 local DESIGN_SQUARE = 0.55 -- the square size the 3D pieces are drawn for (they scale with SquareSize)
 local LOW_CLOCK = 20 -- seconds: a clock this low turns red
@@ -98,7 +95,6 @@ local PIECES: { [string]: { PieceShape } } = {
 	},
 }
 
-type Overhead = { Gui: BillboardGui, Players: TextLabel, Clocks: TextLabel, Status: TextLabel }
 type TableView = {
 	Model: Model,
 	Folder: Folder, -- this client's 3D pieces and marks
@@ -107,7 +103,6 @@ type TableView = {
 	Board: BasePart?, -- the board part the pieces were placed on
 	ShownFen: string,
 	ShownMarks: string,
-	Overhead: Overhead,
 }
 type Cell =
 	{ Button: TextButton, Token: Frame, Glyph: TextLabel, Dot: Frame, Ring: Frame, Tint: Frame, Coord: TextLabel }
@@ -348,86 +343,12 @@ local function refreshPieces(view: TableView)
 	end
 end
 
----------------------------------------------------------------------------------------------------------------------
--- The board over each table
----------------------------------------------------------------------------------------------------------------------
-
-local function buildOverhead(): Overhead
-	local gui = Instance.new("BillboardGui")
-	gui.Name = "ChessBoardInfo"
-	gui.Size = UDim2.fromOffset(300, 120)
-	gui.LightInfluence = 0
-	gui.MaxDistance = BOARD_DISTANCE
-	gui.ResetOnSpawn = false
-	gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-	local back = Instance.new("Frame")
-	back.Size = UDim2.fromScale(1, 1)
-	back.BackgroundColor3 = Kit.Colors.Panel
-	back.BackgroundTransparency = 0.15
-	back.Parent = gui
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 12)
-	corner.Parent = back
-	local outline = Instance.new("UIStroke")
-	outline.Color = Kit.Colors.Gold
-	outline.Thickness = 2
-	outline.Parent = back
-	local title = Kit.label(back, Localization.format("Chess.Title"), UDim2.fromScale(1, 0.24), 20)
-	title.Font = Kit.TitleFont
-	title.TextColor3 = Kit.Colors.Gold
-	title.Position = UDim2.fromScale(0, 0.04)
-	local names = Kit.label(back, "", UDim2.fromScale(0.92, 0.22), 16)
-	names.Position = UDim2.fromScale(0.04, 0.3)
-	local clocks = Kit.label(back, "", UDim2.fromScale(0.92, 0.18), 16)
-	clocks.Position = UDim2.fromScale(0.04, 0.52)
-	clocks.TextColor3 = Kit.Colors.Muted
-	local status = Kit.label(back, "", UDim2.fromScale(0.92, 0.22), 16)
-	status.Position = UDim2.fromScale(0.04, 0.72)
-	status.TextColor3 = Kit.Colors.Coin
-	gui.Parent = player:WaitForChild("PlayerGui")
-	return { Gui = gui, Players = names, Clocks = clocks, Status = status }
-end
-
-local function refreshOverhead(view: TableView)
-	local model, overhead = view.Model, view.Overhead
-	local top = model:FindFirstChild("Top")
-	if top and top:IsA("BasePart") and overhead.Gui.Adornee ~= top then
-		overhead.Gui.Adornee = top
-	end
-	overhead.Gui.StudsOffsetWorldSpace = Vector3.new(0, BOARD_HEIGHT, 0)
-	local state = model:GetAttribute("State")
-	local white, black = numberAttribute(model, "Player1"), numberAttribute(model, "Player2")
-	local position = positionOf(model)
-	local playing = state == "Playing" or state == "Over"
-	overhead.Players.Text = if playing
-		then Localization.format("Chess.Versus", { nameOf(gamePlayer(model, 1)), nameOf(gamePlayer(model, 2)) })
-		elseif white ~= 0 or black ~= 0 then Localization.format(
-			"Chess.WaitingFor",
-			{ nameOf(if white ~= 0 then white else black) }
-		)
-		else Localization.format("Chess.Empty")
-	overhead.Clocks.Text = if playing
-		then `{HudFormat.clock(clockOf(model, 1, position))} · {HudFormat.clock(clockOf(model, 2, position))}`
-		else ""
-	if state == "Playing" then
-		local toMove = nameOf(gamePlayer(model, if position.Turn == "w" then 1 else 2))
-		overhead.Status.Text = if model:GetAttribute("Check") == true
-			then Localization.format("Chess.CheckFor", { toMove })
-			else Localization.format("Chess.ToMove", { toMove })
-	elseif state == "Over" then
-		overhead.Status.Text = resultText(model)
-	else
-		overhead.Status.Text = ""
-	end
-end
-
--- A table left this client (destroyed, or the lobby streamed out while in a round): drop its pieces and board, so
--- nothing is left behind or doubled when it streams back in.
+-- A table left this client (destroyed, or the lobby streamed out while in a round): drop its pieces, so nothing is
+-- left behind or doubled when it streams back in.
 local function removeTable(instance: Instance)
 	local view = views[instance :: Model]
 	if view then
 		view.Folder:Destroy()
-		view.Overhead.Gui:Destroy()
 		views[instance :: Model] = nil
 	end
 end
@@ -447,7 +368,6 @@ local function addTable(instance: Instance)
 		Board = nil,
 		ShownFen = "",
 		ShownMarks = "",
-		Overhead = buildOverhead(),
 	}
 	views[instance] = view
 	instance.Destroying:Connect(function()
@@ -934,7 +854,6 @@ function ChessController.Start(_self: any)
 		elapsed = 0
 		for _, view in views do
 			refreshPieces(view)
-			refreshOverhead(view)
 		end
 		refreshScreen()
 	end)
