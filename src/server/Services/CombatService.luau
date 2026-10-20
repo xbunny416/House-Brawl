@@ -606,6 +606,33 @@ function CombatService.explode(center: Vector3, radius: number, blow: Blow): { M
 	return hit
 end
 
+--[[
+	A push from the arena itself (a swinging hazard): launches `victim` along `velocity` for `hitstun` seconds, with no
+	damage, no Percent and no KO credit (a fall still counts for whoever hit them last); everyone sees it like a heavy hit
+	(CombatHit with no attacker, source "Hazard"). A spawn shield or a dash's invulnerability lets it pass. Returns true if
+	it pushed.
+]]
+function CombatService.push(victim: Model, velocity: Vector3, hitstun: number): boolean
+	local fighter = fighters[victim]
+	if fighter == nil or rootOf(victim) == nil then
+		return false
+	end
+	local now = os.clock()
+	local dash = fighter.DashStartedAt
+	if Fighter.isShielded(fighter, now) or (dash ~= nil and Formulas.isDashInvulnerable(dash, now)) then
+		return false
+	end
+	local victimPlayer = Players:GetPlayerFromCharacter(victim)
+	if victimPlayer then
+		Net.fireClient("Knockback", victimPlayer, velocity, hitstun)
+	else
+		Launch.apply(victim, velocity, hitstun)
+	end
+	-- Feedback like a heavy hit with no attacker: the tumble, sparks, the hit sound, the victim's camera shake.
+	Net.fireAll("CombatHit", nil, victim, "Hazard", true, true, hitstun, nil)
+	return true
+end
+
 -- Runs when an attack's windup ends. The swing is lost if the attacker was hit, knocked out or respawned meanwhile.
 local function strike(attacker: Player, character: Model, fighter: Fighter, startedAt: number, swing: Swing)
 	if fighters[character] ~= fighter or fighter.Defeated or Fighter.wasHitSince(fighter, startedAt) then

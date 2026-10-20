@@ -12,6 +12,7 @@ local NeonMotel = require("../../maps/layouts/NeonMotel")
 local Arena = require("../../maps/lib/Arena")
 
 local Config = Roblox.require(Roblox.game.ReplicatedStorage.Shared.Config)
+local MoverRules = Roblox.require(Roblox.game.ReplicatedStorage.Shared.MoverRules)
 
 local ORIGIN = { 0, 0, 0 }
 
@@ -44,6 +45,55 @@ local function eachArena(check: (layout: any, model: any) -> ())
 	for _, arena in arenas do
 		check(arena.Layout, arena.Model)
 	end
+end
+
+-- A part's world-axis bounding box (corners of its rotated box), with its name.
+local function boxOf(part: any): { min: { number }, max: { number }, name: string, part: any }
+	local cframe, size = part.CFrame, part.Size
+	local min = { math.huge, math.huge, math.huge }
+	local max = { -math.huge, -math.huge, -math.huge }
+	for _, sx in { -1, 1 } do
+		for _, sy in { -1, 1 } do
+			for _, sz in { -1, 1 } do
+				local corner = cframe * roblox.Vector3.new(sx * size.X / 2, sy * size.Y / 2, sz * size.Z / 2)
+				local values = { corner.X, corner.Y, corner.Z }
+				for axis = 1, 3 do
+					min[axis] = math.min(min[axis], values[axis])
+					max[axis] = math.max(max[axis], values[axis])
+				end
+			end
+		end
+	end
+	return { min = min, max = max, name = part:GetFullName(), part = part }
+end
+
+-- Whether two boxes overlap by more than a hair (touching faces don't count).
+local function overlaps(a: any, b: any): boolean
+	for axis = 1, 3 do
+		if a.max[axis] <= b.min[axis] + 0.05 or b.max[axis] <= a.min[axis] + 0.05 then
+			return false
+		end
+	end
+	return true
+end
+
+-- Every solid part in an arena (it collides), but not the gameplay markers or a mover's invisible pivot.
+local function solidBoxes(model: any): { any }
+	local boxes = {}
+	for _, part in model:GetDescendants() do
+		if
+			part:IsA("BasePart")
+			and part.CanCollide
+			and not part:HasTag("SpawnPoint")
+			and not part:HasTag("PropSpot")
+			and not part:HasTag("ExplosiveSpot")
+			and not part:HasTag("StructureSpot")
+			and part.Name ~= "Pivot"
+		then
+			table.insert(boxes, boxOf(part))
+		end
+	end
+	return boxes
 end
 
 return {
@@ -252,6 +302,82 @@ return {
 						local a, b = spots[i], spots[j]
 						local distance = math.sqrt((a.x - b.x) ^ 2 + (a.z - b.z) ^ 2)
 						expect.truthy(distance >= a.radius + b.radius, `{where}: {a.name} too close to {b.name}`)
+					end
+				end
+			end
+		end)
+	end,
+	["arenas: nothing solid stands on a spawn, prop, barrel or structure spot"] = function()
+		eachArena(function(layout, model)
+			local solids = solidBoxes(model)
+			for _, tag in { "SpawnPoint", "PropSpot", "ExplosiveSpot", "StructureSpot" } do
+				for _, marker in tagged(model, tag) do
+					local position = marker.CFrame.Position
+					local floor = position.Y - marker.Size.Y / 2
+					local half = { 1.5, 1.5 }
+					if tag == "StructureSpot" then
+						local size = Config.Structures.Types[marker:GetAttribute("StructureType")].Size
+						local radius = math.max(size.X, size.Z) / 2 + 0.3
+						half = { radius, radius }
+					end
+					local column = {
+						min = { position.X - half[1], floor + 0.05, position.Z - half[2] },
+						max = { position.X + half[1], floor + 6, position.Z + half[2] },
+					}
+					for _, solid in solids do
+						expect.truthy(
+							not overlaps(column, solid),
+							`{layout.Id} {marker.Parent.Name} {marker.Name} is blocked by {solid.name}`
+						)
+					end
+				end
+			end
+		end)
+	end,
+	["arenas: movers have a pivot and valid settings; a lift or slide never runs into anything"] = function()
+		eachArena(function(layout, model)
+			local movers = tagged(model, "Mover")
+			if layout.Id == "BrokenHighway" then
+				expect.truthy(#movers >= 3, "Broken Highway has its lift, slide and swing")
+			end
+			local solids = solidBoxes(model)
+			for _, mover in movers do
+				local where = `{layout.Id} {mover.Name}`
+				expect.truthy(mover.PrimaryPart and mover.PrimaryPart.Name == "Pivot", `{where} pivot`)
+				expect.equal(mover.ModelStreamingMode, roblox.Enum.ModelStreamingMode.Persistent, `{where} streaming`)
+				local kind = mover:GetAttribute("Kind")
+				expect.truthy(table.find(MoverRules.Kinds, kind), `{where} kind`)
+				expect.truthy((mover:GetAttribute("Period") or 0) > 0, `{where} period`)
+				for _, part in mover:GetDescendants() do
+					if part:IsA("BasePart") and part:HasTag("Hazard") then
+						expect.equal(kind, "Swing", `{where}: only swings are hazards`)
+					end
+				end
+				if kind == "Lift" or kind == "Slide" then
+					local offset = mover:GetAttribute("Offset")
+					expect.equal(typeof(offset), "Vector3", `{where} offset`)
+					-- The box it sweeps on its way (start and end), against everything solid that isn't itself.
+					for _, part in mover:GetDescendants() do
+						if part:IsA("BasePart") and part.CanCollide then
+							local box = boxOf(part)
+							local swept = {
+								min = {
+									math.min(box.min[1], box.min[1] + offset.X),
+									math.min(box.min[2], box.min[2] + offset.Y),
+									math.min(box.min[3], box.min[3] + offset.Z),
+								},
+								max = {
+									math.max(box.max[1], box.max[1] + offset.X),
+									math.max(box.max[2], box.max[2] + offset.Y),
+									math.max(box.max[3], box.max[3] + offset.Z),
+								},
+							}
+							for _, solid in solids do
+								if not solid.part:IsDescendantOf(mover) then
+									expect.truthy(not overlaps(swept, solid), `{where} runs into {solid.name}`)
+								end
+							end
+						end
 					end
 				end
 			end

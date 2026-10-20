@@ -109,7 +109,8 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
   fields are filled in automatically; renames/removals need a migration (`src/server/Data/Migrations.luau`, bump
   `VERSION` in `src/shared/Data/Template.luau`). Clients read their copy via `Controllers/DataController`.
 - **Maps:** blockouts are generated from `maps/layouts/*.luau` by `lune run maps/build`; never hand-edit
-  `maps/generated/`. Gameplay markers are tagged parts (`SpawnPoint`, `PropSpot`, `ExplosiveSpot`,
+  `maps/generated/`. Shaped pieces come from `maps/lib/Pieces` (and lobby furniture from `maps/lib/Furniture`);
+  moving parts are `Arena.mover` models (Shared/MoverRules) that clients move and `MoverService` reads for hazards. Gameplay markers are tagged parts (`SpawnPoint`, `PropSpot`, `ExplosiveSpot`,
   `StructureSpot` with a `StructureType` attribute, `LobbySpawn`), visible in Edit mode and hidden by
   `Services/MapService` at runtime. The lobby's join pad is a visible `QueueZone`-tagged part (not a marker).
   Each arena platform is a `Platform`-tagged Model (Persistent streaming, `CanFall` attribute). Sign text comes from GameStrings keys (`LocKey` attribute on the label). For a final art
@@ -317,7 +318,8 @@ any errors are fixed before the next item.
 | 2026-10-20 | Lobby arm wrestling (owner: "arm wrestling first"): a table in the middle of the Hideout (Furniture.armWrestleTable: wood top with a gold edge and centre line, elbow pads, pin pads, grip pegs, two stools facing each other; ArmWrestleTable / ArmWrestleSeat tags, Side attribute), ArmWrestleService on pure ArmWrestleRules (both seated → 3 s countdown → 15 s pull; each ArmWrestleTap moves the hands 0.05, capped at 10 presses a second; a pin or the side ahead wins; result 3 s, then a rematch while both stay; standing up cancels; table champion + streak), table and character attributes, ArmWrestleController (a board over the table for everyone; a panel for the wrestlers with the Attack key or a touch PUSH button), the seated arm pose (Shared/Animation/ArmWrestle, an AnimationController layer), "Arm wrestle" on the seat prompt, ArmWrestleWins stat (not in private servers or against the bot), dev "Arm wrestle bot", the bartender's 13th idle line; specs | #68 |
 | 2026-10-20 | Lobby chess (owner: "continue with chess"): a chess table on the bar's wood floor (Furniture.chessTable: wood table with a gold edge, a 64-square board with a SquareSize attribute, stools; ChessTable / ChessSeat tags), pure ChessRules (every rule of chess; perft-tested) and ChessMatch (seats, clocks 5:00 + 3 s, resign / draw offers, every result, rematch after 10 s), ChessService (ChessMove / ChessAction, table attributes), ChessController (3D pieces from parts on the lobby board with last-move / check marks, a board over the table, the board screen: tokens with chess symbols, tap to select and move, promotion picker, clocks, Resign / draw buttons, gamepad selection), "Play chess" on the seat prompt, ChessWins stat, dev "Chess bot", the bartender's 14th idle line; specs | #69 |
 | 2026-10-20 | Review of the new lobby features (owner's pick): chess blocks jumping mid-game (standing up loses, so a stray Space / gamepad A / touch jump would have lost the game; resign to leave), the chess bot waits its 1 s on every turn (a rematch with the bot as White moved at once), the arm-wrestling and chess tables drop their client-built boards and pieces when the lobby streams out (nothing doubled when it streams back), the arm-wrestling countdown never shows 0 | #70 |
-| 2026-10-20 | Detailed props and structures (owner: "more detail in every item", first part of the arena rebuild): Shared/ItemShapes (pure data: every prop type — chair, bucket, tyre, cone, crate, TV, barrel, explosive barrel, fridge, car door, vending chunk — and Broken Highway's wrecked car, vending machine and road barrier stack, 8–40 parts each) and Server/Visuals/ItemDetail (welds them onto the item's box, which turns invisible and keeps doing all the colliding); structures darken every part as they lose HP, a lit barrel's paint glows; items spec (every shape inside its box) | #PR |
+| 2026-10-20 | Detailed props and structures (owner: "more detail in every item", first part of the arena rebuild): Shared/ItemShapes (pure data: every prop type — chair, bucket, tyre, cone, crate, TV, barrel, explosive barrel, fridge, car door, vending chunk — and Broken Highway's wrecked car, vending machine and road barrier stack, 8–40 parts each) and Server/Visuals/ItemDetail (welds them onto the item's box, which turns invisible and keeps doing all the colliding); structures darken every part as they lose HP, a lit barrel's paint glows; items spec (every shape inside its box) | #71 |
+| 2026-10-20 | Broken Highway rebuilt with shapes and moving parts (owner: "more dynamic, not just flat platforms, more layers, more detail"; one arena first): maps/lib/Pieces (ramps, stairs, railings, road barriers, columns, lamp posts, tyres, crates, containers, a bus, a planter, rebar); centre catwalk +14 with stairs and a lift bridge, broken flyover +8, container tower +12, fallen container, barrier lines, sidewalks and lamps; toll plaza canopy (East), collapsed slab and bus (West), parking deck (North), bus shelter and billboard (South), ledge walls, peak floodlights, low tyre stacks, ruins in the void; movers (Shared/MoverRules, Arena.mover, client MoverController moves them from the server clock, MoverService knocks with the swinging sign via CombatService.push): lift, swinging sign, sliding bridge; maps spec: nothing solid on a spawn / prop / barrel / structure spot, movers valid and their paths clear (found and fixed: the centre's underside slab poked 2 studs through the road); movers spec | #72 |
 
 ## Decisions and interpretations
 
@@ -916,6 +918,42 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   grille, rust), the vending machine (cabinet, lit sign, glass front over 16 cans on 4 shelves, buttons, coin slot,
   pickup bin) and the road barrier stack (two barriers with reflective panels and amber lamps). Damage now darkens
   every visible part of a structure (`Structure.Paint`).
+- **Broken Highway rebuilt with shapes and moving parts (owner, 2026-10-20: "improve map to more dynamic not just flat
+  platform, more layer, more detail in every item"; picked "shaped + moving parts" and "one arena first"):** the
+  platforms, gaps, heights and spots stay (every rule of the maps spec still holds); each platform gets real shape
+  from `maps/lib/Pieces` (wedge ramps between levels, stairs with nosing strips, steel railings, jersey road barriers
+  with reflectors, columns, lamp posts — every other one lit —, tyre stacks, crates, shipping containers with ribs and
+  doors, a bus, a planter with a dead tree, rebar), all inside the platform's model so it crumbles with it. Centre:
+  deck guardrails and lane dashes; a diamond-plate catwalk at +14 on four columns over the deck, 4 steps of 2 up from
+  the deck, a bridge north to the lift's top stop; the swinging sign's frame (posts and a beam, a DANGER sign); a
+  broken flyover ramp on the south-west rising to +8 and ending in mid-air on two pillars, with rebar; a container
+  tower (+6, +12; a crate to start); a fallen container (+6) with a crate; 5 barrier lines; a planter; 0.5-high
+  sidewalks along the long edges with 8 lamp posts. East: a toll plaza — two booths on kerb islands (crate → roof),
+  barrier arms, a canopy at +11 on 8 columns with neon strips and a TOLL PLAZA sign, crate stacks at its edge to climb
+  it. West: a collapsed road slab up to +6 with rebar, a crashed bus (+5.5), a barrier, lamps. North: a parking deck
+  slab at +7 (6 studs of headroom under it) on 6 columns, a ramp up, railings, parking lines, crates and tyres on top.
+  South: a bus shelter (roof +5.5, glass back wall, bench), a billboard ("BRAWL TONIGHT · NO REFUNDS") on posts, a
+  barrier. Ledges: low walls along the two outer edges (the corner stays open for the jump to the peak) and a crate.
+  Peaks: a white rim and a floodlight. Lows: a 3-tyre stack and a barrier. Every road platform has a kerb; scenery adds
+  six ruined overpass pillars with tilted road slabs standing in the sludge. **Moving parts** (`Shared/MoverRules`,
+  pure + spec): an arena's Movers folder holds Mover-tagged models (`Arena.mover`: an invisible "Pivot" part as the
+  PrimaryPart, Persistent streaming, never on a platform so they never crumble) with attributes Kind ("Lift" /
+  "Slide": travel by Offset and back, Pause at each end, eased; "Swing": ±Angle about the Pivot's X or Z axis), Period
+  and Phase. The server never moves them; every client moves its copy each physics step from
+  `Workspace:GetServerTimeNow()` (`MoverController`: smooth, no network traffic) and gives each part its speed so a
+  character standing on it rides along. `MoverService` works out where each Hazard-tagged part is from the same rules
+  and knocks a fighter it touches along the swing (`Config.Maps.Movers`: 75 studs/s tipped 0.45 up, 0.6 s hitstun,
+  once a second per fighter) through the new `CombatService.push` — no damage, no Percent, no KO credit (a fall still
+  counts for whoever hit them last), spawn shields and dashes let it pass, and a CombatHit with no attacker (source
+  "Hazard") gives the tumble, sparks and the thud. Broken Highway's movers: a lift (8 × 8 diamond-plate pad from the
+  centre's floor to the catwalk bridge, +13, 11 s round trip with 3 s stops), the swinging sign (a broken EXIT sign on
+  chains under the beam, ±55°, 3.6 s; it sweeps across the deck at head height) and a sliding bridge (a flatbed flush
+  with the centre and South in the 10-stud gap between them, sliding 80 studs along it, 14 s). Limits: the server's
+  copy stays at rest, so a prop dropped on the lift doesn't ride it. **New spec checks** (all arenas): nothing solid
+  (CanCollide) stands within 6 studs above a spawn, prop or barrel spot or a structure's footprint, and a lift's or
+  slide's whole path runs into nothing — the first run found the centre's tilted underside slab poking up to 2 studs
+  through the road around x 55–84 (since 1.4), now lowered by what its tilt raises it. Junkyard Isles and Neon Motel
+  come next in the same style after the owner's look.
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,
