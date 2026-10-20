@@ -11,4 +11,7 @@ return {
 	-- The lobby news TVs (NewsScreen parts, NewsController): a new headline every Interval seconds, a ticker scrolling
 	-- TickerSpeed pixels a second, Headlines fun stories ("News.<n>" strings) mixed with live news.
 	News = { Interval = 8, TickerSpeed = 40, Headlines = 12 },
+	-- The bartender (NpcService): a Roblox user id whose avatar the bartender wears, or 0 for the built-in bartender
+	-- outfit (white shirt, dark vest, apron, bow tie, bandana, moustache).
+	Bartender = { UserId = 0 },
 }

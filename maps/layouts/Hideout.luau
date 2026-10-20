@@ -445,26 +445,29 @@ local function bar()
 		tv(`NewsTV{index}`, { x, 5.9, counterZ }, { 5, 4, 4 }, "News", index)
 	end
 
-	-- Placeholder Shop NPC (the bartender) behind the counter.
+	-- The bartender (Shop NPC) behind the counter: a real Roblox character the server builds here at runtime
+	-- (NpcService), standing on Spot and facing the room. Torso is where the Shop prompt sits (LobbyPromptController).
 	local npcZ = counterZ + 3.5
 	B.model("ShopNPC", function()
-		for _, x in { -0.55, 0.55 } do
-			B.part({ Name = "Leg", Size = { 1, 2.6, 1 }, Position = { x, 1.3, npcZ }, Color = "TealDark" })
-		end
-		B.part({ Name = "Torso", Size = { 2.4, 2.6, 1.2 }, Position = { 0, 3.9, npcZ }, Color = "Black" })
-		B.part({ Name = "Apron", Size = { 2, 2.4, 0.1 }, Position = { 0, 3.7, npcZ - 0.65 }, Color = "OffWhite" })
-		B.part({ Name = "BowTie", Size = { 0.9, 0.35, 0.15 }, Position = { 0, 5, npcZ - 0.68 }, Color = "Sofa" })
-		for _, x in { -1.6, 1.6 } do
-			B.part({ Name = "Arm", Size = { 0.8, 2.4, 0.8 }, Position = { x, 3.9, npcZ }, Color = "DustyPink" })
-		end
 		B.part({
-			Name = "Head",
-			Size = { 1.6, 1.6, 1.6 },
-			Position = { 0, 6.05, npcZ },
-			Shape = "Ball",
-			Color = "DustyPink",
+			Name = "Spot",
+			Size = { 2, 0.2, 2 },
+			Position = { 0, 0.1, npcZ },
+			Rotation = B.yaw("South"),
+			Color = "NeonTeal",
+			Transparency = 1,
+			CanCollide = false,
+			CastShadow = false,
 		})
-		B.part({ Name = "Bandana", Size = { 1.7, 0.45, 1.7 }, Position = { 0, 6.6, npcZ }, Color = "RustOrange" })
+		B.part({
+			Name = "Torso",
+			Size = { 2, 2, 1 },
+			Position = { 0, 3.9, npcZ },
+			Color = "NeonTeal",
+			Transparency = 1,
+			CanCollide = false,
+			CastShadow = false,
+		})
 	end, { Role = "Shop" }):AddTag("ShopNPC")
 
 	-- Between the TVs, not in front of them.

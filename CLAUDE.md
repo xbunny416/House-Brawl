@@ -34,7 +34,7 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   done (owner-side: create the StyleSlot product, declare paid random items on the maturity form); 4/6 part 1 (the
   lobby 25% bigger, the reference's style with detailed furniture, seats) is done; part 2 (TV news, leaderboard board look) is done; 5/6 (every
   arena platform doubled again, the crumble closing in toward the centre) is done; 6/6 the lobby spin wheel is done — **the fix list is
-  complete** (left: the optional bartender phrases and lobby minigames; owner-side: the StyleSlot product, the maturity
+  complete** (the bartender is now a real character, 2026-10-20; left: the optional bartender phrases and lobby minigames; owner-side: the StyleSlot product, the maturity
   form's paid random items, playtests).
 
 ## How this repo works
@@ -312,6 +312,7 @@ any errors are fixed before the next item.
 | 2026-10-20 | The three big bar TVs get screens too (owner: "about 3 big tv, screen only show in 2 small"): NewsController draws the news channel on the VoteScreen TVs as well, and over it the round when there is one — during the map vote each TV shows one map of the ballot with its votes and the time left (VoteState), during a round the middle TV shows the live match (arena, time left, fighters still in) | #63 |
 | 2026-10-20 | Owner's fix list 5/6 — arenas: every platform doubled again (owner picked "double every platform" over an outer ring) by Arena.grow, which keeps every gap and climb (a platform moves out from the one it is reached from by exactly what both grew), contents spread with them (Arena.growContents), decor spread to match (crane arm rebuilt to reach), sludge / flood 2800 wide; Broken Highway centre 240 × 160, arenas about 580 studs across; the crumble closes in: CrumbleRules picks from the outer ring (within Round.Crumble.RingWidth = 40 studs of the farthest standing platform from the arena centre) | #64 |
 | 2026-10-20 | Owner's fix list 6/6 — lobby spin wheel: a wheel on the west wall (pie slices from wedges, painted and turned on every client to each spin's prize: WheelSpun), its screen (walk-up prompt, and a third tab next to Daily reward / Quests: prizes with exact odds, Spin, free-spin countdown, a highlight that lands on the prize), WheelService (1 free spin a day, more for 200 Coins where PolicyService allows paid random items, none in private servers or while fighting; prizes Coins / XP / a bonus free style spin / a random unowned cosmetic), pure WheelRules + spec, Config.Retention.Wheel, data Wheel + Styles.BonusSpins (the style roll uses them after the day's free spin), DataService reconciles again after migrations, Builder `Axes`, dev "Wheel spin" | #65 |
+| 2026-10-20 | Bartender as a real character (owner: "bartender no animation, just make it look like an NPC, not just blocks"): NpcService builds an R15 character (`Players:CreateHumanoidModelFromDescription`) on the ShopNPC model's invisible Spot behind the counter, root anchored, no name / health bar, not a fighter; built-in look (white shirt, dark vest, trousers and shoes, skin head and hands, welded apron, bow tie, round bandana, moustache, default face) or the avatar of `Config.World.Bartender.UserId`; the block figure is gone, the Shop prompt keeps its invisible Torso anchor; maps + config specs | #66 |
 
 ## Decisions and interpretations
 
@@ -796,6 +797,18 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   answer ("You won 250 Coins!"). Data: `Wheel = { FreeDay }`, `Styles.BonusSpins` (new template fields; `DataService`
   now reconciles again after migrations so a rebuilt table gets fields added later). Dev panel → Daily → "Wheel spin"
   makes today's free spin ready again. docs/LAUNCH.md's maturity note now names wheel spins too.
+- **The bartender (owner, 2026-10-20: "bartender no animation just make look alike npc not just block"):** the lobby's
+  block figure (box legs, torso, ball head) is replaced by a real Roblox character. The map keeps only invisible anchors
+  in the `ShopNPC` model: `Spot` (on the floor 3.5 studs behind the counter, facing the room) and `Torso` (where
+  `LobbyPromptController` puts the Shop prompt, so the prompt works even if the character can't be built).
+  `Services/NpcService` (server, Start) builds the character there with `Players:CreateHumanoidModelFromDescription`
+  (R15): the avatar of `Config.World.Bartender.UserId` when it is set and the web call works, otherwise the built-in
+  bartender — the default body with each part coloured (white shirt sleeves, dark vest, trousers, dark shoes, skin head
+  and hands; the BodyColors is removed so it can't put the limb colours back), a default face if the head has none,
+  and welded decor parts (apron bib + apron, red bow tie, a round rust bandana with a knot at the back, a moustache).
+  No animation, as asked: the root is anchored, the name and health bar are hidden, and it isn't registered with
+  CombatService (only players and the dev dummy are fighters); `AnimationController` only poses players. Studio
+  Output shows `[Npc]`. Not seen in Studio yet: the decor's fit on the default head / torso sizes.
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,
