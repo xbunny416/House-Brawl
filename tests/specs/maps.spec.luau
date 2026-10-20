@@ -296,6 +296,25 @@ return {
 		end
 		expect.truthy(#tagged(lobby, "LobbySpawn") >= 1, "lobby spawns")
 	end,
+	["lobby: the bartender's spot stands on the floor behind the counter, facing the room"] = function()
+		local npc = tagged(lobby, "ShopNPC")[1]
+		local counter = tagged(lobby, "ShopCounter")[1]
+		local spot = npc:FindFirstChild("Spot")
+		expect.truthy(spot and spot:IsA("BasePart"), "Spot")
+		expect.truthy(npc:FindFirstChild("Torso"), "Torso (the Shop prompt's part)")
+		expect.truthy(
+			math.abs(spot.CFrame.Position.Y - spot.Size.Y / 2 - Config.Maps.LobbyOrigin[2]) < 0.01,
+			"on the floor"
+		)
+		expect.truthy(spot.CFrame.LookVector.Z < -0.99, "faces the room (south)")
+		local back = counter.CFrame.Position.Z + counter.Size.Z / 2
+		expect.truthy(spot.CFrame.Position.Z - spot.Size.Z / 2 > back, "behind the counter")
+		for _, part in npc:GetDescendants() do
+			if part:IsA("BasePart") then
+				expect.equal(part.Transparency, 1, `{part.Name} is an invisible anchor`)
+			end
+		end
+	end,
 	["lobby: one visible, walk-through join pad, away from the spawns"] = function()
 		local pads = tagged(lobby, "QueueZone")
 		expect.equal(#pads, 1, "join pads")

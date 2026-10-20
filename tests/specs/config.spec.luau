@@ -98,6 +98,10 @@ return {
 		end
 		expect.truthy(#Config.Retention.Quests.Daily >= Config.Retention.Quests.DailyCount, "quest pool size")
 	end,
+	["the bartender's avatar is a user id or 0"] = function()
+		local userId = Config.World.Bartender.UserId
+		expect.truthy(userId >= 0 and userId == math.floor(userId), "Bartender.UserId")
+	end,
 	["scrap packs grant what the bible says"] = function()
 		local products = Config.Monetization.Products
 		expect.equal(products.ScrapPackS.Scrap, 500)
