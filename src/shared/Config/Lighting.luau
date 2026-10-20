@@ -51,6 +51,23 @@ local Lighting: { [string]: Preset } = {
 		ColorCorrection = { Brightness = 0.01, Contrast = 0.12, Saturation = -0.08, TintColor = "#FFE8D2" },
 		Clouds = { Cover = 0.78, Density = 0.65, Color = "#B07C66" },
 	},
+	-- Junkyard Isles (owner, 2026-10-20: a sky that matches the arena, not clear): a stormy rust sunset — the sun just
+	-- setting under heavy grey-violet storm clouds lit orange from below, a dusty rust haze.
+	Rust = {
+		ClockTime = 18.05,
+		GeographicLatitude = 30,
+		Brightness = 1.9,
+		Ambient = "#4E4450",
+		OutdoorAmbient = "#8A6E6A",
+		ColorShiftTop = "#FF8C52",
+		ColorShiftBottom = "#2A2234",
+		EnvironmentDiffuseScale = 0.4,
+		EnvironmentSpecularScale = 0.25,
+		Atmosphere = { Density = 0.38, Offset = 0.2, Color = "#A8705A", Decay = "#3E2A3A", Glare = 0.6, Haze = 2.2 },
+		Bloom = { Intensity = 0.6, Size = 24, Threshold = 1.4 },
+		ColorCorrection = { Brightness = 0.01, Contrast = 0.12, Saturation = -0.02, TintColor = "#FFE6DA" },
+		Clouds = { Cover = 0.72, Density = 0.78, Color = "#7E6A7A" },
+	},
 	-- Night with neon (Neon Motel, step 2.5). Brightened after the owner's first look ("a bit too dark"): bright
 	-- moonlight and a purple ambient so fighters stay readable; the neon and roof lamps add colour.
 	Night = {

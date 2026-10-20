@@ -549,11 +549,13 @@ function Pieces.planter(name: string, at: Vec, size: number)
 end
 
 --[[
-	A straight road deck whose top runs from `a` to `b` (x, y, z: the top surface's centre line, sloping if they differ
-	in height), `width` across: a slab, low concrete kerbs along both edges (knockback still carries you over them), a
-	dashed centre line and two steel girders under it. Returns the deck part.
+	A straight deck whose top runs from `a` to `b` (x, y, z: the top surface's centre line, sloping if they differ in
+	height), `width` across, with two steel girders under it. `style` "Road" (the default): low concrete kerbs along both
+	edges (knockback still carries you over them) and a dashed centre line; "Gangway": yellow steel railings on posts.
+	Returns the deck part.
 ]]
-function Pieces.span(name: string, a: Vec, b: Vec, width: number, color: string, material: string): any
+function Pieces.span(name: string, a: Vec, b: Vec, width: number, color: string, material: string, style: string?): any
+	local gangway = style == "Gangway"
 	local dx, dy, dz = b[1] - a[1], b[2] - a[2], b[3] - a[3]
 	local length = math.sqrt(dx * dx + dy * dy + dz * dz)
 	local fx, fy, fz = dx / length, dy / length, dz / length
@@ -584,14 +586,29 @@ function Pieces.span(name: string, a: Vec, b: Vec, width: number, color: string,
 		CastShadow = true,
 	})
 	for _, side in { -1, 1 } do
-		B.part({
-			Name = `{name}Kerb`,
-			Size = { 0.7, 0.8, length },
-			Position = place(side * (width / 2 - 0.35), 0.4, 0),
-			Axes = axes,
-			Color = "Concrete",
-			Material = "Concrete",
-		})
+		if gangway then
+			-- A steel railing: a top rail on posts.
+			B.part({
+				Name = `{name}Rail`,
+				Size = { 0.2, 0.2, length },
+				Position = place(side * (width / 2 - 0.2), 1.3, 0),
+				Axes = axes,
+				Color = "LaneYellow",
+				Material = "Metal",
+			})
+			local posts = math.max(1, math.floor(length / 4))
+			for index = 0, posts do
+				B.part({
+					Name = `{name}Post`,
+					Size = { 0.15, 1.3, 0.15 },
+					Position = place(side * (width / 2 - 0.2), 0.65, -length / 2 + index * length / posts),
+					Axes = axes,
+					Color = "MetalDark",
+					Material = "Metal",
+					CanCollide = false,
+				})
+			end
+		end
 		B.part({
 			Name = `{name}Girder`,
 			Size = { 0.6, 1.4, length },
@@ -602,18 +619,30 @@ function Pieces.span(name: string, a: Vec, b: Vec, width: number, color: string,
 			CanCollide = false,
 		})
 	end
-	local dashes = math.floor(length / 7)
-	for index = 1, dashes do
-		B.part({
-			Name = `{name}Dash`,
-			Size = { 0.4, 0.06, 3 },
-			Position = place(0, 0.03, -length / 2 + (index - 0.5) * length / dashes),
-			Axes = axes,
-			Color = "LaneYellow",
-			Material = "SmoothPlastic",
-			CanCollide = false,
-			CastShadow = false,
-		})
+	if not gangway then
+		for _, side in { -1, 1 } do
+			B.part({
+				Name = `{name}Kerb`,
+				Size = { 0.7, 0.8, length },
+				Position = place(side * (width / 2 - 0.35), 0.4, 0),
+				Axes = axes,
+				Color = "Concrete",
+				Material = "Concrete",
+			})
+		end
+		local dashes = math.floor(length / 7)
+		for index = 1, dashes do
+			B.part({
+				Name = `{name}Dash`,
+				Size = { 0.4, 0.06, 3 },
+				Position = place(0, 0.03, -length / 2 + (index - 0.5) * length / dashes),
+				Axes = axes,
+				Color = "LaneYellow",
+				Material = "SmoothPlastic",
+				CanCollide = false,
+				CastShadow = false,
+			})
+		end
 	end
 	return deck
 end

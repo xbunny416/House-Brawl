@@ -150,14 +150,6 @@ Layout.Bridges = {
 }
 Layout.BridgeWidth = 10
 
-local function platformsById(): { [string]: Platform }
-	local found: { [string]: Platform } = {}
-	for _, entry in Layout.Platforms do
-		found[entry.Id] = entry
-	end
-	return found
-end
-
 -- Lowest platform bottom (relative to the arena origin) minus the kill depth.
 function Layout.killY(): number
 	return Arena.killY(Layout.Platforms)
@@ -768,22 +760,11 @@ local function lowFeatures(side: number)
 	Pieces.jersey("Barrier", { if side > 0 then -2 else 2, if side > 0 then 4 else -4 }, 12, 0)
 end
 
--- This platform's halves of its bridges, built in arena-origin coordinates so they line up across platforms (but still
--- part of this platform's model: they crumble with it).
+-- This platform's halves of its bridges: asphalt roads with kerbs (Arena.bridges builds them in arena coordinates, as
+-- part of this platform's model, so they crumble with it).
 local function connections(platform: Platform)
-	local byId = platformsById()
-	B.within({ -platform.Center[1], -platform.Top, -platform.Center[2] }, function()
-		for _, bridge in Layout.Bridges do
-			local a, b = byId[bridge[1]], byId[bridge[2]]
-			if a.Id == platform.Id or b.Id == platform.Id then
-				local fromA, fromB = Arena.bridgeEnds(a, b, bridge.Along)
-				local mine, theirs =
-					if a.Id == platform.Id then fromA else fromB, if a.Id == platform.Id then fromB else fromA
-				local middle = { (mine[1] + theirs[1]) / 2, (mine[2] + theirs[2]) / 2, (mine[3] + theirs[3]) / 2 }
-				local deck = Pieces.span("Bridge", mine, middle, Layout.BridgeWidth, "Asphalt", "Asphalt")
-				deck:SetAttribute("Bridge", `{a.Id}-{b.Id}`)
-			end
-		end
+	Arena.bridges(Layout, platform, function(name: string, from: { number }, to: { number }): any
+		return Pieces.span(name, from, to, Layout.BridgeWidth, "Asphalt", "Asphalt")
 	end)
 end
 
