@@ -303,12 +303,6 @@ Bartender.Lost.1,Tough round. Shake it off and hop back on the pad.,Lobby barten
 Bartender.Lost.2,Everybody eats the floor sometimes.,Lobby bartender's speech bubble: you lost the last round,
 Bartender.Lost.3,"Rough one, huh? A new style might help.",Lobby bartender's speech bubble: you lost the last round (fighting styles from the style roll),
 Bartender.Lost.4,Chin up. The arena's not going anywhere. Well — parts of it are.,Lobby bartender's speech bubble: you lost the last round (a joke about crumbling platforms),
-ArmWrestle.Title,ARM WRESTLING,Board over the lobby's arm-wrestling table: its title,
-ArmWrestle.Empty,Sit down to arm wrestle,Board over the arm-wrestling table: nobody is sitting there,
-ArmWrestle.WaitingFor,{1} is waiting for an opponent,Board over the arm-wrestling table: one player sits there (their name),Alex is waiting for an opponent
-ArmWrestle.Versus,{1} vs {2},Board over the arm-wrestling table: the two wrestlers' names during the countdown,Alex vs Sam
-ArmWrestle.VersusTime,{1} vs {2} · {3}s,"Board over the arm-wrestling table: the two wrestlers' names, seconds left",Alex vs Sam · 12s
-ArmWrestle.Wins,{1} wins!,Board over the arm-wrestling table: who won the match,Alex wins!
 ArmWrestle.Draw,Draw!,Arm wrestling: time ran out with the hands dead even,
 ArmWrestle.Champion,Table champ: {1} · {2} in a row,"Board over the arm-wrestling table: the last winner and their wins in a row (name, count)",Table champ: Alex · 3 in a row
 ArmWrestle.You,You,Arm-wrestling panel: the local player's side,
@@ -322,12 +316,6 @@ ArmWrestle.Bot,Practice bot,Arm wrestling: the developer panel's practice oppone
 ArmWrestle.Someone,Someone,Arm wrestling: a wrestler whose name isn't known (they left),
 Prompt.ArmWrestle,Arm wrestle,Walk-up prompt on a seat at the lobby's arm-wrestling table: sit down to arm wrestle (jump to stand up),
 Dev.ArmWrestleBot,Arm wrestle bot,Developer panel button: a practice opponent sits down opposite you at the arm-wrestling table (sit there first),
-Chess.Title,CHESS,Board over the lobby's chess table: its title,
-Chess.Empty,Sit down to play chess,Board over the chess table: nobody is sitting there,
-Chess.WaitingFor,{1} is waiting for an opponent,Board over the chess table: one player sits there (their name),Alex is waiting for an opponent
-Chess.Versus,{1} vs {2},"Board over the chess table: who plays White, who plays Black",Alex vs Sam
-Chess.ToMove,{1} to move,Chess: whose turn it is (a name),Alex to move
-Chess.CheckFor,Check! {1} to move,Board over the chess table: the side to move is in check (a name),Check! Sam to move
 Chess.Check,Check!,Chess board screen: your king (or theirs) is in check,
 Chess.YourMove,Your move,Chess board screen: it is your turn,
 Chess.TheirMove,{1} is thinking…,Chess board screen: it is the other player's turn (their name),Sam is thinking…

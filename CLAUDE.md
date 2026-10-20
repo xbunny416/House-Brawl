@@ -320,6 +320,7 @@ any errors are fixed before the next item.
 | 2026-10-20 | Review of the new lobby features (owner's pick): chess blocks jumping mid-game (standing up loses, so a stray Space / gamepad A / touch jump would have lost the game; resign to leave), the chess bot waits its 1 s on every turn (a rematch with the bot as White moved at once), the arm-wrestling and chess tables drop their client-built boards and pieces when the lobby streams out (nothing doubled when it streams back), the arm-wrestling countdown never shows 0 | #70 |
 | 2026-10-20 | Detailed props and structures (owner: "more detail in every item", first part of the arena rebuild): Shared/ItemShapes (pure data: every prop type — chair, bucket, tyre, cone, crate, TV, barrel, explosive barrel, fridge, car door, vending chunk — and Broken Highway's wrecked car, vending machine and road barrier stack, 8–40 parts each) and Server/Visuals/ItemDetail (welds them onto the item's box, which turns invisible and keeps doing all the colliding); structures darken every part as they lose HP, a lit barrel's paint glows; items spec (every shape inside its box) | #71 |
 | 2026-10-20 | Broken Highway rebuilt with shapes and moving parts (owner: "more dynamic, not just flat platforms, more layers, more detail"; one arena first): maps/lib/Pieces (ramps, stairs, railings, road barriers, columns, lamp posts, tyres, crates, containers, a bus, a planter, rebar); centre catwalk +14 with stairs and a lift bridge, broken flyover +8, container tower +12, fallen container, barrier lines, sidewalks and lamps; toll plaza canopy (East), collapsed slab and bus (West), parking deck (North), bus shelter and billboard (South), ledge walls, peak floodlights, low tyre stacks, ruins in the void; movers (Shared/MoverRules, Arena.mover, client MoverController moves them from the server clock, MoverService knocks with the swinging sign via CombatService.push): lift, swinging sign, sliding bridge; maps spec: nothing solid on a spawn / prop / barrel / structure spot, movers valid and their paths clear (found and fixed: the centre's underside slab poked 2 studs through the road); movers spec | #72 |
+| 2026-10-20 | No floating boards over the minigame tables (owner: "remove floating label on minigame"): the arm-wrestling and chess BillboardGuis are gone with their strings; the arm-wrestling table champion now shows in the wrestlers' panel between matches | #73 |
 
 ## Decisions and interpretations
 
@@ -850,12 +851,11 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   (`ArmWrestleService`): one match per table, the seats' `Occupant` changes and the presses drive it, a 0.1 s tick
   moves it on; it mirrors the match onto the table model's attributes (`State`, `Progress`, `EndsAt` in
   `Workspace:GetServerTimeNow()`, `Player1` / `Player2`, `Winner`, `Champion`, `Streak`) and each wrestler's character
-  (`ArmWrestle` = their own view of the progress). **Client** (`ArmWrestleController`): a board over each table for
-  everyone in the lobby (ARM WRESTLING; who is sitting / who is wrestling with the seconds left / who won; a tug bar
-  in side 1's orange `Kit.Colors.Accent` from the left and side 2's teal `Kit.Colors.Rival` from the right; "Table
-  champ: name · n in a row"); for the two wrestlers a bottom panel ("You" against the other in their side colours,
+  (`ArmWrestle` = their own view of the progress). **Client** (`ArmWrestleController`): for the two wrestlers a bottom panel ("You" against the other in their side colours,
   the bar from their own side, the countdown, "PUSH! 12s" with the Attack key's box and "Mash to push!", or a big
-  PUSH button on touch, then "You win!" / "You lose!" / "Draw!"). **Pose** (`Shared/Animation/ArmWrestle`, a layer in
+  PUSH button on touch, then "You win!" / "You lose!" / "Draw!", and between matches "Table champ: name · n in a row"). There
+  was a floating board over the table for everyone until the owner asked to remove it (2026-10-20: "remove floating
+  label on minigame"); the champion line moved into the panel. **Pose** (`Shared/Animation/ArmWrestle`, a layer in
   `AnimationController` while `ArmWrestle` is set): the right upper arm reaches forward and down to the elbow pad, the
   forearm stands up to the clasp and leans up to 65° toward the winner's left (the hands go down on the loser's
   side), the waist leans in and twists into the push, the arms tremble while it's close, the left hand rests by its
@@ -885,8 +885,8 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   files a → h toward +Z), two stools facing each other along X (`ChessSeat`, `Side`, still `LobbySeat`s: the prompt
   says "Play chess"). **Client** (`ChessController`): the pieces on the lobby board for everyone — built from parts
   (pawn, rook with merlons, knight facing the other side, bishop, queen, king with a cross; cream / dark), only
-  changed squares rebuilt — with the last move tinted and a checked king marked red; a board over the table (CHESS,
-  White vs Black, both clocks, whose move / check / the result); and for the two players the board screen (the board
+  changed squares rebuilt — with the last move tinted and a checked king marked red; and for the two players the board screen (its floating board over the table was removed at the owner's
+  request, 2026-10-20: "remove floating label on minigame") (the board
   from their side, pieces as cream / dark tokens with the outline chess symbols ♔♕♖♗♘♙ — none of them an emoji —
   or letters with `PieceLetters`; tap a piece for its moves: dots, rings on captures; tap the square; a promotion
   picker; coordinates on the edge squares; both clocks, red under 20 s; status: your move / they're thinking / check
