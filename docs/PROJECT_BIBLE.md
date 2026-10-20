@@ -220,6 +220,18 @@ yellow railings): short from the centre to East and West, South to its raft, the
 from East to the NE tyre stack and North to the NW one; the rest are jumps. The crushed car stacks and scrap piles
 are detailed models.
 
+**Neon Motel arena (rebuilt 2026-10-20 the same way):** sinking motel rooftops over the dark abyss (the flooded street
+is gone; the sunken neon buildings reach down into the dark) on a cloudy night (the `Night` preset now has heavy
+purple clouds). Higher places: on the main roof two raised roof sections (+3), a machine room (+7) with a water-tank
+deck (+13, the tank's top +18) and a service lift, and a neon sign tower with a catwalk (+10) under a big MOTEL sign;
+the pool roof's high-dive tower (+5, +10 with a board over the water) and a cabana (+5); a catwalk along West's MOTEL
+sign (+7) and a stairwell hut (+6); North's two-storey penthouse (+6.4, +11.8); South's water tank on stilts (+8,
+tank top +13); huts on three ledges. Moving parts: a neon OPEN sign swinging on chains across the main roof's east side
+(it knocks you flat), the service lift, a window cleaner's platform sliding along the gap between the main roof and
+the pool roof. Gangways: short from the centre to West and South, East to its low roof, the water-tower roof to its
+antenna roof; longer from West to the NW roof and South to the SE roof; the rest are jumps. Ice machines and lawn
+chair stacks are detailed models.
+
 **Every arena** follows the same rules as Broken Highway: four layers — 2 low platforms (4–9 below the centre), the
 base level (one centre platform that never falls, with a raised deck ≤ 6 high and ramps, and 4 side platforms within
 3 studs of it), 4 corner ledges (4–6 above) and 2 peaks (10–12 above) — every outer platform 8–14 studs from its

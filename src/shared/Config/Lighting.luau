@@ -83,6 +83,8 @@ local Lighting: { [string]: Preset } = {
 		Atmosphere = { Density = 0.3, Offset = 0.1, Color = "#3A2A60", Decay = "#1A1030", Glare = 0, Haze = 0.8 },
 		Bloom = { Intensity = 0.9, Size = 28, Threshold = 1.2 },
 		ColorCorrection = { Brightness = 0.06, Contrast = 0.1, Saturation = 0.15, TintColor = "#EEE8FF" },
+		-- Heavy night clouds over the motel (owner, 2026-10-20: a sky that matches the arena, not clear).
+		Clouds = { Cover = 0.8, Density = 0.7, Color = "#2E2648" },
 	},
 }
 

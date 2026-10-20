@@ -50,6 +50,7 @@ Map.BrokenHighway.Sign.Danger,DANGER · SWINGING SIGN,Warning sign by the swingi
 Map.JunkyardIsles.Sign.Yard,JOE'S SCRAP & SALVAGE,Painted sign on a shipping container in the Junkyard Isles arena,
 Map.NeonMotel.Sign.Motel,MOTEL,Giant neon sign on a roof in the Neon Motel arena,
 Map.NeonMotel.Sign.Vacancy,NO VACANCY,Small neon sign under the Neon Motel sign,
+Map.NeonMotel.Sign.Open,OPEN,Neon sign swinging on chains in the Neon Motel arena,
 Map.NeonMotel.Sign.Billboard,FREE COLOR TV!,Retro billboard on a ledge in the Neon Motel arena,
 Controls.Attack,Punch,"Mobile button and key hint for the Attack action (tap to punch, hold to charge a power punch; throws when holding a prop)",
 Controls.Ability,Ability,Key hint for the Ability action (the fighting style's special move),
