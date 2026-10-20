@@ -60,7 +60,17 @@ return {
 			expect.truthy(#shapes >= 10, `{typeId} has detail`)
 			checkInside(typeId, shapes, typeConfig.Size)
 		end
-		for _, typeId in { "WreckedCar", "VendingMachine", "RoadBarrierStack", "CrushedCarStack", "ScrapPile" } do
+		for _, typeId in
+			{
+				"WreckedCar",
+				"VendingMachine",
+				"RoadBarrierStack",
+				"CrushedCarStack",
+				"ScrapPile",
+				"IceMachine",
+				"LawnChairStack",
+			}
+		do
 			expect.truthy(ItemShapes.Structures[typeId], `{typeId} (Broken Highway) is detailed`)
 		end
 	end,

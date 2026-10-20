@@ -1,6 +1,6 @@
 --!strict
 --[[
-	Map 3: Neon Motel — sinking motel rooftops over a flooded street at night, flickering retro neon, a pool on one
+	Map 3: Neon Motel — sinking motel rooftops over a dark abyss (the flooded street until 2026-10-20) on a cloudy night, flickering retro neon, a pool on one
 	roof (bible §3.1–3.2; Night lighting); four times the first size with four layers (owner: 2026-10-17, every platform
 	doubled again 2026-10-20).
 
@@ -17,6 +17,7 @@
 ]]
 local Arena = require("../lib/Arena")
 local B = require("../lib/Builder")
+local Pieces = require("../lib/Pieces")
 
 type Platform = Arena.Platform
 type Contents = Arena.Contents
@@ -489,6 +490,249 @@ local function antenna(platform: Platform)
 	B.light(beacon, "NeonPink", 24, 1.6)
 end
 
+--[[
+	Bridges (owner, 2026-10-20: "some short, some long, some gaps, not too boring"): steel gangways — short from the
+	centre to West and South, East to its low roof and the NE water-tower roof to its antenna roof; longer from West to
+	the NW vent roof and a long one from South to the SE vent roof. Every other neighbour is a jump (the centre–East gap
+	has the window cleaner's platform). Each is two halves, one on each roof, so a crumbling roof takes its half.
+]]
+Layout.Bridges = {
+	{ "Center", "West", Along = 30 },
+	{ "Center", "South", Along = 20 },
+	{ "East", "LowEast" },
+	{ "LedgeNE", "PeakNE" },
+	{ "West", "LedgeNW", Along = -141 },
+	{ "South", "LedgeSE", Along = -100.5 },
+}
+Layout.BridgeWidth = 8
+
+-- A small rooftop hut (stairwell / pump house) `size` across, standing on `floor` (default the roof), with a roof slab,
+-- a door and a lamp over it; its roof's top is `floor` + height + 0.4.
+local function hut(name: string, at: { number }, size: { number }, color: string, floor: number?)
+	local base = floor or 0
+	Pieces.block(name, at, size, color, "Brick", base)
+	Pieces.block(`{name}Roof`, at, { size[1] + 0.6, 0.4, size[3] + 0.6 }, "ConcreteDark", "Concrete", base + size[2])
+	B.part({
+		Name = `{name}Door`,
+		Size = { 1.8, 3.2, 0.1 },
+		Position = { at[1], base + 1.6, at[2] - size[3] / 2 - 0.05 },
+		Color = "MetalDark",
+		Material = "Metal",
+		CanCollide = false,
+	})
+	local lamp = B.part({
+		Name = `{name}Lamp`,
+		Size = { 0.8, 0.3, 0.5 },
+		Position = { at[1], base + 3.8, at[2] - size[3] / 2 - 0.3 },
+		Color = "WarmLight",
+		Material = "Neon",
+		CanCollide = false,
+	})
+	B.light(lamp, "WarmLight", 14, 1.2)
+end
+
+-- A square steel deck on four posts with its top at `top` (from `floor`).
+local function stiltDeck(name: string, at: { number }, size: number, top: number, floor: number?)
+	B.part({
+		Name = name,
+		Size = { size, 0.5, size },
+		Position = { at[1], top - 0.25, at[2] },
+		Color = "MetalDark",
+		Material = "DiamondPlate",
+		CastShadow = true,
+	})
+	for _, dx in { -1, 1 } do
+		for _, dz in { -1, 1 } do
+			Pieces.column(
+				`{name}Leg`,
+				{ at[1] + dx * (size / 2 - 0.3), at[2] + dz * (size / 2 - 0.3) },
+				floor or 0,
+				top - 0.5,
+				0.5,
+				"MetalDark",
+				"Metal"
+			)
+		end
+	end
+end
+
+-- A wooden water tank you can stand on: staves, iron hoops and a cone roof.
+local function waterTank(at: { number }, base: number, diameter: number, height: number)
+	B.part({
+		Name = "WaterTank",
+		Size = { height, diameter, diameter },
+		Position = { at[1], base + height / 2, at[2] },
+		Rotation = { 0, 0, 90 },
+		Shape = "Cylinder",
+		Color = "Wood",
+		Material = "WoodPlanks",
+		CastShadow = true,
+	})
+	for _, y in { 1, height - 1 } do
+		B.part({
+			Name = "WaterTankHoop",
+			Size = { 0.3, diameter + 0.2, diameter + 0.2 },
+			Position = { at[1], base + y, at[2] },
+			Rotation = { 0, 0, 90 },
+			Shape = "Cylinder",
+			Color = "MetalDark",
+			Material = "Metal",
+			CanCollide = false,
+		})
+	end
+end
+
+-- A raised section of roof (+3, walkable) with two skylights and an AC unit on it.
+local function raisedRoof(at: { number })
+	Pieces.block("RaisedRoof", at, { 20, 3, 14 }, "ConcreteDark", "Slate")
+	for _, dx in { -5, 5 } do
+		B.part({
+			Name = "RaisedSkylight",
+			Size = { 6, 0.3, 5 },
+			Position = { at[1] + dx, 3.15, at[2] - 2 },
+			Color = "Glass",
+			Material = "Glass",
+			Transparency = 0.3,
+			CanCollide = false,
+		})
+	end
+	B.within({ at[1] + 5, 3, at[2] + 4 }, function()
+		acUnit({ 0, 0 })
+	end)
+end
+
+--[[
+	The centre (the main roof): two raised roof sections (+3), a machine room (+7) with a water-tank deck beside its roof (+13; the tank's top +18) and
+	the service lift up to it; a neon sign tower with a catwalk (+10) under a big MOTEL sign; the frame the swinging OPEN
+	sign hangs from (the sign is a mover).
+]]
+local function centerFeatures()
+	raisedRoof({ 95, -15 })
+	raisedRoof({ -90, 20 })
+	hut("MachineRoom", { 24, 28 }, { 14, 7, 10 }, "PinkDark")
+	stiltDeck("TankDeck", { 27, 28 }, 8, 13, 7.4)
+	waterTank({ 27, 28 }, 13, 4, 5)
+	Pieces.crate("MachineStep", { 13.5, 28 }, 3)
+	Pieces.crate("MachineStep", { 13.5, 28 }, 2.6, 3, 15)
+	for _, x in { 31.6, 38.4 } do
+		for _, z in { 24.4, 31.6 } do
+			Pieces.column("LiftPost", { x, z }, 0, 16, 0.5, "NeonTeal", "Metal")
+		end
+	end
+
+	-- The neon sign tower.
+	for _, x in { -44.5, -35.5 } do
+		Pieces.column("SignTowerLeg", { x, -30 }, 0, 23, 0.8, "MetalDark", "Metal")
+	end
+	B.part({
+		Name = "SignCatwalk",
+		Size = { 10, 0.5, 3 },
+		Position = { -40, 9.75, -30 },
+		Color = "MetalDark",
+		Material = "DiamondPlate",
+	})
+	Pieces.railing("SignCatwalkRail", { -45, -31.3 }, { -35, -31.3 }, 10)
+	local sign = B.sign({
+		Name = "TowerSign",
+		Size = { 12, 5, 0.4 },
+		Position = { -40, 19.5, -30 },
+		Rotation = B.yaw("North"),
+		Color = "Black",
+		Material = "SmoothPlastic",
+		Key = "Map.NeonMotel.Sign.Motel",
+		TextColor = "NeonPink",
+		Glow = true,
+		Tags = FLICKER,
+	})
+	B.light(sign, "NeonPink", 34, 2)
+	for _, tube in { { 12.6, 0.25, 22.2 }, { 12.6, 0.25, 16.8 } } do
+		B.part({
+			Name = "TowerSignTube",
+			Size = { tube[1], tube[2], 0.25 },
+			Position = { -40, tube[3], -29.7 },
+			Color = "NeonTeal",
+			Material = "Neon",
+			CanCollide = false,
+		})
+	end
+	Pieces.crate("SignStep", { -40, -24.5 }, 3)
+	Pieces.crate("SignStep", { -40, -24.5 }, 2.6, 3, -10)
+
+	-- The OPEN sign's frame.
+	for _, z in { -22, 22 } do
+		Pieces.column("OpenSignPost", { 60, z }, 0, 21.5, 0.8, "MetalDark", "Metal")
+	end
+	B.part({
+		Name = "OpenSignBeam",
+		Size = { 1, 1, 45 },
+		Position = { 60, 21, 0 },
+		Color = "MetalDark",
+		Material = "Metal",
+	})
+end
+
+-- East (the pool roof): a high-dive tower at the pool's south end (+5, then +10 with the board out over the water)
+-- and a cabana you can climb onto (+5).
+local function eastFeatures()
+	stiltDeck("DiveDeck", { -12, -30 }, 6, 5)
+	stiltDeck("DiveDeck", { -6, -30 }, 6, 10)
+	B.part({
+		Name = "HighBoard",
+		Size = { 1.4, 0.3, 8 },
+		Position = { -6, 9.85, -23 },
+		Color = "NeonTeal",
+		Material = "SmoothPlastic",
+	})
+	for _, x in { 26.4, 33.6 } do
+		for _, z in { 17.4, 22.6 } do
+			Pieces.column("CabanaPost", { x, z }, 0, 5, 0.4, "Wood", "Wood")
+		end
+	end
+	Pieces.block("CabanaRoof", { 30, 20 }, { 8, 0.4, 6 }, "NeonPink", "Fabric", 4.8)
+	for _, x in { 28, 32 } do
+		B.part({
+			Name = "Lounger",
+			Size = { 1.6, 0.4, 4 },
+			Position = { x, 0.6, 20 },
+			Rotation = { -8, 0, 0 },
+			Color = "OffWhite",
+			Material = "SmoothPlastic",
+			CanCollide = false,
+		})
+	end
+end
+
+-- West (the sign roof): a maintenance catwalk along the MOTEL sign (+7) and a stairwell hut (+6).
+local function westFeatures()
+	B.part({
+		Name = "SignWalk",
+		Size = { 3, 0.4, 18 },
+		Position = { -41, 7, 0 },
+		Color = "MetalDark",
+		Material = "DiamondPlate",
+	})
+	Pieces.railing("SignWalkRail", { -39.6, -9 }, { -39.6, 3 }, 7.2)
+	Pieces.crate("SignWalkStep", { -37, 6 }, 3)
+	Pieces.crate("SignWalkStep", { -37, 6 }, 2.6, 3, 20)
+	hut("Stairwell", { 20, -10 }, { 10, 6, 8 }, "DustyPink")
+	Pieces.crate("StairwellStep", { 20, -3 }, 3)
+end
+
+-- North: a two-storey penthouse (roofs +6.4, then +11.8).
+local function northFeatures()
+	hut("Penthouse", { 10, 24 }, { 16, 6, 12 }, "PinkDark")
+	hut("PenthouseTop", { 14, 26 }, { 8, 5, 6 }, "DustyPink", 6.4)
+	Pieces.crate("PenthouseStep", { -1.5, 24 }, 3)
+end
+
+-- South: a water tank on stilts (+8, the tank's top +13).
+local function southFeatures()
+	stiltDeck("TankStilts", { 20, -10 }, 10, 8)
+	waterTank({ 20, -10 }, 8, 5, 5)
+	Pieces.crate("TankStep", { 20, -1.5 }, 3)
+	Pieces.crate("TankStep", { 20, -1.5 }, 2.6, 3, 15)
+end
+
 local function decorate(platform: Platform)
 	if platform.Kind ~= "Ledge" then
 		building(platform)
@@ -518,20 +762,52 @@ local function decorate(platform: Platform)
 			roofLamp({ 11 * math.sign(platform.Center[1]), 11 })
 		end)
 	end
+	-- Shapes and higher places on top, and this roof's bridge halves (gangways).
+	if platform.Id == "Center" then
+		centerFeatures()
+	elseif platform.Id == "East" then
+		eastFeatures()
+	elseif platform.Id == "West" then
+		westFeatures()
+	elseif platform.Id == "North" then
+		northFeatures()
+	elseif platform.Id == "South" then
+		southFeatures()
+	elseif platform.Id == "LedgeNE" or platform.Id == "LedgeNW" then
+		hut("RoofHut", { 10, 10 }, { 6, 5, 6 }, "DustyPink")
+		Pieces.crate("RoofHutStep", { 10, 3.5 }, 3)
+	elseif platform.Id == "LedgeSE" then
+		hut("RoofHut", { -10, -10 }, { 6, 5, 6 }, "DustyPink")
+		Pieces.crate("RoofHutStep", { -10, -3.5 }, 3)
+	end
+	Arena.bridges(Layout, platform, function(name: string, from: { number }, to: { number }): any
+		return Pieces.span(name, from, to, Layout.BridgeWidth, "MetalDark", "DiamondPlate", "Gangway")
+	end)
 end
 
 local function scenery(killY: number)
-	-- The flooded street far below.
-	B.part({
-		Name = "FloodWater",
-		Size = { 2800, 1, 2800 },
-		Position = { 0, killY - 25, 0 },
-		Color = "TealDark",
-		Material = "Glass",
-		Transparency = 0.2,
-		CanCollide = false,
-		CastShadow = false,
-	})
+	-- The abyss (owner, 2026-10-20: a dark abyss instead of the flooded street), as on the other arenas: sheets of dark
+	-- mist fading to black far below; the sunken buildings reach down into it.
+	for index, layer in
+		{
+			{ 12, 0.82, "#221F2E" },
+			{ 40, 0.7, "#191624" },
+			{ 80, 0.55, "#110F1A" },
+			{ 130, 0.35, "#0A0910" },
+			{ 200, 0, "#040407" },
+		}
+	do
+		B.part({
+			Name = `AbyssMist{index}`,
+			Size = { 2800, 1, 2800 },
+			Position = { 0, killY - layer[1], 0 },
+			Color = layer[3],
+			Material = "SmoothPlastic",
+			Transparency = layer[2],
+			CanCollide = false,
+			CastShadow = false,
+		})
+	end
 	-- Dark buildings around the motel, half sunk, each with a neon sign on the side facing the arena (positions laid
 	-- out for the first arena, a quarter of today's, so × 2 × GROWTH).
 	for index, block in
@@ -548,8 +824,8 @@ local function scenery(killY: number)
 		local faceZ = if z > 0 then -block[5] / 2 - 0.3 else block[5] / 2 + 0.3
 		B.part({
 			Name = `Tower{index}`,
-			Size = { block[3], height, block[5] },
-			Position = { x, killY - 25 + height / 2 - 10, z },
+			Size = { block[3], height + 165, block[5] },
+			Position = { x, killY - 25 + height / 2 - 10 - 82.5, z },
 			Color = "Black",
 			Material = "Concrete",
 			CanCollide = false,
@@ -568,9 +844,112 @@ local function scenery(killY: number)
 	end
 end
 
+--[[
+	The moving parts (Shared/MoverRules; positions from the arena origin = the centre's top):
+	  * OpenSign: a neon OPEN sign swinging on chains under its frame on the east of the main roof; it knocks you flat.
+	  * ServiceLift: a service lift beside the machine room, from the roof up to the water-tank deck (+13).
+	  * WindowCleaner: a window cleaner's platform sliding along the gap between the main roof and the pool roof, about
+	    level with both.
+]]
+local function movers()
+	local vector = B.roblox.Vector3.new
+	Arena.mover(
+		"OpenSign",
+		{ 60, 20.5, 0 },
+		{ Kind = "Swing", Period = 3.8, Angle = 50, Axis = "Z", Phase = 1.1 },
+		function()
+			for _, z in { -3, 3 } do
+				B.part({
+					Name = "Chain",
+					Size = { 0.2, 14.5, 0.2 },
+					Position = { 60, 13.25, z },
+					Color = "MetalDark",
+					Material = "Metal",
+					CanCollide = false,
+				})
+			end
+			for _, side in { -1, 1 } do
+				local board = B.sign({
+					Name = "OpenBoard",
+					Size = { 8, 3.5, 0.2 },
+					Position = { 60 + side * 0.15, 4.25, 0 },
+					Rotation = B.yaw(if side < 0 then "West" else "East"),
+					Color = "Black",
+					Material = "SmoothPlastic",
+					Key = "Map.NeonMotel.Sign.Open",
+					TextColor = "NeonPink",
+					Glow = true,
+					CanCollide = false,
+				})
+				board:AddTag("Hazard")
+			end
+			local rim = B.part({
+				Name = "OpenRim",
+				Size = { 0.5, 3.9, 8.4 },
+				Position = { 60, 4.25, 0 },
+				Color = "NeonTeal",
+				Material = "Neon",
+				CanCollide = false,
+			})
+			B.light(rim, "NeonTeal", 18, 1.4)
+		end
+	)
+	Arena.mover(
+		"ServiceLift",
+		{ 35, 0.5, 28 },
+		{ Kind = "Lift", Period = 11, Pause = 3, Offset = vector(0, 12, 0) },
+		function()
+			B.part({
+				Name = "LiftCage",
+				Size = { 6, 1, 6 },
+				Position = { 35, 0.5, 28 },
+				Color = "MetalDark",
+				Material = "DiamondPlate",
+				CastShadow = true,
+			})
+			Pieces.railing("LiftCageRail", { 37.6, 25.4 }, { 37.6, 30.6 }, 1, 1.2, "NeonTeal")
+		end
+	)
+	Arena.mover(
+		"WindowCleaner",
+		{ 117, 0, -50 },
+		{ Kind = "Slide", Period = 15, Pause = 2.5, Offset = vector(0, 0, 84), Phase = 4 },
+		function()
+			B.part({
+				Name = "CleanerDeck",
+				Size = { 9.6, 1, 10 },
+				Position = { 117, 0, -50 },
+				Color = "MetalDark",
+				Material = "DiamondPlate",
+				CastShadow = true,
+			})
+			for _, z in { -54.6, -45.4 } do
+				B.part({
+					Name = "CleanerRail",
+					Size = { 9.6, 0.2, 0.2 },
+					Position = { 117, 1.7, z },
+					Color = "NeonOrange",
+					Material = "Metal",
+					CanCollide = false,
+				})
+			end
+			B.part({
+				Name = "CleanerBucket",
+				Size = { 1.2, 1.4, 1.2 },
+				Position = { 120, 1.2, -52 },
+				Shape = "Cylinder",
+				Rotation = { 0, 0, 90 },
+				Color = "NeonTeal",
+				Material = "SmoothPlastic",
+				CanCollide = false,
+			})
+		end
+	)
+end
+
 -- Builds the arena model at `origin` (world position of the centre platform's top centre).
 function Layout.build(origin: { number }): any
-	return Arena.build(Layout :: any, origin, decorate, scenery)
+	return Arena.build(Layout :: any, origin, decorate, scenery, movers)
 end
 
 return Layout

@@ -431,6 +431,58 @@ ItemShapes.Structures = {
 		lying(1.1, 1.8, { -1.7, -0.75, 1.9 }, { Color = "#2F8C8C", Material = "CorrodedMetal" }),
 		upright(1.1, 0.25, { 0.2, 1.05, -0.4 }, { Color = "#55595E", Material = "Metal" }),
 	},
+	-- Neon Motel: an ice machine — its cabinet, a glowing blue ICE header, the bin door with a chrome handle, a vent
+	-- grille, the coin box, feet and a few ice cubes on top.
+	IceMachine = (function(): { Shape }
+		local shapes = {
+			block({ 3.9, 5.7, 2.8 }, { 0, 0.05, 0.05 }, { Color = "#E8EEF2" }),
+			block({ 3.7, 1, 0.08 }, { 0, 2.25, -1.42 }, { Color = "#3FA7E8", Material = "Neon" }),
+			block({ 3.2, 2.6, 0.1 }, { 0, -0.6, -1.42 }, { Color = "#C9D6DE", Material = "Metal" }),
+			block({ 2.4, 0.15, 0.12 }, { 0, 0.55, -1.48 }, { Color = CHROME, Material = "Metal" }),
+			block({ 3.3, 0.12, 0.06 }, { 0, 0.85, -1.47 }, { Color = WHITE }),
+			block({ 0.5, 0.7, 0.08 }, { 1.4, 1.3, -1.45 }, { Color = DARK }),
+		}
+		for index = 0, 3 do
+			table.insert(shapes, block({ 2.6, 0.06, 0.05 }, { -0.4, 1.2 + index * 0.18, -1.45 }, { Color = DARK }))
+		end
+		for _, foot in { { -1.6, -1.1 }, { 1.6, -1.1 }, { -1.6, 1.1 }, { 1.6, 1.1 } } do
+			table.insert(shapes, block({ 0.4, 0.2, 0.4 }, { foot[1], -2.9, foot[2] }, { Color = DARK }))
+		end
+		for index, cube in { { -1, 0.3 }, { 0.2, -0.4 }, { 1.1, 0.5 } } do
+			table.insert(
+				shapes,
+				block(
+					{ 0.35, 0.35, 0.35 },
+					{ cube[1], 3, cube[2] },
+					{ Turn = { 0, index * 25, 0 }, Color = "#CFEFF7", Material = "Glass", Transparency = 0.3 }
+				)
+			)
+		end
+		return shapes
+	end)(),
+	-- Neon Motel: two stacks of plastic lawn chairs (three and two), each chair a seat, a tilted back, arms and legs.
+	LawnChairStack = (function(): { Shape }
+		local shapes: { Shape } = {}
+		local colors = { "#F2F2F2", "#3FB8AF", "#D98C9A" }
+		local function chair(x: number, y: number, color: string)
+			table.insert(shapes, block({ 2.2, 0.14, 2.1 }, { x, y, 0.1 }, { Color = color }))
+			table.insert(
+				shapes,
+				block({ 2.2, 1.3, 0.12 }, { x, y + 0.6, 1.1 }, { Turn = { -12, 0, 0 }, Color = color })
+			)
+			for _, side in { -1, 1 } do
+				table.insert(shapes, block({ 0.12, 0.12, 1.9 }, { x + side * 1.05, y + 0.45, 0.1 }, { Color = color }))
+				table.insert(shapes, block({ 0.12, 0.6, 0.12 }, { x + side * 1.05, y - 0.35, -0.9 }, { Color = color }))
+			end
+		end
+		for level = 0, 2 do
+			chair(-1.25, -0.9 + level * 0.5, colors[level + 1])
+		end
+		for level = 0, 1 do
+			chair(1.25, -0.9 + level * 0.5, colors[3 - level])
+		end
+		return shapes
+	end)(),
 }
 
 -- Where a shape sits relative to its item's centre (its CFrame there; Size is the part's own size).

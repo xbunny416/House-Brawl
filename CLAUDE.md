@@ -324,6 +324,7 @@ any errors are fixed before the next item.
 | 2026-10-20 | Broken Highway connected, sky roads, dark abyss, smoggy sky (owner: "more layer structure, outer platforms more connected — still able to crumble; change the neon void and the sky"; picked a dark abyss and a sky that matches the arena, "not this clear"): 15 bridges (a ring side ↔ ledge, side ↔ low, ledge ↔ peak, centre ↔ East / West / North) in two halves each owned by its platform (Arena.bridgeEnds, Pieces.span); two sky roads catwalk → ledge → peak at +12–14 on pillars, one piece per platform below (Arena.splitRoad); the abyss (5 sheets of dark mist to black, ruins reaching down into it) replaces the neon sludge; Smog lighting preset with Roblox dynamic clouds (Config.Lighting Clouds, MapService); swing frame posts and end lamps moved for the NE / SW roads; specs: bridge halves on both platforms at a walkable slope, sky road pieces join and are carried by their platforms, cloud ranges; the marker check now tests rotated parts exactly (separating axes) | #74 |
 | 2026-10-20 | Broken Highway: fewer bridges, higher places (owner: "didn't expect many roads to connect — more structure, I mean higher places"; bridges "some short, some long, some gaps, not too boring"): the sky roads and Arena.splitRoad are gone; 6 bridges (short: centre ↔ East / North, West ↔ LowWest, LedgeNE ↔ PeakNE; long: North ↔ LedgeNE, West ↔ LedgeSW), the rest are jumps; new climbable heights: container tower +18, parking roof deck +14, toll control booth ~+17, West overpass pier +12, billboard catwalk +7, a sign deck +7 on every ledge; the bridge spec covers every arena with bridges (a mix of short and long, at most 8) | #75 |
 | 2026-10-20 | Junkyard Isles rebuilt the Broken Highway way (owner: "continue Junkyard Isles and Neon Motel the same way"): detailed CrushedCarStack and ScrapPile (ItemShapes); higher places — junk tower +6 / +12 / +17, car crusher +8, four junk heaps (centre), container stack +6 / +12 under a container crane walkway +18 (East), stepped car pile +10 (West), scaffold +5 / +10 / +15 with the crane cab (North), barge wheelhouse +5 / +9.4 (South), tyre towers; movers: a swinging magnet (hazard) on a new magnet crane, the junk elevator, a raft sliding along the centre–South gap; 6 gangway bridges (Pieces.span "Gangway"; Arena.bridges now builds any layout's bridge halves); the dark abyss with crushed-car spires instead of the sludge; Rust lighting preset (stormy rust sunset, dynamic clouds) | #76 |
+| 2026-10-20 | Neon Motel rebuilt the same way: detailed IceMachine and LawnChairStack (ItemShapes); higher places — two raised roofs +3, machine room +7 with a water-tank deck +13 (tank top +18) and a service lift, a neon sign tower with a catwalk +10 (centre), high-dive tower +5 / +10 and a cabana +5 (East), MOTEL sign catwalk +7 and a stairwell hut +6 (West), two-storey penthouse +6.4 / +11.8 (North), water tank on stilts +8 / +13 (South), huts on three ledges; movers: a swinging neon OPEN sign (hazard), the service lift, a window cleaner's platform sliding along the centre–East gap; 6 gangway bridges; the dark abyss replaces the flooded street (the sunken buildings reach down into it); the Night preset gets heavy purple clouds | #77 |
 
 ## Decisions and interpretations
 
@@ -1014,6 +1015,24 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   Highway, with five towers of crushed cars rising out of it; the drifting drums lost their green; the new `Rust` preset
   — a stormy rust sunset (sun just setting at 18:03, grey-violet clouds at cover 0.72 / density 0.78 lit orange, a
   dusty rust haze).
+- **Neon Motel rebuilt the same way (owner, 2026-10-20):** the platforms, gaps and spots stay. **Structures:**
+  `ItemShapes` gains the ice machine (cabinet, a glowing blue header, the bin door with a chrome handle, a vent
+  grille, the coin box, feet, ice cubes on top) and the lawn chair stack (two stacks of plastic chairs, three and two,
+  each a seat, a tilted back, arms and legs). **Higher places** (the layout's `hut`, `stiltDeck` and `waterTank` plus
+  `maps/lib/Pieces`): main roof — two raised roof sections (+3 with skylights and an AC unit), a machine room (+7.4) with a
+  steel deck on legs over half its roof (+13) carrying a wooden water tank you can stand on (+18), the service lift's
+  shaft beside it, and a neon sign tower (two legs, a catwalk at +10 under a big flickering MOTEL sign with teal tubes;
+  crates to climb); pool roof — a high-dive tower (decks +5 and +10 side by side, the high board out over the water)
+  and a cabana (+5, pink canopy, loungers); West — a maintenance catwalk along the MOTEL sign (+7) and a stairwell hut
+  (+6.4); North — a two-storey penthouse (+6.4, +11.8); South — a water tank on stilts (+8, tank top +13); ledges NE,
+  NW and SE — a rooftop hut (+5.4, with a lit door). Crates lead up everywhere. **Movers:** `OpenSign` (a neon OPEN
+  sign on chains under a frame on the main roof's east side: a swing about Z, ±50°, 3.8 s, at head height; Hazard,
+  the new string `Map.NeonMotel.Sign.Open`), `ServiceLift` (+12 to the tank deck, 11 s), `WindowCleaner` (a platform
+  sliding 84 studs along the 10-stud gap between the main roof and the pool roof, 15 s). **Bridges:** gangways —
+  short centre ↔ West / South, East ↔ LowEast, LedgeNE ↔ PeakNE; West ↔ LedgeNW (22) and South ↔ LedgeSE (86). **Void
+  and sky:** the dark abyss (a little more violet) replaces the flooded street, and the six sunken buildings with their
+  neon signs now reach 165 studs further down into it; the `Night` preset gets heavy purple clouds (cover 0.8, density
+  0.7). All three arenas are now rebuilt.
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,
@@ -1142,8 +1161,8 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   art / VFX passes restyle them. The lobby's CRT-TV vote screens from the bible are an art-pass item. The dash ring
   fills bottom-to-top (a true radial ring needs an image asset).
 - **Props and structures are detailed** (since 2026-10-20, `Shared/ItemShapes`): the box from `Config.Props.Types` /
-  `Config.Structures.Types` still does all the colliding and turns invisible; Junkyard Isles' and Neon Motel's structures
-  keep their plain box until those arenas' rebuilds. A lit barrel glows, explosions are a client-drawn cartoon blast (2.7). Carry pose and throw animation
+  `Config.Structures.Types` still does all the colliding and turns invisible; every prop and all seven structure types
+  have their look. A lit barrel glows, explosions are a client-drawn cartoon blast (2.7). Carry pose and throw animation
   are scripted clips (2.6). Flights are simulated by the server (props are server-owned while flying), so throws
   look slightly delayed on high ping.
 - **Camera sensitivity** is saved and validated but not used or shown: Roblox does not let scripts change mouse /
