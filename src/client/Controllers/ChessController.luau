@@ -14,6 +14,7 @@
 	    them; the legal moves shown come from the same Shared/ChessRules.
 ]]
 local CollectionService = game:GetService("CollectionService")
+local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -41,6 +42,7 @@ local PIECE_LIFT = 0.02 -- studs from the board frame's top to the squares' top
 local DESIGN_SQUARE = 0.55 -- the square size the 3D pieces are drawn for (they scale with SquareSize)
 local LOW_CLOCK = 20 -- seconds: a clock this low turns red
 local RESIGN_CONFIRM = 3 -- seconds the "Sure? Resign" button waits for the second tap
+local NO_JUMP = "ChessNoJump" -- the ContextActionService binding that keeps a player seated mid-game
 
 -- The chess symbols (outline set: none of them turns into an emoji) and the letters used instead if asked.
 local SYMBOLS: { [string]: string } =
@@ -136,6 +138,8 @@ local targets: { [number]: ChessRules.Move } = {}
 local pendingPromotion: { From: number, To: number }? = nil
 local resignArmedUntil = 0
 local shownSignature = ""
+local jumpBlocked = false
+local savedJump: { Height: number, Power: number }? = nil
 local wasOpen = false
 
 local function numberAttribute(model: Instance, name: string): number
@@ -417,6 +421,17 @@ local function refreshOverhead(view: TableView)
 	end
 end
 
+-- A table left this client (destroyed, or the lobby streamed out while in a round): drop its pieces and board, so
+-- nothing is left behind or doubled when it streams back in.
+local function removeTable(instance: Instance)
+	local view = views[instance :: Model]
+	if view then
+		view.Folder:Destroy()
+		view.Overhead.Gui:Destroy()
+		views[instance :: Model] = nil
+	end
+end
+
 local function addTable(instance: Instance)
 	if not instance:IsA("Model") or views[instance] then
 		return
@@ -436,9 +451,7 @@ local function addTable(instance: Instance)
 	}
 	views[instance] = view
 	instance.Destroying:Connect(function()
-		folder:Destroy()
-		view.Overhead.Gui:Destroy()
-		views[instance] = nil
+		removeTable(instance)
 	end)
 end
 
@@ -730,6 +743,38 @@ local function buildScreen()
 	end)
 end
 
+--[[
+	Jumping stands you up, and standing up mid-game loses it: while your game is on, the jump key / button does nothing
+	(a sunk CharacterJump action for keyboard and gamepad; no jump height, so the touch jump button hides). Resign to
+	leave; jumping works again once the game is over.
+]]
+local function setJumpBlocked(blocked: boolean)
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	if blocked == jumpBlocked then
+		return
+	end
+	jumpBlocked = blocked
+	if blocked then
+		ContextActionService:BindActionAtPriority(NO_JUMP, function()
+			return Enum.ContextActionResult.Sink
+		end, false, Enum.ContextActionPriority.High.Value, Enum.PlayerActions.CharacterJump)
+		if humanoid then
+			savedJump = { Height = humanoid.JumpHeight, Power = humanoid.JumpPower }
+			humanoid.JumpHeight = 0
+			humanoid.JumpPower = 0
+		end
+	else
+		ContextActionService:UnbindAction(NO_JUMP)
+		local saved = savedJump
+		if humanoid and saved then
+			humanoid.JumpHeight = saved.Height
+			humanoid.JumpPower = saved.Power
+		end
+		savedJump = nil
+	end
+end
+
 -- Redraws the squares: pieces, the last move, the selection and where the selected piece can go.
 local function renderBoard(model: Model, side: number, position: ChessRules.Position)
 	local lastMove = stringAttribute(model, "LastMove")
@@ -771,6 +816,7 @@ local function refreshScreen()
 	local open = model ~= nil
 	screen.Enabled = open
 	if model == nil then
+		setJumpBlocked(false)
 		if wasOpen then
 			selected, targets, pendingPromotion = nil, {}, nil
 			picker.Visible = false
@@ -783,6 +829,7 @@ local function refreshScreen()
 	local position = positionOf(model)
 	local mine = if side == 1 then "w" else "b"
 	local myTurn = state == "Playing" and position.Turn == mine
+	setJumpBlocked(state == "Playing")
 	if not myTurn and (selected or pendingPromotion) then
 		selected, targets, pendingPromotion = nil, {}, nil
 		picker.Visible = false
@@ -840,6 +887,7 @@ local function refreshScreen()
 		if offer == other then
 			table.insert(lines, Localization.format("Chess.TheyOfferDraw", { nameOf(otherId) }))
 		end
+		table.insert(lines, Localization.format("Chess.StayHint"))
 		statusLabel.Text = table.concat(lines, "\n")
 		statusLabel.TextColor3 = if myTurn then Kit.Colors.Coin else Kit.Colors.Text
 	elseif state == "Over" then
@@ -875,6 +923,7 @@ function ChessController.Start(_self: any)
 		addTable(model)
 	end
 	CollectionService:GetInstanceAddedSignal(TABLE_TAG):Connect(addTable)
+	CollectionService:GetInstanceRemovedSignal(TABLE_TAG):Connect(removeTable)
 
 	local elapsed = 0
 	RunService.Heartbeat:Connect(function(dt: number)
