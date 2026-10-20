@@ -131,14 +131,11 @@ local function build()
 	header.Parent = panel
 	local tabs = Kit.tabRow(
 		header,
-		{ Localization.format("Daily.Title"), Localization.format("Quests.Title"), Localization.format("Wheel.Tab") },
+		{ Localization.format("Daily.Title"), Localization.format("Quests.Title") },
 		UDim2.fromScale(0, 0),
-		UDim2.fromScale(0.78, 0.9),
-		0.31
+		UDim2.fromScale(0.7, 0.9),
+		0.4
 	)
-	tabs[3].Activated:Connect(function()
-		MenuController.openNamed("SpinWheel")
-	end)
 	Kit.setChosen(tabs[2], true)
 	tabs[1].Activated:Connect(function()
 		MenuController.openNamed("DailyReward")

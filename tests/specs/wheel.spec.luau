@@ -1,6 +1,7 @@
 --!strict
 -- The lobby spin wheel (owner's fix list, 2026-10-19): exact odds that add up to 100, the free daily spin and paid
--- spins, picks that follow the odds, the cosmetic prize, and the wheel in the lobby with one slice per prize.
+-- spins, one spin at a time, picks that follow the odds, the cosmetic prize, and the wheel in the lobby: one slice per
+-- prize with its label facing the room, and the spin button.
 local fs = require("@lune/fs")
 local csv = require("../../tools/csv")
 local Roblox = require("../roblox")
@@ -48,7 +49,7 @@ return {
 		end
 		expect.equal(WheelRules.pick(0.99999), #Wheel.Prizes)
 	end,
-	["spin checks: private servers, fighting, the daily free spin, paid spins"] = function()
+	["spin checks: private servers, fighting, one spin at a time, the daily free spin, paid spins"] = function()
 		local wheel = { FreeDay = -1 }
 		local function check(kind: string, scrap: number, overrides: { [string]: boolean }?): string?
 			local checks: { [string]: boolean } = { Allowed = true, Fighting = false, PaidAllowed = true }
@@ -60,6 +61,8 @@ return {
 		expect.equal(check("Free", 0), nil)
 		expect.equal(check("Free", 0, { Allowed = false }), "PrivateServer")
 		expect.equal(check("Free", 0, { Fighting = true }), "Fighting")
+		expect.equal(check("Free", 0, { Busy = true }), "Busy")
+		expect.equal(check("Paid", Wheel.SpinPrice, { Busy = true }), "Busy")
 		expect.equal(check("Paid", Wheel.SpinPrice), nil)
 		expect.equal(check("Paid", Wheel.SpinPrice - 1), "NotEnoughScrap")
 		expect.equal(check("Paid", 1000000, { PaidAllowed = false }), "NotAllowed")
@@ -86,27 +89,52 @@ return {
 		for _, reason in WheelRules.Reasons do
 			expect.truthy(keys[`Wheel.Error.{reason}`], `Wheel.Error.{reason}`)
 		end
-		for _, key in { "Wheel.XP", "Wheel.StyleSpin", "Wheel.Cosmetic", "Currency.Scrap", "Lobby.Sign.Wheel" } do
+		for _, kind in WheelRules.PrizeKinds do
+			expect.truthy(keys[`Wheel.Slice.{kind}`], `Wheel.Slice.{kind}`)
+		end
+		local others =
+			{ "Wheel.XP", "Wheel.StyleSpin", "Wheel.Cosmetic", "Wheel.Won", "Currency.Scrap", "Lobby.Sign.Wheel" }
+		for _, key in { "Prompt.Wheel", "Prompt.Wheel.Free", "Prompt.Wheel.Paid", "Prompt.Wheel.Object" } do
+			table.insert(others, key)
+		end
+		for _, key in others do
 			expect.truthy(keys[key], key)
 		end
 	end,
-	["the lobby wheel: one SpinWheel with a Backboard for the prompt and one slice (two wedges) per prize"] = function()
+	["the lobby wheel: one slice (two wedges) and one label per prize, the labels facing the room, a spin button"] = function()
 		local lobby = Hideout.build(Config.Maps.LobbyOrigin)
 		local wheels = tagged(lobby, "SpinWheel")
 		expect.equal(#wheels, 1)
 		local wheel = wheels[1]
-		expect.truthy(wheel:FindFirstChild("Backboard"), "Backboard")
+		expect.equal(wheel.ModelStreamingMode.Name, "Atomic", "streams in whole")
+		local stand = wheel:FindFirstChild("SpinButton")
+		expect.truthy(stand and stand:FindFirstChild("Button"), "SpinButton with a Button")
 		local rotor = wheel:FindFirstChild("Rotor")
 		expect.truthy(rotor and rotor:FindFirstChild("Hub"), "Rotor with a Hub")
+		local hub = rotor.Hub.CFrame.Position
 		local slices: { [number]: number } = {}
+		local labels: { [number]: number } = {}
 		for _, part in rotor:GetDescendants() do
 			local segment = part:GetAttribute("Segment")
-			if segment then
+			if segment and part.Name == "Label" then
+				labels[segment] = (labels[segment] or 0) + 1
+				-- Its front (where the client writes the prize) faces the room (+X); its up points from the hub out
+				-- through the middle of its slice (slice i at (i - 1) / count of a turn from the top, toward +Z).
+				local angle = (segment - 1) / #Wheel.Prizes * 2 * math.pi
+				local look, up = part.CFrame.LookVector, part.CFrame.UpVector
+				expect.near(look.X, 1, 1e-3, `label {segment} faces the room`)
+				expect.near(up.Y, math.cos(angle), 1e-3, `label {segment} up`)
+				expect.near(up.Z, math.sin(angle), 1e-3, `label {segment} up`)
+				local out = part.CFrame.Position - hub
+				expect.near(out.Y * up.Z - out.Z * up.Y, 0, 1e-3, `label {segment} sits on its slice's middle line`)
+				expect.truthy(out.Y * up.Y + out.Z * up.Z > 3, `label {segment} out toward the rim`)
+			elseif segment then
 				slices[segment] = (slices[segment] or 0) + 1
 			end
 		end
 		for index = 1, #Wheel.Prizes do
 			expect.equal(slices[index], 2, `slice {index}`)
+			expect.equal(labels[index], 1, `label {index}`)
 		end
 		expect.equal(slices[#Wheel.Prizes + 1], nil, "no extra slices")
 	end,

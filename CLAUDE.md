@@ -325,6 +325,7 @@ any errors are fixed before the next item.
 | 2026-10-20 | Broken Highway: fewer bridges, higher places (owner: "didn't expect many roads to connect — more structure, I mean higher places"; bridges "some short, some long, some gaps, not too boring"): the sky roads and Arena.splitRoad are gone; 6 bridges (short: centre ↔ East / North, West ↔ LowWest, LedgeNE ↔ PeakNE; long: North ↔ LedgeNE, West ↔ LedgeSW), the rest are jumps; new climbable heights: container tower +18, parking roof deck +14, toll control booth ~+17, West overpass pier +12, billboard catwalk +7, a sign deck +7 on every ledge; the bridge spec covers every arena with bridges (a mix of short and long, at most 8) | #75 |
 | 2026-10-20 | Junkyard Isles rebuilt the Broken Highway way (owner: "continue Junkyard Isles and Neon Motel the same way"): detailed CrushedCarStack and ScrapPile (ItemShapes); higher places — junk tower +6 / +12 / +17, car crusher +8, four junk heaps (centre), container stack +6 / +12 under a container crane walkway +18 (East), stepped car pile +10 (West), scaffold +5 / +10 / +15 with the crane cab (North), barge wheelhouse +5 / +9.4 (South), tyre towers; movers: a swinging magnet (hazard) on a new magnet crane, the junk elevator, a raft sliding along the centre–South gap; 6 gangway bridges (Pieces.span "Gangway"; Arena.bridges now builds any layout's bridge halves); the dark abyss with crushed-car spires instead of the sludge; Rust lighting preset (stormy rust sunset, dynamic clouds) | #76 |
 | 2026-10-20 | Neon Motel rebuilt the same way: detailed IceMachine and LawnChairStack (ItemShapes); higher places — two raised roofs +3, machine room +7 with a water-tank deck +13 (tank top +18) and a service lift, a neon sign tower with a catwalk +10 (centre), high-dive tower +5 / +10 and a cabana +5 (East), MOTEL sign catwalk +7 and a stairwell hut +6 (West), two-storey penthouse +6.4 / +11.8 (North), water tank on stilts +8 / +13 (South), huts on three ledges; movers: a swinging neon OPEN sign (hazard), the service lift, a window cleaner's platform sliding along the centre–East gap; 6 gangway bridges; the dark abyss replaces the flooded street (the sunken buildings reach down into it); the Night preset gets heavy purple clouds | #77 |
+| 2026-10-20 | Spin wheel without a screen (owner: "make spin wheel separated from quests, no click UI, have to walk to spin, make prize show in wheel too"): the wheel tab and screen are gone (Daily reward / Quests are two tabs again); a big red spin button on a post in front of the wheel carries the prompt ("Free spin" — the button glows —, else "Spin · 200 Coins" held 1 s with the free-spin countdown, or only the countdown where paid random items aren't allowed); every slice shows its prize and exact chance (client SurfaceGuis on new Label parts, so the odds are on the wheel); one spin at a time (`Busy`, Wheel.SpinTime + NextSpinDelay; the prompt hides while it turns); the winning slice blinks and the spinner gets a "You won …" notice when it lands; refusals are notices; wheel model streams Atomic; wheel spec checks the labels face the room | #78 |
 
 ## Decisions and interpretations
 
@@ -809,6 +810,20 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   answer ("You won 250 Coins!"). Data: `Wheel = { FreeDay }`, `Styles.BonusSpins` (new template fields; `DataService`
   now reconciles again after migrations so a rebuilt table gets fields added later). Dev panel → Daily → "Wheel spin"
   makes today's free spin ready again. docs/LAUNCH.md's maturity note now names wheel spins too.
+  **No screen (owner, 2026-10-20: "make spin wheel separated from quests, no click UI, have to walk to spin, make prize
+  show in wheel too"):** the Screen above and its Daily reward / Quests tab are gone; you spin at the wheel. In front of
+  it, on the mat, a `SpinButton` (gold base, wood post, gold housing, a big red `Button`) carries the client-made prompt
+  (`WheelController`, `Config.Controls.Prompts` keys and range): "Free spin" while today's free spin is ready (the button
+  glows Neon for that player), else "Spin · 200 Coins" held `Wheel.PaidHoldTime` = 1 s (no accidental spending) under
+  "Next free spin in h:mm:ss", or — where PolicyService doesn't allow paid random items — only the countdown (pressing
+  says why); in a private server "Spin" (pressing says the wheel only works in public servers). **Odds on the wheel:**
+  each slice has an invisible `Label` part (same `Segment`, facing the room, its up toward the rim) on which the client
+  writes the amount ("1,000"; "+1" for the style spin, "?" for the mystery cosmetic), what it is (`Wheel.Slice.<Kind>`)
+  and its exact chance in gold — every outcome and its odds are in view before a spin. **One spin at a time:** the
+  server refuses another spin (`Busy`) for `Wheel.SpinTime` (4 s, the turn) + `NextSpinDelay` (2 s) after one; the
+  prompt hides meanwhile. `WheelSpun` now also carries the spinner's UserId: when the wheel lands, the winning slice
+  blinks on every client and the spinner gets a notice ("You won 250 Coins!", the cosmetic by name); refusals are
+  notices too. The wheel model streams in whole (`Atomic`) so every slice and label is there at once.
 - **The bartender (owner, 2026-10-20: "bartender no animation just make look alike npc not just block"):** the lobby's
   block figure (box legs, torso, ball head) is replaced by a real Roblox character. The map keeps only invisible anchors
   in the `ShopNPC` model: `Spot` (on the floor 3.5 studs behind the counter, facing the room) and `Torso` (where

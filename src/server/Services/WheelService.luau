@@ -7,7 +7,8 @@
 	  Coins → DataService.addScrap (Gameplay, sku "Wheel.<prize id>"), XP → DataService.addXP, StyleSpin → one bonus
 	  free style spin (Styles.BonusSpins), Cosmetic → a random cosmetic sold for Scrap the player doesn't own
 	  (CosmeticService.grant), or CosmeticFallbackScrap when they own them all.
-	Then every client hears WheelSpun (prize index, who spun) and turns the lobby wheel to it.
+	Then every client hears WheelSpun (prize index, who spun, their UserId) and turns the lobby wheel to it. One spin at a
+	time: the next is refused ("Busy") until the wheel has turned (Wheel.SpinTime) and shown its prize (NextSpinDelay).
 ]]
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -29,6 +30,7 @@ export type SpinResult = { Index: number, Kind: string, Amount: number, Cosmetic
 local WheelService = {}
 
 local random = Random.new()
+local busyUntil = 0 -- os.clock(): the wheel turns and shows the last prize until then
 
 local function log(message: string)
 	if RunService:IsStudio() then
@@ -76,15 +78,19 @@ function WheelService.spin(player: Player, kind: string): (boolean, SpinResult |
 	local reason = WheelRules.checkSpin(data.Wheel, kind, day, data.Scrap, {
 		Allowed = PrivateServerService.paysRewards(),
 		Fighting = status == "Playing" or status == "Respawning",
+		Busy = os.clock() < busyUntil,
 		PaidAllowed = PlayerPolicyService.allows(player, "PaidRandomItems"),
 	})
 	if reason then
 		log(`{player.Name} could not spin ({kind}): {reason}`)
 		return false, reason
 	end
+	-- Taken before anything can yield, so two spins never turn the wheel at once.
+	busyUntil = os.clock() + Config.Retention.Wheel.SpinTime + Config.Retention.Wheel.NextSpinDelay
 	local price = if kind == "Paid" then Config.Retention.Wheel.SpinPrice else 0
 	if kind == "Paid" then
 		if not DataService.spendScrap(player, price, Analytics.Transaction.Shop, "WheelSpin") then
+			busyUntil = 0
 			return false, "NotEnoughScrap"
 		end
 	else
@@ -94,7 +100,7 @@ function WheelService.spin(player: Player, kind: string): (boolean, SpinResult |
 	end
 	local index = WheelRules.pick(random:NextNumber())
 	local result = pay(player, index)
-	Net.fireAll("WheelSpun", index, player.DisplayName)
+	Net.fireAll("WheelSpun", index, player.DisplayName, player.UserId)
 	local prize = Config.Retention.Wheel.Prizes[index]
 	Analytics.custom(player, "WheelSpin", price, { kind, prize.Id, result.Cosmetic or "" })
 	log(`{player.Name} spun ({kind}): {prize.Id}{if result.Cosmetic then ` → {result.Cosmetic}` else ""}`)
