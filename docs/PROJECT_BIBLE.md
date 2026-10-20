@@ -191,12 +191,14 @@ tap); both also open from the left-edge menu.
   bus shelter (+5.5) and a billboard; ledges have low walls and crates, peaks a white rim and floodlights, the lows
   tyre stacks. **Moving parts:** a lift from the centre's floor up to the catwalk; a broken highway sign swinging on
   chains across the deck that knocks you off your feet (no damage); a flatbed sliding along the gap between the
-  centre and South — walk across while it passes. **Connected (owner, 2026-10-20: "outer platforms more connected,
-  still able to crumble"):** a ring of bridges joins every side to the two corner ledges next to it, each side to its low
-  platform, each corner ledge to its peak, and the centre to East, West and North; each bridge is two halves, one on
-  each platform, so a crumbling platform takes its half and leaves a broken stub. **Sky roads:** two elevated highways
-  run from the catwalk (+14) out over the NE / SW ledges to the peaks (+12), on pillars, in one piece per platform
-  below (a crumbling ledge breaks the road). **The void is a dark abyss** (mist fading to black; the green neon sludge is
+  centre and South — walk across while it passes. **Connected, but not everywhere (owner, 2026-10-20: "some
+  short, some long, some gaps, not too boring"):** short bridges join the centre to East and North, West to its low
+  platform and the NE ledge to its peak; long ones join North to the NE ledge and West to the SW ledge; every other
+  neighbour is a jump. Each bridge is two halves, one on each platform, so a crumbling platform takes its half and
+  leaves a broken stub. **Higher places** (owner: "more structure — higher places"): a third container on the tower
+  (+18), a roof deck on the parking garage (+14), a control booth on the toll canopy (about +17), a broken overpass
+  pier on West (+12), a catwalk along the billboard (+7) and a sign deck on every corner ledge (+7 above it), each with
+  crates or ramps to climb. **The void is a dark abyss** (mist fading to black; the green neon sludge is
   gone) with ruins of the old highway rising out of it, under a **smoggy sunset sky** (thick brown-orange haze, heavy
   rust-tinted clouds: the `Smog` lighting preset). The props
   and structures are detailed models (no more plain blocks).
