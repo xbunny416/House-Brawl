@@ -15,6 +15,7 @@
 	Target player:
 	  SpawnProp (typeId)             a prop in front of them
 	  SpawnDummy                     the practice dummy in front of them (replaces the last one)
+	  ArmWrestleBot                  a practice bot in the empty seat of their arm-wrestling table (sit down first)
 	  SetPercent / SetHealth (n)     their Percent / HP
 	  SetStyle (styleId)             put a fighting style into their equipped slot
 	  FreeSpin                       today's free style spin is ready again
@@ -42,6 +43,7 @@ local Net = require(Shared:WaitForChild("Net"))
 local Server = script.Parent.Parent
 local DevRules = require(Server:WaitForChild("Dev"):WaitForChild("DevRules"))
 local Analytics = require(script.Parent:WaitForChild("Analytics"))
+local ArmWrestleService = require(script.Parent:WaitForChild("ArmWrestleService"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local CodeService = require(script.Parent:WaitForChild("CodeService"))
 local CosmeticService = require(script.Parent:WaitForChild("CosmeticService"))
@@ -107,6 +109,9 @@ local commands: { [string]: Command } = {
 			local front = (root.CFrame * CFrame.new(0, 0, -SPAWN_DISTANCE)).Position
 			DummyService.spawnAt(CFrame.lookAt(front, Vector3.new(root.Position.X, front.Y, root.Position.Z)))
 		end
+	end,
+	ArmWrestleBot = function(player)
+		ArmWrestleService.addBot(player)
 	end,
 	SetPercent = function(player, _text, value)
 		local character = player.Character

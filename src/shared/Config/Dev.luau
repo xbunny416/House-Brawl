@@ -24,4 +24,6 @@ return {
 	-- the Slugger / Scrapper / Wrecker).
 	GiveXP = 1000,
 	LevelPresets = { 1, 5, 12, 25, 50 },
+	-- The panel's "Arm wrestle bot": presses a second the bot makes at the arm-wrestling table (a quick human makes 6-8).
+	ArmWrestleBotTaps = 6,
 }

@@ -379,6 +379,35 @@ return {
 			expect.equal(onPad, false, `{seat.Name} on the join pad`)
 		end
 	end,
+	["lobby: one arm-wrestling table, its two seats facing each other across it"] = function()
+		local tables = tagged(lobby, "ArmWrestleTable")
+		expect.equal(#tables, 1, "arm-wrestling tables")
+		local model = tables[1]
+		local top = model:FindFirstChild("Top")
+		expect.truthy(top and top:IsA("BasePart"), "Top")
+		local seats: { [number]: any } = {}
+		for _, seat in tagged(model, "ArmWrestleSeat") do
+			expect.equal(seat.ClassName, "Seat", seat.Name)
+			expect.truthy(seat:HasTag("LobbySeat"), "a lobby seat too (the Sit prompt)")
+			seats[seat:GetAttribute("Side")] = seat
+		end
+		expect.equal(#tagged(model, "ArmWrestleSeat"), 2, "two seats")
+		local one, two = seats[1], seats[2]
+		expect.truthy(one and two, "sides 1 and 2")
+		local centre = top.CFrame.Position
+		expect.near(centre.X - Config.Maps.LobbyOrigin[1], Hideout.ArmWrestle[1], 0.001, "table x")
+		expect.near(centre.Z - Config.Maps.LobbyOrigin[3], Hideout.ArmWrestle[2], 0.001, "table z")
+		expect.truthy(one.CFrame.Position.X < centre.X and two.CFrame.Position.X > centre.X, "side 1 west, side 2 east")
+		expect.truthy(one.CFrame.LookVector.X > 0.99, "side 1 faces the table")
+		expect.truthy(two.CFrame.LookVector.X < -0.99, "side 2 faces the table")
+		-- The seat sits lower than the table top, by about a seated elbow's height.
+		local seatTop = one.CFrame.Position.Y + one.Size.Y / 2
+		local tableTop = centre.Y + top.Size.Y / 2
+		expect.truthy(
+			tableTop - seatTop > 0.8 and tableTop - seatTop < 1.6,
+			`table {tableTop - seatTop} above the seat`
+		)
+	end,
 	["lobby: a few main lamps cast shadows (Future lighting), all tagged for Low Graphics"] = function()
 		local shadows = 0
 		for _, light in lobby:GetDescendants() do

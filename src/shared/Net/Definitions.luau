@@ -85,6 +85,9 @@ local Definitions: { [string]: Definition } = {
 	-- Client -> server: spectate this player (UserId), or 0 to stop. Only while the sender is spectating.
 	Spectate = { Kind = "Event", Direction = "ToServer", Args = { Guard.integer(0, 2 ^ 53) } },
 	-- Client -> server: sit on a lobby seat (a LobbySeat-tagged Seat; SeatService checks it). (seat: Seat)
+	-- Client -> server: a push at the lobby's arm-wrestling table (Attack, or the PUSH button on touch). It counts only
+	-- for a player seated there during a pull, up to Config.World.ArmWrestle.TapRate a second (ArmWrestleService).
+	ArmWrestleTap = { Kind = "Event", Direction = "ToServer", Args = {} },
 	Sit = {
 		Kind = "Event",
 		Direction = "ToServer",
