@@ -34,7 +34,7 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   done (owner-side: create the StyleSlot product, declare paid random items on the maturity form); 4/6 part 1 (the
   lobby 25% bigger, the reference's style with detailed furniture, seats) is done; part 2 (TV news, leaderboard board look) is done; 5/6 (every
   arena platform doubled again, the crumble closing in toward the centre) is done; 6/6 the lobby spin wheel is done — **the fix list is
-  complete** (the bartender is now a real character, 2026-10-20; left: the optional bartender phrases and lobby minigames; owner-side: the StyleSlot product, the maturity
+  complete** (the bartender is now a real character who talks, 2026-10-20; left: the optional lobby minigames; owner-side: the StyleSlot product, the maturity
   form's paid random items, playtests).
 
 ## How this repo works
@@ -313,6 +313,7 @@ any errors are fixed before the next item.
 | 2026-10-20 | Owner's fix list 5/6 — arenas: every platform doubled again (owner picked "double every platform" over an outer ring) by Arena.grow, which keeps every gap and climb (a platform moves out from the one it is reached from by exactly what both grew), contents spread with them (Arena.growContents), decor spread to match (crane arm rebuilt to reach), sludge / flood 2800 wide; Broken Highway centre 240 × 160, arenas about 580 studs across; the crumble closes in: CrumbleRules picks from the outer ring (within Round.Crumble.RingWidth = 40 studs of the farthest standing platform from the arena centre) | #64 |
 | 2026-10-20 | Owner's fix list 6/6 — lobby spin wheel: a wheel on the west wall (pie slices from wedges, painted and turned on every client to each spin's prize: WheelSpun), its screen (walk-up prompt, and a third tab next to Daily reward / Quests: prizes with exact odds, Spin, free-spin countdown, a highlight that lands on the prize), WheelService (1 free spin a day, more for 200 Coins where PolicyService allows paid random items, none in private servers or while fighting; prizes Coins / XP / a bonus free style spin / a random unowned cosmetic), pure WheelRules + spec, Config.Retention.Wheel, data Wheel + Styles.BonusSpins (the style roll uses them after the day's free spin), DataService reconciles again after migrations, Builder `Axes`, dev "Wheel spin" | #65 |
 | 2026-10-20 | Bartender as a real character (owner: "bartender no animation, just make it look like an NPC, not just blocks"): NpcService builds an R15 character (`Players:CreateHumanoidModelFromDescription`) on the ShopNPC model's invisible Spot behind the counter, root anchored, no name / health bar, not a fighter; built-in look (white shirt, dark vest, trousers and shoes, skin head and hands, welded apron, bow tie, round bandana, moustache, default face) or the avatar of `Config.World.Bartender.UserId`; the block figure is gone, the Shop prompt keeps its invisible Torso anchor; maps + config specs | #66 |
+| 2026-10-20 | Bartender phrases (owner's fix list; no animation): speech bubbles over the bartender that only the local player sees (BartenderController: pops in, types out, shrinks away) — a greeting on walking up (once per 90 s), a Won / Lost line after a round you fought in, idle tips and jokes every 15–28 s while near, a Shop line on opening the Shop near the bar and a Thanks line after a Coins purchase there; 34 lines in 6 pools (`Bartender.<Pool>.<n>`), pure Lib/BartenderRules + spec, `Config.World.Bartender.Talk`, `MenuController.openName`, `ShopController.Bought` | #PR |
 
 ## Decisions and interpretations
 
@@ -809,6 +810,19 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   No animation, as asked: the root is anchored, the name and health bar are hidden, and it isn't registered with
   CombatService (only players and the dev dummy are fighters); `AnimationController` only poses players. Studio
   Output shows `[Npc]`. Not seen in Studio yet: the decor's fit on the default head / torso sizes.
+  **Phrases** (the fix list's "bartender phrases", without the animation): `BartenderController` shows the bartender's
+  lines in a speech bubble over its head (a cream rounded box with a tail, a `BillboardGui` in the player's PlayerGui
+  adorned to the head, or to the Torso anchor if the character isn't there; it pops in, types itself out, shrinks
+  away). Only the local player sees their bartender's lines (nothing goes through the server; two players at the bar
+  each get their own). When and what is the pure `Client/Lib/BartenderRules` over `Config.World.Bartender.Talk`:
+  coming within `Distance` = 20 studs greets (at most once per `GreetCooldown` = 90 s); after a round you fought in
+  (your row in `RoundResults`), the next time you are near you get a Won line (placement 1) or a Lost line instead,
+  once; staying near brings an Idle line every `IdleEvery` 15–28 s, never over a line still showing; opening the Shop
+  near the bar (`MenuController.openName()` turns "Shop") says a Shop line and a Coins purchase there
+  (`ShopController.Bought`) a Thanks line. A line stays 2.5 s + 0.05 s a character, 3–7 s (`ReadTime`). Pools and
+  sizes: Greet 6, Idle 12 (tips: the centre never falls, the crumble eats the edges, barrels, Perfect Dodge, charging,
+  percent; the wheel, daily deals, the jukebox's promo codes; jokes), Shop 4, Thanks 4, Won 4, Lost 4 — strings
+  `Bartender.<Pool>.<n>` (a spec checks every pool has exactly its count). No alcohol: the bar serves root beer.
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,

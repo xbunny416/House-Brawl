@@ -26,6 +26,7 @@ local Localization = require(Shared:WaitForChild("Localization"))
 local MonetizationRules = require(Shared:WaitForChild("MonetizationRules"))
 local Net = require(Shared:WaitForChild("Net"))
 local ShopRules = require(Shared:WaitForChild("ShopRules"))
+local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
 
 local Client = script.Parent.Parent
 local HudFormat = require(Client:WaitForChild("Lib"):WaitForChild("HudFormat"))
@@ -46,6 +47,9 @@ type Offer = { Kind: string, Id: string, Price: number, Name: string }
 type Card = { Title: string, Detail: string, Status: string, Dimmed: boolean, Offer: Offer?, Prompt: (() -> ())? }
 
 local ShopController = {}
+
+-- Fires (kind, id) after something was bought for Coins (the bartender thanks you: BartenderController).
+ShopController.Bought = Signal.new() :: Signal.Signal<string, string>
 
 local player = Players.LocalPlayer
 local gui: ScreenGui
@@ -299,6 +303,7 @@ local function buy()
 		end
 		if ok and bought == true then
 			message.Text = Localization.format("Shop.Bought", { offer.Name })
+			ShopController.Bought:Fire(offer.Kind, offer.Id)
 			setButtons(Localization.format("Shop.Equip"), function()
 				equip(offer)
 			end, Localization.format("Common.Close"))
