@@ -67,11 +67,48 @@ local function boxOf(part: any): { min: { number }, max: { number }, name: strin
 	return { min = min, max = max, name = part:GetFullName(), part = part }
 end
 
--- Whether two boxes overlap by more than a hair (touching faces don't count).
+-- Whether the axis-aligned box `a` and the part box `b` overlap by more than a hair (touching faces don't count): their
+-- world-axis boxes first, then exactly by separating axes, so a long diagonal road doesn't count as covering its whole
+-- bounding rectangle.
 local function overlaps(a: any, b: any): boolean
 	for axis = 1, 3 do
 		if a.max[axis] <= b.min[axis] + 0.05 or b.max[axis] <= a.min[axis] + 0.05 then
 			return false
+		end
+	end
+	local Vector3 = roblox.Vector3
+	local center = Vector3.new((a.min[1] + a.max[1]) / 2, (a.min[2] + a.max[2]) / 2, (a.min[3] + a.max[3]) / 2)
+	local half = Vector3.new((a.max[1] - a.min[1]) / 2, (a.max[2] - a.min[2]) / 2, (a.max[3] - a.min[3]) / 2)
+	local cframe, size = b.part.CFrame, b.part.Size / 2
+	local partAxes = { cframe.RightVector, cframe.UpVector, cframe.LookVector }
+	local worldAxes = { Vector3.xAxis, Vector3.yAxis, Vector3.zAxis }
+	local offset = cframe.Position - center
+	local function separated(axis: any): boolean
+		if axis.Magnitude < 1e-6 then
+			return false
+		end
+		local unit = axis.Unit
+		local reachA = half.X * math.abs(unit.X) + half.Y * math.abs(unit.Y) + half.Z * math.abs(unit.Z)
+		local reachB = size.X * math.abs(unit:Dot(partAxes[1]))
+			+ size.Y * math.abs(unit:Dot(partAxes[2]))
+			+ size.Z * math.abs(unit:Dot(partAxes[3]))
+		return math.abs(offset:Dot(unit)) >= reachA + reachB - 0.05
+	end
+	for _, axis in worldAxes do
+		if separated(axis) then
+			return false
+		end
+	end
+	for _, axis in partAxes do
+		if separated(axis) then
+			return false
+		end
+	end
+	for _, worldAxis in worldAxes do
+		for _, partAxis in partAxes do
+			if separated(worldAxis:Cross(partAxis)) then
+				return false
+			end
 		end
 	end
 	return true
@@ -333,6 +370,58 @@ return {
 				end
 			end
 		end)
+	end,
+	["broken highway: bridges join neighbours in two halves, one on each platform, at a walkable slope"] = function()
+		local model = arenas[1].Model
+		local byId: { [string]: any } = {}
+		for _, platform in BrokenHighway.Platforms do
+			byId[platform.Id] = platform
+		end
+		expect.truthy(#BrokenHighway.Bridges >= 12, "outer platforms are connected")
+		for _, bridge in BrokenHighway.Bridges do
+			local name = `{bridge[1]}-{bridge[2]}`
+			local a, b = byId[bridge[1]], byId[bridge[2]]
+			expect.truthy(a and b, `{name} platforms`)
+			for _, platform in { a, b } do
+				local halves = 0
+				for _, part in model.Platforms[platform.Id]:GetDescendants() do
+					if part:GetAttribute("Bridge") == name then
+						halves += 1
+					end
+				end
+				expect.equal(halves, 1, `{name}: one half on {platform.Id} (it crumbles with it)`)
+			end
+			local fromA, fromB = Arena.bridgeEnds(a, b, bridge.Along)
+			local run = math.sqrt((fromA[1] - fromB[1]) ^ 2 + (fromA[3] - fromB[3]) ^ 2)
+			local rise = math.abs(fromA[2] - fromB[2])
+			expect.truthy(run > 1, `{name} spans its gap`)
+			expect.truthy(math.deg(math.atan2(rise, run)) <= 35, `{name} slope`)
+		end
+	end,
+	["broken highway: sky roads run from the catwalk to a peak, in one piece per platform below"] = function()
+		local model = arenas[1].Model
+		for index, road in BrokenHighway.SkyRoads do
+			expect.equal(road[1].Owner, "Center", `road {index} starts over the centre`)
+			expect.near(road[1].From[2], 14, 0.001, `road {index} leaves the catwalk (+14)`)
+			local last = road[#road]
+			expect.truthy(string.sub(last.Owner, 1, 4) == "Peak", `road {index} ends on a peak`)
+			for step = 1, #road do
+				local piece = road[step]
+				if step > 1 then
+					local before = road[step - 1].To
+					for axis = 1, 3 do
+						expect.near(piece.From[axis], before[axis], 0.001, `road {index} pieces join`)
+					end
+				end
+				local found = false
+				for _, part in model.Platforms[piece.Owner]:GetDescendants() do
+					if part:GetAttribute("SkyRoad") == true then
+						found = true
+					end
+				end
+				expect.truthy(found, `road {index}: {piece.Owner} carries its piece`)
+			end
+		end
 	end,
 	["arenas: movers have a pivot and valid settings; a lift or slide never runs into anything"] = function()
 		eachArena(function(layout, model)

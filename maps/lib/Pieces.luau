@@ -548,4 +548,74 @@ function Pieces.planter(name: string, at: Vec, size: number)
 	end
 end
 
+--[[
+	A straight road deck whose top runs from `a` to `b` (x, y, z: the top surface's centre line, sloping if they differ
+	in height), `width` across: a slab, low concrete kerbs along both edges (knockback still carries you over them), a
+	dashed centre line and two steel girders under it. Returns the deck part.
+]]
+function Pieces.span(name: string, a: Vec, b: Vec, width: number, color: string, material: string): any
+	local dx, dy, dz = b[1] - a[1], b[2] - a[2], b[3] - a[3]
+	local length = math.sqrt(dx * dx + dy * dy + dz * dz)
+	local fx, fy, fz = dx / length, dy / length, dz / length
+	local flat = math.sqrt(fx * fx + fz * fz)
+	-- The deck's own axes: X across, Y up (square to the slope), Z along the road.
+	local right = { -fz / flat, 0, fx / flat }
+	local up = {
+		right[2] * fz - right[3] * fy,
+		right[3] * fx - right[1] * fz,
+		right[1] * fy - right[2] * fx,
+	}
+	local function place(across: number, above: number, along: number): Vec
+		local mid = { (a[1] + b[1]) / 2, (a[2] + b[2]) / 2, (a[3] + b[3]) / 2 }
+		return {
+			mid[1] + right[1] * across + up[1] * above + fx * along,
+			mid[2] + right[2] * across + up[2] * above + fy * along,
+			mid[3] + right[3] * across + up[3] * above + fz * along,
+		}
+	end
+	local axes = { Right = right, Up = up }
+	local deck = B.part({
+		Name = name,
+		Size = { width, 1.2, length },
+		Position = place(0, -0.6, 0),
+		Axes = axes,
+		Color = color,
+		Material = material,
+		CastShadow = true,
+	})
+	for _, side in { -1, 1 } do
+		B.part({
+			Name = `{name}Kerb`,
+			Size = { 0.7, 0.8, length },
+			Position = place(side * (width / 2 - 0.35), 0.4, 0),
+			Axes = axes,
+			Color = "Concrete",
+			Material = "Concrete",
+		})
+		B.part({
+			Name = `{name}Girder`,
+			Size = { 0.6, 1.4, length },
+			Position = place(side * (width / 2 - 1.6), -1.9, 0),
+			Axes = axes,
+			Color = "MetalDark",
+			Material = "Metal",
+			CanCollide = false,
+		})
+	end
+	local dashes = math.floor(length / 7)
+	for index = 1, dashes do
+		B.part({
+			Name = `{name}Dash`,
+			Size = { 0.4, 0.06, 3 },
+			Position = place(0, 0.03, -length / 2 + (index - 0.5) * length / dashes),
+			Axes = axes,
+			Color = "LaneYellow",
+			Material = "SmoothPlastic",
+			CanCollide = false,
+			CastShadow = false,
+		})
+	end
+	return deck
+end
+
 return Pieces

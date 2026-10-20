@@ -159,6 +159,101 @@ function Arena.growContents(contents: { [string]: Contents }, factor: number): {
 	return grown
 end
 
+--[[
+	Where a bridge between platforms `a` and `b` meets each of them (owner, 2026-10-20: "outer platforms more connected
+	together — still able to crumble"): from arena-origin points on each platform's top, 0.5 studs in from the facing
+	edges. Side by side (apart along one axis, overlapping along the other) the bridge crosses the gap straight, at
+	`along` on the overlapping axis (default: the middle of the overlap); corner to corner (apart on both axes) it runs
+	diagonally between the facing corners, 2 studs in. The layout builds each half with its own platform, so a
+	crumbling platform takes its half and leaves the other half as a broken stub.
+]]
+function Arena.bridgeEnds(a: Platform, b: Platform, along: number?): ({ number }, { number })
+	local function bounds(p: Platform, axis: number): (number, number)
+		return p.Center[axis] - p.Size[axis] / 2, p.Center[axis] + p.Size[axis] / 2
+	end
+	local gaps = {}
+	for axis = 1, 2 do
+		gaps[axis] = math.abs(a.Center[axis] - b.Center[axis]) - (a.Size[axis] + b.Size[axis]) / 2
+	end
+	local function edge(p: Platform, toward: Platform, axis: number, inset: number): number
+		local low, high = bounds(p, axis)
+		return if toward.Center[axis] > p.Center[axis] then high - inset else low + inset
+	end
+	if gaps[1] > 0 and gaps[2] > 0 then
+		return { edge(a, b, 1, 2), a.Top, edge(a, b, 2, 2) }, { edge(b, a, 1, 2), b.Top, edge(b, a, 2, 2) }
+	end
+	local across = if gaps[1] > 0 then 1 else 2 -- the axis the gap is on
+	local other = 3 - across
+	local aLow, aHigh = bounds(a, other)
+	local bLow, bHigh = bounds(b, other)
+	local at = along or (math.max(aLow, bLow) + math.min(aHigh, bHigh)) / 2
+	local function point(p: Platform, toward: Platform): { number }
+		local values = { 0, 0 }
+		values[across] = edge(p, toward, across, 0.5)
+		values[other] = at
+		return { values[1], p.Top, values[2] }
+	end
+	return point(a, b), point(b, a)
+end
+
+-- Whether arena-origin point (x, z) is over platform `p`'s footprint.
+local function over(p: Platform, x: number, z: number): boolean
+	return math.abs(x - p.Center[1]) <= p.Size[1] / 2 and math.abs(z - p.Center[2]) <= p.Size[2] / 2
+end
+
+--[[
+	Splits a straight elevated road from `from` to `to` (arena-origin points; the road's top passes through them) into
+	one piece per platform it passes over, in `owners` order: each piece runs from where the road leaves the previous
+	platform's footprint (the middle of the gap it crosses) to the middle of the next gap, so each platform carries the
+	road above it and takes that piece down when it crumbles. Returns { Owner, From, To } pieces.
+]]
+function Arena.splitRoad(
+	platforms: { Platform },
+	owners: { string },
+	from: { number },
+	to: { number }
+): { { Owner: string, From: { number }, To: { number } } }
+	local byId: { [string]: Platform } = {}
+	for _, platform in platforms do
+		byId[platform.Id] = platform
+	end
+	local function at(t: number): { number }
+		return {
+			from[1] + (to[1] - from[1]) * t,
+			from[2] + (to[2] - from[2]) * t,
+			from[3] + (to[3] - from[3]) * t,
+		}
+	end
+	local steps = 2000
+	-- Where the road leaves each owner and enters the next (by sampling along it).
+	local cuts: { number } = {}
+	for index = 1, #owners - 1 do
+		local current, nextOne = byId[owners[index]], byId[owners[index + 1]]
+		local leave, enter = nil, nil
+		for step = 0, steps do
+			local t = step / steps
+			local point = at(t)
+			if leave == nil and not over(current, point[1], point[3]) and t > (cuts[#cuts] or 0) then
+				leave = t
+			end
+			if leave and enter == nil and over(nextOne, point[1], point[3]) then
+				enter = t
+				break
+			end
+		end
+		assert(leave and enter, `the road doesn't run from {owners[index]} to {owners[index + 1]}`)
+		table.insert(cuts, (leave + enter) / 2)
+	end
+	local pieces = {}
+	local previous = 0
+	for index, owner in owners do
+		local t = cuts[index] or 1
+		table.insert(pieces, { Owner = owner, From = at(previous), To = at(t) })
+		previous = t
+	end
+	return pieces
+end
+
 -- Yaw that points a marker's front (-Z) at the arena centre.
 local function facingCenter(x: number, z: number): { number }
 	return { 0, math.deg(math.atan2(x, z)), 0 }
