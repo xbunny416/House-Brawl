@@ -1,0 +1,242 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  html,body{margin:0;background:#000;overflow:hidden}
+  #stage{position:relative;width:var(--w);height:var(--h)}
+  canvas{display:block}
+  .title{position:absolute;left:0;right:0;text-align:center;font-family:'Inter',sans-serif;font-weight:900;font-style:italic;
+    letter-spacing:-0.02em;line-height:.86;pointer-events:none}
+  .title .layer{position:absolute;left:0;right:0;top:0}
+  .title .fill{position:relative}
+  .tag{position:absolute;left:50%;transform:translateX(-50%);font-family:'Inter',sans-serif;font-weight:900;font-style:italic;
+    color:#3ff2e0;background:#1c1622;border:6px solid #3ff2e0;border-radius:18px;text-align:center;white-space:nowrap;
+    box-shadow:0 8px 0 #0c0a10, 0 0 30px rgba(63,242,224,.55)}
+</style></head>
+<body>
+<div id="stage"></div>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const params = new URLSearchParams(location.search);
+const MODE = params.get('mode') || 'thumb';
+const W = MODE === 'icon' ? 1024 : 1920, H = MODE === 'icon' ? 1024 : 1080;
+document.documentElement.style.setProperty('--w', W + 'px');
+document.documentElement.style.setProperty('--h', H + 'px');
+const stage = document.getElementById('stage');
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+stage.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const C = (hex) => new THREE.Color(hex);
+
+// ---------- sky ----------
+function skyTexture() {
+  const c = document.createElement('canvas'); c.width = 16; c.height = 512;
+  const g = c.getContext('2d'); const grad = g.createLinearGradient(0, 0, 0, 512);
+  grad.addColorStop(0, '#5b2a6e'); grad.addColorStop(0.25, '#c9507a'); grad.addColorStop(0.55, '#ff8a4c');
+  grad.addColorStop(0.78, '#ffc27a'); grad.addColorStop(1, '#ffe3a8');
+  g.fillStyle = grad; g.fillRect(0, 0, 16, 512);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+scene.background = skyTexture();
+scene.fog = new THREE.Fog(0xe8956a, 90, 230);
+
+// sun
+const sunTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
+  const r = g.createRadialGradient(128,128,10,128,128,128); r.addColorStop(0,'rgba(255,250,220,1)'); r.addColorStop(.35,'rgba(255,214,140,.85)');
+  r.addColorStop(1,'rgba(255,160,90,0)'); g.fillStyle = r; g.fillRect(0,0,256,256); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+const sun = new THREE.Sprite(new THREE.SpriteMaterial({ map: sunTex, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }));
+sun.scale.set(110, 110, 1); sun.position.set(-34, 24, -130); scene.add(sun);
+
+// ---------- lights ----------
+scene.add(new THREE.HemisphereLight(0xffd2a8, 0x6a3a70, 0.9));
+const key = new THREE.DirectionalLight(0xffd0a0, 2.9);
+key.position.set(-26, 34, 22); key.target.position.set(0, 4, 0); scene.add(key, key.target);
+key.castShadow = true; key.shadow.mapSize.set(4096, 4096);
+Object.assign(key.shadow.camera, { left: -45, right: 45, top: 35, bottom: -35, near: 1, far: 140 });
+key.shadow.bias = -0.0004; key.shadow.normalBias = 0.04;
+const rim = new THREE.DirectionalLight(0x7ff0e6, 1.1); rim.position.set(30, 14, -20); scene.add(rim);
+const toxic = new THREE.PointLight(0x39ff88, 60, 40); toxic.position.set(0, -12, 6); scene.add(toxic);
+
+// ---------- helpers ----------
+const mat = (color, o = {}) => new THREE.MeshStandardMaterial({ color: C(color), roughness: 0.55, metalness: 0.0, ...o });
+const box = (w, h, d, m, r = 0.12) => { const mesh = new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 3, r), m); mesh.castShadow = mesh.receiveShadow = true; return mesh; };
+
+function studs(w, d, y, color, step = 2) {
+  const nx = Math.floor(w / step), nz = Math.floor(d / step);
+  const geo = new THREE.CylinderGeometry(0.55, 0.55, 0.28, 18);
+  const m = new THREE.InstancedMesh(geo, mat(color), nx * nz);
+  const dummy = new THREE.Object3D(); let i = 0;
+  for (let ix = 0; ix < nx; ix++) for (let iz = 0; iz < nz; iz++) {
+    dummy.position.set(-w / 2 + step * (ix + 0.5), y + 0.14, -d / 2 + step * (iz + 0.5)); dummy.updateMatrix(); m.setMatrixAt(i++, dummy.matrix);
+  }
+  m.castShadow = m.receiveShadow = true; return m;
+}
+
+function platform(w, d, h, topColor, sideColor, withLine = true) {
+  const g = new THREE.Group();
+  const slab = box(w, h, d, mat(sideColor, { roughness: .8 }), .25); slab.position.y = -h / 2; g.add(slab);
+  const top = box(w - 0.4, 0.5, d - 0.4, mat(topColor, { roughness: .7 }), .15); top.position.y = 0.05; g.add(top);
+  const st = studs(w - 2, d - 2, 0.3, topColor); st.position.y = 0; g.add(st);
+  if (withLine) for (let x = -w / 2 + 5; x < w / 2 - 5; x += 7) {
+    const dash = box(3.6, 0.12, 0.6, mat('#ffd640', { emissive: C('#7a5a00'), emissiveIntensity: .4 }), .04); dash.position.set(x, 0.62, 0); g.add(dash);
+  }
+  // neon trim on the front lip
+  const neon = box(w - 1, 0.35, 0.3, new THREE.MeshStandardMaterial({ color: C('#3ff2e0'), emissive: C('#3ff2e0'), emissiveIntensity: 2.4 }), .08);
+  neon.position.set(0, -0.6, d / 2 + 0.05); g.add(neon);
+  // rubble under the slab
+  for (let i = 0; i < 5; i++) { const r = box(3 + i, 2.5 + (i % 3), 3 + (i % 2) * 2, mat('#5b5963', { roughness: .9 }), .3);
+    r.position.set(-w * 0.35 + i * (w * 0.18), -h - 1 - (i % 3), (i % 2 ? 1 : -1) * 2); r.rotation.set(.2 * i, .5 * i, .1 * i); g.add(r); }
+  return g;
+}
+
+function faceTexture(kind) {
+  const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
+  g.lineCap = 'round'; g.strokeStyle = '#1b1220'; g.fillStyle = '#1b1220';
+  if (kind === 'angry') {
+    g.lineWidth = 16; g.beginPath(); g.moveTo(52, 82); g.lineTo(110, 104); g.moveTo(204, 82); g.lineTo(146, 104); g.stroke();
+    g.beginPath(); g.ellipse(86, 130, 11, 16, 0, 0, 7); g.ellipse(170, 130, 11, 16, 0, 0, 7); g.fill();
+    g.lineWidth = 14; g.beginPath(); g.arc(128, 200, 44, Math.PI * 1.15, Math.PI * 1.85); g.stroke();
+  } else {
+    g.beginPath(); g.ellipse(84, 122, 17, 25, 0, 0, 7); g.ellipse(172, 122, 17, 25, 0, 0, 7); g.fill();
+    g.fillStyle = '#fff'; g.beginPath(); g.arc(90, 112, 6, 0, 7); g.arc(178, 112, 6, 0, 7); g.fill();
+    g.fillStyle = '#1b1220'; g.beginPath(); g.ellipse(128, 202, 24, 32, 0, 0, 7); g.fill();
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+}
+
+// A Roblox-style R6 character. Origin = feet centre; faces -Z.
+function character({ skin = '#f5cd30', torso, legs, face = 'angry', hair = null }) {
+  const g = new THREE.Group();
+  const skinM = mat(skin, { roughness: .45 });
+  const legL = box(1, 2, 1, mat(legs), .12), legR = legL.clone();
+  legL.position.set(-0.5, 1, 0); legR.position.set(0.5, 1, 0);
+  const body = box(2, 2, 1, mat(torso), .14); body.position.y = 3;
+  const armL = box(1, 2, 1, skinM, .12), armR = armL.clone();
+  // arms pivot at the shoulder
+  const shoulderL = new THREE.Group(), shoulderR = new THREE.Group();
+  shoulderL.position.set(-1.5, 3.9, 0); shoulderR.position.set(1.5, 3.9, 0);
+  armL.position.y = -0.9; armR.position.y = -0.9; shoulderL.add(armL); shoulderR.add(armR);
+  const head = box(1.3, 1.2, 1.2, skinM, .4); head.position.y = 4.75;
+  const decal = new THREE.Mesh(new THREE.PlaneGeometry(1.15, 1.15), new THREE.MeshBasicMaterial({ map: faceTexture(face), transparent: true }));
+  decal.position.set(0, 4.78, -0.612); decal.rotation.y = Math.PI;
+  decal.scale.x = -1; // plane faces +Z by default; flip to face -Z
+  const headG = new THREE.Group(); headG.position.y = 4.75; head.position.y = 0; decal.position.y = 0.03; headG.add(head, decal);
+  g.add(legL, legR, body, shoulderL, shoulderR, headG);
+  if (hair) { const h = box(1.45, 0.55, 1.35, mat(hair, { roughness: .8 }), .2); h.position.set(0, 0.6, 0.05); headG.add(h); }
+  g.userData = { shoulderL, shoulderR, legL, legR, headG };
+  return g;
+}
+
+// ---------- scene content ----------
+const arena = new THREE.Group(); scene.add(arena);
+const main = platform(46, 26, 3.5, '#7c7c88', '#4a4a54'); arena.add(main);
+
+// props on the platform
+const crate = box(3.2, 3.2, 3.2, mat('#a06a3a', { roughness: .85 }), .12); crate.position.set(-17, 2.1, -6); crate.rotation.y = .3; arena.add(crate);
+const crateB = crate.clone(); crateB.position.set(-14.4, 1.7, -8.2); crateB.scale.setScalar(.75); crateB.rotation.y = -.4; arena.add(crateB);
+const barrel = new THREE.Mesh(new THREE.CylinderGeometry(1.3, 1.3, 3.2, 28), mat('#d93a2b', { roughness: .4, metalness: .35 })); barrel.position.set(17.5, 2.1, -5.5); barrel.castShadow = true; arena.add(barrel);
+const band = new THREE.Mesh(new THREE.CylinderGeometry(1.34, 1.34, .35, 28), mat('#f5ecd6')); band.position.set(17.5, 2.1, -5.5); arena.add(band);
+const barrelB = barrel.clone(); barrelB.position.set(19.6, 2.1, -3.2); barrelB.material = mat('#2f8c8c', { roughness: .4, metalness: .35 }); arena.add(barrelB);
+const cone = new THREE.Mesh(new THREE.ConeGeometry(.9, 2.2, 22), mat('#ff7a2a')); cone.position.set(-9, 1.7, 8); cone.castShadow = true; arena.add(cone);
+const coneBase = box(2, .25, 2, mat('#ff7a2a'), .06); coneBase.position.set(-9, .75, 8); arena.add(coneBase);
+
+// side platforms
+const left = platform(18, 14, 3, '#8f8a82', '#5f5b55', false); left.position.set(-36, -4, -6); left.rotation.y = .12; arena.add(left);
+const right = platform(18, 14, 3, '#8f8a82', '#5f5b55', false); right.position.set(38, -2, -10); right.rotation.y = -.1; arena.add(right);
+const far1 = platform(14, 10, 2.5, '#6e6a72', '#48454d', false); far1.position.set(-18, -9, -44); arena.add(far1);
+const far2 = platform(16, 10, 2.5, '#6e6a72', '#48454d', false); far2.position.set(30, -7, -52); arena.add(far2);
+
+// toxic glow rising from the void under the arena (soft sprites, no hard horizon)
+const glowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
+  const r = g.createRadialGradient(128,128,0,128,128,128); r.addColorStop(0,'rgba(80,255,150,.95)'); r.addColorStop(.5,'rgba(40,200,110,.45)'); r.addColorStop(1,'rgba(30,160,90,0)');
+  g.fillStyle = r; g.fillRect(0,0,256,256); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+for (const [x, y, z, sx, sy] of [[0, -22, 4, 150, 46], [-34, -20, -10, 80, 36], [38, -18, -12, 80, 36]]) {
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, opacity: .85 }));
+  sp.scale.set(sx, sy, 1); sp.position.set(x, y, z); scene.add(sp);
+}
+
+// fighters
+const puncher = character({ torso: '#2fb5b0', legs: '#2b3f66', face: 'angry', hair: '#3b2a1e' });
+puncher.scale.setScalar(1.9); puncher.position.set(-11, 0.6, 2); puncher.rotation.y = -Math.PI / 2 - 0.12; puncher.userData.headG.rotation.y = -0.75; arena.add(puncher);
+puncher.userData.shoulderR.rotation.x = Math.PI / 2;   // right arm straight forward
+puncher.userData.shoulderL.rotation.x = -0.9; puncher.userData.shoulderL.rotation.z = -0.25;
+puncher.userData.legL.rotation.x = .6; puncher.userData.legR.rotation.x = -.45;
+const glove = new THREE.Mesh(new THREE.SphereGeometry(.85, 24, 18), mat('#e24034', { roughness: .35 }));
+glove.position.set(0, -2.15, 0); glove.castShadow = true; puncher.userData.shoulderR.add(glove);
+
+const victim = character({ torso: '#ff4fa3', legs: '#3a2a52', face: 'shock', hair: '#ffd640' });
+victim.scale.setScalar(1.6); victim.rotation.order = 'YXZ'; victim.rotation.set(0, Math.PI / 2 + .25, 0);
+const flyer = new THREE.Group(); flyer.add(victim); flyer.position.set(12.5, 13, 3); flyer.rotation.z = -.7; victim.userData.headG.rotation.y = .5; arena.add(flyer);
+victim.userData.shoulderL.rotation.x = 2.6; victim.userData.shoulderR.rotation.x = 2.2; victim.userData.shoulderR.rotation.z = .5;
+victim.userData.legL.rotation.x = -.9; victim.userData.legR.rotation.x = .5;
+
+// speed streaks behind the flying fighter
+const streakM = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .8 });
+for (let i = 0; i < 7; i++) { const s = new THREE.Mesh(new THREE.BoxGeometry(7 + (i % 3) * 3, .16, .16), streakM);
+  s.position.set(5 + (i % 3) * 1.6, 8.5 + i * 1.4, 6 + (i % 2)); s.rotation.z = -0.5; scene.add(s); }
+
+// POW burst sprite
+function powTexture() {
+  const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d'); g.translate(256, 256);
+  g.beginPath(); const n = 12;
+  for (let i = 0; i < n * 2; i++) { const r = i % 2 ? 128 : 242; const a = Math.PI * i / n; const j = 1 + .07 * Math.sin(i * 5.1); g.lineTo(Math.cos(a) * r * j, Math.sin(a) * r * j); }
+  g.closePath(); g.fillStyle = '#ffd640'; g.fill(); g.lineWidth = 16; g.strokeStyle = '#1c1622'; g.lineJoin = 'round'; g.stroke();
+  g.rotate(-.12); g.font = '900 italic 150px Inter'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = 22; g.strokeStyle = '#f5ecd6'; g.strokeText('POW!', 0, 6);
+  g.fillStyle = '#e24034'; g.fillText('POW!', 0, 6);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const pow = new THREE.Sprite(new THREE.SpriteMaterial({ map: powTexture(), depthTest: false, transparent: true, fog: false }));
+pow.scale.set(12, 12, 1); pow.position.set(3.4, 7.2, 6); pow.renderOrder = 10; scene.add(pow);
+
+// ---------- camera ----------
+const camera = new THREE.PerspectiveCamera(MODE === 'icon' ? 44 : 34, W / H, 0.5, 600);
+if (MODE === 'icon') { camera.position.set(1, 27, 47); camera.lookAt(1, 5.5, 0); }
+else { camera.position.set(0, 17, 46); camera.lookAt(0, 8.5, 0); }
+
+// ---------- post ----------
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+composer.addPass(new UnrealBloomPass(new THREE.Vector2(W, H), 0.3, 0.5, 1.15));
+composer.addPass(new OutputPass());
+
+// ---------- title overlay ----------
+function title(text, top, size, color1, color2, widthPct = 100) {
+  const wrap = document.createElement('div'); wrap.className = 'title'; wrap.style.top = top + 'px'; wrap.style.fontSize = size + 'px';
+  const depth = Math.round(size * .075);
+  let shadows = []; for (let i = 1; i <= depth; i++) shadows.push(`0 ${i}px 0 #1c1622`, `${Math.round(i * .25)}px ${i}px 0 #1c1622`);
+  shadows.push(`0 ${depth + Math.round(size * .06)}px ${Math.round(size * .08)}px rgba(0,0,0,.55)`);
+  const back = document.createElement('div'); back.className = 'layer'; back.textContent = text;
+  back.style.color = '#1c1622'; back.style.webkitTextStroke = `${Math.round(size * .11)}px #1c1622`; back.style.textShadow = shadows.join(',');
+  const front = document.createElement('div'); front.className = 'fill'; front.textContent = text;
+  front.style.background = `linear-gradient(${color1} 15%, ${color2} 85%)`; front.style.webkitBackgroundClip = 'text'; front.style.backgroundClip = 'text';
+  front.style.color = 'transparent'; front.style.webkitTextStroke = `${Math.round(size * .02)}px #1c1622`;
+  wrap.append(back, front); stage.appendChild(wrap); return wrap;
+}
+if (MODE === 'icon') {
+  title('BRAWL', 20, 178, '#fffaf0', '#f0d9a8'); title('ARENA', 172, 178, '#ffe56a', '#ff9a1f');
+} else {
+  title('BRAWL', 14, 215, '#fffaf0', '#f0d9a8'); title('ARENA', 190, 215, '#ffe56a', '#ff9a1f');
+  const tag = document.createElement('div'); tag.className = 'tag'; tag.textContent = 'KNOCK THEM OFF THE EDGE!';
+  tag.style.bottom = '34px'; tag.style.fontSize = '58px'; tag.style.padding = '10px 44px'; stage.appendChild(tag);
+}
+
+await document.fonts.load('900 italic 100px Inter');
+await document.fonts.ready;
+composer.render();
+window.__done = true;
+</script>
+</body></html>

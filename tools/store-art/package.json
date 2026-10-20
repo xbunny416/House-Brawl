@@ -1,0 +1,10 @@
+{
+	"name": "store-art",
+	"private": true,
+	"type": "module",
+	"description": "Renders the Brawl Arena icon and thumbnail as a real 3D scene (three.js) in headless Chromium.",
+	"dependencies": {
+		"playwright-core": "^1.56.1",
+		"three": "^0.186.1"
+	}
+}
