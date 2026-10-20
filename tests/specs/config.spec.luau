@@ -102,6 +102,16 @@ return {
 		local userId = Config.World.Bartender.UserId
 		expect.truthy(userId >= 0 and userId == math.floor(userId), "Bartender.UserId")
 	end,
+	["lighting presets: cloud cover and density between 0 and 1"] = function()
+		for id, preset in Config.Lighting do
+			local clouds = preset.Clouds
+			if clouds then
+				expect.truthy(clouds.Cover >= 0 and clouds.Cover <= 1, `{id} cloud cover`)
+				expect.truthy(clouds.Density >= 0 and clouds.Density <= 1, `{id} cloud density`)
+				expect.truthy(string.match(clouds.Color, "^#%x%x%x%x%x%x$"), `{id} cloud colour`)
+			end
+		end
+	end,
 	["scrap packs grant what the bible says"] = function()
 		local products = Config.Monetization.Products
 		expect.equal(products.ScrapPackS.Scrap, 500)

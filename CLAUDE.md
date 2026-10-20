@@ -321,6 +321,7 @@ any errors are fixed before the next item.
 | 2026-10-20 | Detailed props and structures (owner: "more detail in every item", first part of the arena rebuild): Shared/ItemShapes (pure data: every prop type — chair, bucket, tyre, cone, crate, TV, barrel, explosive barrel, fridge, car door, vending chunk — and Broken Highway's wrecked car, vending machine and road barrier stack, 8–40 parts each) and Server/Visuals/ItemDetail (welds them onto the item's box, which turns invisible and keeps doing all the colliding); structures darken every part as they lose HP, a lit barrel's paint glows; items spec (every shape inside its box) | #71 |
 | 2026-10-20 | Broken Highway rebuilt with shapes and moving parts (owner: "more dynamic, not just flat platforms, more layers, more detail"; one arena first): maps/lib/Pieces (ramps, stairs, railings, road barriers, columns, lamp posts, tyres, crates, containers, a bus, a planter, rebar); centre catwalk +14 with stairs and a lift bridge, broken flyover +8, container tower +12, fallen container, barrier lines, sidewalks and lamps; toll plaza canopy (East), collapsed slab and bus (West), parking deck (North), bus shelter and billboard (South), ledge walls, peak floodlights, low tyre stacks, ruins in the void; movers (Shared/MoverRules, Arena.mover, client MoverController moves them from the server clock, MoverService knocks with the swinging sign via CombatService.push): lift, swinging sign, sliding bridge; maps spec: nothing solid on a spawn / prop / barrel / structure spot, movers valid and their paths clear (found and fixed: the centre's underside slab poked 2 studs through the road); movers spec | #72 |
 | 2026-10-20 | No floating boards over the minigame tables (owner: "remove floating label on minigame"): the arm-wrestling and chess BillboardGuis are gone with their strings; the arm-wrestling table champion now shows in the wrestlers' panel between matches | #73 |
+| 2026-10-20 | Broken Highway connected, sky roads, dark abyss, smoggy sky (owner: "more layer structure, outer platforms more connected — still able to crumble; change the neon void and the sky"; picked a dark abyss and a sky that matches the arena, "not this clear"): 15 bridges (a ring side ↔ ledge, side ↔ low, ledge ↔ peak, centre ↔ East / West / North) in two halves each owned by its platform (Arena.bridgeEnds, Pieces.span); two sky roads catwalk → ledge → peak at +12–14 on pillars, one piece per platform below (Arena.splitRoad); the abyss (5 sheets of dark mist to black, ruins reaching down into it) replaces the neon sludge; Smog lighting preset with Roblox dynamic clouds (Config.Lighting Clouds, MapService); swing frame posts and end lamps moved for the NE / SW roads; specs: bridge halves on both platforms at a walkable slope, sky road pieces join and are carried by their platforms, cloud ranges; the marker check now tests rotated parts exactly (separating axes) | #74 |
 
 ## Decisions and interpretations
 
@@ -954,6 +955,31 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   slide's whole path runs into nothing — the first run found the centre's tilted underside slab poking up to 2 studs
   through the road around x 55–84 (since 1.4), now lowered by what its tilt raises it. Junkyard Isles and Neon Motel
   come next in the same style after the owner's look.
+  **Connected, sky roads, abyss, smog (owner, same day: "want more layer structure and outer platforms more connected,
+  even connected still can crumble; change the neon fall void and the sky"; asked: a "dark abyss", and a sky that
+  "matches the arena style, but not this clear like now"):** `Layout.Bridges` lists 15 bridges — the ring East ↔
+  LedgeNE / LedgeSE, West ↔ LedgeNW / LedgeSW, North ↔ LedgeNE / LedgeNW, South ↔ LedgeSE / LedgeSW, each side ↔ its
+  low platform, LedgeNE ↔ PeakNE and LedgeSW ↔ PeakSW, and the centre ↔ East / West / North (South already has the
+  sliding bridge). `Arena.bridgeEnds` finds where a bridge meets each platform (straight across the gap at `Along`
+  for side-by-side platforms, corner to corner diagonally), and each platform's `decorate` builds its own half up to
+  the middle with `Pieces.span` (a sloped deck with kerbs, a dashed centre line and girders, `Bridge` attribute "A-B")
+  in arena-origin coordinates (`B.within` back from the platform's top), so the half is part of that platform's model:
+  when it crumbles, its half falls and the other half is left as a broken stub. Slopes stay walkable (the low and
+  peak bridges are the steepest, about 31°). **Sky roads** (`Layout.SkyRoads`): elevated highways 8 wide from the
+  catwalk's north-east and south-west corners (+14) to the far corners of the peaks (+12), cut by `Arena.splitRoad`
+  into one piece per platform they pass over (centre, corner ledge, peak; each cut in the middle of the gap), each
+  piece on two pillars on its own platform; a crumbling ledge breaks the road there. To make room, the catwalk's
+  railings open at those corners, the swinging sign's posts moved out to z ±26 (beam 53 long) and the end lamps to
+  x ±110. **The abyss** replaces the green neon sludge: five 2800-wide sheets of mist below KillY, darker and more
+  solid with depth (12 / 40 / 80 / 130 studs below, the last solid black), and the six ruined pillars reach 200 studs
+  down into it. **The sky:** a new `Smog` lighting preset (Broken Highway only; Junkyard Isles keeps `Dusk` until its
+  rebuild): the sun low at 17:51 behind a dense brown-orange haze (Atmosphere density 0.42, haze 2.6), a slightly
+  desaturated grade and Roblox's dynamic clouds (`Clouds` in a preset: cover 0.78, density 0.65, rust tint;
+  `MapService.applyLighting` makes / updates `Workspace.Terrain.Clouds`, and turns them off for presets without).
+  The maps spec's marker check now tests rotated parts exactly (separating axes; the first version's bounding boxes
+  made a long diagonal road look like it covered a ledge's prop spot); new checks: every bridge has one half on each
+  of its platforms at a slope of at most 35°, and each sky road starts on the catwalk, ends on a peak and its pieces
+  join and are carried by their platforms.
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,

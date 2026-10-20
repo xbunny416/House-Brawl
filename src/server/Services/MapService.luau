@@ -104,6 +104,23 @@ function MapService.applyLighting(presetId: string)
 	grade.Contrast = preset.ColorCorrection.Contrast
 	grade.Saturation = preset.ColorCorrection.Saturation
 	grade.TintColor = Color3.fromHex(preset.ColorCorrection.TintColor)
+
+	-- Dynamic clouds only where the preset asks for them (they live under Terrain).
+	local clouds = Workspace.Terrain:FindFirstChildOfClass("Clouds")
+	if preset.Clouds then
+		if clouds == nil then
+			clouds = Instance.new("Clouds")
+			clouds.Parent = Workspace.Terrain
+		end
+		local settings = preset.Clouds
+		local sky = clouds :: Clouds
+		sky.Cover = settings.Cover
+		sky.Density = settings.Density
+		sky.Color = Color3.fromHex(settings.Color)
+		sky.Enabled = true
+	elseif clouds then
+		clouds.Enabled = false
+	end
 end
 
 ---------------------------------------------------------------------------------------------------------------------

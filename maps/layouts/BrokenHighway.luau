@@ -22,7 +22,7 @@ type Contents = Arena.Contents
 local Layout = {}
 
 Layout.Id = "BrokenHighway"
-Layout.Lighting = "Dusk"
+Layout.Lighting = "Smog"
 
 -- One platform entry (keeps the list short).
 local function platform(
@@ -131,6 +131,50 @@ Layout.Contents = Arena.growContents(
 	} :: { [string]: Contents },
 	GROWTH
 )
+
+--[[
+	Bridges between neighbouring platforms (owner, 2026-10-20: "outer platforms more connected together — still able to
+	crumble"): a ring round the outside (each side to the two corner ledges next to it), each side to its low platform,
+	each corner ledge to its peak, and the centre to East, West and North (South has the sliding bridge). Each bridge is
+	built as two halves, each part of its own platform's model: a crumbling platform takes its half down and leaves the
+	other as a broken stub. `Along` places a straight bridge on the axis its two platforms overlap on.
+]]
+Layout.Bridges = {
+	{ "Center", "East", Along = -40 },
+	{ "Center", "West", Along = 40 },
+	{ "Center", "North", Along = -30 },
+	{ "East", "LedgeNE", Along = 153 },
+	{ "East", "LedgeSE", Along = 153 },
+	{ "West", "LedgeNW", Along = -152 },
+	{ "West", "LedgeSW", Along = -152 },
+	{ "North", "LedgeNE", Along = 113.5 },
+	{ "North", "LedgeNW", Along = 113.5 },
+	{ "South", "LedgeSE", Along = -112.5 },
+	{ "South", "LedgeSW", Along = -112.5 },
+	{ "East", "LowEast" },
+	{ "West", "LowWest" },
+	{ "LedgeNE", "PeakNE" },
+	{ "LedgeSW", "PeakSW" },
+}
+Layout.BridgeWidth = 10
+
+--[[
+	Two sky roads — the top layer: elevated highways from the centre's catwalk (+14) out over the NE / SW corner ledges
+	to the peaks (+12), on pillars. Each is cut into one piece per platform it passes over (Arena.splitRoad), so a
+	crumbling ledge or peak breaks the road there.
+]]
+Layout.SkyRoadWidth = 8
+local function platformsById(): { [string]: Platform }
+	local found: { [string]: Platform } = {}
+	for _, entry in Layout.Platforms do
+		found[entry.Id] = entry
+	end
+	return found
+end
+Layout.SkyRoads = {
+	Arena.splitRoad(Layout.Platforms, { "Center", "LedgeNE", "PeakNE" }, { 7.5, 14, 5.5 }, { 186, 12, 146 }),
+	Arena.splitRoad(Layout.Platforms, { "Center", "LedgeSW", "PeakSW" }, { -7.5, 14, -5.5 }, { -186, 12, -146 }),
+}
 
 -- Lowest platform bottom (relative to the arena origin) minus the kill depth.
 function Layout.killY(): number
@@ -294,10 +338,10 @@ local function centerFeatures()
 		end
 	end
 	Pieces.stairs("CatwalkStairs", { 22, 0 }, "-X", 6, 4, 2, 2.5, "MetalDark", "DiamondPlate", deckTop)
-	Pieces.railing("CatwalkRail", { -12, -6 }, { 12, -6 }, walk)
+	-- Railings, open where the lift bridge (north, middle) and the sky roads (north-east, south-west) leave.
+	Pieces.railing("CatwalkRail", { 3, -6 }, { 12, -6 }, walk)
 	Pieces.railing("CatwalkRail", { -12, -6 }, { -12, 6 }, walk)
 	Pieces.railing("CatwalkRail", { -12, 6 }, { -3, 6 }, walk)
-	Pieces.railing("CatwalkRail", { 3, 6 }, { 12, 6 }, walk)
 	B.part({
 		Name = "LiftBridge",
 		Size = { 6, 0.8, 18 },
@@ -358,12 +402,12 @@ local function centerFeatures()
 	end
 
 	-- The frame the swinging sign hangs from (the sign itself is a mover).
-	for _, z in { -23, 23 } do
+	for _, z in { -26, 26 } do
 		Pieces.column("SwingPost", { -24, z }, 0, 21.5, 0.8, "MetalDark", "Metal")
 	end
 	B.part({
 		Name = "SwingBeam",
-		Size = { 1, 1, 47 },
+		Size = { 1, 1, 53 },
 		Position = { -24, 21, 0 },
 		Color = "MetalDark",
 		Material = "Metal",
@@ -371,7 +415,7 @@ local function centerFeatures()
 	B.sign({
 		Name = "DangerSign",
 		Size = { 5, 1.6, 0.2 },
-		Position = { -24, 3.4, 23.5 },
+		Position = { -24, 3.4, 26.5 },
 		Rotation = B.yaw("North"),
 		Color = "LaneYellow",
 		Material = "Metal",
@@ -434,7 +478,7 @@ local function centerFeatures()
 	end
 
 	-- Lamp posts along the long edges, arms over the road; every other one lit.
-	for index, x in { -100, -40, 40, 100 } do
+	for index, x in { -110, -40, 40, 110 } do
 		Pieces.lamp("Lamp", { x, 76 }, 16, 0, 0.5, index % 2 == 1)
 		Pieces.lamp("Lamp", { x, -76 }, 16, 180, 0.5, index % 2 == 0)
 	end
@@ -667,6 +711,58 @@ local function lowFeatures(side: number)
 	Pieces.jersey("Barrier", { if side > 0 then -2 else 2, if side > 0 then 4 else -4 }, 12, 0)
 end
 
+-- A sky road's pillar from `floor` up under the deck at (x, z), whose top is `top` there.
+local function roadPillar(x: number, z: number, floor: number, top: number)
+	Pieces.column("SkyRoadPillar", { x, z }, floor, top - 3.2, 2.2, "Concrete", "Concrete", true)
+	B.part({
+		Name = "SkyRoadPillarCap",
+		Size = { 3.6, 1.2, 9 },
+		Position = { x, top - 2.6, z },
+		Color = "ConcreteDark",
+		Material = "Concrete",
+		CanCollide = false,
+	})
+end
+
+-- This platform's halves of its bridges and its pieces of the sky roads, built in arena-origin coordinates so they
+-- line up across platforms (but still part of this platform's model: they crumble with it).
+local function connections(platform: Platform)
+	local byId = platformsById()
+	B.within({ -platform.Center[1], -platform.Top, -platform.Center[2] }, function()
+		for _, bridge in Layout.Bridges do
+			local a, b = byId[bridge[1]], byId[bridge[2]]
+			if a.Id == platform.Id or b.Id == platform.Id then
+				local fromA, fromB = Arena.bridgeEnds(a, b, bridge.Along)
+				local mine, theirs =
+					if a.Id == platform.Id then fromA else fromB, if a.Id == platform.Id then fromB else fromA
+				local middle = { (mine[1] + theirs[1]) / 2, (mine[2] + theirs[2]) / 2, (mine[3] + theirs[3]) / 2 }
+				local deck = Pieces.span("Bridge", mine, middle, Layout.BridgeWidth, "Asphalt", "Asphalt")
+				deck:SetAttribute("Bridge", `{a.Id}-{b.Id}`)
+			end
+		end
+		for _, road in Layout.SkyRoads do
+			for _, piece in road do
+				if piece.Owner == platform.Id then
+					local deck = Pieces.span("SkyRoad", piece.From, piece.To, Layout.SkyRoadWidth, "Asphalt", "Asphalt")
+					deck:SetAttribute("SkyRoad", true)
+					-- Pillars down to this platform's floor, a third and two thirds of the way along this piece.
+					for _, t in { 1 / 3, 2 / 3 } do
+						local x = piece.From[1] + (piece.To[1] - piece.From[1]) * t
+						local z = piece.From[3] + (piece.To[3] - piece.From[3]) * t
+						local top = piece.From[2] + (piece.To[2] - piece.From[2]) * t
+						if
+							math.abs(x - platform.Center[1]) < platform.Size[1] / 2 - 3
+							and math.abs(z - platform.Center[2]) < platform.Size[2] / 2 - 3
+						then
+							roadPillar(x, z, platform.Top, top)
+						end
+					end
+				end
+			end
+		end
+	end)
+end
+
 -- Decor and shapes on each platform (positions from its top centre). Part of the platform, so it crumbles with it.
 local function decorate(platform: Platform)
 	-- Jagged broken underside, tilted 4°: lowered by what the tilt raises its far end, so it never pokes up through the
@@ -740,6 +836,7 @@ local function decorate(platform: Platform)
 	elseif platform.Kind == "Low" then
 		lowFeatures(sx)
 	end
+	connections(platform)
 	if platform.Id == "LedgeNE" then
 		exitSign({ 2, 2 }, "South")
 	elseif platform.Id == "LedgeSW" then
@@ -891,7 +988,7 @@ local function scenery(killY: number)
 			})
 		end
 	end)
-	-- Ruins of the old highway standing in the sludge all round: broken pillars carrying tilted slabs of road with
+	-- Ruins of the old highway rising out of the abyss all round: broken pillars carrying tilted slabs of road with
 	-- lane lines, a lamp post still on one (decor; nothing out there can be reached).
 	for index, ruin in
 		{
@@ -906,8 +1003,8 @@ local function scenery(killY: number)
 		local x, z, yaw, top = ruin[1], ruin[2], ruin[3], ruin[4]
 		B.part({
 			Name = `RuinPillar{index}`,
-			Size = { top - killY + 30, 14, 14 },
-			Position = { x, (top + killY - 30) / 2, z },
+			Size = { top - killY + 200, 14, 14 },
+			Position = { x, (top + killY - 200) / 2, z },
 			Rotation = { 0, 0, 90 },
 			Shape = "Cylinder",
 			Color = "Concrete",
@@ -943,17 +1040,28 @@ local function scenery(killY: number)
 	B.within({ -360, -18 + 4, 120 }, function()
 		Pieces.lamp("RuinLamp", { 12, 4 }, 14, 70, 0, true)
 	end)
-	-- Toxic sludge far below: the green glow under the arena.
-	B.part({
-		Name = "Sludge",
-		Size = { 2800, 1, 2800 },
-		Position = { 0, killY - 30, 0 },
-		Color = "ToxicGreen",
-		Material = "Neon",
-		Transparency = 0.35,
-		CanCollide = false,
-		CastShadow = false,
-	})
+	-- The abyss (owner, 2026-10-20: a dark abyss instead of the green neon): sheets of dark mist, each more solid and
+	-- darker than the one above, fading to black far below; the ruins sink into it.
+	for index, layer in
+		{
+			{ 12, 0.82, "#2A2630" },
+			{ 40, 0.7, "#1E1B24" },
+			{ 80, 0.55, "#141218" },
+			{ 130, 0.35, "#0C0B0F" },
+			{ 200, 0, "#050507" },
+		}
+	do
+		B.part({
+			Name = `AbyssMist{index}`,
+			Size = { 2800, 1, 2800 },
+			Position = { 0, killY - layer[1], 0 },
+			Color = layer[3],
+			Material = "SmoothPlastic",
+			Transparency = layer[2],
+			CanCollide = false,
+			CastShadow = false,
+		})
+	end
 end
 
 -- Builds the arena model at `origin` (world position of the centre platform's top centre).

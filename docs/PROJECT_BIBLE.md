@@ -191,7 +191,14 @@ tap); both also open from the left-edge menu.
   bus shelter (+5.5) and a billboard; ledges have low walls and crates, peaks a white rim and floodlights, the lows
   tyre stacks. **Moving parts:** a lift from the centre's floor up to the catwalk; a broken highway sign swinging on
   chains across the deck that knocks you off your feet (no damage); a flatbed sliding along the gap between the
-  centre and South — walk across while it passes. Ruins of the old highway stand in the sludge all round. The props
+  centre and South — walk across while it passes. **Connected (owner, 2026-10-20: "outer platforms more connected,
+  still able to crumble"):** a ring of bridges joins every side to the two corner ledges next to it, each side to its low
+  platform, each corner ledge to its peak, and the centre to East, West and North; each bridge is two halves, one on
+  each platform, so a crumbling platform takes its half and leaves a broken stub. **Sky roads:** two elevated highways
+  run from the catwalk (+14) out over the NE / SW ledges to the peaks (+12), on pillars, in one piece per platform
+  below (a crumbling ledge breaks the road). **The void is a dark abyss** (mist fading to black; the green neon sludge is
+  gone) with ruins of the old highway rising out of it, under a **smoggy sunset sky** (thick brown-orange haze, heavy
+  rust-tinted clouds: the `Smog` lighting preset). The props
   and structures are detailed models (no more plain blocks).
 - **Crumbling platforms:** from 1:00 into the round, every 20 s one platform flashes red and shakes for 3 s, then
   falls. The arena closes in toward the centre (owner, 2026-10-19): the next platform is a random one from the outer

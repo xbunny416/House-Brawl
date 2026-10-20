@@ -14,6 +14,8 @@ export type Preset = {
 	Atmosphere: { Density: number, Offset: number, Color: string, Decay: string, Glare: number, Haze: number },
 	Bloom: { Intensity: number, Size: number, Threshold: number },
 	ColorCorrection: { Brightness: number, Contrast: number, Saturation: number, TintColor: string },
+	-- Roblox's dynamic clouds (Workspace.Terrain.Clouds), or none: how much of the sky they cover, how thick, their tint.
+	Clouds: { Cover: number, Density: number, Color: string }?,
 }
 
 local Lighting: { [string]: Preset } = {
@@ -31,6 +33,23 @@ local Lighting: { [string]: Preset } = {
 		Atmosphere = { Density = 0.35, Offset = 0.2, Color = "#E8A27A", Decay = "#8C5A4A", Glare = 0.4, Haze = 1.8 },
 		Bloom = { Intensity = 0.6, Size = 24, Threshold = 1.4 },
 		ColorCorrection = { Brightness = 0.02, Contrast = 0.08, Saturation = 0.05, TintColor = "#FFF1E0" },
+	},
+	-- Broken Highway (owner, 2026-10-20: a sky that matches the arena, "not this clear"): a smoggy sunset — the sun low
+	-- behind a thick brown-orange haze, heavy rust-tinted clouds over most of the sky, slightly washed-out colour.
+	Smog = {
+		ClockTime = 17.85,
+		GeographicLatitude = 30,
+		Brightness = 2.1,
+		Ambient = "#544649",
+		OutdoorAmbient = "#94786A",
+		ColorShiftTop = "#FF9E5E",
+		ColorShiftBottom = "#2E2228",
+		EnvironmentDiffuseScale = 0.4,
+		EnvironmentSpecularScale = 0.2,
+		Atmosphere = { Density = 0.42, Offset = 0.25, Color = "#B98466", Decay = "#4A2E28", Glare = 0.8, Haze = 2.6 },
+		Bloom = { Intensity = 0.6, Size = 24, Threshold = 1.4 },
+		ColorCorrection = { Brightness = 0.01, Contrast = 0.12, Saturation = -0.08, TintColor = "#FFE8D2" },
+		Clouds = { Cover = 0.78, Density = 0.65, Color = "#B07C66" },
 	},
 	-- Night with neon (Neon Motel, step 2.5). Brightened after the owner's first look ("a bit too dark"): bright
 	-- moonlight and a purple ambient so fighters stay readable; the neon and roof lamps add colour.
