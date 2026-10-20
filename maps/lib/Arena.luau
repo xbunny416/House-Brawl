@@ -240,12 +240,43 @@ local function buildPlatform(platform: Platform, contents: Contents, decorate: (
 	model:AddTag("Platform")
 end
 
--- Builds the arena model at `origin` (world position of the centre platform's top centre).
+--[[
+	A moving part (Shared/MoverRules; owner, 2026-10-20: "moving parts"): a Mover-tagged model, always streamed in, with
+	an invisible "Pivot" part at `pivot` (from the arena origin; a Swing turns about it) and the rest built by `fill`
+	(positions from the arena origin). `attributes`: Kind ("Lift" / "Slide" / "Swing"), Period, Pause, Offset (Vector3),
+	Angle, Axis, Phase. Hazard-tagged parts knock fighters they touch (MoverService). Movers sit in the arena's Movers
+	folder, not on a platform, so they never crumble.
+]]
+function Arena.mover(name: string, pivot: { number }, attributes: { [string]: any }, fill: () -> ()): any
+	local model = B.model(name, function()
+		B.part({
+			Name = "Pivot",
+			Size = { 1, 1, 1 },
+			Position = pivot,
+			Color = "Metal",
+			Transparency = 1,
+			CanCollide = false,
+			CastShadow = false,
+		})
+		fill()
+	end, attributes)
+	local pivotPart = model:FindFirstChild("Pivot")
+	pivotPart.CanQuery = false
+	pivotPart.CanTouch = false
+	model.PrimaryPart = pivotPart
+	model.ModelStreamingMode = B.Enum.ModelStreamingMode.Persistent
+	model:AddTag("Mover")
+	return model
+end
+
+-- Builds the arena model at `origin` (world position of the centre platform's top centre). `movers` (optional) builds
+-- the arena's moving parts (Arena.mover), from the arena origin.
 function Arena.build(
 	layout: Layout,
 	origin: { number },
 	decorate: (Platform) -> (),
-	scenery: (killY: number) -> ()
+	scenery: (killY: number) -> (),
+	movers: (() -> ())?
 ): any
 	local killY = Arena.killY(layout.Platforms)
 	return B.root(layout.Id, function()
@@ -258,6 +289,9 @@ function Arena.build(
 			B.folder("Scenery", function()
 				scenery(killY)
 			end)
+			if movers then
+				B.folder("Movers", movers)
+			end
 		end)
 	end, {
 		MapId = layout.Id,

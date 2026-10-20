@@ -184,6 +184,16 @@ tap); both also open from the left-edge menu.
 - 8 breakable structures: wrecked car (HP 100), vending machine (HP 80), road barrier stack (HP 60) — each drops 2–4
   props, respawn 45 s.
 - 1 explosive barrel spot per side and low platform, respawn 30 s.
+- **Shaped, with moving parts (owner, 2026-10-20: "more dynamic, not just flat platforms, more layers, more detail"):**
+  the centre has a steel catwalk at +14 over the deck (stairs from the deck, or the lift), a broken flyover ramp that
+  ends in mid-air at +8, a two-high container tower (+6 / +12), a fallen container, concrete barrier lines, a planter
+  with a dead tree, raised sidewalks with lamp posts; East is a toll plaza (booths, a canopy you can climb onto, +11),
+  West a collapsed road slab (+6) and a crashed bus (+5.5), North a parking deck (+7, walk under it, ramp up), South a
+  bus shelter (+5.5) and a billboard; ledges have low walls and crates, peaks a white rim and floodlights, the lows
+  tyre stacks. **Moving parts:** a lift from the centre's floor up to the catwalk; a broken highway sign swinging on
+  chains across the deck that knocks you off your feet (no damage); a flatbed sliding along the gap between the
+  centre and South — walk across while it passes. Ruins of the old highway stand in the sludge all round. The props
+  and structures are detailed models (no more plain blocks).
 - **Crumbling platforms:** from 1:00 into the round, every 20 s one platform flashes red and shakes for 3 s, then
   falls. The arena closes in toward the centre (owner, 2026-10-19): the next platform is a random one from the outer
   ring (within 40 studs of the farthest one still standing), so the far peaks and low slabs go first, then the
