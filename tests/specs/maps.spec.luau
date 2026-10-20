@@ -371,57 +371,45 @@ return {
 			end
 		end)
 	end,
-	["broken highway: bridges join neighbours in two halves, one on each platform, at a walkable slope"] = function()
-		local model = arenas[1].Model
-		local byId: { [string]: any } = {}
-		for _, platform in BrokenHighway.Platforms do
-			byId[platform.Id] = platform
-		end
-		expect.truthy(#BrokenHighway.Bridges >= 12, "outer platforms are connected")
-		for _, bridge in BrokenHighway.Bridges do
-			local name = `{bridge[1]}-{bridge[2]}`
-			local a, b = byId[bridge[1]], byId[bridge[2]]
-			expect.truthy(a and b, `{name} platforms`)
-			for _, platform in { a, b } do
-				local halves = 0
-				for _, part in model.Platforms[platform.Id]:GetDescendants() do
-					if part:GetAttribute("Bridge") == name then
-						halves += 1
-					end
-				end
-				expect.equal(halves, 1, `{name}: one half on {platform.Id} (it crumbles with it)`)
+	["arenas: bridges join neighbours in two halves, one on each platform, some short, some long, at a walkable slope"] = function()
+		eachArena(function(layout, model)
+			local bridges = layout.Bridges
+			if bridges == nil then
+				return
 			end
-			local fromA, fromB = Arena.bridgeEnds(a, b, bridge.Along)
-			local run = math.sqrt((fromA[1] - fromB[1]) ^ 2 + (fromA[3] - fromB[3]) ^ 2)
-			local rise = math.abs(fromA[2] - fromB[2])
-			expect.truthy(run > 1, `{name} spans its gap`)
-			expect.truthy(math.deg(math.atan2(rise, run)) <= 35, `{name} slope`)
-		end
-	end,
-	["broken highway: sky roads run from the catwalk to a peak, in one piece per platform below"] = function()
-		local model = arenas[1].Model
-		for index, road in BrokenHighway.SkyRoads do
-			expect.equal(road[1].Owner, "Center", `road {index} starts over the centre`)
-			expect.near(road[1].From[2], 14, 0.001, `road {index} leaves the catwalk (+14)`)
-			local last = road[#road]
-			expect.truthy(string.sub(last.Owner, 1, 4) == "Peak", `road {index} ends on a peak`)
-			for step = 1, #road do
-				local piece = road[step]
-				if step > 1 then
-					local before = road[step - 1].To
-					for axis = 1, 3 do
-						expect.near(piece.From[axis], before[axis], 0.001, `road {index} pieces join`)
-					end
-				end
-				local found = false
-				for _, part in model.Platforms[piece.Owner]:GetDescendants() do
-					if part:GetAttribute("SkyRoad") == true then
-						found = true
-					end
-				end
-				expect.truthy(found, `road {index}: {piece.Owner} carries its piece`)
+			local byId: { [string]: any } = {}
+			for _, platform in layout.Platforms do
+				byId[platform.Id] = platform
 			end
-		end
+			local short, long = 0, 0
+			for _, bridge in bridges do
+				local name = `{bridge[1]}-{bridge[2]}`
+				local a, b = byId[bridge[1]], byId[bridge[2]]
+				expect.truthy(a and b, `{name} platforms`)
+				for _, platform in { a, b } do
+					local halves = 0
+					for _, part in model.Platforms[platform.Id]:GetDescendants() do
+						if part:GetAttribute("Bridge") == name then
+							halves += 1
+						end
+					end
+					expect.equal(halves, 1, `{name}: one half on {platform.Id} (it crumbles with it)`)
+				end
+				local fromA, fromB = Arena.bridgeEnds(a, b, bridge.Along)
+				local run = math.sqrt((fromA[1] - fromB[1]) ^ 2 + (fromA[3] - fromB[3]) ^ 2)
+				local rise = math.abs(fromA[2] - fromB[2])
+				expect.truthy(run > 1, `{name} spans its gap`)
+				expect.truthy(math.deg(math.atan2(rise, run)) <= 35, `{name} slope`)
+				if run <= 16 then
+					short += 1
+				elseif run >= 30 then
+					long += 1
+				end
+			end
+			-- The owner: "some short, some long, some gaps, not too boring".
+			expect.truthy(short >= 2 and long >= 1, `{layout.Id}: a mix of short and long bridges`)
+			expect.truthy(#bridges <= 8, `{layout.Id}: not too many bridges (gaps stay)`)
+		end)
 	end,
 	["arenas: movers have a pivot and valid settings; a lift or slide never runs into anything"] = function()
 		eachArena(function(layout, model)

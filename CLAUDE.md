@@ -322,6 +322,7 @@ any errors are fixed before the next item.
 | 2026-10-20 | Broken Highway rebuilt with shapes and moving parts (owner: "more dynamic, not just flat platforms, more layers, more detail"; one arena first): maps/lib/Pieces (ramps, stairs, railings, road barriers, columns, lamp posts, tyres, crates, containers, a bus, a planter, rebar); centre catwalk +14 with stairs and a lift bridge, broken flyover +8, container tower +12, fallen container, barrier lines, sidewalks and lamps; toll plaza canopy (East), collapsed slab and bus (West), parking deck (North), bus shelter and billboard (South), ledge walls, peak floodlights, low tyre stacks, ruins in the void; movers (Shared/MoverRules, Arena.mover, client MoverController moves them from the server clock, MoverService knocks with the swinging sign via CombatService.push): lift, swinging sign, sliding bridge; maps spec: nothing solid on a spawn / prop / barrel / structure spot, movers valid and their paths clear (found and fixed: the centre's underside slab poked 2 studs through the road); movers spec | #72 |
 | 2026-10-20 | No floating boards over the minigame tables (owner: "remove floating label on minigame"): the arm-wrestling and chess BillboardGuis are gone with their strings; the arm-wrestling table champion now shows in the wrestlers' panel between matches | #73 |
 | 2026-10-20 | Broken Highway connected, sky roads, dark abyss, smoggy sky (owner: "more layer structure, outer platforms more connected — still able to crumble; change the neon void and the sky"; picked a dark abyss and a sky that matches the arena, "not this clear"): 15 bridges (a ring side ↔ ledge, side ↔ low, ledge ↔ peak, centre ↔ East / West / North) in two halves each owned by its platform (Arena.bridgeEnds, Pieces.span); two sky roads catwalk → ledge → peak at +12–14 on pillars, one piece per platform below (Arena.splitRoad); the abyss (5 sheets of dark mist to black, ruins reaching down into it) replaces the neon sludge; Smog lighting preset with Roblox dynamic clouds (Config.Lighting Clouds, MapService); swing frame posts and end lamps moved for the NE / SW roads; specs: bridge halves on both platforms at a walkable slope, sky road pieces join and are carried by their platforms, cloud ranges; the marker check now tests rotated parts exactly (separating axes) | #74 |
+| 2026-10-20 | Broken Highway: fewer bridges, higher places (owner: "didn't expect many roads to connect — more structure, I mean higher places"; bridges "some short, some long, some gaps, not too boring"): the sky roads and Arena.splitRoad are gone; 6 bridges (short: centre ↔ East / North, West ↔ LowWest, LedgeNE ↔ PeakNE; long: North ↔ LedgeNE, West ↔ LedgeSW), the rest are jumps; new climbable heights: container tower +18, parking roof deck +14, toll control booth ~+17, West overpass pier +12, billboard catwalk +7, a sign deck +7 on every ledge; the bridge spec covers every arena with bridges (a mix of short and long, at most 8) | #75 |
 
 ## Decisions and interpretations
 
@@ -980,6 +981,17 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   made a long diagonal road look like it covered a ledge's prop spot); new checks: every bridge has one half on each
   of its platforms at a slope of at most 35°, and each sky road starts on the catwalk, ends on a peak and its pieces
   join and are carried by their platforms.
+  **Then (owner, same day: "didn't expect many roads to connect — more structure, I mean like higher places"; on
+  connections: "some short, some long, some gaps, not too boring"):** the sky roads are gone (and `Arena.splitRoad`
+  with them; the catwalk's railings and the end lamps' new places stay), and `Layout.Bridges` keeps six — short:
+  centre ↔ East, centre ↔ North, West ↔ LowWest, LedgeNE ↔ PeakNE; long: North ↔ LedgeNE (79), West ↔ LedgeSW (39) —
+  every other neighbour is a jump again. Height comes from structures instead: a third container on the tower (+18;
+  each level leaves room to stand and jump up 6), the parking garage's roof deck (+14 over its east half, on columns,
+  a ramp up from +7, railings), a control booth on the toll canopy (roof about +17; a crate beside it), a broken
+  overpass pier on West beside the collapsed slab's high end (a +12 deck on two columns, rebar), a service catwalk
+  along the billboard's foot (+7; a crate stack) and a steel sign deck on four posts on every corner ledge (+7 above it;
+  a crate). The maps spec's bridge check now runs for every arena that lists bridges: one half on each platform, a
+  slope of at most 35°, at least two short and one long bridge, and no more than 8.
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,

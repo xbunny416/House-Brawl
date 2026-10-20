@@ -133,37 +133,23 @@ Layout.Contents = Arena.growContents(
 )
 
 --[[
-	Bridges between neighbouring platforms (owner, 2026-10-20: "outer platforms more connected together — still able to
-	crumble"): a ring round the outside (each side to the two corner ledges next to it), each side to its low platform,
-	each corner ledge to its peak, and the centre to East, West and North (South has the sliding bridge). Each bridge is
-	built as two halves, each part of its own platform's model: a crumbling platform takes its half down and leaves the
-	other as a broken stub. `Along` places a straight bridge on the axis its two platforms overlap on.
+	Bridges between neighbouring platforms (owner, 2026-10-20: connected "still able to crumble", then "not that many
+	roads — some short, some long, some gaps, not too boring"): short ones from the centre to East and North, West to its
+	low platform and the NE ledge to its peak; long ones from North to the NE ledge and West to the SW ledge; every other
+	neighbour is still a jump (South has the sliding bridge). Each bridge is built as two halves, each part of its own
+	platform's model: a crumbling platform takes its half down and leaves the other as a broken stub. `Along` places a
+	straight bridge on the axis its two platforms overlap on.
 ]]
 Layout.Bridges = {
 	{ "Center", "East", Along = -40 },
-	{ "Center", "West", Along = 40 },
 	{ "Center", "North", Along = -30 },
-	{ "East", "LedgeNE", Along = 153 },
-	{ "East", "LedgeSE", Along = 153 },
-	{ "West", "LedgeNW", Along = -152 },
-	{ "West", "LedgeSW", Along = -152 },
-	{ "North", "LedgeNE", Along = 113.5 },
-	{ "North", "LedgeNW", Along = 113.5 },
-	{ "South", "LedgeSE", Along = -112.5 },
-	{ "South", "LedgeSW", Along = -112.5 },
-	{ "East", "LowEast" },
 	{ "West", "LowWest" },
 	{ "LedgeNE", "PeakNE" },
-	{ "LedgeSW", "PeakSW" },
+	{ "North", "LedgeNE", Along = 113.5 },
+	{ "West", "LedgeSW", Along = -152 },
 }
 Layout.BridgeWidth = 10
 
---[[
-	Two sky roads — the top layer: elevated highways from the centre's catwalk (+14) out over the NE / SW corner ledges
-	to the peaks (+12), on pillars. Each is cut into one piece per platform it passes over (Arena.splitRoad), so a
-	crumbling ledge or peak breaks the road there.
-]]
-Layout.SkyRoadWidth = 8
 local function platformsById(): { [string]: Platform }
 	local found: { [string]: Platform } = {}
 	for _, entry in Layout.Platforms do
@@ -171,10 +157,6 @@ local function platformsById(): { [string]: Platform }
 	end
 	return found
 end
-Layout.SkyRoads = {
-	Arena.splitRoad(Layout.Platforms, { "Center", "LedgeNE", "PeakNE" }, { 7.5, 14, 5.5 }, { 186, 12, 146 }),
-	Arena.splitRoad(Layout.Platforms, { "Center", "LedgeSW", "PeakSW" }, { -7.5, 14, -5.5 }, { -186, 12, -146 }),
-}
 
 -- Lowest platform bottom (relative to the arena origin) minus the kill depth.
 function Layout.killY(): number
@@ -338,8 +320,9 @@ local function centerFeatures()
 		end
 	end
 	Pieces.stairs("CatwalkStairs", { 22, 0 }, "-X", 6, 4, 2, 2.5, "MetalDark", "DiamondPlate", deckTop)
-	-- Railings, open where the lift bridge (north, middle) and the sky roads (north-east, south-west) leave.
-	Pieces.railing("CatwalkRail", { 3, -6 }, { 12, -6 }, walk)
+	-- Railings, open where the lift bridge leaves (north, middle) and the stairs come up (east).
+	Pieces.railing("CatwalkRail", { -12, -6 }, { 12, -6 }, walk)
+	Pieces.railing("CatwalkRail", { 3, 6 }, { 12, 6 }, walk)
 	Pieces.railing("CatwalkRail", { -12, -6 }, { -12, 6 }, walk)
 	Pieces.railing("CatwalkRail", { -12, 6 }, { -3, 6 }, walk)
 	B.part({
@@ -452,9 +435,11 @@ local function centerFeatures()
 	Pieces.jersey("Barrier", { -80, 50 }, 12, 90)
 	Pieces.container("FallenContainer", { 95, 8 }, { 22, 6, 8 }, 90, "RustOrange")
 	Pieces.crate("ContainerStep", { 86.5, 14 }, 3)
-	-- A container tower (+6, then +12): a crate, the lower container, the upper one turned across it.
+	-- A container tower (+6, +12, then +18): a crate, the lower container, two more stacked on it, each leaving room to
+	-- stand and jump to the next.
 	Pieces.container("TowerContainer", { 48, 64 }, { 16, 6, 8 }, 0, "TealDark")
 	Pieces.container("TowerContainer", { 50, 64.5 }, { 12, 6, 7 }, 8, "RustOrange", 6)
+	Pieces.container("TowerContainer", { 52.5, 64.5 }, { 7, 6, 6 }, 8, "MetalDark", 12) -- the top: +18
 	Pieces.crate("TowerStep", { 37.5, 62 }, 3)
 	Pieces.planter("Planter", { -100, 28 }, 10)
 
@@ -560,6 +545,21 @@ local function eastFeatures()
 	end
 	Pieces.crate("TollStep", { -17.6, -3.5 }, 2.6)
 	Pieces.crate("TollStep", { 17.6, 3.5 }, 2.6)
+	-- A control booth on the canopy (roof about +17), a crate beside it to climb up.
+	Pieces.block("ControlBooth", { 0, 0 }, { 6, 5.5, 6 }, "OffWhite", "SmoothPlastic", 11)
+	Pieces.block("ControlBoothRoof", { 0, 0 }, { 7, 0.4, 7 }, "RustOrange", "Metal", 16.5)
+	for _, side in { -1, 1 } do
+		B.part({
+			Name = "ControlWindow",
+			Size = { 5, 2.2, 0.08 },
+			Position = { 0, 14.3, side * 3.03 },
+			Color = "Glass",
+			Material = "Glass",
+			Transparency = 0.35,
+			CanCollide = false,
+		})
+	end
+	Pieces.crate("ControlStep", { -5.2, 0 }, 2.6, 11)
 	-- Up to the canopy (+11): a crate, a smaller crate on it, then a jump onto the canopy's edge.
 	for _, side in { -1, 1 } do
 		Pieces.crate("CanopyStep", { 36 * side, 16 * side }, 3)
@@ -573,6 +573,20 @@ end
 local function westFeatures()
 	Pieces.ramp("CollapsedSlab", { -10, -17 }, { -40, -17 }, 10, 6, "Asphalt", "Asphalt")
 	Pieces.rebar("CollapsedRebar", { -40.3, -21.5 }, { -40.3, -12.5 }, 5.2, 6, -90)
+	-- A broken overpass pier beside the slab's high end: a deck at +12 on two columns, jagged and overhanging.
+	B.part({
+		Name = "PierDeck",
+		Size = { 12, 1.5, 10 },
+		Position = { -40, 11.25, -25 },
+		Rotation = { 0, 0, -3 },
+		Color = "Concrete",
+		Material = "Concrete",
+		CastShadow = true,
+	})
+	for _, x in { -44, -36 } do
+		Pieces.column("PierColumn", { x, -25 }, 0, 10.5, 1.8, "Concrete", "Concrete", true)
+	end
+	Pieces.rebar("PierRebar", { -46.2, -29 }, { -46.2, -21 }, 11, 5, -90)
 	for index = 0, 2 do
 		B.part({
 			Name = "CollapsedCrack",
@@ -625,6 +639,23 @@ local function northFeatures()
 	Pieces.crate("ParkingCrate", { 30, 6 }, 3, 7)
 	Pieces.crate("ParkingCrate", { 30.4, 6.2 }, 2.4, 10, 20)
 	Pieces.tires("ParkingTires", { 14, 15 }, 2, 7)
+	-- The garage's roof deck (+14) over its east half, a ramp up from the +7 deck, railings.
+	B.part({
+		Name = "ParkingRoof",
+		Size = { 14, 1, 22 },
+		Position = { 29, 13.5, 11 },
+		Color = "Concrete",
+		Material = "Concrete",
+		CastShadow = true,
+	})
+	for _, x in { 23, 35 } do
+		for _, z in { 1, 21 } do
+			Pieces.column("ParkingRoofColumn", { x, z }, 7, 13, 1, "ConcreteDark", "Concrete")
+		end
+	end
+	Pieces.ramp("ParkingRoofRamp", { 9, 5 }, { 22, 5 }, 6, 7, "Concrete", "Concrete", 7)
+	Pieces.railing("ParkingRoofRail", { 22.4, 21.6 }, { 35.6, 21.6 }, 14)
+	Pieces.railing("ParkingRoofRail", { 35.6, 0.4 }, { 35.6, 21.6 }, 14)
 	roadWear({ { -20, -36 }, { 34, -36 } })
 end
 
@@ -679,15 +710,41 @@ local function southFeatures()
 		CanCollide = false,
 	})
 	Pieces.jersey("Barrier", { -4, -20 }, 12, 0, nil, true)
+	-- A service catwalk along the billboard's foot (+7), a crate stack to climb to it.
+	B.part({
+		Name = "BillboardCatwalk",
+		Size = { 22, 0.4, 2 },
+		Position = { -18, 7, -38.8 },
+		Color = "MetalDark",
+		Material = "DiamondPlate",
+	})
+	Pieces.railing("BillboardRail", { -29, -37.9 }, { -7, -37.9 }, 7.2, 1.1)
+	Pieces.crate("BillboardStep", { -18, -34.5 }, 3)
+	Pieces.crate("BillboardStep", { -18, -34.5 }, 2.6, 3, 10)
 	roadWear({ { -30, 20 }, { 34, -34 } })
 end
 
--- A corner ledge: low barrier walls along its two outer edges (the corner stays open for the jump to a peak) and a
--- crate. `sx` / `sz` point outward.
+-- A corner ledge: low barrier walls along its two outer edges (the corner stays open for the jump to a peak), a crate
+-- and a sign deck at +7 above it. `sx` / `sz` point outward.
 local function ledgeFeatures(sx: number, sz: number)
 	Pieces.jersey("LedgeWall", { 22.5 * sx, -7 * sz }, 26, 90)
 	Pieces.jersey("LedgeWall", { -7 * sx, 22.5 * sz }, 26, 0)
 	Pieces.crate("LedgeCrate", { 8 * sx, -8 * sz }, 3, nil, 15)
+	-- A steel sign deck at +7 on four posts, with a crate to climb onto it.
+	B.part({
+		Name = "SignDeck",
+		Size = { 10, 0.6, 10 },
+		Position = { -12 * sx, 6.7, 12 * sz },
+		Color = "MetalDark",
+		Material = "DiamondPlate",
+		CastShadow = true,
+	})
+	for _, dx in { -4.5, 4.5 } do
+		for _, dz in { -4.5, 4.5 } do
+			Pieces.column("SignDeckPost", { -12 * sx + dx, 12 * sz + dz }, 0, 6.4, 0.5, "Metal", "Metal")
+		end
+	end
+	Pieces.crate("SignDeckStep", { -12 * sx, 4 * sz }, 3)
 end
 
 -- A peak (a giant green highway sign lying flat): a white rim and a floodlight on its outer corner.
@@ -711,21 +768,8 @@ local function lowFeatures(side: number)
 	Pieces.jersey("Barrier", { if side > 0 then -2 else 2, if side > 0 then 4 else -4 }, 12, 0)
 end
 
--- A sky road's pillar from `floor` up under the deck at (x, z), whose top is `top` there.
-local function roadPillar(x: number, z: number, floor: number, top: number)
-	Pieces.column("SkyRoadPillar", { x, z }, floor, top - 3.2, 2.2, "Concrete", "Concrete", true)
-	B.part({
-		Name = "SkyRoadPillarCap",
-		Size = { 3.6, 1.2, 9 },
-		Position = { x, top - 2.6, z },
-		Color = "ConcreteDark",
-		Material = "Concrete",
-		CanCollide = false,
-	})
-end
-
--- This platform's halves of its bridges and its pieces of the sky roads, built in arena-origin coordinates so they
--- line up across platforms (but still part of this platform's model: they crumble with it).
+-- This platform's halves of its bridges, built in arena-origin coordinates so they line up across platforms (but still
+-- part of this platform's model: they crumble with it).
 local function connections(platform: Platform)
 	local byId = platformsById()
 	B.within({ -platform.Center[1], -platform.Top, -platform.Center[2] }, function()
@@ -738,26 +782,6 @@ local function connections(platform: Platform)
 				local middle = { (mine[1] + theirs[1]) / 2, (mine[2] + theirs[2]) / 2, (mine[3] + theirs[3]) / 2 }
 				local deck = Pieces.span("Bridge", mine, middle, Layout.BridgeWidth, "Asphalt", "Asphalt")
 				deck:SetAttribute("Bridge", `{a.Id}-{b.Id}`)
-			end
-		end
-		for _, road in Layout.SkyRoads do
-			for _, piece in road do
-				if piece.Owner == platform.Id then
-					local deck = Pieces.span("SkyRoad", piece.From, piece.To, Layout.SkyRoadWidth, "Asphalt", "Asphalt")
-					deck:SetAttribute("SkyRoad", true)
-					-- Pillars down to this platform's floor, a third and two thirds of the way along this piece.
-					for _, t in { 1 / 3, 2 / 3 } do
-						local x = piece.From[1] + (piece.To[1] - piece.From[1]) * t
-						local z = piece.From[3] + (piece.To[3] - piece.From[3]) * t
-						local top = piece.From[2] + (piece.To[2] - piece.From[2]) * t
-						if
-							math.abs(x - platform.Center[1]) < platform.Size[1] / 2 - 3
-							and math.abs(z - platform.Center[2]) < platform.Size[2] / 2 - 3
-						then
-							roadPillar(x, z, platform.Top, top)
-						end
-					end
-				end
 			end
 		end
 	end)
