@@ -28,6 +28,7 @@ export type Stats = {
 	RoundsPlayed: number,
 	RoundsCompleted: number,
 	ArmWrestleWins: number, -- arm-wrestling matches won at the lobby table (not against the dev bot)
+	ChessWins: number, -- chess games won at the lobby table (not against the dev bot)
 }
 
 -- A private server owner's choices (Shared/PrivateServerRules): "Vote" or a mode / map id, and the round length.
@@ -113,6 +114,7 @@ local Template: PlayerData = {
 		RoundsPlayed = 0,
 		RoundsCompleted = 0,
 		ArmWrestleWins = 0,
+		ChessWins = 0,
 	},
 	Styles = {
 		Slots = startSlots,

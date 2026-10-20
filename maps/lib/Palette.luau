@@ -49,4 +49,6 @@ return {
 	SofaDark = "#561713", -- piping and buttons
 	WoodMid = "#6B3F28", -- moldings
 	Soil = "#3B2A1E",
+	ChessLight = "#E8D3AE", -- the chess board's light squares
+	ChessDark = "#8E5A3A", -- and its dark squares
 }

@@ -315,6 +315,76 @@ function Furniture.armWrestleTable(name: string, x: number, z: number, top: numb
 	return model
 end
 
+--[[
+	The chess table (ChessService): a square dark wood table with a gold edge on a pedestal with a cross foot, a board of
+	64 squares in a wood frame, and a stool at each end facing the other. White plays from −X (side 1), Black from +X
+	(side 2): ranks run toward +X, files a → h toward +Z (White's right). The board's frame is the part "Board" with a
+	SquareSize attribute; square (file f, rank r, 0-7) sits at Board.CFrame * (( r − 3.5 ) × size, top, ( f − 3.5 ) ×
+	size), where the client stands the pieces (ChessController). The model is tagged ChessTable; each stool's Seat is
+	tagged ChessSeat with a Side attribute (and stays a LobbySeat, so the normal Sit prompt seats players).
+]]
+function Furniture.chessTable(name: string, x: number, z: number, top: number, seatHeight: number): any
+	local put = frame(x, z, "South")
+	local square = 0.55
+	local frameSize = square * 8 + 0.5
+	-- World offsets (dx, dz) from the table's centre; the "South" frame's lz runs toward −Z.
+	local function at(dx: number, y: number, dz: number): { number }
+		return { dx, y, -dz }
+	end
+	local model = B.model(name, function()
+		put({
+			Name = "Top",
+			Size = { 5.4, 0.3, 5.4 },
+			Position = at(0, top - 0.15, 0),
+			Color = "WoodDark",
+			Material = "Wood",
+		})
+		put({
+			Name = "Edge",
+			Size = { 5.6, 0.12, 5.6 },
+			Position = at(0, top - 0.24, 0),
+			Color = "Gold",
+			Material = "Metal",
+		})
+		upright(put, "Pedestal", at(0, (top - 0.3) / 2, 0), top - 0.3, 1, "WoodDark", "Wood", true)
+		upright(put, "Collar", at(0, top - 0.55, 0), 0.15, 1.4, "Gold", "Metal")
+		for _, size in { { 3.4, 0.3, 0.6 }, { 0.6, 0.3, 3.4 } } do
+			put({ Name = "Foot", Size = size, Position = at(0, 0.15, 0), Color = "WoodDark", Material = "Wood" })
+		end
+		local board = put({
+			Name = "Board",
+			Size = { frameSize, 0.1, frameSize },
+			Position = at(0, top + 0.05, 0),
+			Color = "WoodMid",
+			Material = "Wood",
+		})
+		board:SetAttribute("SquareSize", square)
+		for rank = 0, 7 do
+			for file = 0, 7 do
+				put({
+					Name = "Square",
+					Size = { square, 0.02, square },
+					Position = at((rank - 3.5) * square, top + 0.11, (file - 3.5) * square),
+					Color = if (rank + file) % 2 == 0 then "ChessDark" else "ChessLight",
+					Material = "SmoothPlastic",
+					CanCollide = false,
+					CastShadow = false,
+				})
+			end
+		end
+	end)
+	for side, dx in { -1, 1 } do
+		local stool =
+			Furniture.stool(`Stool{side}`, x + dx * 3.4, z, if side == 1 then "East" else "West", seatHeight, "Sofa")
+		stool.Parent = model
+		local seat = stool:FindFirstChild("Seat")
+		seat:AddTag("ChessSeat")
+		seat:SetAttribute("Side", side)
+	end
+	model:AddTag("ChessTable")
+	return model
+end
+
 ---------------------------------------------------------------------------------------------------------------------
 -- Tables
 ---------------------------------------------------------------------------------------------------------------------

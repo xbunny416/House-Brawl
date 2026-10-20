@@ -88,6 +88,19 @@ local Definitions: { [string]: Definition } = {
 	-- Client -> server: a push at the lobby's arm-wrestling table (Attack, or the PUSH button on touch). It counts only
 	-- for a player seated there during a pull, up to Config.World.ArmWrestle.TapRate a second (ArmWrestleService).
 	ArmWrestleTap = { Kind = "Event", Direction = "ToServer", Args = {} },
+	-- Client -> server: a move at the lobby's chess table: from and to squares ("e2", "e4") and, when a pawn promotes, the
+	-- piece ("Q" / "R" / "B" / "N"). It counts only for a seated player whose turn it is, if legal (ChessService).
+	ChessMove = {
+		Kind = "Event",
+		Direction = "ToServer",
+		Args = { Guard.string(2), Guard.string(2), Guard.optional(Guard.oneOf({ "Q", "R", "B", "N" })) },
+	},
+	-- Client -> server: at the chess table, "Resign", "OfferDraw" or "AcceptDraw" (the other side's offer).
+	ChessAction = {
+		Kind = "Event",
+		Direction = "ToServer",
+		Args = { Guard.oneOf({ "Resign", "OfferDraw", "AcceptDraw" }) },
+	},
 	Sit = {
 		Kind = "Event",
 		Direction = "ToServer",

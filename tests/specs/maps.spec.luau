@@ -408,6 +408,40 @@ return {
 			`table {tableTop - seatTop} above the seat`
 		)
 	end,
+	["lobby: one chess table: 64 squares in the board, two seats facing each other"] = function()
+		local tables = tagged(lobby, "ChessTable")
+		expect.equal(#tables, 1, "chess tables")
+		local model = tables[1]
+		local board = model:FindFirstChild("Board")
+		expect.truthy(board and board:IsA("BasePart"), "Board")
+		local size = board:GetAttribute("SquareSize")
+		expect.truthy(type(size) == "number" and size > 0, "SquareSize")
+		expect.near(board.CFrame.Position.X - Config.Maps.LobbyOrigin[1], Hideout.Chess[1], 0.001, "table x")
+		expect.near(board.CFrame.Position.Z - Config.Maps.LobbyOrigin[3], Hideout.Chess[2], 0.001, "table z")
+		-- Every square where the client puts its piece: a1 dark, at White's left (−Z) nearest White (−X).
+		local squares = 0
+		for _, square in model:GetChildren() do
+			if square.Name == "Square" then
+				squares += 1
+				local offset = board.CFrame:PointToObjectSpace(square.CFrame.Position)
+				local rank, file = offset.X / size + 3.5, offset.Z / size + 3.5
+				expect.near(rank, math.round(rank), 0.001, "on a rank")
+				expect.near(file, math.round(file), 0.001, "on a file")
+				local dark = (math.round(rank) + math.round(file)) % 2 == 0
+				expect.equal(square.Color.R < 0.75, dark, `square {math.round(file)},{math.round(rank)} shade`)
+			end
+		end
+		expect.equal(squares, 64, "squares")
+		local seats: { [number]: any } = {}
+		for _, seat in tagged(model, "ChessSeat") do
+			expect.truthy(seat:HasTag("LobbySeat"), "a lobby seat too (the Sit prompt)")
+			seats[seat:GetAttribute("Side")] = seat
+		end
+		expect.equal(#tagged(model, "ChessSeat"), 2, "two seats")
+		expect.truthy(seats[1].CFrame.Position.X < board.CFrame.Position.X, "White sits west")
+		expect.truthy(seats[1].CFrame.LookVector.X > 0.99, "White faces the board")
+		expect.truthy(seats[2].CFrame.LookVector.X < -0.99, "Black faces the board")
+	end,
 	["lobby: a few main lamps cast shadows (Future lighting), all tagged for Low Graphics"] = function()
 		local shadows = 0
 		for _, light in lobby:GetDescendants() do
