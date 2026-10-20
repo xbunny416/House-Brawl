@@ -1152,6 +1152,16 @@ local function lounge()
 	end
 end
 
+-- The arm-wrestling table (ArmWrestleService) in the open middle of the room, between the lounge and the pool table,
+-- on its own rug under its own lamp. The pull runs east-west.
+local ARM_WRESTLE = { 0, -10 }
+local function armWrestle()
+	local x, z = ARM_WRESTLE[1], ARM_WRESTLE[2]
+	F.rug(x, z, 12, 9, 7)
+	F.armWrestleTable("ArmWrestleTable", x, z, 3.2, 1.4)
+	F.pendant(x, 15, z, HEIGHT, 22)
+end
+
 -- Builds the lobby at `origin` (world position of the floor's top centre).
 function Layout.build(origin: { number }): any
 	return B.root("Lobby", function()
@@ -1166,6 +1176,7 @@ function Layout.build(origin: { number }): any
 			leaderboards()
 			spawns()
 			lounge()
+			armWrestle()
 		end)
 	end, {
 		MapId = Layout.Id,
@@ -1177,5 +1188,6 @@ end
 -- The room's inside floor size (X, Z) and the join pad's footprint (X, Z) and centre, for specs.
 Layout.Inner = INNER
 Layout.JoinPad = { Size = PAD_SIZE, Center = { PAD_X, 0 } }
+Layout.ArmWrestle = ARM_WRESTLE
 
 return Layout

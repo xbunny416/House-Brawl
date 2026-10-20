@@ -212,9 +212,9 @@ end
 
 -- A bar stool: round cushion with a gold ring on a gold pole, footrest ring and base. The Seat is an invisible block
 -- inside the cushion (a round, upright Seat isn't possible: cylinders lie along X).
-function Furniture.stool(name: string, x: number, z: number, facing: string, height: number, colorName: string)
+function Furniture.stool(name: string, x: number, z: number, facing: string, height: number, colorName: string): any
 	local put, seat = frame(x, z, facing)
-	B.model(name, function()
+	return B.model(name, function()
 		upright(put, "Base", { 0, 0.12, 0 }, 0.25, 2, "Gold", "Metal", true)
 		upright(put, "Pole", { 0, height / 2, 0 }, height, 0.35, "Gold", "Metal", true)
 		upright(put, "Footrest", { 0, height * 0.4, 0 }, 0.15, 1.7, "Gold", "Metal")
@@ -229,6 +229,90 @@ function Furniture.stool(name: string, x: number, z: number, facing: string, hei
 			Transparency = 1,
 		})
 	end)
+end
+
+--[[
+	The arm-wrestling table (ArmWrestleService): a dark wood top with a gold edge and a gold centre line on two posts
+	with feet, two elbow pads, two pin pads where a beaten hand lands, two gold grip pegs for the free hands, and a stool
+	at each end facing the other. The pull runs along X: side 1 sits at −X facing +X, side 2 at +X facing −X; each
+	stool sits a little to its sitter's left so the two right hands meet over the middle. The model is tagged
+	ArmWrestleTable; its top is the part "Top" (the board over the table hangs above it); each stool's Seat is tagged
+	ArmWrestleSeat with a Side attribute (and stays a LobbySeat, so the normal Sit prompt seats players).
+]]
+function Furniture.armWrestleTable(name: string, x: number, z: number, top: number, seatHeight: number): any
+	local put = frame(x, z, "South")
+	-- World offsets (dx, dz) from the table's centre; the "South" frame's lz runs toward −Z.
+	local function at(dx: number, y: number, dz: number): { number }
+		return { dx, y, -dz }
+	end
+	local model = B.model(name, function()
+		put({
+			Name = "Top",
+			Size = { 3, 0.35, 3.6 },
+			Position = at(0, top - 0.175, 0),
+			Color = "WoodDark",
+			Material = "Wood",
+		})
+		put({
+			Name = "Edge",
+			Size = { 3.2, 0.12, 3.8 },
+			Position = at(0, top - 0.3, 0),
+			Color = "Gold",
+			Material = "Metal",
+		})
+		put({
+			Name = "CentreLine",
+			Size = { 0.08, 0.02, 3.4 },
+			Position = at(0, top + 0.01, 0),
+			Color = "Gold",
+			Material = "Metal",
+			CanCollide = false,
+		})
+		for side, dx in { -1, 1 } do
+			-- Side 1 (−X) faces +X, so its right is +Z; side 2's right is −Z.
+			local right = if side == 1 then 1 else -1
+			upright(put, `ElbowPad{side}`, at(dx * 0.6, top + 0.05, right * 0.15), 0.1, 0.9, "SofaDark", "Leather")
+			put({
+				Name = `PinPad{side}`,
+				Size = { 1, 0.08, 0.7 },
+				Position = at(0, top + 0.04, -right * 1.25),
+				Color = "Sofa",
+				Material = "Leather",
+				CanCollide = false,
+			})
+			upright(put, `GripPeg{side}`, at(dx * 0.95, top + 0.35, -right * 1.25), 0.7, 0.22, "Gold", "Metal")
+			upright(put, `GripKnob{side}`, at(dx * 0.95, top + 0.72, -right * 1.25), 0.12, 0.34, "Gold", "Metal")
+		end
+		-- Two posts on feet, off to the sides so the sitters' legs fit under the top.
+		for _, dz in { -1.4, 1.4 } do
+			upright(put, "Post", at(0, (top - 0.36) / 2, dz), top - 0.36, 0.45, "WoodDark", "Wood", true)
+			put({
+				Name = "Foot",
+				Size = { 2.4, 0.25, 0.5 },
+				Position = at(0, 0.125, dz),
+				Color = "WoodDark",
+				Material = "Wood",
+			})
+			upright(put, "Collar", at(0, top - 0.6, dz), 0.15, 0.6, "Gold", "Metal")
+		end
+	end)
+	for side, dx in { -1, 1 } do
+		local right = if side == 1 then 1 else -1
+		local stool = Furniture.stool(
+			`Stool{side}`,
+			x + dx * 1.8,
+			z - right * 0.5,
+			if side == 1 then "East" else "West",
+			seatHeight,
+			"Sofa"
+		)
+		stool.Parent = model
+		local seat = stool:FindFirstChild("Seat")
+		seat:AddTag("ArmWrestleSeat")
+		seat:SetAttribute("Side", side)
+	end
+	model:AddTag("ArmWrestleTable")
+	return model
 end
 
 ---------------------------------------------------------------------------------------------------------------------

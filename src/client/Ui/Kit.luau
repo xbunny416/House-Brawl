@@ -23,6 +23,7 @@ Kit.Colors = {
 	Bronze = Color3.fromHex("#D08A4E"),
 	Cream = Color3.fromHex("#F0E2C0"),
 	BoardRow = Color3.fromHex("#26262B"),
+	Rival = Color3.fromHex("#3FA7B5"), -- the other side at the arm-wrestling table (your side is Accent)
 }
 Kit.TitleFont = Enum.Font.GothamBlack
 Kit.BodyFont = Enum.Font.GothamBold

@@ -159,7 +159,11 @@ booth, Codes jukebox, the cork quest board. South — three tall dark leaderboar
 avatar headshot, name and value with thousands separators, the top 3 outlined in gold / silver / bronze), the spawns
 and the street door. Middle — the
 lounge (dark rug with a gold ring, round black marble table on a gold base, red tufted sofa and two armchairs, floor
-lamps with white drum shades, potted topiaries), a pool table and high tables with stools; the spin wheel on the west wall (walk up and press E). Every sofa,
+lamps with white drum shades, potted topiaries), a pool table and high tables with stools; the spin wheel on the west wall (walk up and press E); the
+arm-wrestling table in the open middle of the room (two stools facing each other: sit down opposite someone, wait out
+a 3-second countdown, then mash Attack — or tap PUSH on a phone — to push the clasped hands over to your side; a pin
+wins at once, otherwise whoever is ahead after 15 seconds; a board over the table shows the match and the table
+champion's wins in a row; no Coins at stake, wins count toward a lifetime arm-wrestling stat). Every sofa,
 armchair, booth bench and
 stool can be sat on: walk up and press Sit (E / gamepad B / tap); jump to stand up. Walk up to the bartender for the Shop and into the locker booth for the Inventory (a prompt: E / gamepad B /
 tap); both also open from the left-edge menu.

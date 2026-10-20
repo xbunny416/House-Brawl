@@ -9,6 +9,7 @@
 	  2. Stance: fists up while standing still in a round (fades out as the fighter moves).
 	  3. A state loop from replicated attributes: Charge while Charging is set, Carry while HeldProp is set (blends in
 	     and out).
+	     Arm wrestling at the lobby table (Shared/Animation/ArmWrestle) while ArmWrestle is set, following the match.
 	  4. One-shots: the server's Animate event (punch chain / weapon swings, charged punch, parry, grab, throw, victory
 	     emotes, other players' dashes); the local dash (DashController.Dashed, no round trip); hits from CombatHit (a
 	     recoil away from the attacker, or a tumble looping through a long hitstun).
@@ -28,6 +29,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local Net = require(Shared:WaitForChild("Net"))
+local ArmWrestle = require(Shared:WaitForChild("Animation"):WaitForChild("ArmWrestle"))
 local Clips = require(Shared:WaitForChild("Animation"):WaitForChild("Clips"))
 local Motion = require(Shared:WaitForChild("Animation"):WaitForChild("Motion"))
 local Pose = require(Shared:WaitForChild("Animation"):WaitForChild("Pose"))
@@ -64,6 +66,8 @@ type Rig = {
 	Pitch: number, -- smoothed Motion lean
 	Roll: number,
 	StanceWeight: number, -- smoothed
+	WrestleWeight: number, -- smoothed: how much the arm-wrestling pose shows
+	WrestleProgress: number, -- smoothed ArmWrestle attribute
 	OneShot: Playing?,
 	Loop: Playing?,
 	Fading: Playing?, -- the loop that just ended, blending out
@@ -169,6 +173,8 @@ local function rigOf(character: Model): Rig?
 		Pitch = 0,
 		Roll = 0,
 		StanceWeight = 0,
+		WrestleWeight = 0,
+		WrestleProgress = 0,
 		OneShot = nil,
 		Loop = nil,
 		Fading = nil,
@@ -323,6 +329,17 @@ local function update(character: Model, rig: Rig)
 	rig.StanceWeight += (stanceTarget - rig.StanceWeight) * (1 - math.exp(-dt / math.max(blend * 2, 0.01)))
 	if rig.StanceWeight > 0.01 then
 		table.insert(layers, { Sample = Pose.sample(Clips.Stance, clock), Weight = rig.StanceWeight })
+	end
+	-- Arm wrestling at the lobby table: the seated pose, following the match (the ArmWrestle attribute).
+	local wrestle = character:GetAttribute("ArmWrestle")
+	local follow = 1 - math.exp(-dt / math.max(blend, 0.01))
+	rig.WrestleWeight += ((if type(wrestle) == "number" then 1 else 0) - rig.WrestleWeight) * follow
+	if type(wrestle) == "number" then
+		rig.WrestleProgress += (wrestle - rig.WrestleProgress) * follow
+	end
+	if rig.WrestleWeight > 0.01 then
+		local sample = ArmWrestle.sample(rig.WrestleProgress, clock)
+		table.insert(layers, { Sample = sample, Weight = rig.WrestleWeight })
 	end
 	local fading = rig.Fading
 	if fading then

@@ -25,7 +25,14 @@ return {
 			GreetCooldown = 90,
 			IdleEvery = { Min = 15, Max = 28 },
 			ReadTime = { Base = 2.5, PerCharacter = 0.05, Min = 3, Max = 7 },
-			Lines = { Greet = 6, Idle = 12, Shop = 4, Thanks = 4, Won = 4, Lost = 4 },
+			Lines = { Greet = 6, Idle = 13, Shop = 4, Thanks = 4, Won = 4, Lost = 4 },
 		},
 	},
+	-- Arm wrestling at the lobby table (ArmWrestleService, Shared/ArmWrestleRules). When both seats are taken a
+	-- CountdownTime countdown starts, then the pull: every press of Attack (the PUSH button on touch) moves the clasped
+	-- hands PushPerTap toward the presser (they start in the middle; 1 wins). Presses count up to TapRate a second (a
+	-- burst of TapBurst), so an autoclicker is no faster than a quick finger. After PullTime the one ahead wins (dead
+	-- even = a draw). The result shows ResultTime seconds, then the next match starts while both stay seated. Nothing
+	-- is paid: a win counts toward the ArmWrestleWins stat and the table champion's streak.
+	ArmWrestle = { CountdownTime = 3, PullTime = 15, ResultTime = 3, PushPerTap = 0.05, TapRate = 10, TapBurst = 3 },
 }

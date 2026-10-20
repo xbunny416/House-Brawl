@@ -34,7 +34,7 @@ Read this first in every session. Full design spec: [docs/PROJECT_BIBLE.md](docs
   done (owner-side: create the StyleSlot product, declare paid random items on the maturity form); 4/6 part 1 (the
   lobby 25% bigger, the reference's style with detailed furniture, seats) is done; part 2 (TV news, leaderboard board look) is done; 5/6 (every
   arena platform doubled again, the crumble closing in toward the centre) is done; 6/6 the lobby spin wheel is done — **the fix list is
-  complete** (the bartender is now a real character who talks, 2026-10-20; left: the optional lobby minigames; owner-side: the StyleSlot product, the maturity
+  complete** (the bartender is now a real character who talks, 2026-10-20; arm wrestling is built, not playtested; left: the optional chess minigame; owner-side: the StyleSlot product, the maturity
   form's paid random items, playtests).
 
 ## How this repo works
@@ -314,6 +314,7 @@ any errors are fixed before the next item.
 | 2026-10-20 | Owner's fix list 6/6 — lobby spin wheel: a wheel on the west wall (pie slices from wedges, painted and turned on every client to each spin's prize: WheelSpun), its screen (walk-up prompt, and a third tab next to Daily reward / Quests: prizes with exact odds, Spin, free-spin countdown, a highlight that lands on the prize), WheelService (1 free spin a day, more for 200 Coins where PolicyService allows paid random items, none in private servers or while fighting; prizes Coins / XP / a bonus free style spin / a random unowned cosmetic), pure WheelRules + spec, Config.Retention.Wheel, data Wheel + Styles.BonusSpins (the style roll uses them after the day's free spin), DataService reconciles again after migrations, Builder `Axes`, dev "Wheel spin" | #65 |
 | 2026-10-20 | Bartender as a real character (owner: "bartender no animation, just make it look like an NPC, not just blocks"): NpcService builds an R15 character (`Players:CreateHumanoidModelFromDescription`) on the ShopNPC model's invisible Spot behind the counter, root anchored, no name / health bar, not a fighter; built-in look (white shirt, dark vest, trousers and shoes, skin head and hands, welded apron, bow tie, round bandana, moustache, default face) or the avatar of `Config.World.Bartender.UserId`; the block figure is gone, the Shop prompt keeps its invisible Torso anchor; maps + config specs | #66 |
 | 2026-10-20 | Bartender phrases (owner's fix list; no animation): speech bubbles over the bartender that only the local player sees (BartenderController: pops in, types out, shrinks away) — a greeting on walking up (once per 90 s), a Won / Lost line after a round you fought in, idle tips and jokes every 15–28 s while near, a Shop line on opening the Shop near the bar and a Thanks line after a Coins purchase there; 34 lines in 6 pools (`Bartender.<Pool>.<n>`), pure Lib/BartenderRules + spec, `Config.World.Bartender.Talk`, `MenuController.openName`, `ShopController.Bought` | #67 |
+| 2026-10-20 | Lobby arm wrestling (owner: "arm wrestling first"): a table in the middle of the Hideout (Furniture.armWrestleTable: wood top with a gold edge and centre line, elbow pads, pin pads, grip pegs, two stools facing each other; ArmWrestleTable / ArmWrestleSeat tags, Side attribute), ArmWrestleService on pure ArmWrestleRules (both seated → 3 s countdown → 15 s pull; each ArmWrestleTap moves the hands 0.05, capped at 10 presses a second; a pin or the side ahead wins; result 3 s, then a rematch while both stay; standing up cancels; table champion + streak), table and character attributes, ArmWrestleController (a board over the table for everyone; a panel for the wrestlers with the Attack key or a touch PUSH button), the seated arm pose (Shared/Animation/ArmWrestle, an AnimationController layer), "Arm wrestle" on the seat prompt, ArmWrestleWins stat (not in private servers or against the bot), dev "Arm wrestle bot", the bartender's 13th idle line; specs | #68 |
 
 ## Decisions and interpretations
 
@@ -820,9 +821,43 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   once; staying near brings an Idle line every `IdleEvery` 15–28 s, never over a line still showing; opening the Shop
   near the bar (`MenuController.openName()` turns "Shop") says a Shop line and a Coins purchase there
   (`ShopController.Bought`) a Thanks line. A line stays 2.5 s + 0.05 s a character, 3–7 s (`ReadTime`). Pools and
-  sizes: Greet 6, Idle 12 (tips: the centre never falls, the crumble eats the edges, barrels, Perfect Dodge, charging,
+  sizes: Greet 6, Idle 13 (the 13th, about the arm-wrestling table, came with it; tips: the centre never falls, the crumble eats the edges, barrels, Perfect Dodge, charging,
   percent; the wheel, daily deals, the jukebox's promo codes; jokes), Shop 4, Thanks 4, Won 4, Lost 4 — strings
   `Bartender.<Pool>.<n>` (a spec checks every pool has exactly its count). No alcohol: the bar serves root beer.
+- **Lobby arm wrestling (owner, 2026-10-20: "arm wrestling first", of the optional "chess and arm-wrestling minigames"):**
+  my picks, all in `Config.World.ArmWrestle` (tunable): no Coins at stake (nothing to farm or gamble), a win counts
+  toward the new lifetime stat `ArmWrestleWins` (not in private servers, not against the bot; no quest or leaderboard
+  uses it yet) and the table's champion streak. **Table** (`Furniture.armWrestleTable`, `maps/layouts/Hideout`
+  `ARM_WRESTLE` = (0, −10), the open middle between the lounge and the pool table, on a small rug under a pendant):
+  dark wood top (surface 3.2 studs up) with a gold edge and centre line, two leather elbow pads, two red pin pads where
+  a beaten hand lands, gold grip pegs for the free hands, two posts on feet out to the sides (the sitters' legs fit
+  under the top), and two stools (seat top 2.0) facing each other along X, each 0.5 studs to its sitter's left so the
+  right hands meet over the middle. The model is tagged `ArmWrestleTable` (its `Top` part carries the board); each
+  stool's Seat is tagged `ArmWrestleSeat` with `Side` 1 (west) / 2 (east) and stays a `LobbySeat`, so `SeatController`
+  shows its prompt — "Arm wrestle" instead of "Sit" — and `SeatService` seats players as usual. **Rules** (pure
+  `Shared/ArmWrestleRules`, spec-tested): Waiting until both seats are taken → Countdown (`CountdownTime` 3 s) → the
+  Pull (`PullTime` 15 s): each `ArmWrestleTap` (the Attack action, or the touch PUSH button) moves `Progress` (−1 … 1)
+  `PushPerTap` = 0.05 toward the presser; presses count through a per-side token bucket (`TapRate` 10 a second, burst
+  `TapBurst` 3), so autoclickers gain nothing over a quick finger; ±1 is a pin and wins at once, otherwise the side
+  ahead when time runs out (dead even = a draw); the Result shows `ResultTime` 3 s, then the next countdown starts
+  while both stay seated. Standing up (jump) during a countdown or a pull cancels it, with no result. The champion is
+  the last winner with their wins in a row at that table, forgotten when they leave the server. **Server**
+  (`ArmWrestleService`): one match per table, the seats' `Occupant` changes and the presses drive it, a 0.1 s tick
+  moves it on; it mirrors the match onto the table model's attributes (`State`, `Progress`, `EndsAt` in
+  `Workspace:GetServerTimeNow()`, `Player1` / `Player2`, `Winner`, `Champion`, `Streak`) and each wrestler's character
+  (`ArmWrestle` = their own view of the progress). **Client** (`ArmWrestleController`): a board over each table for
+  everyone in the lobby (ARM WRESTLING; who is sitting / who is wrestling with the seconds left / who won; a tug bar
+  in side 1's orange `Kit.Colors.Accent` from the left and side 2's teal `Kit.Colors.Rival` from the right; "Table
+  champ: name · n in a row"); for the two wrestlers a bottom panel ("You" against the other in their side colours,
+  the bar from their own side, the countdown, "PUSH! 12s" with the Attack key's box and "Mash to push!", or a big
+  PUSH button on touch, then "You win!" / "You lose!" / "Draw!"). **Pose** (`Shared/Animation/ArmWrestle`, a layer in
+  `AnimationController` while `ArmWrestle` is set): the right upper arm reaches forward and down to the elbow pad, the
+  forearm stands up to the clasp and leans up to 65° toward the winner's left (the hands go down on the loser's
+  side), the waist leans in and twists into the push, the arms tremble while it's close, the left hand rests by its
+  peg. Tuned without Studio, like the other clips: the reach depends on the avatar's size, and Roblox's own sit
+  animation still plays under it. Developer panel → Spawn → "Arm wrestle bot": sit at the table first; a practice bot
+  takes the empty seat (no character) and presses `Dev.ArmWrestleBotTaps` = 6 times a second; it leaves when you stand
+  up. The bartender has a 13th idle line pointing at the table.
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,

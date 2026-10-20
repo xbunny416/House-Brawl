@@ -282,6 +282,7 @@ Bartender.Idle.9,Give the big wheel a spin. The first one's free every day!,Lobb
 Bartender.Idle.10,Daily deals change every day. Don't sleep on them.,Lobby bartender's speech bubble: chatter while you stand near the bar (the Shop's daily deals),
 Bartender.Idle.11,Got a promo code? Try the jukebox. Don't ask me how it works.,Lobby bartender's speech bubble: chatter while you stand near the bar (the jukebox opens the promo code screen),
 Bartender.Idle.12,I used to fight in the arena. Then I took a chair to the knee.,Lobby bartender's speech bubble: chatter while you stand near the bar (a joke),
+Bartender.Idle.13,"Think you've got a strong arm? The arm-wrestling table's free.",Lobby bartender's speech bubble: chatter while you stand near the bar (the arm-wrestling table in the middle of the room),
 Bartender.Shop.1,What'll it be?,Lobby bartender's speech bubble: you opened the Shop near the bar,
 Bartender.Shop.2,Take a look. Everything's fresh off the scrap heap.,Lobby bartender's speech bubble: you opened the Shop near the bar,
 Bartender.Shop.3,Today's deals are cheaper. Don't tell the boss.,Lobby bartender's speech bubble: you opened the Shop near the bar (the daily deals tab),
@@ -298,6 +299,25 @@ Bartender.Lost.1,Tough round. Shake it off and hop back on the pad.,Lobby barten
 Bartender.Lost.2,Everybody eats the floor sometimes.,Lobby bartender's speech bubble: you lost the last round,
 Bartender.Lost.3,"Rough one, huh? A new style might help.",Lobby bartender's speech bubble: you lost the last round (fighting styles from the style roll),
 Bartender.Lost.4,Chin up. The arena's not going anywhere. Well — parts of it are.,Lobby bartender's speech bubble: you lost the last round (a joke about crumbling platforms),
+ArmWrestle.Title,ARM WRESTLING,Board over the lobby's arm-wrestling table: its title,
+ArmWrestle.Empty,Sit down to arm wrestle,Board over the arm-wrestling table: nobody is sitting there,
+ArmWrestle.WaitingFor,{1} is waiting for an opponent,Board over the arm-wrestling table: one player sits there (their name),Alex is waiting for an opponent
+ArmWrestle.Versus,{1} vs {2},Board over the arm-wrestling table: the two wrestlers' names during the countdown,Alex vs Sam
+ArmWrestle.VersusTime,{1} vs {2} · {3}s,"Board over the arm-wrestling table: the two wrestlers' names, seconds left",Alex vs Sam · 12s
+ArmWrestle.Wins,{1} wins!,Board over the arm-wrestling table: who won the match,Alex wins!
+ArmWrestle.Draw,Draw!,Arm wrestling: time ran out with the hands dead even,
+ArmWrestle.Champion,Table champ: {1} · {2} in a row,"Board over the arm-wrestling table: the last winner and their wins in a row (name, count)",Table champ: Alex · 3 in a row
+ArmWrestle.You,You,Arm-wrestling panel: the local player's side,
+ArmWrestle.Mash,Mash to push!,"Arm-wrestling panel: shown after the Attack key's box, press it as fast as you can",
+ArmWrestle.PushButton,PUSH!,Arm-wrestling panel: the big button to tap on touch screens,
+ArmWrestle.Push,PUSH! {1}s,Arm-wrestling panel: the match is on (seconds left),PUSH! 12s
+ArmWrestle.YouWin,You win!,Arm-wrestling panel: the local player won the match,
+ArmWrestle.YouLose,You lose!,Arm-wrestling panel: the local player lost the match,
+ArmWrestle.WaitingYou,Waiting for an opponent… jump to stand up,Arm-wrestling panel: sitting at the table alone,
+ArmWrestle.Bot,Practice bot,Arm wrestling: the developer panel's practice opponent (testing only),
+ArmWrestle.Someone,Someone,Arm wrestling: a wrestler whose name isn't known (they left),
+Prompt.ArmWrestle,Arm wrestle,Walk-up prompt on a seat at the lobby's arm-wrestling table: sit down to arm wrestle (jump to stand up),
+Dev.ArmWrestleBot,Arm wrestle bot,Developer panel button: a practice opponent sits down opposite you at the arm-wrestling table (sit there first),
 Prompt.Locker,Inventory,Walk-up prompt in the lobby locker booth: opens the Inventory,
 Prompt.Locker.Object,Locker booth,Walk-up prompt in the lobby locker booth: what it is,
 Menu.Server,Server,Lobby menu button that opens the private server settings (only the private server's owner sees it),
