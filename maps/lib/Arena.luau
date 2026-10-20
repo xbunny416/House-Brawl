@@ -196,6 +196,32 @@ function Arena.bridgeEnds(a: Platform, b: Platform, along: number?): ({ number }
 	return point(a, b), point(b, a)
 end
 
+--[[
+	Builds `platform`'s halves of the layout's bridges (`layout.Bridges`: { idA, idB, Along = n? }) with `build(name,
+	from, to)` — from its own end to the middle of the bridge, in arena-origin coordinates (call it inside the
+	platform's `decorate`, so each half is part of its platform's model and crumbles with it). Each half's first part
+	gets the `Bridge` attribute "idA-idB" (the maps spec finds them by it).
+]]
+function Arena.bridges(layout: any, platform: Platform, build: (name: string, from: { number }, to: { number }) -> any)
+	local byId: { [string]: Platform } = {}
+	for _, entry in layout.Platforms do
+		byId[entry.Id] = entry
+	end
+	B.within({ -platform.Center[1], -platform.Top, -platform.Center[2] }, function()
+		for _, bridge in layout.Bridges or {} do
+			local a, b = byId[bridge[1]], byId[bridge[2]]
+			if a.Id == platform.Id or b.Id == platform.Id then
+				local fromA, fromB = Arena.bridgeEnds(a, b, bridge.Along)
+				local mine = if a.Id == platform.Id then fromA else fromB
+				local theirs = if a.Id == platform.Id then fromB else fromA
+				local middle = { (mine[1] + theirs[1]) / 2, (mine[2] + theirs[2]) / 2, (mine[3] + theirs[3]) / 2 }
+				local deck = build("Bridge", mine, middle)
+				deck:SetAttribute("Bridge", `{a.Id}-{b.Id}`)
+			end
+		end
+	end)
+end
+
 -- Yaw that points a marker's front (-Z) at the arena centre.
 local function facingCenter(x: number, z: number): { number }
 	return { 0, math.deg(math.atan2(x, z)), 0 }

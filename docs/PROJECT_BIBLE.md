@@ -208,6 +208,18 @@ tap); both also open from the left-edge menu.
   ledges and sides. The central platform never falls; at least 2 platforms always remain. Clear 3 s warning (shake,
   crack VFX, rumble SFX).
 
+**Junkyard Isles arena (rebuilt 2026-10-20 the Broken Highway way):** stacked car and container islands over the dark
+abyss (the toxic sludge is gone; towers of crushed cars rise out of the dark) under a stormy rust sunset (the `Rust`
+lighting preset: heavy grey-violet clouds lit orange). Higher places: on the scrap-heap centre a junk tower (+6, +12,
++17; the junk elevator rides to +12), a car crusher (+8, ramp up) and four junk heaps; East's two-high container stack
+under a container crane with a walkway at +18; West's stepped car pile (+10); North's scaffold beside the old crane
+(+5, +10, +15, the crane cab on top); South's barge wheelhouse (+5, +9.4) and a deck container; tyre towers on the
+ledges and peaks. Moving parts: the magnet crane's magnet swings along the centre's north side and knocks you
+flying; the junk elevator; a junk raft slides along the gap between the centre and the South barge. Gangways (steel,
+yellow railings): short from the centre to East and West, South to its raft, the SW tyre stack to its tower; long
+from East to the NE tyre stack and North to the NW one; the rest are jumps. The crushed car stacks and scrap piles
+are detailed models.
+
 **Every arena** follows the same rules as Broken Highway: four layers — 2 low platforms (4–9 below the centre), the
 base level (one centre platform that never falls, with a raised deck ≤ 6 high and ramps, and 4 side platforms within
 3 studs of it), 4 corner ledges (4–6 above) and 2 peaks (10–12 above) — every outer platform 8–14 studs from its

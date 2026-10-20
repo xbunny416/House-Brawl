@@ -29,7 +29,7 @@ local Maps: MapsConfig = {
 	Movers = { HazardSpeed = 75, HazardUp = 0.45, HazardHitstun = 0.6, HazardCooldown = 1, HazardReach = 1 },
 	List = {
 		BrokenHighway = { Enabled = true, Lighting = "Smog" },
-		JunkyardIsles = { Enabled = true, Lighting = "Dusk" },
+		JunkyardIsles = { Enabled = true, Lighting = "Rust" },
 		NeonMotel = { Enabled = true, Lighting = "Night" },
 	},
 }

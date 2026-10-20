@@ -323,6 +323,7 @@ any errors are fixed before the next item.
 | 2026-10-20 | No floating boards over the minigame tables (owner: "remove floating label on minigame"): the arm-wrestling and chess BillboardGuis are gone with their strings; the arm-wrestling table champion now shows in the wrestlers' panel between matches | #73 |
 | 2026-10-20 | Broken Highway connected, sky roads, dark abyss, smoggy sky (owner: "more layer structure, outer platforms more connected — still able to crumble; change the neon void and the sky"; picked a dark abyss and a sky that matches the arena, "not this clear"): 15 bridges (a ring side ↔ ledge, side ↔ low, ledge ↔ peak, centre ↔ East / West / North) in two halves each owned by its platform (Arena.bridgeEnds, Pieces.span); two sky roads catwalk → ledge → peak at +12–14 on pillars, one piece per platform below (Arena.splitRoad); the abyss (5 sheets of dark mist to black, ruins reaching down into it) replaces the neon sludge; Smog lighting preset with Roblox dynamic clouds (Config.Lighting Clouds, MapService); swing frame posts and end lamps moved for the NE / SW roads; specs: bridge halves on both platforms at a walkable slope, sky road pieces join and are carried by their platforms, cloud ranges; the marker check now tests rotated parts exactly (separating axes) | #74 |
 | 2026-10-20 | Broken Highway: fewer bridges, higher places (owner: "didn't expect many roads to connect — more structure, I mean higher places"; bridges "some short, some long, some gaps, not too boring"): the sky roads and Arena.splitRoad are gone; 6 bridges (short: centre ↔ East / North, West ↔ LowWest, LedgeNE ↔ PeakNE; long: North ↔ LedgeNE, West ↔ LedgeSW), the rest are jumps; new climbable heights: container tower +18, parking roof deck +14, toll control booth ~+17, West overpass pier +12, billboard catwalk +7, a sign deck +7 on every ledge; the bridge spec covers every arena with bridges (a mix of short and long, at most 8) | #75 |
+| 2026-10-20 | Junkyard Isles rebuilt the Broken Highway way (owner: "continue Junkyard Isles and Neon Motel the same way"): detailed CrushedCarStack and ScrapPile (ItemShapes); higher places — junk tower +6 / +12 / +17, car crusher +8, four junk heaps (centre), container stack +6 / +12 under a container crane walkway +18 (East), stepped car pile +10 (West), scaffold +5 / +10 / +15 with the crane cab (North), barge wheelhouse +5 / +9.4 (South), tyre towers; movers: a swinging magnet (hazard) on a new magnet crane, the junk elevator, a raft sliding along the centre–South gap; 6 gangway bridges (Pieces.span "Gangway"; Arena.bridges now builds any layout's bridge halves); the dark abyss with crushed-car spires instead of the sludge; Rust lighting preset (stormy rust sunset, dynamic clouds) | #76 |
 
 ## Decisions and interpretations
 
@@ -992,6 +993,27 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   along the billboard's foot (+7; a crate stack) and a steel sign deck on four posts on every corner ledge (+7 above it;
   a crate). The maps spec's bridge check now runs for every arena that lists bridges: one half on each platform, a
   slope of at most 35°, at least two short and one long bridge, and no more than 8.
+- **Junkyard Isles rebuilt the same way (owner, 2026-10-20: "if done, continue Junkyard Isles and Neon Motel the same
+  way"):** the platforms, gaps and spots stay. **Structures:** `ItemShapes` gains the crushed car stack (three flattened
+  cars, each with a window band, wheels and a bumper, turned against each other, two steel straps) and the scrap pile
+  (a rusty mound of two wedges and a block with pipes, bent sheets, a tyre, a drum and a gear). **Shapes and higher
+  places** (`maps/lib/Pieces` plus a `carBlock` and `scaffoldDeck` in the layout): centre — a junk tower (container +6,
+  a second container across it +12, a crushed-car block +17; a crate to start), a car crusher (+8 with a hydraulic
+  frame, a squashed car and a ramp up), four junk heaps (plus-shaped rusty mounds 3.5–4 up with a wreck on top), and a
+  magnet crane (mast and arm along the north side); East — a container stack (+6 / +12) under a four-legged container
+  crane whose top walkway is +18 (railing), and a side container (+6); West — a stepped pile of crushed cars in four
+  layers (+10); North — a scaffold beside the old crane: decks at +5, +10 and +15, each next to the one below, with the
+  crane cab on the top one; South — a two-storey wheelhouse (+5, then +9.4) with a smokestack and a container on the
+  deck; ledges — two tyre towers on their side corners (the outer corner stays open); peaks — tyre piles; rafts — a
+  tyre stack. **Movers:** `Magnet` (a swing about Z: ±40°, 4.2 s, the disc at head height sweeping 11 studs each way at
+  (−20, 88); Hazard), `Elevator` (a lift beside the junk tower, +11 to the second container, 10 s), `Raft` (a plank
+  raft sliding 90 studs along the 12-stud centre–South gap, about level with both, 16 s). **Bridges:** gangways (the new
+  `Pieces.span` style "Gangway": diamond plate with yellow railings on posts) — short centre ↔ East / West, South ↔
+  LowSouth, LedgeSW ↔ PeakSW; long East ↔ LedgeNE and North ↔ LedgeNW (46 each); `Arena.bridges(layout, platform,
+  build)` now builds any layout's halves (Broken Highway uses it too). **Void and sky:** the same dark abyss as Broken
+  Highway, with five towers of crushed cars rising out of it; the drifting drums lost their green; the new `Rust` preset
+  — a stormy rust sunset (sun just setting at 18:03, grey-violet clouds at cover 0.72 / density 0.78 lit orange, a
+  dusty rust haze).
 - **Social (3.7; parties removed 2026-10-19, see above):** parties lived in one server (`Server/Social/Parties`, pure; `PartyService` owns the state): up to 4,
   only the leader invites (anyone not in a party may, and becomes leader when someone accepts), invites last 30 s, a
   leaving leader passes the lead on, a party of one ends, the leader can remove members. What a party does (owner,

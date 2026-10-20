@@ -1,6 +1,7 @@
 --!strict
 --[[
-	Map 2: Junkyard Isles — stacked car and container islands over toxic sludge (bible §3.1–3.2), at dusk; four times
+	Map 2: Junkyard Isles — stacked car and container islands over a dark abyss (bible §3.1–3.2; the toxic sludge became
+	the abyss, 2026-10-20), under a stormy rust sunset; four times
 	the first size with four layers (owner: 2026-10-17, every platform doubled again 2026-10-20).
 
 	Platforms (studs; X/Z footprint, top height), listed below at the 2026-10-17 size and doubled by Arena.grow:
@@ -16,6 +17,7 @@
 ]]
 local Arena = require("../lib/Arena")
 local B = require("../lib/Builder")
+local Pieces = require("../lib/Pieces")
 
 type Platform = Arena.Platform
 type Contents = Arena.Contents
@@ -23,7 +25,7 @@ type Contents = Arena.Contents
 local Layout = {}
 
 Layout.Id = "JunkyardIsles"
-Layout.Lighting = "Dusk"
+Layout.Lighting = "Rust"
 
 -- One platform entry (keeps the list short).
 local function platform(
@@ -340,6 +342,296 @@ local function tireStack(platform: Platform)
 	end
 end
 
+--[[
+	Bridges (owner, 2026-10-20: "some short, some long, some gaps, not too boring"): steel gangways with yellow railings —
+	short from the centre to East and West, South to its raft and the SW tyre stack to its tower; long from East to the
+	NE tyre stack and North to the NW one. Every other neighbour is a jump. Each is two halves, one on each platform,
+	so a crumbling island takes its half and leaves a stub.
+]]
+Layout.Bridges = {
+	{ "Center", "East", Along = -40 },
+	{ "Center", "West", Along = 40 },
+	{ "South", "LowSouth", Along = 16 },
+	{ "LedgeSW", "PeakSW" },
+	{ "East", "LedgeNE", Along = 124.5 },
+	{ "North", "LedgeNW", Along = 125 },
+}
+Layout.BridgeWidth = 8
+
+-- A crushed car as a solid block: body, a dark window band, wheel discs on both sides; `y` is what it stands on.
+local function carBlock(name: string, at: { number }, size: { number }, y: number, yaw: number, color: string)
+	local c, s = math.cos(math.rad(yaw)), math.sin(math.rad(yaw))
+	local function place(lx: number, ly: number, lz: number): { number }
+		return { at[1] + lx * c + lz * s, y + ly, at[2] - lx * s + lz * c }
+	end
+	B.part({
+		Name = name,
+		Size = size,
+		Position = place(0, size[2] / 2, 0),
+		Rotation = { 0, yaw, 0 },
+		Color = color,
+		Material = "CorrodedMetal",
+		CastShadow = true,
+	})
+	B.part({
+		Name = `{name}Windows`,
+		Size = { size[1] + 0.06, 0.4, size[3] * 0.45 },
+		Position = place(0, size[2] - 0.35, 0.2),
+		Rotation = { 0, yaw, 0 },
+		Color = "Black",
+		Material = "Glass",
+		CanCollide = false,
+	})
+	for _, wheel in { { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 } } do
+		B.part({
+			Name = `{name}Wheel`,
+			Size = { 0.15, 1.2, 1.2 },
+			Position = place(wheel[1] * (size[1] / 2 + 0.05), 0.6, wheel[2] * (size[3] / 2 - 1.2)),
+			Rotation = { 0, yaw, 0 },
+			Shape = "Cylinder",
+			Color = "Black",
+			Material = "SmoothPlastic",
+			CanCollide = false,
+		})
+	end
+end
+
+-- A square steel deck on four posts, its top at `top`.
+local function scaffoldDeck(name: string, at: { number }, size: number, top: number)
+	B.part({
+		Name = name,
+		Size = { size, 0.5, size },
+		Position = { at[1], top - 0.25, at[2] },
+		Color = "MetalDark",
+		Material = "DiamondPlate",
+		CastShadow = true,
+	})
+	for _, dx in { -1, 1 } do
+		for _, dz in { -1, 1 } do
+			Pieces.column(
+				`{name}Post`,
+				{ at[1] + dx * (size / 2 - 0.3), at[2] + dz * (size / 2 - 0.3) },
+				0,
+				top - 0.5,
+				0.5,
+				"LaneYellow",
+				"Metal"
+			)
+		end
+	end
+end
+
+-- A junk heap: a rusty mound (four ramps up to a flat top, `height` up) with a wreck and loose scrap on it.
+local function junkHeap(name: string, at: { number }, size: number, height: number, yaw: number, color: string)
+	local top = size * 0.4
+	Pieces.block(name, at, { top, height, top }, "RustDark", "CorrodedMetal", 0, yaw)
+	local c, s = math.cos(math.rad(yaw)), math.sin(math.rad(yaw))
+	for _, side in { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } } do
+		-- Each ramp runs from the mound's foot up to the top's edge on its side.
+		local lx, lz = side[1], side[2]
+		local foot = { at[1] + (lx * c + lz * s) * size / 2, at[2] + (-lx * s + lz * c) * size / 2 }
+		local edge = { at[1] + (lx * c + lz * s) * top / 2, at[2] + (-lx * s + lz * c) * top / 2 }
+		Pieces.ramp(`{name}Slope`, foot, edge, top, height, "RustDark", "CorrodedMetal")
+	end
+	carBlock(`{name}Wreck`, at, { 3.6, 2, 5.5 }, height, yaw + 25, color)
+	B.part({
+		Name = `{name}Sheet`,
+		Size = { 4, 0.12, 3 },
+		Position = { at[1] + size * 0.22, height * 0.5, at[2] - size * 0.18 },
+		Rotation = { 18, yaw + 40, -12 },
+		Color = "MetalDark",
+		Material = "CorrodedMetal",
+		CanCollide = false,
+	})
+end
+
+--[[
+	The centre (192 × 192 scrap heap): four junk heaps to run up, a junk tower to climb (a container +6, another +12, a crushed-car block +17; a
+	crate to start, the junk elevator beside it), a car crusher (+8, a ramp up), the frame of the magnet crane (its
+	magnet swings: a mover).
+]]
+local function centerFeatures()
+	Pieces.container("TowerContainer", { -62, 30 }, { 16, 6, 8 }, 0, "TealDark")
+	Pieces.container("TowerContainer", { -62, 30 }, { 10, 6, 7 }, 90, "RustOrange", 6)
+	carBlock("TowerCars", { -62, 30 }, { 5, 5, 5 }, 12, 15, "DustyPink")
+	Pieces.crate("TowerStep", { -73.5, 30 }, 3)
+	-- Junk heaps to run up, in the open parts of the yard.
+	junkHeap("JunkHeap", { 40, 40 }, 14, 4, 10, "Teal")
+	junkHeap("JunkHeap", { -30, -70 }, 14, 4, -20, "DustyPink")
+	junkHeap("JunkHeap", { 70, -45 }, 12, 3.5, 35, "RustOrange")
+	junkHeap("JunkHeap", { -20, 70 }, 12, 3.5, 0, "OffWhite")
+	-- The junk elevator's shaft (the pad is a mover): four posts and a top frame.
+	for _, x in { -65.6, -58.4 } do
+		for _, z in { 35.6, 42.4 } do
+			Pieces.column("ElevatorPost", { x, z }, 0, 15, 0.5, "LaneYellow", "Metal")
+		end
+	end
+
+	-- The car crusher: a heavy press block with a car squashed in it, pillars and the raised press plate, a ramp up.
+	Pieces.block("Crusher", { 55, -20 }, { 12, 8, 10 }, "MetalDark", "DiamondPlate")
+	for _, x in { 49.6, 60.4 } do
+		Pieces.column("CrusherPillar", { x, -20 }, 8, 15, 1.2, "LaneYellow", "Metal")
+	end
+	B.part({
+		Name = "CrusherPress",
+		Size = { 12, 1.2, 9 },
+		Position = { 55, 14.4, -20 },
+		Color = "LaneYellow",
+		Material = "Metal",
+		CanCollide = false,
+	})
+	carBlock("CrushedInPress", { 55, -20 }, { 5, 1.4, 8 }, 8, 90, "Teal")
+	for index = 0, 5 do
+		B.part({
+			Name = "CrusherStripe",
+			Size = { 1.2, 0.06, 10.2 },
+			Position = { 49.6 + index * 2.2, 8.03, -20 },
+			Rotation = { 0, 30, 0 },
+			Color = if index % 2 == 0 then "LaneYellow" else "Black",
+			Material = "SmoothPlastic",
+			CanCollide = false,
+		})
+	end
+	Pieces.ramp("CrusherRamp", { 55, -40 }, { 55, -25 }, 8, 8, "RustDark", "CorrodedMetal")
+
+	-- The magnet crane's frame: a mast at the north edge and its arm reaching east (the magnet is a mover).
+	Pieces.column("MagnetCraneMast", { -44, 88 }, 0, 22.5, 1.6, "LaneYellow", "Metal")
+	B.part({
+		Name = "MagnetCraneArm",
+		Size = { 26, 1.2, 1.2 },
+		Position = { -32, 22, 88 },
+		Color = "LaneYellow",
+		Material = "Metal",
+	})
+	B.part({
+		Name = "MagnetCraneCab",
+		Size = { 4, 3, 4 },
+		Position = { -44, 18, 85.5 },
+		Color = "LaneYellow",
+		Material = "Metal",
+		CanCollide = false,
+	})
+end
+
+-- East (the container stack): a two-high stack (+6, +12) under a container crane whose top walkway is +18; another
+-- container to climb on the west side.
+local function eastFeatures()
+	Pieces.container("StackLow", { 30, -14 }, { 22, 6, 8 }, 90, "RustOrange")
+	Pieces.container("StackHigh", { 30, -13 }, { 12, 6, 8 }, 90, "Teal", 6)
+	Pieces.crate("StackStep", { 24, -28 }, 3)
+	-- The container crane: four legs, two beams and a walkway along the top (+18).
+	for _, x in { 22, 38 } do
+		for _, z in { -30, 2 } do
+			Pieces.column("CraneLeg", { x, z }, 0, 18, 1, "LaneYellow", "Metal")
+		end
+	end
+	for _, z in { -30, 2 } do
+		B.part({
+			Name = "CraneBeam",
+			Size = { 17, 1, 1 },
+			Position = { 30, 18.5, z },
+			Color = "LaneYellow",
+			Material = "Metal",
+		})
+	end
+	B.part({
+		Name = "CraneWalk",
+		Size = { 3, 0.5, 32 },
+		Position = { 30, 17.75, -14 },
+		Color = "MetalDark",
+		Material = "DiamondPlate",
+	})
+	Pieces.railing("CraneWalkRail", { 31.4, -29.5 }, { 31.4, 1.5 }, 18)
+	Pieces.container("SideContainer", { -30, 30 }, { 16, 6, 8 }, 90, "TealDark")
+	Pieces.crate("SideStep", { -30, 18 }, 3)
+end
+
+-- West (the car pile): a stepped mountain of crushed cars (four layers, +10 at the top).
+local function westFeatures()
+	local layers = {
+		{ y = 0, cars = { { 21, 0, 0 }, { 31, 0, 0 }, { 26, 8, 90 }, { 21, 9, 0 } } },
+		{ y = 2.5, cars = { { 24, 2, 10 }, { 31, 6, 80 } } },
+		{ y = 5, cars = { { 26.5, 4, -15 } } },
+		{ y = 7.5, cars = { { 27, 4.5, 30 } } },
+	}
+	local colors = { "DustyPink", "Teal", "RustOrange", "OffWhite", "TealDark" }
+	local index = 0
+	for level, layer in layers do
+		for _, car in layer.cars do
+			index += 1
+			local size = if level == 4 then { 3.6, 2.5, 5 } else { 4.4, 2.5, 7 }
+			carBlock(`PileCar{index}`, { car[1], car[2] }, size, layer.y, car[3], colors[index % #colors + 1])
+		end
+	end
+end
+
+-- North (the crane barge): a scaffold tower beside the old crane's mast — decks at +5, +10 and +15, each next to the
+-- one below, and the crane cab on the top one.
+local function northFeatures()
+	scaffoldDeck("ScaffoldDeck", { -32, 22 }, 8, 5)
+	scaffoldDeck("ScaffoldDeck", { -32, 30 }, 8, 10)
+	scaffoldDeck("ScaffoldDeck", { -24, 30 }, 8, 15)
+	B.part({
+		Name = "CraneCab",
+		Size = { 5, 3.6, 5 },
+		Position = { -23, 16.8, 31 },
+		Color = "LaneYellow",
+		Material = "Metal",
+	})
+	B.part({
+		Name = "CraneCabWindow",
+		Size = { 4.2, 1.6, 0.08 },
+		Position = { -23, 17.4, 28.46 },
+		Color = "Glass",
+		Material = "Glass",
+		Transparency = 0.35,
+		CanCollide = false,
+	})
+end
+
+-- South (the barge): a two-storey wheelhouse (+5, then +9.4) with a smokestack, and a container on the deck.
+local function southFeatures()
+	Pieces.block("Wheelhouse", { -40, 20 }, { 12, 5, 10 }, "OffWhite", "SmoothPlastic")
+	Pieces.block("Bridgehouse", { -41, 21 }, { 8, 4, 7 }, "OffWhite", "SmoothPlastic", 5)
+	Pieces.block("BridgeRoof", { -41, 21 }, { 8.6, 0.4, 7.6 }, "RustOrange", "Metal", 9)
+	for _, side in { -1, 1 } do
+		B.part({
+			Name = "BridgeWindows",
+			Size = { 7.2, 1.4, 0.08 },
+			Position = { -41, 7.3, 21 + side * 3.53 },
+			Color = "Glass",
+			Material = "Glass",
+			Transparency = 0.35,
+			CanCollide = false,
+		})
+	end
+	Pieces.railing("WheelhouseRail", { -46, 15.3 }, { -34, 15.3 }, 5)
+	B.part({
+		Name = "Smokestack",
+		Size = { 12, 3, 3 },
+		Position = { -50, 6, 28 },
+		Rotation = { 0, 0, 90 },
+		Shape = "Cylinder",
+		Color = "RustDark",
+		Material = "CorrodedMetal",
+	})
+	Pieces.container("DeckContainer", { 24, -6 }, { 16, 6, 8 }, 0, "Teal")
+	Pieces.crate("DeckStep", { 24, 0.5 }, 2.6)
+end
+
+-- A tyre-stack ledge: two tyre towers on its side corners (the outer corner stays open for the jump to a tower).
+local function ledgeFeatures(sx: number, sz: number)
+	Pieces.tires("LedgeTires", { 12 * sx, -12 * sz }, 3)
+	Pieces.tires("LedgeTires", { -12 * sx, 12 * sz }, 3)
+end
+
+-- A tyre tower (peak): tyre piles on its corners as cover.
+local function peakFeatures()
+	for _, corner in { { 13, -13 }, { -13, 13 } } do
+		Pieces.tires("PeakTires", corner, 2)
+	end
+end
+
 local function decorate(platform: Platform)
 	if platform.Kind ~= "Ledge" and platform.Kind ~= "Peak" then
 		underside(platform, platform.Color)
@@ -358,21 +650,74 @@ local function decorate(platform: Platform)
 	else
 		tireStack(platform)
 	end
+	-- Shapes and higher places on top, and this island's bridge halves (gangways).
+	local sx = if platform.Center[1] > 0 then 1 else -1
+	local sz = if platform.Center[2] > 0 then 1 else -1
+	if platform.Id == "Center" then
+		centerFeatures()
+	elseif platform.Id == "East" then
+		eastFeatures()
+	elseif platform.Id == "West" then
+		westFeatures()
+	elseif platform.Id == "North" then
+		northFeatures()
+	elseif platform.Id == "South" then
+		southFeatures()
+	elseif platform.Kind == "Ledge" then
+		ledgeFeatures(sx, sz)
+	elseif platform.Kind == "Peak" then
+		peakFeatures()
+	elseif platform.Kind == "Low" then
+		Pieces.tires("RaftTires", { 18 * sx, 0 }, 2)
+	end
+	Arena.bridges(Layout, platform, function(name: string, from: { number }, to: { number }): any
+		return Pieces.span(name, from, to, Layout.BridgeWidth, "MetalDark", "DiamondPlate", "Gangway")
+	end)
 end
 
 local function scenery(killY: number)
-	-- Toxic sludge far below, with junk mounds poking out of it (laid out for the first arena, a quarter of today's:
+	-- The abyss (owner, 2026-10-20: a dark abyss instead of the green neon), as on Broken Highway: sheets of dark mist,
+	-- each more solid and darker, fading to black far below; towers of crushed cars rise out of it all round.
+	for index, layer in
+		{
+			{ 12, 0.82, "#2A2630" },
+			{ 40, 0.7, "#1E1B24" },
+			{ 80, 0.55, "#141218" },
+			{ 130, 0.35, "#0C0B0F" },
+			{ 200, 0, "#050507" },
+		}
+	do
+		B.part({
+			Name = `AbyssMist{index}`,
+			Size = { 2800, 1, 2800 },
+			Position = { 0, killY - layer[1], 0 },
+			Color = layer[3],
+			Material = "SmoothPlastic",
+			Transparency = layer[2],
+			CanCollide = false,
+			CastShadow = false,
+		})
+	end
+	local spireColors = { "RustDark", "TealDark", "PinkDark", "MetalDark" }
+	for index, spire in
+		{ { -330, 140, -20 }, { 340, -110, -26 }, { -150, 300, -16 }, { 160, -300, -22 }, { 360, 200, -30 } }
+	do
+		local x, z, top = spire[1], spire[2], spire[3]
+		local bottom = killY - 200
+		for level = 0, math.floor((top - bottom) / 9) do
+			B.part({
+				Name = `JunkSpire{index}`,
+				Size = { 18 - (level % 3) * 2, 9, 12 + (level % 2) * 3 },
+				Position = { x + (level % 2) * 1.5, bottom + level * 9 + 4.5, z - (level % 3) },
+				Rotation = { 0, level * 23 + index * 11, 0 },
+				Color = spireColors[(level + index) % #spireColors + 1],
+				Material = "CorrodedMetal",
+				CanCollide = false,
+			})
+		end
+	end
+	-- Junk mounds, drifting drums and a car floating in the haze (laid out for the first arena, a quarter of today's:
 	-- B.spread).
-	B.part({
-		Name = "Sludge",
-		Size = { 2800, 1, 2800 },
-		Position = { 0, killY - 30, 0 },
-		Color = "ToxicGreen",
-		Material = "Neon",
-		Transparency = 0.35,
-		CanCollide = false,
-		CastShadow = false,
-	})
 	B.spread(2 * GROWTH, function()
 		for index, mound in
 			{
@@ -402,7 +747,7 @@ local function scenery(killY: number)
 				Position = { drum[1], drum[2], drum[3] },
 				Rotation = { index * 20, 0, 70 },
 				Shape = "Cylinder",
-				Color = if index % 2 == 0 then "ToxicGreen" else "RustOrange",
+				Color = if index % 2 == 0 then "Teal" else "RustOrange",
 				Material = "CorrodedMetal",
 				CanCollide = false,
 			})
@@ -419,9 +764,94 @@ local function scenery(killY: number)
 	end)
 end
 
+--[[
+	The moving parts (Shared/MoverRules; positions from the arena origin = the centre's top):
+	  * Magnet: the magnet crane's magnet swinging on its cable along the centre's north side; it knocks you flying.
+	  * Elevator: the junk elevator beside the junk tower, from the floor up to the tower's second container (+12).
+	  * Raft: a junk raft sliding along the gap between the centre and the South barge, about level with both.
+]]
+local function movers()
+	local vector = B.roblox.Vector3.new
+	Arena.mover("Magnet", { -20, 21.3, 88 }, { Kind = "Swing", Period = 4.2, Angle = 40, Axis = "Z" }, function()
+		B.part({
+			Name = "MagnetCable",
+			Size = { 0.25, 15.5, 0.25 },
+			Position = { -20, 13.55, 88 },
+			Color = "Black",
+			Material = "Metal",
+			CanCollide = false,
+		})
+		local magnet = B.part({
+			Name = "MagnetDisc",
+			Size = { 1.2, 5, 5 },
+			Position = { -20, 3.8, 88 },
+			Rotation = { 0, 0, 90 },
+			Shape = "Cylinder",
+			Color = "MetalDark",
+			Material = "Metal",
+			CanCollide = false,
+		})
+		magnet:AddTag("Hazard")
+		B.part({
+			Name = "MagnetRim",
+			Size = { 0.4, 5.4, 5.4 },
+			Position = { -20, 4.5, 88 },
+			Rotation = { 0, 0, 90 },
+			Shape = "Cylinder",
+			Color = "LaneYellow",
+			Material = "Metal",
+			CanCollide = false,
+		})
+	end)
+	Arena.mover(
+		"Elevator",
+		{ -62, 0.5, 39 },
+		{ Kind = "Lift", Period = 10, Pause = 2.5, Offset = vector(0, 11, 0) },
+		function()
+			B.part({
+				Name = "ElevatorPad",
+				Size = { 6, 1, 6 },
+				Position = { -62, 0.5, 39 },
+				Color = "MetalDark",
+				Material = "DiamondPlate",
+				CastShadow = true,
+			})
+			Pieces.railing("ElevatorRail", { -64.6, 36.4 }, { -64.6, 41.6 }, 1, 1.2, "LaneYellow")
+			Pieces.railing("ElevatorRail", { -59.4, 36.4 }, { -59.4, 41.6 }, 1, 1.2, "LaneYellow")
+		end
+	)
+	Arena.mover(
+		"Raft",
+		{ -30, -1, -102 },
+		{ Kind = "Slide", Period = 16, Pause = 2.5, Offset = vector(90, 0, 0), Phase = 5 },
+		function()
+			B.part({
+				Name = "RaftDeck",
+				Size = { 10, 1, 11.6 },
+				Position = { -30, -1, -102 },
+				Color = "Wood",
+				Material = "WoodPlanks",
+				CastShadow = true,
+			})
+			for index, drum in { { -33.5, -97.5 }, { -26.5, -106.5 } } do
+				B.part({
+					Name = `RaftDrum{index}`,
+					Size = { 2.2, 1.6, 1.6 },
+					Position = { drum[1], -0.5, drum[2] },
+					Rotation = { 0, 90, 90 },
+					Shape = "Cylinder",
+					Color = if index == 1 then "RustOrange" else "Teal",
+					Material = "CorrodedMetal",
+					CanCollide = false,
+				})
+			end
+		end
+	)
+end
+
 -- Builds the arena model at `origin` (world position of the centre platform's top centre).
 function Layout.build(origin: { number }): any
-	return Arena.build(Layout :: any, origin, decorate, scenery)
+	return Arena.build(Layout :: any, origin, decorate, scenery, movers)
 end
 
 return Layout

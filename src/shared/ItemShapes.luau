@@ -364,6 +364,73 @@ ItemShapes.Structures = {
 		end
 		return shapes
 	end)(),
+	-- Junkyard Isles: three crushed cars stacked and strapped, each with its window band, flattened wheels and a
+	-- bumper, turned a little against each other.
+	CrushedCarStack = (function(): { Shape }
+		local shapes: { Shape } = {}
+		local cars = {
+			{ size = { 4.8, 1.5, 7.8 }, y = -1.75, turn = 0, color = "#B87A82" },
+			{ size = { 4.6, 1.45, 7.5 }, y = -0.27, turn = 6, color = "#2F8C8C" },
+			{ size = { 4.3, 1.5, 7.1 }, y = 1.24, turn = -8, color = "#C8642D" },
+		}
+		for _, car in cars do
+			local turn = { 0, car.turn, 0 }
+			local sx, sy, sz = car.size[1], car.size[2], car.size[3]
+			table.insert(
+				shapes,
+				block(car.size, { 0, car.y, 0 }, { Turn = turn, Color = car.color, Material = "CorrodedMetal" })
+			)
+			table.insert(
+				shapes,
+				block(
+					{ sx + 0.06, 0.35, sz * 0.45 },
+					{ 0, car.y + sy / 2 - 0.3, 0.2 },
+					{ Turn = turn, Color = DARK, Material = "Glass" }
+				)
+			)
+			table.insert(
+				shapes,
+				block(
+					{ sx - 0.2, 0.25, 0.12 },
+					{ 0, car.y - 0.3, -sz / 2 - 0.02 },
+					{ Turn = turn, Color = CHROME, Material = "Metal" }
+				)
+			)
+			local c, s = math.cos(math.rad(car.turn)), math.sin(math.rad(car.turn))
+			for _, wheel in { { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 } } do
+				local lx, lz = wheel[1] * (sx / 2 + 0.03), wheel[2] * (sz / 2 - 1.3)
+				table.insert(
+					shapes,
+					lying(1, 0.12, { lx * c + lz * s, car.y - 0.2, -lx * s + lz * c }, { Turn = turn, Color = RUBBER })
+				)
+			end
+		end
+		-- Steel straps round the stack.
+		for _, z in { -2.2, 2.2 } do
+			for _, x in { -2.53, 2.53 } do
+				table.insert(shapes, block({ 0.08, 4.9, 0.3 }, { x, 0, z }, { Color = STEEL, Material = "Metal" }))
+			end
+			table.insert(shapes, block({ 5, 0.08, 0.3 }, { 0, 2.47, z }, { Color = STEEL, Material = "Metal" }))
+		end
+		return shapes
+	end)(),
+	-- Junkyard Isles: a heap of scrap — a rusty mound with pipes, bent sheet metal, a tyre, a drum and a gear on it.
+	ScrapPile = {
+		block({ 6, 1.6, 3 }, { 0, -0.7, -1.5 }, { Shape = "Wedge" } :: any),
+		block({ 6, 1.6, 3 }, { 0, -0.7, 1.5 }, { Shape = "Wedge", Turn = { 0, 180, 0 } } :: any),
+		block({ 3.2, 1, 3 }, { 0, 0.3, 0 }, { Tint = 0.8 }),
+		lying(0.5, 4.2, { -0.6, 0.65, 0.6 }, { Turn = { 0, 30, 8 }, Color = STEEL, Material = "CorrodedMetal" }),
+		lying(0.4, 3.6, { 0.9, 0.35, -1 }, { Turn = { 0, -50, 0 }, Color = "#8A5A32", Material = "CorrodedMetal" }),
+		block({ 2.8, 0.1, 1.8 }, { 0.8, 0.95, 0.2 }, { Turn = { 15, 20, -10 }, Color = "#55595E", Material = "Metal" }),
+		block(
+			{ 2.2, 0.1, 1.6 },
+			{ -1.2, 0.55, -1.2 },
+			{ Turn = { -12, -35, 8 }, Color = "#8C4A2A", Material = "CorrodedMetal" }
+		),
+		upright(1.8, 0.55, { 1.5, 0.75, 1.5 }, { Turn = { 25, 0, 0 }, Color = RUBBER }),
+		lying(1.1, 1.8, { -1.7, -0.75, 1.9 }, { Color = "#2F8C8C", Material = "CorrodedMetal" }),
+		upright(1.1, 0.25, { 0.2, 1.05, -0.4 }, { Color = "#55595E", Material = "Metal" }),
+	},
 }
 
 -- Where a shape sits relative to its item's centre (its CFrame there; Size is the part's own size).
