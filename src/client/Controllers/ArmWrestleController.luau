@@ -184,15 +184,20 @@ local function refreshBoard(model: Model, board: Board)
 		else ""
 end
 
+-- A table left this client (destroyed, or the lobby streamed out while in a round): drop its board.
+local function removeTable(instance: Instance)
+	local board = boards[instance :: Model]
+	if board then
+		board.Gui:Destroy()
+		boards[instance :: Model] = nil
+	end
+end
+
 local function addTable(instance: Instance)
 	if instance:IsA("Model") and boards[instance] == nil then
 		boards[instance] = buildBoard()
 		instance.Destroying:Connect(function()
-			local board = boards[instance]
-			if board then
-				board.Gui:Destroy()
-				boards[instance] = nil
-			end
+			removeTable(instance)
 		end)
 	end
 end
@@ -297,7 +302,7 @@ local function refreshPanel()
 	hintRow.Visible = pulling and not touch
 	pushButton.Visible = pulling and touch
 	if state == "Countdown" then
-		bigLabel.Text = tostring(secondsLeft(model))
+		bigLabel.Text = tostring(math.max(1, secondsLeft(model))) -- 3, 2, 1 (never 0 before the pull starts)
 		bigLabel.TextColor3 = Kit.Colors.Text
 	elseif pulling then
 		bigLabel.Text = Localization.format("ArmWrestle.Push", { secondsLeft(model) })
@@ -323,6 +328,7 @@ function ArmWrestleController.Start(_self: any)
 		addTable(model)
 	end
 	CollectionService:GetInstanceAddedSignal(TABLE_TAG):Connect(addTable)
+	CollectionService:GetInstanceRemovedSignal(TABLE_TAG):Connect(removeTable)
 
 	InputController.ActionBegan:Connect(function(action: string)
 		if action == "Attack" then

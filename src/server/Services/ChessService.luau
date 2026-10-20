@@ -38,7 +38,7 @@ type Table = {
 	Model: Model,
 	Seats: { [number]: Seat },
 	Match: ChessMatch.Match,
-	BotTurn: number, -- the move count when the bot's current turn began (to time its reply)
+	BotTurn: number, -- when the turn the bot is replying to began (TurnStartedAt: new for every move and game)
 	BotAt: number, -- when the bot moves
 }
 
@@ -199,8 +199,8 @@ local function botMove(entry: Table, t: number)
 	if match.State ~= "Playing" or match.Players[side] ~= BOT then
 		return
 	end
-	if entry.BotTurn ~= #match.History then
-		entry.BotTurn = #match.History
+	if entry.BotTurn ~= match.TurnStartedAt then
+		entry.BotTurn = match.TurnStartedAt
 		entry.BotAt = t + Config.Dev.ChessBotDelay
 		return
 	end
