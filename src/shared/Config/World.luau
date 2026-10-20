@@ -13,5 +13,19 @@ return {
 	News = { Interval = 8, TickerSpeed = 40, Headlines = 12 },
 	-- The bartender (NpcService): a Roblox user id whose avatar the bartender wears, or 0 for the built-in bartender
 	-- outfit (white shirt, dark vest, apron, bow tie, bandana, moustache).
-	Bartender = { UserId = 0 },
+	-- Talk: speech bubbles over the bartender that only the local player sees (BartenderController, Lib/BartenderRules):
+	-- walking within Distance studs greets (once per GreetCooldown seconds; after a round you fought in, a Won / Lost line
+	-- instead), opening the Shop near the bar and buying there get their own lines, and staying near brings an idle
+	-- line every IdleEvery Min–Max seconds (random). A bubble stays ReadTime.Base + PerCharacter × its length seconds,
+	-- within Min–Max. Lines[pool] = how many "Bartender.<pool>.<n>" strings each pool has.
+	Bartender = {
+		UserId = 0,
+		Talk = {
+			Distance = 20,
+			GreetCooldown = 90,
+			IdleEvery = { Min = 15, Max = 28 },
+			ReadTime = { Base = 2.5, PerCharacter = 0.05, Min = 3, Max = 7 },
+			Lines = { Greet = 6, Idle = 12, Shop = 4, Thanks = 4, Won = 4, Lost = 4 },
+		},
+	},
 }

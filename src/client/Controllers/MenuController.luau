@@ -68,6 +68,12 @@ function MenuController.isOpen(): boolean
 	return openScreen() ~= nil
 end
 
+-- The name of the open menu screen's ScreenGui (e.g. "Shop"), or nil.
+function MenuController.openName(): string?
+	local screen = openScreen()
+	return if screen then screen.Gui.Name else nil
+end
+
 -- Closes the open menu screen (if any).
 function MenuController.close()
 	for _, screen in screens do
