@@ -4,7 +4,8 @@ A retro, slightly-apocalyptic Roblox free-for-all platform fighter: punch, shove
 crumbling floating platforms. Two modes — **Classic** (HP + stocks) and **Casual** (knockback % only).
 
 - Design spec: [docs/PROJECT_BIBLE.md](docs/PROJECT_BIBLE.md)
-- Progress log, build order, setup and conventions: [CLAUDE.md](CLAUDE.md)
+- Setup, conventions and status: [CLAUDE.md](CLAUDE.md); progress log and build order:
+  [docs/PROGRESS.md](docs/PROGRESS.md)
 
 ## Quick start
 
