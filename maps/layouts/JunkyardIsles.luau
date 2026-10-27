@@ -4,6 +4,9 @@
 	the abyss, 2026-10-20), under a stormy rust sunset; four times
 	the first size with four layers (owner: 2026-10-17, every platform doubled again 2026-10-20).
 
+	No CorrodedMetal (owner, 2026-10-27: "i really dont like that rusty texture"): the rust is in the colours only;
+	what was corroded is plain Metal.
+
 	Platforms (studs; X/Z footprint, top height), listed below at the 2026-10-17 size and doubled by Arena.grow:
 	  Center 192x192 scrap heap (never falls) with a raised 56x40 scrap deck (+6, a ramp on each end) ·
 	  East 80x112 container stack (+3) · West 88x88 car pile · North 96x80 crane barge (−2) · South 112x72 barge
@@ -50,7 +53,7 @@ local function platform(
 	}
 end
 
-local center = platform("Center", "Center", { 0, 0 }, { 96, 96 }, 0, 4, "RustDark", "CorrodedMetal")
+local center = platform("Center", "Center", { 0, 0 }, { 96, 96 }, 0, 4, "RustDark", "Metal")
 center.Deck = { Size = { 28, 20 }, Height = 6, Ramp = 12, RampWidth = 12 }
 
 -- Laid out at the 2026-10-17 size; Arena.grow doubles every platform again (owner, 2026-10-20), keeping the gaps.
@@ -58,8 +61,8 @@ local GROWTH = 2
 
 Layout.Platforms = Arena.grow({
 	center,
-	platform("East", "Side", { 79, 0 }, { 40, 56 }, 3, 6, "Teal", "CorrodedMetal"),
-	platform("West", "Side", { -81, 8 }, { 44, 44 }, 0, 4, "RustOrange", "CorrodedMetal"),
+	platform("East", "Side", { 79, 0 }, { 40, 56 }, 3, 6, "Teal", "Metal"),
+	platform("West", "Side", { -81, 8 }, { 44, 44 }, 0, 4, "RustOrange", "Metal"),
 	platform("North", "Side", { -4, 80 }, { 48, 40 }, -2, 3, "MetalDark", "DiamondPlate"),
 	platform("South", "Side", { 8, -78 }, { 56, 36 }, -1, 3, "TealDark", "Metal"),
 	platform("LedgeNE", "Ledge", { 64, 64 }, { 20, 20 }, 6, 3, "Black", "SmoothPlastic"),
@@ -147,7 +150,7 @@ local function underside(platform: Platform, color: string)
 		Position = { 0, -platform.Thickness - 2.6, 0 },
 		Rotation = { 3, 12, -4 },
 		Color = color,
-		Material = "CorrodedMetal",
+		Material = "Metal",
 		CanCollide = false,
 	})
 	B.part({
@@ -156,13 +159,13 @@ local function underside(platform: Platform, color: string)
 		Position = { 1, -platform.Thickness - 9, -1 },
 		Rotation = { -5, 40, 6 },
 		Color = "RustDark",
-		Material = "CorrodedMetal",
+		Material = "Metal",
 		CanCollide = false,
 	})
 end
 
 local function centerDecor()
-	-- Rusty floor plates.
+	-- Rust-coloured floor plates.
 	for index, plate in { { -2, 4, 14, 10, 8 }, { 14, -10, 9, 7, -12 }, { -16, -12, 8, 9, 20 } } do
 		B.part({
 			Name = `FloorPlate{index}`,
@@ -180,7 +183,7 @@ local function centerDecor()
 		Size = { 10, 1.4, 4 },
 		Position = { 0, 0.7, 21 },
 		Color = "DustyPink",
-		Material = "CorrodedMetal",
+		Material = "Metal",
 	})
 	for index, tire in { { -21.5, -8 }, { -21.5, -5.5 } } do
 		B.part({
@@ -203,7 +206,7 @@ local function containerDecor(platform: Platform)
 		Size = { halfX, 0.1, platform.Size[2] },
 		Position = { halfX / 2, 0.05, 0 },
 		Color = "RustOrange",
-		Material = "CorrodedMetal",
+		Material = "Metal",
 		CanCollide = false,
 	})
 	B.part({
@@ -221,7 +224,7 @@ local function containerDecor(platform: Platform)
 			Size = { platform.Size[1] - 1, platform.Thickness - 1, 0.3 },
 			Position = { 0, -platform.Thickness / 2, side * (halfZ + 0.15) },
 			Color = "MetalDark",
-			Material = "CorrodedMetal",
+			Material = "Metal",
 			CanCollide = false,
 		})
 	end
@@ -245,7 +248,7 @@ local function carPileDecor()
 			Position = { cube[1], 0.75, cube[2] },
 			Rotation = { 0, index * 27, 0 },
 			Color = cube[3],
-			Material = "CorrodedMetal",
+			Material = "Metal",
 		})
 	end
 end
@@ -322,7 +325,7 @@ local function bargeDecor(platform: Platform)
 		Size = { platform.Size[1] - 2, 4, platform.Size[2] - 2 },
 		Position = { 0, -platform.Thickness - 2, 0 },
 		Color = "RustOrange",
-		Material = "CorrodedMetal",
+		Material = "Metal",
 		CanCollide = false,
 	})
 end
@@ -370,7 +373,7 @@ local function carBlock(name: string, at: { number }, size: { number }, y: numbe
 		Position = place(0, size[2] / 2, 0),
 		Rotation = { 0, yaw, 0 },
 		Color = color,
-		Material = "CorrodedMetal",
+		Material = "Metal",
 		CastShadow = true,
 	})
 	B.part({
@@ -421,17 +424,17 @@ local function scaffoldDeck(name: string, at: { number }, size: number, top: num
 	end
 end
 
--- A junk heap: a rusty mound (four ramps up to a flat top, `height` up) with a wreck and loose scrap on it.
+-- A junk heap: a rust-coloured mound (four ramps up to a flat top, `height` up) with a wreck and loose scrap on it.
 local function junkHeap(name: string, at: { number }, size: number, height: number, yaw: number, color: string)
 	local top = size * 0.4
-	Pieces.block(name, at, { top, height, top }, "RustDark", "CorrodedMetal", 0, yaw)
+	Pieces.block(name, at, { top, height, top }, "RustDark", "Metal", 0, yaw)
 	local c, s = math.cos(math.rad(yaw)), math.sin(math.rad(yaw))
 	for _, side in { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } } do
 		-- Each ramp runs from the mound's foot up to the top's edge on its side.
 		local lx, lz = side[1], side[2]
 		local foot = { at[1] + (lx * c + lz * s) * size / 2, at[2] + (-lx * s + lz * c) * size / 2 }
 		local edge = { at[1] + (lx * c + lz * s) * top / 2, at[2] + (-lx * s + lz * c) * top / 2 }
-		Pieces.ramp(`{name}Slope`, foot, edge, top, height, "RustDark", "CorrodedMetal")
+		Pieces.ramp(`{name}Slope`, foot, edge, top, height, "RustDark", "Metal")
 	end
 	carBlock(`{name}Wreck`, at, { 3.6, 2, 5.5 }, height, yaw + 25, color)
 	B.part({
@@ -440,7 +443,7 @@ local function junkHeap(name: string, at: { number }, size: number, height: numb
 		Position = { at[1] + size * 0.22, height * 0.5, at[2] - size * 0.18 },
 		Rotation = { 18, yaw + 40, -12 },
 		Color = "MetalDark",
-		Material = "CorrodedMetal",
+		Material = "Metal",
 		CanCollide = false,
 	})
 end
@@ -492,7 +495,7 @@ local function centerFeatures()
 			CanCollide = false,
 		})
 	end
-	Pieces.ramp("CrusherRamp", { 55, -40 }, { 55, -25 }, 8, 8, "RustDark", "CorrodedMetal")
+	Pieces.ramp("CrusherRamp", { 55, -40 }, { 55, -25 }, 8, 8, "RustDark", "Metal")
 
 	-- The magnet crane's frame: a mast at the north edge and its arm reaching east (the magnet is a mover).
 	Pieces.column("MagnetCraneMast", { -44, 88 }, 0, 22.5, 1.6, "LaneYellow", "Metal")
@@ -613,7 +616,7 @@ local function southFeatures()
 		Rotation = { 0, 0, 90 },
 		Shape = "Cylinder",
 		Color = "RustDark",
-		Material = "CorrodedMetal",
+		Material = "Metal",
 	})
 	Pieces.container("DeckContainer", { 24, -6 }, { 16, 6, 8 }, 0, "Teal")
 	Pieces.crate("DeckStep", { 24, 0.5 }, 2.6)
@@ -711,7 +714,7 @@ local function scenery(killY: number)
 				Position = { x + (level % 2) * 1.5, bottom + level * 9 + 4.5, z - (level % 3) },
 				Rotation = { 0, level * 23 + index * 11, 0 },
 				Color = spireColors[(level + index) % #spireColors + 1],
-				Material = "CorrodedMetal",
+				Material = "Metal",
 				CanCollide = false,
 			})
 		end
@@ -735,7 +738,7 @@ local function scenery(killY: number)
 				Rotation = { 0, index * 41, 0 },
 				Shape = "Wedge",
 				Color = if index % 2 == 0 then "RustDark" else "MetalDark",
-				Material = "CorrodedMetal",
+				Material = "Metal",
 				CanCollide = false,
 			})
 		end
@@ -748,7 +751,7 @@ local function scenery(killY: number)
 				Rotation = { index * 20, 0, 70 },
 				Shape = "Cylinder",
 				Color = if index % 2 == 0 then "Teal" else "RustOrange",
-				Material = "CorrodedMetal",
+				Material = "Metal",
 				CanCollide = false,
 			})
 		end
@@ -758,7 +761,7 @@ local function scenery(killY: number)
 			Position = { 90, -18, 55 },
 			Rotation = { 12, 30, -18 },
 			Color = "DustyPink",
-			Material = "CorrodedMetal",
+			Material = "Metal",
 			CanCollide = false,
 		})
 	end)
@@ -841,7 +844,7 @@ local function movers()
 					Rotation = { 0, 90, 90 },
 					Shape = "Cylinder",
 					Color = if index == 1 then "RustOrange" else "Teal",
-					Material = "CorrodedMetal",
+					Material = "Metal",
 					CanCollide = false,
 				})
 			end

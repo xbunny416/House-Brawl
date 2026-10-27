@@ -351,7 +351,7 @@ function Pieces.container(name: string, at: Vec, size: Vec, yaw: number, color: 
 		Position = place(0, size[2] / 2, 0),
 		Rotation = turn,
 		Color = color,
-		Material = "CorrodedMetal",
+		Material = "Metal",
 		CastShadow = true,
 	})
 	-- Ribs along both long sides.
@@ -365,7 +365,7 @@ function Pieces.container(name: string, at: Vec, size: Vec, yaw: number, color: 
 				Position = place(lx, size[2] / 2, side * (size[3] / 2 + 0.06)),
 				Rotation = turn,
 				Color = color,
-				Material = "CorrodedMetal",
+				Material = "Metal",
 				CanCollide = false,
 			})
 		end

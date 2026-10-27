@@ -411,7 +411,7 @@ local function onExplosion(position: Vector3, data: { [string]: any })
 		180
 	)
 	if not lowGraphics() then
-		chunks(position, explosion.Debris, hex("#3A3632"), Enum.Material.CorrodedMetal, 0.8, 2)
+		chunks(position, explosion.Debris, hex("#3A3632"), Enum.Material.Metal, 0.8, 2)
 	end
 end
 
