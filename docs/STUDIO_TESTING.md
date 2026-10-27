@@ -103,3 +103,7 @@ Settings → Promo code, styles come from the style roll).
 - **Audio ids are all 0 (silent).** To hear music and sounds: Studio → Toolbox → Audio (free Creator Store audio), right-click a
   sound → Copy Asset ID, paste it into the matching slot in `src/shared/Config/Audio.luau` (or send the ids to Claude).
   Bible: lobby retro synthwave, a gritty chiptune-rock track per arena, a tension layer, a victory sting.
+- **Less-luxury lobby (2026-10-27):** after `rojo serve` picks up the new `Hideout.rbxmx`, look at the lounge, the bar
+  and the booths: iron instead of gold, wood instead of marble, a concrete floor. The concrete is darker than the old
+  light carpet, so check the room isn't too dim (raise a pendant's range or brightness in `maps/layouts/Hideout`, or
+  the Dusk preset's `Ambient` in `Config.Lighting`, if it is).

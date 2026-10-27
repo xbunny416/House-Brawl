@@ -2,19 +2,20 @@
 --[[
 	Lobby: "The Hideout" — an enclosed hideout bar (owner's choices: a closed space instead of the open Rust Diner
 	rooftop, 2026-10-16; 25% bigger and in the style of the reference pictures in docs/reference — wood, gold trim,
-	warm lamps, a red sofa corner — with detailed furniture instead of plain blocks, 2026-10-19).
+	warm lamps, a red sofa corner — with detailed furniture instead of plain blocks, 2026-10-19; a bit less luxury,
+	2026-10-27: worn iron, old brass and wood instead of gold and marble, a concrete floor instead of the light carpet).
 
-	Walls: grey-green plaster over dark wood wainscoting (framed panels, a gold rail), dark wood pillars with gold bands
-	and wall lamps, wood beams with gold strips under a dark ceiling. Floor: a light carpet, wood planks in the bar.
-	North: the bar — marble-topped counter (Shop) with the bartender (Shop NPC), stools, a mirrored back bar with
-	shelves of bottles, map vote TVs hanging over the bar, news TVs on the counter ends, the title sign. Booths with
-	tufted benches in both north corners.
+	Walls: grey-green plaster over dark wood wainscoting (framed panels, a wood rail), dark wood pillars with iron bands
+	and wall lamps, wood beams under a dark ceiling. Floor: concrete, wood planks in the bar.
+	North: the bar — wood-topped counter (Shop) with the bartender (Shop NPC), stools, a back bar with a wood-framed
+	mirror and shelves of bottles, map vote TVs hanging over the bar, news TVs on the counter ends, the title sign.
+	Booths with channel-stitched benches in both north corners.
 	East: the steel ARENA door with the join pad in front of it (QueueZone: only players standing on it are taken into
 	the next round), barrels, a dartboard.
 	West: Locker booth (Inventory), Codes jukebox, the cork quest board.
 	South: three tall leaderboard boards, the spawn pads, the street door.
-	Middle: the lounge — a rug with a gold ring, a round black marble table, a red tufted sofa and two armchairs, floor
-	lamps, topiaries — a pool table and high tables with stools. Furniture comes from maps/lib/Furniture.
+	Middle: the lounge — a worn rug with a rust ring, a round wood table, a red sofa and two armchairs, floor lamps,
+	potted shrubs in old buckets — a pool table and high tables with stools. Furniture comes from maps/lib/Furniture.
 	Seats (sofas, armchairs, booth benches, stools) are LobbySeat-tagged Seats: walk up and press the Sit prompt.
 	Interactive objects carry CollectionService tags so code can attach prompts and UI.
 ]]
@@ -54,11 +55,11 @@ local function shell()
 		Material = "Concrete",
 	})
 	B.part({
-		Name = "Carpet",
+		Name = "ConcreteFloor", -- a light carpet until 2026-10-27 (owner: "a bit less luxury")
 		Size = { INNER[1], 0.1, INNER[2] - BAR_DEPTH },
 		Position = { 0, 0.05, -BAR_DEPTH / 2 },
-		Color = "Carpet",
-		Material = "Carpet",
+		Color = "Concrete",
+		Material = "Concrete",
 		CanCollide = false,
 		CastShadow = false,
 	})
@@ -75,7 +76,7 @@ local function shell()
 		Name = "FloorEdge",
 		Size = { INNER[1], 0.12, 0.4 },
 		Position = { 0, 0.06, HALF_Z - BAR_DEPTH },
-		Color = "Gold",
+		Color = "Iron",
 		Material = "Metal",
 		CanCollide = false,
 		CastShadow = false,
@@ -103,24 +104,6 @@ local function shell()
 	F.wainscot(0, -HALF_Z, "North", INNER[1], WAINSCOT)
 	F.wainscot(HALF_X, 0, "West", INNER[2], WAINSCOT)
 	F.wainscot(-HALF_X, 0, "East", INNER[2], WAINSCOT)
-	-- Crown molding where the walls meet the ceiling.
-	for _, crown in
-		{
-			{ size = { INNER[1], 0.8, 0.8 }, pos = { 0, HALF_Z - 0.4 } },
-			{ size = { INNER[1], 0.8, 0.8 }, pos = { 0, -HALF_Z + 0.4 } },
-			{ size = { 0.8, 0.8, INNER[2] }, pos = { HALF_X - 0.4, 0 } },
-			{ size = { 0.8, 0.8, INNER[2] }, pos = { -HALF_X + 0.4, 0 } },
-		}
-	do
-		B.part({
-			Name = "Crown",
-			Size = crown.size,
-			Position = { crown.pos[1], HEIGHT - 0.4, crown.pos[2] },
-			Color = "WoodDark",
-			Material = "Wood",
-			CastShadow = false,
-		})
-	end
 	B.part({
 		Name = "Ceiling",
 		Size = { INNER[1] + WALL * 2, 2, INNER[2] + WALL * 2 },
@@ -129,7 +112,7 @@ local function shell()
 		Material = "Plaster",
 		CastShadow = true,
 	})
-	-- Wood beams with a gold strip down each lower edge.
+	-- Plain wood beams.
 	for _, z in { -28, -14, 0, 14, 28 } do
 		B.part({
 			Name = "Beam",
@@ -138,17 +121,6 @@ local function shell()
 			Color = "WoodDark",
 			Material = "Wood",
 		})
-		for _, side in { -1, 1 } do
-			B.part({
-				Name = "BeamStrip",
-				Size = { INNER[1], 0.12, 0.12 },
-				Position = { 0, HEIGHT - 1.62, z + side * 0.64 },
-				Color = "Gold",
-				Material = "Metal",
-				CanCollide = false,
-				CastShadow = false,
-			})
-		end
 	end
 	-- Pillars along the walls; the east / west ones carry lit wall lamps.
 	for _, z in PILLARS_Z do
@@ -255,7 +227,7 @@ local function bar()
 		TextColor = "NeonPink",
 		Glow = true,
 	})
-	-- Back bar: a framed mirror, gold shelves on brackets, bottles, a cabinet with framed doors.
+	-- Back bar: a wood-framed mirror, plank shelves on iron brackets, bottles, a cabinet with framed doors.
 	B.part({
 		Name = "BackMirror",
 		Size = { width - 2, 9.5, 0.2 },
@@ -276,8 +248,8 @@ local function bar()
 			Name = "MirrorFrame",
 			Size = edge.size,
 			Position = { edge.at[1], edge.at[2], wallZ - 0.75 },
-			Color = "Gold",
-			Material = "Metal",
+			Color = "WoodMid",
+			Material = "Wood",
 		})
 	end
 	B.part({
@@ -291,8 +263,8 @@ local function bar()
 		Name = "BackCabinetTop",
 		Size = { width + 0.4, 0.35, 3 },
 		Position = { 0, 5.65, wallZ - 1.8 },
-		Color = "Marble",
-		Material = "Marble",
+		Color = "WoodMid",
+		Material = "Wood",
 	})
 	for index = 1, 8 do
 		local x = -width / 2 + (index - 0.5) * width / 8
@@ -309,7 +281,7 @@ local function bar()
 			Size = { 0.3, 0.3, 0.3 },
 			Position = { x + (if index % 2 == 0 then -1.6 else 1.6), 3, wallZ - 3.3 },
 			Shape = "Ball",
-			Color = "Gold",
+			Color = "OldBrass",
 			Material = "Metal",
 			CanCollide = false,
 		})
@@ -320,15 +292,15 @@ local function bar()
 			Name = "Shelf",
 			Size = { width - 3, 0.3, 1.8 },
 			Position = { 0, y, wallZ - 1.4 },
-			Color = "Gold",
-			Material = "Metal",
+			Color = "WoodMid",
+			Material = "WoodPlanks",
 		})
 		for _, x in { -14, 0, 14 } do
 			B.part({
 				Name = "Bracket",
 				Size = { 0.25, 0.9, 1.4 },
 				Position = { x, y - 0.6, wallZ - 1.2 },
-				Color = "Gold",
+				Color = "Iron",
 				Material = "Metal",
 				CanCollide = false,
 			})
@@ -344,7 +316,8 @@ local function bar()
 		end
 	end
 
-	-- The counter (Shop): framed wood front, marble top with a rounded front edge, gold foot rail on brackets.
+	-- The counter (Shop): framed wood front, a worn wood top with a rounded front edge, an old brass foot rail on iron
+	-- brackets.
 	local counterZ = wallZ - 11
 	B.part({
 		Name = "CounterBase",
@@ -384,23 +357,23 @@ local function bar()
 		Name = "CounterTop",
 		Size = { width + 1, 0.4, 3.6 },
 		Position = { 0, 3.7, counterZ + 0.2 },
-		Color = "Marble",
-		Material = "Marble",
+		Color = "WoodMid",
+		Material = "WoodPlanks",
 	})
 	B.part({
 		Name = "CounterEdge",
 		Size = { width + 1, 0.55, 0.55 },
 		Position = { 0, 3.68, counterZ - 1.75 },
 		Shape = "Cylinder",
-		Color = "Marble",
-		Material = "Marble",
+		Color = "WoodMid",
+		Material = "Wood",
 	})
 	B.part({
 		Name = "FootRail",
 		Size = { width, 0.35, 0.35 },
 		Position = { 0, 0.75, counterZ - 2.1 },
 		Shape = "Cylinder",
-		Color = "Gold",
+		Color = "OldBrass",
 		Material = "Metal",
 		CanCollide = false,
 	})
@@ -409,7 +382,7 @@ local function bar()
 			Name = "RailBracket",
 			Size = { 0.2, 0.7, 0.6 },
 			Position = { -width / 2 + 2 + (index - 1) * (width - 4) / 4, 0.55, counterZ - 1.8 },
-			Color = "Gold",
+			Color = "Iron",
 			Material = "Metal",
 			CanCollide = false,
 		})
@@ -436,7 +409,7 @@ local function bar()
 			Name = "TVMount",
 			Size = { 0.4, HEIGHT - 17.25, 0.4 },
 			Position = { x, (HEIGHT + 17.25) / 2, counterZ },
-			Color = "Gold",
+			Color = "Iron",
 			Material = "Metal",
 			CanCollide = false,
 		})
@@ -648,7 +621,7 @@ local function locker()
 				Name = "SideTrim",
 				Size = { 10, 0.25, 1.1 },
 				Position = { x, 6.1, z + side * 6 },
-				Color = "Gold",
+				Color = "Iron",
 				Material = "Metal",
 				CanCollide = false,
 			})
@@ -658,7 +631,7 @@ local function locker()
 			Name = "TopTrim",
 			Size = { 12.2, 0.25, 14.2 },
 			Position = { x, 10, z },
-			Color = "Gold",
+			Color = "Iron",
 			Material = "Metal",
 		})
 		for index = 1, 5 do
@@ -684,7 +657,7 @@ local function locker()
 				Name = "Handle",
 				Size = { 0.2, 0.9, 0.2 },
 				Position = { x - 4.5, 3.6, doorZ + 0.6 },
-				Color = "Gold",
+				Color = "Metal",
 				Material = "Metal",
 				CanCollide = false,
 			})
@@ -747,7 +720,7 @@ local function jukebox()
 			Name = "Grille",
 			Size = { 0.15, 1.2, 3 },
 			Position = { x + 1.8, 0.7, z },
-			Color = "Gold",
+			Color = "Metal",
 			Material = "Metal",
 			CanCollide = false,
 		})
@@ -979,7 +952,7 @@ local function spinWheel()
 	})
 end
 
--- Three tall dark leaderboard boards on the south wall (reference: leaderboard-boards.png): a wood frame with gold
+-- Three tall dark leaderboard boards on the south wall (reference: leaderboard-boards.png): a wood frame with iron
 -- corners, a cream title with a thin gold underline, and the screen the rows are drawn on (LeaderboardController).
 local function leaderboards()
 	local z = -HALF_Z + 0.5
@@ -1020,7 +993,7 @@ local function leaderboards()
 						Name = "Corner",
 						Size = { 0.9, 0.9, 0.2 },
 						Position = { board.x + cx, cy, z + 0.85 },
-						Color = "Gold",
+						Color = "Iron",
 						Material = "Metal",
 						CanCollide = false,
 					})
@@ -1097,7 +1070,7 @@ local function spawns()
 		Size = { 0.3, 0.3, 0.4 },
 		Position = { doorX + 2.6, 5, -HALF_Z + 1.1 },
 		Shape = "Ball",
-		Color = "Gold",
+		Color = "OldBrass",
 		Material = "Metal",
 		CanCollide = false,
 	})
@@ -1121,7 +1094,7 @@ local function spawns()
 	F.plant(31, -HALF_Z + 3)
 end
 
--- Booths in the north corners: a marble table between two tufted benches that face each other.
+-- Booths in the north corners: a wood table between two channel-stitched benches that face each other.
 local function booth(name: string, x: number, z: number)
 	F.boothTable(`{name}Table`, x, z)
 	F.sofa(
@@ -1142,7 +1115,7 @@ local function booth(name: string, x: number, z: number)
 end
 
 local function lounge()
-	-- The sitting area: a rug with a gold ring, a black marble table, a red tufted sofa and two armchairs.
+	-- The sitting area: a worn rug with a rust ring, a round wood table, a red sofa and two armchairs.
 	local rugX, rugZ = -27, -6
 	F.rug(rugX, rugZ, 30, 24, 15)
 	F.roundTable("CoffeeTable", rugX, rugZ, 6.5, 2.4)

@@ -810,3 +810,17 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   read once per player (`PlayerPolicyService`, attributes `PolicyPaidRandomItems` / `PolicyPaidTrading`); nothing
   at launch needs it. Developer panel "Robux" section: switch VIP / Emote Pack / Premium on or off for the session
   and get what any product gives (no receipt), to test while the ids are 0.
+- **A bit less luxury (owner, 2026-10-27: "make lobby a bit less luxury"):** the Hideout keeps its layout, size,
+  seats, tags and lamps; only the finish changes, from a hotel lounge to a worn hideout bar. **Gold → worn iron**
+  (`Palette.Iron`): stool poles and bases, table pedestals, floor lamp poles, the pendant domes (workshop lamps now),
+  wall lamps, shelf and rail brackets, TV mounts, pillar bands, locker trim, the arm-wrestling and chess table edges,
+  the bar's floor edge, the leaderboards' corners. **Old brass** (`Palette.OldBrass`, duller) is left on a few small
+  things: the bar's foot rail, the back bar's door knobs, the street door handle. **Marble → wood:** the bar counter
+  top (planks), the back cabinet top, the coffee table, the high tables and the booth tables. **Gone:** the crown
+  molding, the gold strips under the beams and down the pillars, the sofa and armchair button tufting (booths keep
+  their channel seams), the topiaries (now shrubs in rusty buckets). The wainscot rail, the mirror frame and the
+  shelves are wood; the sofa legs are wood; the rugs' ring and corner marks are faded rust; the pool table's diamonds
+  are pearl; the bottle caps and the locker / jukebox metal are plain steel. **Floor:** concrete instead of the light
+  carpet (the bar keeps its wood planks). Kept as it was: the plaster walls and wood wainscoting, the red upholstery,
+  the neon signs, the leaderboards' gold underline, and the spin wheel's gold (a prize game may shine). The lobby
+  went from 1572 to 1497 instances.
