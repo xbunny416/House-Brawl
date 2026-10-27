@@ -160,7 +160,7 @@ booth, Codes jukebox, the cork quest board. South — three tall dark leaderboar
 avatar headshot, name and value with thousands separators, the top 3 outlined in gold / silver / bronze), the spawns
 and the street door. Middle — the
 lounge (worn dark rug with a rust ring, round wood table on an iron base, red sofa and two armchairs, floor
-lamps with white drum shades, shrubs in rusty buckets), a pool table and high tables with stools; the spin wheel on the west wall (walk up and press the red button in front of it; each slice shows its prize and chance); the
+lamps with white drum shades, potted trees in black pots), a pool table and high tables with stools; the spin wheel on the west wall (walk up and press the red button in front of it; each slice shows its prize and chance); the
 arm-wrestling table in the open middle of the room (two stools facing each other: sit down opposite someone, wait out
 a 3-second countdown, then mash Attack — or tap PUSH on a phone — to push the clasped hands over to your side; a pin
 wins at once, otherwise whoever is ahead after 15 seconds; the wrestlers' panel shows the match and, between matches,
