@@ -892,3 +892,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   not a second set — a 2-seat sofa (3 before) facing the wheel, the two armchairs on its sides, a 5-stud round table
   (6.5 before), a 16 × 18 rug that stops short of the wheel's mat, with a walkway to the spin button. Still 12
   shadow-casting lamps.
+- **No sofa in front of the wheel (owner, 2026-10-27: "just remove that 3 sofa"):** read as the couch (the 3-seat
+  sofa that became a 2-seater facing the wheel), which also fits the earlier "2 chair … circle table": the lounge in
+  front of the spin wheel is now the round table between the two armchairs on a 12 × 18 rug, a floor lamp beside
+  each armchair. 31 lobby seats.

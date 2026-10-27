@@ -20,7 +20,7 @@
 	Left wall (+X): the three leaderboards in the middle with the pool table and the arm-wrestling table in front of
 	them; a barrel and a dartboard at the bar end, the teal barrel in the corner by the ARENA wall.
 	Right wall (−X): the spin wheel in the middle with the lounge in front of it — a worn rug with a rust ring, a round
-	wood table, a red 2-seat sofa facing the wheel and two armchairs, floor lamps — and a potted tree.
+	wood table between two red armchairs, floor lamps — and a potted tree.
 	South (the ARENA wall): the steel ARENA door with the join pad in front of it (QueueZone: only players standing on
 	it are taken into the next round), the spawn pads on both sides of it; left of it the style coach (StyleNPC: opens
 	the Styles screen) by the jukebox (decor) and the street door in the corner; right of it the quest board and the
@@ -1168,19 +1168,18 @@ end
 local function lounge()
 	--[[
 		The sitting area in front of the spin wheel (owner, 2026-10-27: "bit smaller 2 chair sofa circle table in front
-		spin wheel"; in the middle of the room before, with a 3-seat sofa): a worn rug with a rust ring, a round wood
-		table, a red 2-seat sofa facing the wheel and an armchair on each side, two floor lamps. The wheel's mat stays
-		clear: the rug stops short of it, with a walkway between the table and the mat.
+		spin wheel", then "just remove that 3 sofa"; in the middle of the room before, with a 3-seat sofa, and for a day
+		with a 2-seat sofa facing the wheel): a worn rug with a rust ring, a round wood table with a red armchair on each
+		side, a floor lamp beside each armchair. The wheel's mat stays clear: the rug stops short of it, with a walkway
+		between the table and the mat.
 	]]
-	local rugX, rugZ = -31.5, 0
-	local tableX = -33
-	F.rug(rugX, rugZ, 16, 18, 10)
-	F.roundTable("CoffeeTable", tableX, rugZ, 5, 2.4)
-	F.sofa("Sofa", -26, rugZ, "West", { Seats = 2, Color = "Sofa" })
-	F.sofa("ArmchairArenaSide", tableX, rugZ - 6.6, "North", { Seats = 1, Color = "Sofa" })
-	F.sofa("ArmchairBarSide", tableX, rugZ + 6.6, "South", { Seats = 1, Color = "Sofa" })
-	F.floorLamp(-25, rugZ - 6.5)
-	F.floorLamp(-25, rugZ + 6.5)
+	local rugX, rugZ = -33, 0
+	F.rug(rugX, rugZ, 12, 18, 8)
+	F.roundTable("CoffeeTable", rugX, rugZ, 5, 2.4)
+	F.sofa("ArmchairArenaSide", rugX, rugZ - 6.6, "North", { Seats = 1, Color = "Sofa" })
+	F.sofa("ArmchairBarSide", rugX, rugZ + 6.6, "South", { Seats = 1, Color = "Sofa" })
+	F.floorLamp(rugX + 4.5, rugZ - 6.6)
+	F.floorLamp(rugX + 4.5, rugZ + 6.6)
 	F.plant(-HALF_X + 3, -21.5) -- by the right wall, between the pillars past the wheel
 	F.plant(-21, -8)
 	F.pendant(rugX, 17, rugZ, HEIGHT, 30)
