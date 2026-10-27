@@ -1,10 +1,11 @@
 --!strict
 --[[
 	Furniture — detailed lobby furniture built from parts (owner, 2026-10-19: "style like the reference … right now it
-	looks too blocky, items with no detail"). Every piece is many small parts: rolled sofa arms, tufted backs with
-	buttons, piping, tapered legs, round seats on gold poles, drum lamp shades with trim rings, two-tier topiaries,
-	marble tops with gold rims. Real meshes (free Creator Store models or Studio's AI generator) could replace any
-	piece later; these keep the look while the game is code-first.
+	looks too blocky, items with no detail"). Every piece is many small parts: rolled sofa arms, cushioned backs,
+	piping, wood legs, round seats on iron poles, drum lamp shades, iron dome lamps, potted shrubs, wood table tops on
+	iron bases. Since 2026-10-27 it is a bit less luxury (owner: "make lobby a bit less luxury"): worn iron, old brass
+	and wood instead of gold and marble, no button tufting, no topiaries. Real meshes (free Creator Store models or
+	Studio's AI generator) could replace any piece later; these keep the look while the game is code-first.
 
 	Each builder takes the floor spot (x, z) and a facing (where the front looks: "North" / "South" / "East" / "West").
 	Inside, positions are local: lx to the piece's right, y up from the floor, lz forward (toward its front); sizes are
@@ -67,15 +68,14 @@ end
 export type SofaOptions = {
 	Seats: number,
 	Color: string, -- upholstery
-	Trim: string?, -- piping and buttons (default SofaDark)
+	Trim: string?, -- piping and booth channels (default SofaDark)
 	Material: string?, -- default Fabric
 	TallBack: boolean?, -- booth benches: a taller back with channel tufting
 }
 
 --[[
-	A sofa / armchair / booth bench: a plinth on tapered gold legs with a rounded front edge, one Seat cushion per seat
-	(with piping along the front), a back with tilted, button-tufted cushions (channels on tall booth backs), and rolled
-	arms.
+	A sofa / armchair / booth bench: a plinth on short wood legs with a rounded front edge, one Seat cushion per seat
+	(with piping along the front), a back with tilted cushions (channels on tall booth backs), and rolled arms.
 ]]
 function Furniture.sofa(name: string, x: number, z: number, facing: string, options: SofaOptions)
 	local put, seat = frame(x, z, facing)
@@ -103,7 +103,7 @@ function Furniture.sofa(name: string, x: number, z: number, facing: string, opti
 		})
 		for _, side in { -1, 1 } do
 			for _, end_ in { -1, 1 } do
-				upright(put, "Leg", { side * (width / 2 - 0.45), 0.15, end_ * 1.45 }, 0.3, 0.32, "Gold", "Metal")
+				upright(put, "Leg", { side * (width / 2 - 0.45), 0.15, end_ * 1.45 }, 0.3, 0.32, "WoodDark", "Wood")
 			end
 			-- Rolled arm: an upright block topped by a cylinder running front to back.
 			put({
@@ -177,7 +177,7 @@ function Furniture.sofa(name: string, x: number, z: number, facing: string, opti
 				CanCollide = false,
 			})
 			if options.TallBack then
-				-- Channel tufting: vertical seams down the back cushion.
+				-- Channel tufting: vertical seams down the back cushion (diner booths).
 				for _, seam in { -0.7, 0.7 } do
 					put({
 						Name = "Channel",
@@ -189,36 +189,20 @@ function Furniture.sofa(name: string, x: number, z: number, facing: string, opti
 						CanCollide = false,
 					})
 				end
-			else
-				-- Button tufting: a 3 × 2 grid of buttons.
-				for _, row in { 0.55, 1.35 } do
-					for _, column in { -0.9, 0, 0.9 } do
-						put({
-							Name = "Button",
-							Size = { 0.2, 0.2, 0.2 },
-							-- On the tilted cushion's face: higher buttons sit further back.
-							Position = { lx + column, 1.9 + row, -0.5 - 0.139 * (row - cushionHeight / 2) },
-							Shape = "Ball",
-							Color = trim,
-							Material = "Fabric",
-							CanCollide = false,
-						})
-					end
-				end
 			end
 		end
 	end)
 end
 
--- A bar stool: round cushion with a gold ring on a gold pole, footrest ring and base. The Seat is an invisible block
+-- A bar stool: round cushion with an iron ring on an iron pole, footrest ring and base. The Seat is an invisible block
 -- inside the cushion (a round, upright Seat isn't possible: cylinders lie along X).
 function Furniture.stool(name: string, x: number, z: number, facing: string, height: number, colorName: string): any
 	local put, seat = frame(x, z, facing)
 	return B.model(name, function()
-		upright(put, "Base", { 0, 0.12, 0 }, 0.25, 2, "Gold", "Metal", true)
-		upright(put, "Pole", { 0, height / 2, 0 }, height, 0.35, "Gold", "Metal", true)
-		upright(put, "Footrest", { 0, height * 0.4, 0 }, 0.15, 1.7, "Gold", "Metal")
-		upright(put, "Rim", { 0, height + 0.05, 0 }, 0.2, 2.35, "Gold", "Metal")
+		upright(put, "Base", { 0, 0.12, 0 }, 0.25, 2, "Iron", "Metal", true)
+		upright(put, "Pole", { 0, height / 2, 0 }, height, 0.35, "Iron", "Metal", true)
+		upright(put, "Footrest", { 0, height * 0.4, 0 }, 0.15, 1.7, "Iron", "Metal")
+		upright(put, "Rim", { 0, height + 0.05, 0 }, 0.2, 2.35, "Iron", "Metal")
 		upright(put, "Cushion", { 0, height + 0.35, 0 }, 0.5, 2.2, colorName, "Leather")
 		seat({
 			Name = "Seat",
@@ -232,8 +216,8 @@ function Furniture.stool(name: string, x: number, z: number, facing: string, hei
 end
 
 --[[
-	The arm-wrestling table (ArmWrestleService): a dark wood top with a gold edge and a gold centre line on two posts
-	with feet, two elbow pads, two pin pads where a beaten hand lands, two gold grip pegs for the free hands, and a stool
+	The arm-wrestling table (ArmWrestleService): a dark wood top with an iron edge and a painted centre line on two posts
+	with feet, two elbow pads, two pin pads where a beaten hand lands, two iron grip pegs for the free hands, and a stool
 	at each end facing the other. The pull runs along X: side 1 sits at −X facing +X, side 2 at +X facing −X; each
 	stool sits a little to its sitter's left so the two right hands meet over the middle. The model is tagged
 	ArmWrestleTable; its top is the part "Top" (the board over the table hangs above it); each stool's Seat is tagged
@@ -257,15 +241,15 @@ function Furniture.armWrestleTable(name: string, x: number, z: number, top: numb
 			Name = "Edge",
 			Size = { 3.2, 0.12, 3.8 },
 			Position = at(0, top - 0.3, 0),
-			Color = "Gold",
+			Color = "Iron",
 			Material = "Metal",
 		})
 		put({
 			Name = "CentreLine",
 			Size = { 0.08, 0.02, 3.4 },
 			Position = at(0, top + 0.01, 0),
-			Color = "Gold",
-			Material = "Metal",
+			Color = "OffWhite",
+			Material = "SmoothPlastic",
 			CanCollide = false,
 		})
 		for side, dx in { -1, 1 } do
@@ -280,8 +264,8 @@ function Furniture.armWrestleTable(name: string, x: number, z: number, top: numb
 				Material = "Leather",
 				CanCollide = false,
 			})
-			upright(put, `GripPeg{side}`, at(dx * 0.95, top + 0.35, -right * 1.25), 0.7, 0.22, "Gold", "Metal")
-			upright(put, `GripKnob{side}`, at(dx * 0.95, top + 0.72, -right * 1.25), 0.12, 0.34, "Gold", "Metal")
+			upright(put, `GripPeg{side}`, at(dx * 0.95, top + 0.35, -right * 1.25), 0.7, 0.22, "Iron", "Metal")
+			upright(put, `GripKnob{side}`, at(dx * 0.95, top + 0.72, -right * 1.25), 0.12, 0.34, "Iron", "Metal")
 		end
 		-- Two posts on feet, off to the sides so the sitters' legs fit under the top.
 		for _, dz in { -1.4, 1.4 } do
@@ -293,7 +277,7 @@ function Furniture.armWrestleTable(name: string, x: number, z: number, top: numb
 				Color = "WoodDark",
 				Material = "Wood",
 			})
-			upright(put, "Collar", at(0, top - 0.6, dz), 0.15, 0.6, "Gold", "Metal")
+			upright(put, "Collar", at(0, top - 0.6, dz), 0.15, 0.6, "Iron", "Metal")
 		end
 	end)
 	for side, dx in { -1, 1 } do
@@ -316,7 +300,7 @@ function Furniture.armWrestleTable(name: string, x: number, z: number, top: numb
 end
 
 --[[
-	The chess table (ChessService): a square dark wood table with a gold edge on a pedestal with a cross foot, a board of
+	The chess table (ChessService): a square dark wood table with an iron edge on a pedestal with a cross foot, a board of
 	64 squares in a wood frame, and a stool at each end facing the other. White plays from −X (side 1), Black from +X
 	(side 2): ranks run toward +X, files a → h toward +Z (White's right). The board's frame is the part "Board" with a
 	SquareSize attribute; square (file f, rank r, 0-7) sits at Board.CFrame * (( r − 3.5 ) × size, top, ( f − 3.5 ) ×
@@ -343,11 +327,11 @@ function Furniture.chessTable(name: string, x: number, z: number, top: number, s
 			Name = "Edge",
 			Size = { 5.6, 0.12, 5.6 },
 			Position = at(0, top - 0.24, 0),
-			Color = "Gold",
+			Color = "Iron",
 			Material = "Metal",
 		})
 		upright(put, "Pedestal", at(0, (top - 0.3) / 2, 0), top - 0.3, 1, "WoodDark", "Wood", true)
-		upright(put, "Collar", at(0, top - 0.55, 0), 0.15, 1.4, "Gold", "Metal")
+		upright(put, "Collar", at(0, top - 0.55, 0), 0.15, 1.4, "Iron", "Metal")
 		for _, size in { { 3.4, 0.3, 0.6 }, { 0.6, 0.3, 3.4 } } do
 			put({ Name = "Foot", Size = size, Position = at(0, 0.15, 0), Color = "WoodDark", Material = "Wood" })
 		end
@@ -389,32 +373,37 @@ end
 -- Tables
 ---------------------------------------------------------------------------------------------------------------------
 
--- A round black marble table on a gold pedestal (the lounge's coffee table; tall = a high table).
+-- A round wood table on an iron pedestal (the lounge's coffee table; tall = a high table).
 function Furniture.roundTable(name: string, x: number, z: number, diameter: number, height: number)
 	local put = frame(x, z, "South")
 	B.model(name, function()
-		upright(put, "Top", { 0, height, 0 }, 0.35, diameter, "Marble", "Marble", true)
-		upright(put, "Rim", { 0, height - 0.12, 0 }, 0.2, diameter + 0.3, "Gold", "Metal")
-		upright(put, "Apron", { 0, height - 0.3, 0 }, 0.2, diameter * 0.45, "Gold", "Metal")
-		upright(put, "Pedestal", { 0, (height - 0.3) / 2, 0 }, height - 0.4, 0.7, "Gold", "Metal", true)
-		upright(put, "Collar", { 0, height * 0.35, 0 }, 0.25, 1.3, "Gold", "Metal")
-		upright(put, "Foot", { 0, 0.12, 0 }, 0.25, math.min(diameter * 0.55, 3.4), "Gold", "Metal", true)
-		upright(put, "FootTop", { 0, 0.27, 0 }, 0.1, math.min(diameter * 0.5, 3.1), "Black", "Marble")
+		upright(put, "Top", { 0, height, 0 }, 0.35, diameter, "WoodMid", "Wood", true)
+		upright(put, "Rim", { 0, height - 0.12, 0 }, 0.2, diameter + 0.3, "WoodDark", "Wood")
+		upright(put, "Apron", { 0, height - 0.3, 0 }, 0.2, diameter * 0.45, "Iron", "Metal")
+		upright(put, "Pedestal", { 0, (height - 0.3) / 2, 0 }, height - 0.4, 0.7, "Iron", "Metal", true)
+		upright(put, "Collar", { 0, height * 0.35, 0 }, 0.25, 1.3, "Iron", "Metal")
+		upright(put, "Foot", { 0, 0.12, 0 }, 0.25, math.min(diameter * 0.55, 3.4), "Iron", "Metal", true)
 	end)
 end
 
--- A rectangular marble booth table on a gold pedestal.
+-- A rectangular wood booth table on an iron pedestal.
 function Furniture.boothTable(name: string, x: number, z: number)
 	local put = frame(x, z, "South")
 	B.model(name, function()
-		put({ Name = "Top", Size = { 6, 0.35, 3.4 }, Position = { 0, 3, 0 }, Color = "Marble", Material = "Marble" })
-		put({ Name = "Edge", Size = { 6.3, 0.15, 3.7 }, Position = { 0, 2.78, 0 }, Color = "Gold", Material = "Metal" })
-		upright(put, "Pedestal", { 0, 1.4, 0 }, 2.8, 0.6, "Gold", "Metal", true)
-		put({ Name = "Foot", Size = { 3, 0.25, 1.6 }, Position = { 0, 0.12, 0 }, Color = "Gold", Material = "Metal" })
+		put({ Name = "Top", Size = { 6, 0.35, 3.4 }, Position = { 0, 3, 0 }, Color = "WoodMid", Material = "Wood" })
+		put({
+			Name = "Edge",
+			Size = { 6.3, 0.15, 3.7 },
+			Position = { 0, 2.78, 0 },
+			Color = "WoodDark",
+			Material = "Wood",
+		})
+		upright(put, "Pedestal", { 0, 1.4, 0 }, 2.8, 0.6, "Iron", "Metal", true)
+		put({ Name = "Foot", Size = { 3, 0.25, 1.6 }, Position = { 0, 0.12, 0 }, Color = "Iron", Material = "Metal" })
 	end)
 end
 
--- A dark rug with a black border, a gold ring and gold corner marks.
+-- A dark rug with a black border, a faded rust ring and rust corner marks.
 function Furniture.rug(x: number, z: number, sizeX: number, sizeZ: number, ring: number)
 	local put = frame(x, z, "South")
 	B.model("Rug", function()
@@ -431,7 +420,7 @@ function Furniture.rug(x: number, z: number, sizeX: number, sizeZ: number, ring:
 		end
 		flat("Border", { sizeX, 0.06, sizeZ }, 0.08, "Black", "Carpet")
 		flat("Field", { sizeX - 1.4, 0.06, sizeZ - 1.4 }, 0.1, "Rug", "Carpet")
-		upright(put, "Ring", { 0, 0.12, 0 }, 0.06, ring, "Gold", "Fabric")
+		upright(put, "Ring", { 0, 0.12, 0 }, 0.06, ring, "RustDark", "Fabric")
 		upright(put, "RingInner", { 0, 0.14, 0 }, 0.06, ring - 1.4, "Rug", "Carpet")
 		for _, cx in { -1, 1 } do
 			for _, cz in { -1, 1 } do
@@ -440,7 +429,7 @@ function Furniture.rug(x: number, z: number, sizeX: number, sizeZ: number, ring:
 					Size = { 1.2, 0.06, 1.2 },
 					Position = { cx * (sizeX / 2 - 2), 0.12, cz * (sizeZ / 2 - 2) },
 					Rotation = { 0, 45, 0 },
-					Color = "Gold",
+					Color = "RustDark",
 					Material = "Fabric",
 					CanCollide = false,
 					CastShadow = false,
@@ -454,25 +443,23 @@ end
 -- Lights
 ---------------------------------------------------------------------------------------------------------------------
 
--- A floor lamp: weighted base, gold pole with a knob, white drum shade with gold trim rings, a glowing bulb.
+-- A floor lamp: weighted base, iron pole with a knob, white drum shade, a glowing bulb.
 function Furniture.floorLamp(x: number, z: number)
 	local put = frame(x, z, "South")
 	B.model("FloorLamp", function()
 		upright(put, "Base", { 0, 0.12, 0 }, 0.25, 1.9, "Black", "Metal", true)
-		upright(put, "Collar", { 0, 0.32, 0 }, 0.2, 0.9, "Gold", "Metal")
-		upright(put, "Pole", { 0, 3.9, 0 }, 7.2, 0.24, "Gold", "Metal", true)
+		upright(put, "Collar", { 0, 0.32, 0 }, 0.2, 0.9, "Iron", "Metal")
+		upright(put, "Pole", { 0, 3.9, 0 }, 7.2, 0.24, "Iron", "Metal", true)
 		put({
 			Name = "Knob",
 			Size = { 0.45, 0.45, 0.45 },
 			Position = { 0, 4.6, 0 },
 			Shape = "Ball",
-			Color = "Gold",
+			Color = "Iron",
 			Material = "Metal",
 			CanCollide = false,
 		})
 		upright(put, "Shade", { 0, 8.3, 0 }, 1.9, 2.6, "Shade", "Fabric")
-		upright(put, "TrimTop", { 0, 9.25, 0 }, 0.12, 2.68, "Gold", "Metal")
-		upright(put, "TrimBottom", { 0, 7.35, 0 }, 0.12, 2.68, "Gold", "Metal")
 		local bulb = put({
 			Name = "Bulb",
 			Size = { 0.6, 0.6, 0.6 },
@@ -486,15 +473,15 @@ function Furniture.floorLamp(x: number, z: number)
 	end)
 end
 
--- A pendant lamp hanging from the ceiling at `ceiling`: canopy, chain, a stepped gold dome, a glowing bulb.
+-- A pendant lamp hanging from the ceiling at `ceiling`: canopy, chain, a stepped iron dome (a workshop lamp), a bulb.
 function Furniture.pendant(x: number, y: number, z: number, ceiling: number, range: number)
 	local put = frame(x, z, "South")
 	B.model("Lamp", function()
-		upright(put, "Canopy", { 0, ceiling - 0.15, 0 }, 0.3, 1.2, "Gold", "Metal")
+		upright(put, "Canopy", { 0, ceiling - 0.15, 0 }, 0.3, 1.2, "Iron", "Metal")
 		upright(put, "Chain", { 0, (ceiling + y) / 2 + 0.6, 0 }, ceiling - y - 1.2, 0.12, "Black", "Metal")
-		upright(put, "DomeTop", { 0, y + 1, 0 }, 0.5, 1.2, "Gold", "Metal")
-		upright(put, "DomeMid", { 0, y + 0.55, 0 }, 0.5, 2.2, "Gold", "Metal")
-		upright(put, "DomeRim", { 0, y + 0.1, 0 }, 0.45, 3.2, "Gold", "Metal")
+		upright(put, "DomeTop", { 0, y + 1, 0 }, 0.5, 1.2, "Iron", "Metal")
+		upright(put, "DomeMid", { 0, y + 0.55, 0 }, 0.5, 2.2, "Iron", "Metal")
+		upright(put, "DomeRim", { 0, y + 0.1, 0 }, 0.45, 3.2, "Iron", "Metal")
 		local bulb = put({
 			Name = "Bulb",
 			Size = { 0.9, 0.9, 0.9 },
@@ -508,7 +495,7 @@ function Furniture.pendant(x: number, y: number, z: number, ceiling: number, ran
 	end)
 end
 
--- A wall lamp: gold backplate and arm, a small white shade with gold trim and a bulb (`lit`: a soft light).
+-- A wall lamp: iron backplate and arm, a small white shade with an iron trim and a bulb (`lit`: a soft light).
 function Furniture.sconce(x: number, y: number, z: number, facing: string, lit: boolean)
 	local put = frame(x, z, facing)
 	B.model("WallLamp", function()
@@ -516,7 +503,7 @@ function Furniture.sconce(x: number, y: number, z: number, facing: string, lit: 
 			Name = "Plate",
 			Size = { 0.9, 1.4, 0.15 },
 			Position = { 0, y, 0.07 },
-			Color = "Gold",
+			Color = "Iron",
 			Material = "Metal",
 			CanCollide = false,
 		})
@@ -524,12 +511,12 @@ function Furniture.sconce(x: number, y: number, z: number, facing: string, lit: 
 			Name = "Arm",
 			Size = { 0.18, 0.18, 1 },
 			Position = { 0, y, 0.6 },
-			Color = "Gold",
+			Color = "Iron",
 			Material = "Metal",
 			CanCollide = false,
 		})
 		upright(put, "Shade", { 0, y + 0.55, 1.1 }, 1.1, 1.1, "Shade", "Fabric")
-		upright(put, "Trim", { 0, y + 0.02, 1.1 }, 0.1, 1.16, "Gold", "Metal")
+		upright(put, "Trim", { 0, y + 0.02, 1.1 }, 0.1, 1.16, "Iron", "Metal")
 		local bulb = put({
 			Name = "Bulb",
 			Size = { 0.35, 0.35, 0.35 },
@@ -549,40 +536,29 @@ end
 -- Decor
 ---------------------------------------------------------------------------------------------------------------------
 
--- A potted two-tier topiary: black pot with a gold rim and soil, a trunk, two balls of leaves.
+-- A shrub in an old rusty bucket: an iron rim and soil, a short trunk, a bushy clump of leaves.
 function Furniture.plant(x: number, z: number)
 	local put = frame(x, z, "South")
 	B.model("Plant", function()
-		upright(put, "Pot", { 0, 1.3, 0 }, 2.6, 3, "Black", "SmoothPlastic", true)
-		upright(put, "PotBand", { 0, 0.3, 0 }, 0.3, 3.1, "Gold", "Metal")
-		upright(put, "Rim", { 0, 2.65, 0 }, 0.25, 3.3, "Gold", "Metal")
+		upright(put, "Pot", { 0, 1.3, 0 }, 2.6, 3, "RustDark", "CorrodedMetal", true)
+		upright(put, "Rim", { 0, 2.65, 0 }, 0.25, 3.2, "Iron", "Metal")
 		upright(put, "Soil", { 0, 2.62, 0 }, 0.2, 2.7, "Soil", "Ground")
-		upright(put, "Trunk", { 0, 4.6, 0 }, 4, 0.35, "Wood", "Wood")
-		put({
-			Name = "Leaves",
-			Size = { 4.4, 4.4, 4.4 },
-			Position = { 0, 6.9, 0 },
-			Shape = "Ball",
-			Color = "Leaf",
-			Material = "LeafyGrass",
-			CanCollide = false,
-		})
-		put({
-			Name = "LeavesTop",
-			Size = { 2.8, 2.8, 2.8 },
-			Position = { 0, 9.6, 0 },
-			Shape = "Ball",
-			Color = "Leaf",
-			Material = "LeafyGrass",
-			CanCollide = false,
-		})
+		upright(put, "Trunk", { 0, 3.4, 0 }, 1.6, 0.35, "Wood", "Wood")
+		for index, leaves in { { 0, 5, 0, 4.2 }, { -1.2, 5.9, 0.6, 2.6 }, { 1.1, 6.2, -0.5, 2.4 } } do
+			put({
+				Name = if index == 1 then "Leaves" else `Leaves{index}`,
+				Size = { leaves[4], leaves[4], leaves[4] },
+				Position = { leaves[1], leaves[2], leaves[3] },
+				Shape = "Ball",
+				Color = "Leaf",
+				Material = "LeafyGrass",
+				CanCollide = false,
+			})
+		end
 	end)
 end
 
---[[
-	A dark wood pillar against a wall: gold base and capital bands, gold strips down the front corners, and a wall lamp
-	facing into the room.
-]]
+-- A dark wood pillar against a wall: iron base and capital bands, and a wall lamp facing into the room.
 function Furniture.pillar(x: number, z: number, facing: string, height: number, lit: boolean)
 	local put = frame(x, z, facing)
 	B.model("Pillar", function()
@@ -599,7 +575,7 @@ function Furniture.pillar(x: number, z: number, facing: string, height: number, 
 			Name = "BaseBand",
 			Size = { 3, 0.2, 3 },
 			Position = { 0, 0.9, 0 },
-			Color = "Gold",
+			Color = "Iron",
 			Material = "Metal",
 			CanCollide = false,
 		})
@@ -614,21 +590,10 @@ function Furniture.pillar(x: number, z: number, facing: string, height: number, 
 			Name = "CapitalBand",
 			Size = { 3.1, 0.2, 3.1 },
 			Position = { 0, height - 0.75, 0 },
-			Color = "Gold",
+			Color = "Iron",
 			Material = "Metal",
 			CanCollide = false,
 		})
-		for _, side in { -1, 1 } do
-			put({
-				Name = "CornerStrip",
-				Size = { 0.15, height - 2, 0.15 },
-				Position = { side * 1.15, height / 2, 1.15 },
-				Color = "Gold",
-				Material = "Metal",
-				CanCollide = false,
-				CastShadow = false,
-			})
-		end
 	end)
 	local lampX = x - math.sin(math.rad(YAW[facing])) * 1.2
 	local lampZ = z - math.cos(math.rad(YAW[facing])) * 1.2
@@ -637,7 +602,7 @@ end
 
 --[[
 	Wainscoting `length` long along a wall, centred on (x, z) on the wall's inner face and facing into the room: a
-	dark wood skin with a baseboard, framed raised panels, a wood cap and a gold rail on top.
+	dark wood skin with a baseboard, framed raised panels, a wood cap and a wood rail on top.
 ]]
 function Furniture.wainscot(x: number, z: number, facing: string, length: number, height: number)
 	local put = frame(x, z, facing)
@@ -659,11 +624,11 @@ function Furniture.wainscot(x: number, z: number, facing: string, length: number
 			CastShadow = false,
 		})
 		put({
-			Name = "GoldRail",
+			Name = "Rail",
 			Size = { length, 0.3, 0.9 },
 			Position = { 0, height + 0.15, 0.45 },
-			Color = "Gold",
-			Material = "Metal",
+			Color = "WoodMid",
+			Material = "Wood",
 			CastShadow = false,
 		})
 		put({
@@ -717,10 +682,10 @@ function Furniture.bottle(x: number, y: number, z: number, colorName: string, ta
 	upright(put, "Bottle", { 0, y + body / 2, 0 }, body, 0.55, colorName, "Glass")
 	upright(put, "Shoulder", { 0, y + body + 0.1, 0 }, 0.2, 0.4, colorName, "Glass")
 	upright(put, "Neck", { 0, y + body + 0.4, 0 }, 0.45, 0.2, colorName, "Glass")
-	upright(put, "Cap", { 0, y + body + 0.67, 0 }, 0.1, 0.24, "Gold", "Metal")
+	upright(put, "Cap", { 0, y + body + 0.67, 0 }, 0.1, 0.24, "Metal", "Metal")
 end
 
--- A pool table: framed wood body on turned legs, green felt with cushioned rails, six pockets, gold diamonds, balls.
+-- A pool table: framed wood body on turned legs, green felt with cushioned rails, six pockets, pearl diamonds, balls.
 function Furniture.poolTable(x: number, z: number, facing: string)
 	local put = frame(x, z, facing)
 	B.model("PoolTable", function()
@@ -728,7 +693,7 @@ function Furniture.poolTable(x: number, z: number, facing: string)
 		for _, lx in { -6.2, 6.2 } do
 			for _, lz in { -3.2, 3.2 } do
 				upright(put, "Leg", { lx, 0.8, lz }, 1.6, 1.1, "WoodDark", "Wood", true)
-				upright(put, "Foot", { lx, 0.1, lz }, 0.2, 1.3, "Gold", "Metal")
+				upright(put, "Foot", { lx, 0.1, lz }, 0.2, 1.3, "Iron", "Metal")
 			end
 		end
 		put({ Name = "Felt", Size = { 12.6, 0.2, 6.6 }, Position = { 0, 3.05, 0 }, Color = "Felt", Material = "Fabric" })
@@ -752,8 +717,8 @@ function Furniture.poolTable(x: number, z: number, facing: string)
 					Size = { 0.25, 0.06, 0.25 },
 					Position = { lx, 3.58, lz },
 					Rotation = { 0, 45, 0 },
-					Color = "Gold",
-					Material = "Metal",
+					Color = "OffWhite",
+					Material = "SmoothPlastic",
 					CanCollide = false,
 				})
 			end

@@ -83,6 +83,7 @@ One row per merged PR, newest last. Add a row with every PR (see [CLAUDE.md](../
 | 2026-10-24 | Store art redone as a 3D Roblox-style render (three.js scene in headless Chromium) | #80 |
 | 2026-10-24 | `roblox-animation` project skill (`.claude/skills/roblox-animation`): KeyframeSequences in Studio through the Studio MCP | #81 |
 | 2026-10-24 | CLAUDE.md made compact: the progress log, build order, decisions and Studio test notes moved to `docs/` | #82 |
+| 2026-10-27 | Lobby a bit less luxury (owner: "make lobby a bit less luxury"): same layout, seats and tags; gold → worn iron (stools, table bases, lamp poles and pendant domes, wall lamps, brackets, pillar bands, table edges), a few old-brass accents (foot rail, knobs), marble → wood (bar top, back cabinet, coffee / high / booth tables), concrete floor instead of the light carpet; no crown molding, beam / pillar gold strips, sofa buttons or topiaries (shrubs in rusty buckets); faded rust rug rings; the spin wheel keeps its gold | #83 |
 
 ## Build order (approved 2026-10-15)
 

@@ -36,13 +36,14 @@ return {
 	-- The lobby's lounge style (owner's reference pictures, 2026-10-19).
 	Plaster = "#5C6762", -- grey-green upper walls
 	WoodDark = "#4A2A1C", -- wainscot panels, pillars, beams
-	Gold = "#D9B44A", -- trim, lamp poles, table bases
-	Marble = "#141416",
+	Gold = "#D9B44A", -- the spin wheel's rim, hub and pegs (the prize game stays shiny)
+	-- Less luxury (owner, 2026-10-27): the lounge's gold and marble became worn iron, old brass and wood.
+	Iron = "#3A3B3F", -- table bases, stool poles, lamp poles and domes, brackets, bands
+	OldBrass = "#9A8048", -- a few small accents: the bar's foot rail, knobs
 	Rug = "#1E3B3C",
 	Sofa = "#7E2420",
 	Shade = "#F3F0E6", -- lamp shades
 	Leaf = "#6FA556",
-	Carpet = "#D8D4CB",
 	Red = "#C9302C", -- pins on the quest board
 	Cream = "#F0E2C0", -- leaderboard titles
 	BoardDark = "#1C1C1F",

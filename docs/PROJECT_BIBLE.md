@@ -147,8 +147,9 @@ Not used. No pets, eggs, or paid random items.
 
 **Lobby (The Hideout):** an enclosed hideout bar (owner's changes: a closed space, not the open Rust Diner rooftop,
 no Training Yard, 2026-10-16; 25% bigger — 115 × 85 studs, 26 high — in the style of the reference pictures with
-detailed furniture, 2026-10-19). Grey-green plaster walls over dark wood wainscoting with a gold rail, dark wood pillars with
-white wall lamps, wood beams, a light carpet (wood planks in the bar). North — the marble-topped bar counter with the Shop NPC
+detailed furniture, 2026-10-19; a bit less luxury, 2026-10-27: worn iron, old brass and wood instead of gold and marble).
+Grey-green plaster walls over dark wood wainscoting with a wood rail, dark wood pillars with iron bands and white wall
+lamps, wood beams, iron workshop pendant lamps, a concrete floor (wood planks in the bar). North — the wood-topped bar counter with the Shop NPC
 (the bartender: a standing Roblox character in a white shirt, dark vest, apron, bow tie and bandana, who talks in a
 speech bubble: a greeting when you walk up, a line about your last round, tips and jokes while you hang around, and lines
 when you open the Shop or buy something), bar stools, a mirrored back bar with bottle shelves, three big CRT TVs over the bar (each shows one map of the ballot with its votes during the vote,
@@ -158,8 +159,8 @@ ticker), the "JUNKYARD BRAWL" sign; booths in both corners. East — the steel A
 booth, Codes jukebox, the cork quest board. South — three tall dark leaderboard boards (cream title, gold underline; rows of rank,
 avatar headshot, name and value with thousands separators, the top 3 outlined in gold / silver / bronze), the spawns
 and the street door. Middle — the
-lounge (dark rug with a gold ring, round black marble table on a gold base, red tufted sofa and two armchairs, floor
-lamps with white drum shades, potted topiaries), a pool table and high tables with stools; the spin wheel on the west wall (walk up and press the red button in front of it; each slice shows its prize and chance); the
+lounge (worn dark rug with a rust ring, round wood table on an iron base, red sofa and two armchairs, floor
+lamps with white drum shades, shrubs in rusty buckets), a pool table and high tables with stools; the spin wheel on the west wall (walk up and press the red button in front of it; each slice shows its prize and chance); the
 arm-wrestling table in the open middle of the room (two stools facing each other: sit down opposite someone, wait out
 a 3-second countdown, then mash Attack — or tap PUSH on a phone — to push the clasped hands over to your side; a pin
 wins at once, otherwise whoever is ahead after 15 seconds; the wrestlers' panel shows the match and, between matches,
