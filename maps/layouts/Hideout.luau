@@ -6,18 +6,23 @@
 	2026-10-27: worn iron, old brass and wood instead of gold and marble, a concrete floor instead of the light carpet;
 	the new layout and 15% smaller, 2026-10-27).
 
+	Sides: the owner sees the room in Studio and names its sides as you face the bar — the bar (North, +Z), the left
+	wall (+X), the right wall (−X) and the ARENA door's wall opposite the bar (South, −Z). The Builder's facing names
+	put "East" at +X with North at +Z, a mirror image of a real compass, so in this room "East" (+X) is the LEFT wall and
+	"West" (−X) the right one; the wall parts are named LeftWall / RightWall, and comments here say left / right.
+
 	Walls: grey-green plaster over dark wood wainscoting (framed panels, a wood rail), dark wood pillars with iron bands
 	and wall lamps, wood beams under a dark ceiling. Floor: concrete, wood planks in the bar.
 	North (the bar's wood floor): the wood-topped counter (Shop) with the bartender (Shop NPC), stools, a back bar with
 	a wood-framed mirror and shelves of bottles, map vote TVs hanging over the bar, news TVs on the counter ends, the
-	title sign; two booths on the west side, the chess table on two armchairs and a booth on the east side, high tables
-	in front of the stools.
-	East (the right wall as you face the bar): the three leaderboards in the middle; in the south-east corner the jukebox
-	(decor) by the teal barrel and the style coach (StyleNPC: opens the Styles screen); a barrel and a dartboard at
-	the north end.
-	West: the spin wheel in the middle, a potted tree.
-	South: the steel ARENA door with the join pad in front of it (QueueZone: only players standing on it are taken into
-	the next round), the spawn pads on both sides of it, the quest board, the street door, crates in the corner.
+	title sign; two booths on the left side, the chess table on two armchairs and a booth on the right side, high
+	tables in front of the stools.
+	Left wall (+X): the three leaderboards in the middle; in the corner by the ARENA wall the jukebox (decor) by the
+	teal barrel and the style coach (StyleNPC: opens the Styles screen); a barrel and a dartboard at the bar end.
+	Right wall (−X): the spin wheel in the middle, a potted tree.
+	South (the ARENA wall): the steel ARENA door with the join pad in front of it (QueueZone: only players standing on
+	it are taken into the next round), the spawn pads on both sides of it, the quest board, the street door, crates in
+	the right-hand corner.
 	Middle: the lounge — a worn rug with a rust ring, a round wood table, a red sofa and two armchairs, floor lamps,
 	potted trees — the arm-wrestling table and the pool table. Furniture comes from maps/lib/Furniture.
 	Seats (sofas, armchairs, booth benches, stools) are LobbySeat-tagged Seats: walk up and press the Sit prompt.
@@ -40,15 +45,16 @@ local WALL = 2
 local KILL_DEPTH = 40 -- falling this far below the floor returns you to a spawn
 local WAINSCOT = 6 -- height of the wood panelling
 local BAR_DEPTH = 27 -- the wood floor in front of the north wall
--- Pillars along each wall (X on the north / south walls, Z on the east / west walls), clear of what hangs there.
+-- Pillars along each wall (X on the bar / ARENA walls, Z on the side walls: East = the left wall (+X), West = the
+-- right wall (−X), the Builder's names), clear of what hangs there.
 local PILLARS = {
 	North = { -30, 30 },
 	South = { -36.5, 36.5 },
-	East = { -25.5, 25.5 }, -- around the leaderboards
-	West = { -28.5, -14.5, 14.5, 28.5 },
+	East = { -23, 23 }, -- the left wall, around the leaderboards
+	West = { -28.5, -14.5, 14.5, 28.5 }, -- the right wall
 }
 
--- Join pad in front of the ARENA door (south wall, opposite the bar; the east wall until 2026-10-27).
+-- Join pad in front of the ARENA door (south wall, opposite the bar; the left wall until 2026-10-27).
 local PAD_SIZE = { 18, 14 } -- X, Z
 local PAD_Z = -HALF_Z + 2 + PAD_SIZE[2] / 2
 
@@ -96,8 +102,9 @@ local function shell()
 		{
 			{ name = "NorthWall", size = { INNER[1] + WALL * 2, HEIGHT + 4, WALL }, pos = { 0, HALF_Z + WALL / 2 } },
 			{ name = "SouthWall", size = { INNER[1] + WALL * 2, HEIGHT + 4, WALL }, pos = { 0, -HALF_Z - WALL / 2 } },
-			{ name = "EastWall", size = { WALL, HEIGHT + 4, INNER[2] }, pos = { HALF_X + WALL / 2, 0 } },
-			{ name = "WestWall", size = { WALL, HEIGHT + 4, INNER[2] }, pos = { -HALF_X - WALL / 2, 0 } },
+			-- Named as you face the bar (EastWall / WestWall until 2026-10-27: the owner saw them the other way round).
+			{ name = "LeftWall", size = { WALL, HEIGHT + 4, INNER[2] }, pos = { HALF_X + WALL / 2, 0 } },
+			{ name = "RightWall", size = { WALL, HEIGHT + 4, INNER[2] }, pos = { -HALF_X - WALL / 2, 0 } },
 		}
 	do
 		B.part({
@@ -132,7 +139,7 @@ local function shell()
 			Material = "Wood",
 		})
 	end
-	-- Pillars along the walls; the east, west and south ones carry lit wall lamps (the south ones light the spawns).
+	-- Pillars along the walls; the side and ARENA-wall ones carry lit wall lamps (those light the spawns).
 	for _, z in PILLARS.East do
 		F.pillar(HALF_X - 1.2, z, "West", HEIGHT, true)
 	end
@@ -463,7 +470,7 @@ local function bar()
 	end
 end
 
--- The steel ARENA door in the middle of the south wall, opposite the bar (the east wall until 2026-10-27; owner:
+-- The steel ARENA door in the middle of the south wall, opposite the bar (the left wall until 2026-10-27; owner:
 -- "arena entry in place of the old leaderboards, opposite the bar"), with the join pad in front of it.
 local function arenaDoor()
 	local z = -HALF_Z + 0.3
@@ -583,9 +590,9 @@ local function arenaDoor()
 	end
 end
 
--- The east wall's decor: a rust barrel with a dartboard over it at the north end, the teal barrel in the south-east
--- corner by the jukebox.
-local function eastWall()
+-- The left wall's decor: a rust barrel with a dartboard over it at the bar end, the teal barrel in the corner by the
+-- jukebox.
+local function leftWall()
 	for index, z in { 30, -HALF_Z + 1.7 } do
 		B.part({
 			Name = `Barrel{index}`,
@@ -623,11 +630,11 @@ local function eastWall()
 end
 
 --[[
-	The style coach in the south-east corner by the jukebox (owner, 2026-10-27: "delete locker area, replace with an
-	interactive NPC for the style roll", then "move style npc to near music box"; at the north end of the west wall for
-	a day): NpcService builds a Roblox character on the invisible Spot, facing the room (like the bartender); the Styles
-	prompt sits on the invisible Torso anchor (LobbyPromptController), so it works even if the character can't be built.
-	He stands against the south wall, a STYLES sign over him, a mat under him.
+	The style coach in the corner of the left wall and the ARENA wall, by the jukebox (owner, 2026-10-27: "delete
+	locker area, replace with an interactive NPC for the style roll", then "move style npc to near music box"; at the
+	bar end of the right wall for a day): NpcService builds a Roblox character on the invisible Spot, facing the room
+	(like the bartender); the Styles prompt sits on the invisible Torso anchor (LobbyPromptController), so it works even
+	if the character can't be built. He stands against the ARENA wall, a STYLES sign over him, a mat under him.
 ]]
 local function styleCoach()
 	local x, z = 41, -HALF_Z + 3
@@ -675,9 +682,10 @@ local function styleCoach()
 	})
 end
 
--- The jukebox on the east wall between the last pillar and the teal barrel in the corner, the style coach beside it
--- (owner, 2026-10-27: "add music box between pillar … green barrel and box"; the Codes jukebox on the west wall went):
--- decor only, no prompt. A wood cabinet with a glowing arch, a window with records, neon stripes and a speaker grille.
+-- The jukebox on the left wall between the last pillar and the teal barrel in the corner, the style coach beside it
+-- (owner, 2026-10-27: "add music box between pillar … green barrel and box"; the Codes jukebox on the right wall
+-- went): decor only, no prompt. A wood cabinet with a glowing arch, a window with records, neon stripes and a
+-- speaker grille.
 local function jukebox()
 	local x, z = HALF_X - 2.5, -30.3
 	local front = -1 -- its front faces the room (−X)
@@ -761,7 +769,7 @@ local function jukebox()
 	end)
 end
 
--- The quest board on the south wall, west of the ARENA door: a framed cork board with pinned notes.
+-- The quest board on the ARENA wall, right of the door as you face the bar: a framed cork board with pinned notes.
 local function questBoard()
 	local at = F.at(-27, -HALF_Z, "North")
 	B.model("QuestBoard", function()
@@ -811,16 +819,17 @@ local function questBoard()
 end
 
 --[[
-	The spin wheel in the middle of the west wall (there since it was built, but for a day, 2026-10-27, on the east wall
-	while the leaderboards had the west wall). A wood backboard with a gold rim, and a Rotor: a black face,
+	The spin wheel in the middle of the right wall (there since it was built, but for a day, 2026-10-27, on the left wall
+	while the leaderboards had the right wall). A wood backboard with a gold rim, and a Rotor: a black face,
 	WHEEL_SEGMENTS pie slices (each two wedges; attribute Segment = its prize's index, the client paints them in the
 	prize colours from Config.Retention.Wheel and turns the Rotor to each spin's prize about the hub's X axis), an
 	invisible Label on each slice (same Segment; facing the room, its up pointing out to the rim: the client writes the
-	prize and its chance on it), a gold hub and pegs. Slice 1 starts under the pointer at the top; slices go round toward +Z. In front, on the
-	mat, the SpinButton: a post with a big red Button that carries the spin prompt (WheelController; since 2026-10-20
+	prize and its chance on it), a gold hub and pegs. Slice 1 starts under the pointer at the top; slices go round
+	toward +Z. In front, on the mat, the SpinButton: a post with a big red Button that carries the spin prompt
+	(WheelController; since 2026-10-20
 	there is no wheel screen — owner: "no click UI, have to walk to spin"). The model streams in whole (Atomic), so the
-	client always finds every slice and label. `ROOM` is the side of the wall the room is on (1: toward +X, the west
-	wall; −1 on the east wall).
+	client always finds every slice and label. `ROOM` is the side of the wall the room is on (1: toward +X, on the right
+	wall; −1 on the left wall).
 ]]
 local WHEEL_SEGMENTS = 8 -- one per prize in Config.Retention.Wheel.Prizes (the maps spec checks)
 local function spinWheel()
@@ -979,35 +988,40 @@ local function spinWheel()
 end
 
 --[[
-	Three tall dark leaderboard boards in the middle of the east wall (owner, 2026-10-27: "center of left wall", then
-	"opposite side": the west wall for a day; the south wall until then) — reference: leaderboard-boards.png. Each: a
+	Three tall dark leaderboard boards in the middle of the left wall (owner, 2026-10-27: "center of left wall", then
+	"opposite side": the right wall for a day; the south wall until then) — reference: leaderboard-boards.png. Each: a
 	wood frame with iron corners, a cream title with a thin gold underline, and the screen the rows are drawn on
 	(LeaderboardController). Read from left to right (south to north): Wins, KOs, Level.
 ]]
 local function leaderboards()
-	local width = 14 -- 17 until 2026-10-27; the corner past the pillars is the jukebox's
+	-- 12 × 16.5 since 2026-10-27 (owner: "smaller leaderboard"; 17 × 21 before, 14 × 21 for a day). The screen keeps
+	-- the first board's shape, so LeaderboardController scales the same rows to it.
+	local width, height, bottom = 12, 16.5, 2.5
+	local middle, top = bottom + height / 2, bottom + height
+	local screenWidth = width - 1.2
+	local screenHeight = screenWidth * 16.2 / 15.5
 	for index, board in
 		{
-			{ z = -16, stat = "Wins" },
+			{ z = -14.5, stat = "Wins" },
 			{ z = 0, stat = "KOs" },
-			{ z = 16, stat = "Level" },
+			{ z = 14.5, stat = "Level" },
 		}
 	do
 		local at = F.at(HALF_X, board.z, "West")
 		B.model(`Leaderboard{board.stat}`, function()
 			B.part(at({
 				Name = "Frame",
-				Size = { width, 21, 1 },
-				Position = { 0, 12.5, 0.5 },
+				Size = { width, height, 1 },
+				Position = { 0, middle, 0.5 },
 				Color = "BoardDark",
 				Material = "SmoothPlastic",
 			}))
 			for _, edge in
 				{
-					{ size = { width + 0.6, 0.6, 1.3 }, at = { 0, 23.2 } },
-					{ size = { width + 0.6, 0.6, 1.3 }, at = { 0, 1.8 } },
-					{ size = { 0.6, 21.4, 1.3 }, at = { -width / 2 - 0.3, 12.5 } },
-					{ size = { 0.6, 21.4, 1.3 }, at = { width / 2 + 0.3, 12.5 } },
+					{ size = { width + 0.6, 0.6, 1.3 }, at = { 0, top + 0.2 } },
+					{ size = { width + 0.6, 0.6, 1.3 }, at = { 0, bottom - 0.2 } },
+					{ size = { 0.6, height + 0.4, 1.3 }, at = { -width / 2 - 0.3, middle } },
+					{ size = { 0.6, height + 0.4, 1.3 }, at = { width / 2 + 0.3, middle } },
 				}
 			do
 				B.part(at({
@@ -1019,7 +1033,7 @@ local function leaderboards()
 				}))
 			end
 			for _, cx in { -width / 2 - 0.3, width / 2 + 0.3 } do
-				for _, cy in { 1.8, 23.2 } do
+				for _, cy in { bottom - 0.2, top + 0.2 } do
 					B.part(at({
 						Name = "Corner",
 						Size = { 0.9, 0.9, 0.2 },
@@ -1032,8 +1046,8 @@ local function leaderboards()
 			end
 			B.sign(at({
 				Name = "Title",
-				Size = { width - 1.5, 2.4, 0.2 },
-				Position = { 0, 21.1, 1.1 },
+				Size = { screenWidth, 2, 0.2 },
+				Position = { 0, top - 1.6, 1.1 },
 				Color = "BoardDark",
 				Material = "SmoothPlastic",
 				Key = `Lobby.Sign.Leaderboard.{board.stat}`,
@@ -1042,8 +1056,8 @@ local function leaderboards()
 			}))
 			B.part(at({
 				Name = "Underline",
-				Size = { 10, 0.15, 0.2 },
-				Position = { 0, 19.7, 1.15 },
+				Size = { width * 0.6, 0.12, 0.2 },
+				Position = { 0, top - 3.1, 1.15 },
 				Color = "Gold",
 				Material = "Neon",
 				CanCollide = false,
@@ -1051,8 +1065,8 @@ local function leaderboards()
 			}))
 			B.part(at({
 				Name = "Screen",
-				Size = { width - 1.5, 16.2, 0.2 },
-				Position = { 0, 11, 1.1 },
+				Size = { screenWidth, screenHeight, 0.2 },
+				Position = { 0, top - 3.75 - screenHeight / 2, 1.1 },
 				Color = "BoardDark",
 				Material = "SmoothPlastic",
 				Tags = { "LeaderboardScreen" },
@@ -1154,7 +1168,7 @@ local function lounge()
 	F.sofa("ArmchairEast", rugX + 11.5, rugZ + 0.5, "West", { Seats = 1, Color = "Sofa" })
 	F.floorLamp(rugX - 9, rugZ - 9.5)
 	F.floorLamp(rugX + 9, rugZ - 9.5)
-	F.plant(-HALF_X + 3, -21.5) -- by the west wall, between the pillars south of the wheel
+	F.plant(-HALF_X + 3, -21.5) -- by the right wall, between the pillars past the wheel
 	F.plant(rugX + 16, rugZ + 10)
 	F.pendant(rugX, 17, rugZ, HEIGHT, 30)
 
@@ -1170,13 +1184,13 @@ local function lounge()
 	end
 	F.pendant(0, 18, 13, HEIGHT, 26)
 
-	-- Booths on the bar's wood floor: two on the west side (one more since 2026-10-27, owner: "add more tables with
-	-- sofas"), one on the east side south of the chess table (in the north-east corner until then).
-	booth("BoothNorthWest", -33, HALF_Z - 8.5)
-	booth("BoothWest", -33, 15)
-	booth("BoothEast", 29, 15) -- clear of the leaderboards on the east wall
+	-- Booths on the bar's wood floor (one more since 2026-10-27, owner: "add more tables with sofas"): two on the left
+	-- side, clear of the leaderboards, one on the right side in front of the chess table.
+	booth("BoothLeftNorth", 31, HALF_Z - 8.5)
+	booth("BoothLeft", 31, 15)
+	booth("BoothRight", -33, 15)
 
-	-- Crates: the hideout's junk, in the south-west corner (the south-east one went to the jukebox and the coach).
+	-- Crates: the hideout's junk, in the right-hand corner by the ARENA wall (the left one is the jukebox's).
 	for index, crate in
 		{
 			{ -HALF_X + 3, -HALF_Z + 3, 4 },
@@ -1198,7 +1212,7 @@ local function lounge()
 end
 
 -- The arm-wrestling table (ArmWrestleService) in the open middle of the room, between the lounge and the pool table,
--- on its own rug under its own lamp. The pull runs east-west.
+-- on its own rug under its own lamp. The pull runs along X (side to side).
 local ARM_WRESTLE = { 0, -4 }
 local function armWrestle()
 	local x, z = ARM_WRESTLE[1], ARM_WRESTLE[2]
@@ -1207,10 +1221,11 @@ local function armWrestle()
 	F.pendant(x, 15, z, HEIGHT, 22)
 end
 
--- The chess table (ChessService) in the north-east corner of the bar's wood floor, right of the bar, on two armchairs
--- and no rug (owner, 2026-10-27: "chess to north right, change chair to sofa, no rug"), under its own lamp. White sits
--- in the west armchair.
-local CHESS = { 35, 28.5 }
+-- The chess table (ChessService) in the right-hand corner of the bar's wood floor as you face the bar, on two
+-- armchairs and no rug (owner, 2026-10-27: "chess to north right, change chair to sofa, no rug"; it stood in the
+-- left-hand corner for a day, the Builder's mirrored "east"), under its own lamp. White sits in the −X armchair (the
+-- one nearer the right wall).
+local CHESS = { -35, 28.5 }
 local function chess()
 	local x, z = CHESS[1], CHESS[2]
 	F.chessTable("ChessTable", x, z, 3)
@@ -1224,7 +1239,7 @@ function Layout.build(origin: { number }): any
 			shell()
 			bar()
 			arenaDoor()
-			eastWall()
+			leftWall()
 			styleCoach()
 			jukebox()
 			questBoard()

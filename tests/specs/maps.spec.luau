@@ -564,7 +564,7 @@ return {
 		end
 	end,
 	["lobby: enclosed (four walls and a ceiling)"] = function()
-		for _, name in { "NorthWall", "SouthWall", "EastWall", "WestWall", "Ceiling" } do
+		for _, name in { "NorthWall", "SouthWall", "LeftWall", "RightWall", "Ceiling" } do
 			expect.truthy(lobby:FindFirstChild(name, true), name)
 		end
 	end,
