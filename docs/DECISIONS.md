@@ -896,3 +896,11 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   sofa that became a 2-seater facing the wheel), which also fits the earlier "2 chair … circle table": the lounge in
   front of the spin wheel is now the round table between the two armchairs on a 12 × 18 rug, a floor lamp beside
   each armchair. 31 lobby seats.
+- **Lobby clean-up (owner, 2026-10-27: "remove the 2 armchair too, remove stand here to fight sign, set player spawn
+  in center no blue plate below"):** the two armchairs in front of the spin wheel went too: the rug, the round table
+  and the two floor lamps stay. The two "STAND HERE TO FIGHT" signs on posts at the join pad are gone (and their
+  `Lobby.Sign.Join` string); the glowing pad and the ARENA sign show the way. **Spawn:** one SpawnLocation in the
+  middle of the room, 10 × 10, flush with the floor, invisible and walk-through (the two teal 6 × 6 pads beside the
+  join pad were visible: LobbySpawn isn't a hidden marker), facing the bar. `MapService.getLobbySpawn` now puts each
+  returning player on a random spot of it (1 stud inside its edge), so players back from a round don't stack. The
+  maps spec checks one invisible, walk-through spawn at the room's centre facing the bar. 29 lobby seats.

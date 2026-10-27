@@ -19,13 +19,13 @@
 	on the right side, high tables in front of the stools.
 	Left wall (+X): the three leaderboards in the middle with the pool table and the arm-wrestling table in front of
 	them; a barrel and a dartboard at the bar end, the teal barrel in the corner by the ARENA wall.
-	Right wall (−X): the spin wheel in the middle with the lounge in front of it — a worn rug with a rust ring, a round
-	wood table between two red armchairs, floor lamps — and a potted tree.
+	Right wall (−X): the spin wheel in the middle with a worn rug, a round wood table and two floor lamps in front of
+	it, and a potted tree.
 	South (the ARENA wall): the steel ARENA door with the join pad in front of it (QueueZone: only players standing on
-	it are taken into the next round), the spawn pads on both sides of it; left of it the style coach (StyleNPC: opens
-	the Styles screen) by the jukebox (decor) and the street door in the corner; right of it the quest board and the
-	crates in the corner.
-	Middle: open floor between the ARENA door and the bar, potted trees. Furniture comes from maps/lib/Furniture.
+	it are taken into the next round); left of it the style coach (StyleNPC: opens the Styles screen) by the jukebox
+	(decor) and the street door in the corner; right of it the quest board and the crates in the corner.
+	Middle: open floor between the ARENA door and the bar with the spawn (invisible) in the centre, potted trees.
+	Furniture comes from maps/lib/Furniture.
 	Seats (sofas, armchairs, booth benches, stools) are LobbySeat-tagged Seats: walk up and press the Sit prompt.
 	Interactive objects carry CollectionService tags so code can attach prompts and UI.
 ]]
@@ -567,28 +567,8 @@ local function arenaDoor()
 			CastShadow = false,
 		})
 	end
-	-- "Stand here" signs on posts at both front corners of the pad, facing the room.
-	for _, side in { -1, 1 } do
-		local signX, signZ = side * (PAD_SIZE[1] / 2 + 1.5), front + 1.5
-		B.part({
-			Name = "JoinSignPost",
-			Size = { 0.5, 4, 0.5 },
-			Position = { signX, 2, signZ },
-			Color = "Metal",
-			Material = "Metal",
-		})
-		B.sign({
-			Name = "JoinSign",
-			Size = { 7, 2.4, 0.3 },
-			Position = { signX, 5.2, signZ },
-			Rotation = B.yaw("North"),
-			Color = "Black",
-			Material = "SmoothPlastic",
-			Key = "Lobby.Sign.Join",
-			TextColor = "NeonOrange",
-			Glow = true,
-		})
-	end
+	-- The "STAND HERE TO FIGHT" signs on posts at the pad's front corners went on 2026-10-27 (owner: "remove stand here
+	-- to fight sign"); the glowing pad and the ARENA sign show the way.
 end
 
 -- The left wall's decor: a rust barrel with a dartboard over it at the bar end, the teal barrel in the corner by the
@@ -1080,19 +1060,25 @@ local function leaderboards()
 	end
 end
 
--- The spawn pads on both sides of the join pad, facing the bar, two trees by the walls, and the street door.
+--[[
+	The spawn in the middle of the room, facing the bar: an invisible, walk-through SpawnLocation flush with the floor
+	(owner, 2026-10-27: "set player spawn in center, no blue plate below"; two teal 6 × 6 pads beside the join pad
+	before). MapService puts returning players on a random spot of it. Then two trees by the ARENA wall and the street
+	door.
+]]
 local function spawns()
-	for index, x in { -19, 19 } do
-		B.spawnLocation({
-			Name = `LobbySpawn{index}`,
-			Size = { 6, 1, 6 },
-			Position = { x, 0.5, PAD_Z + 3 },
-			Rotation = B.yaw("North"), -- players spawn facing the bar
-			Color = "Teal",
-			Material = "SmoothPlastic",
-			Tags = { "LobbySpawn" },
-		})
-	end
+	B.spawnLocation({
+		Name = "LobbySpawn",
+		Size = { 10, 0.2, 10 },
+		Position = { 0, 0.1, 0 },
+		Rotation = B.yaw("North"), -- players spawn facing the bar
+		Color = "Teal",
+		Material = "SmoothPlastic",
+		Transparency = 1,
+		CanCollide = false,
+		CastShadow = false,
+		Tags = { "LobbySpawn" },
+	})
 	-- The street door the crew comes in through (decor): a panelled door in a wood frame with a lamp over it, in the
 	-- left-hand corner of the ARENA wall since 2026-10-27 (owner: "swap place of npc style + music box with green door").
 	local doorX = 41
@@ -1168,16 +1154,13 @@ end
 local function lounge()
 	--[[
 		The sitting area in front of the spin wheel (owner, 2026-10-27: "bit smaller 2 chair sofa circle table in front
-		spin wheel", then "just remove that 3 sofa"; in the middle of the room before, with a 3-seat sofa, and for a day
-		with a 2-seat sofa facing the wheel): a worn rug with a rust ring, a round wood table with a red armchair on each
-		side, a floor lamp beside each armchair. The wheel's mat stays clear: the rug stops short of it, with a walkway
-		between the table and the mat.
+		spin wheel", "just remove that 3 sofa", then "remove the 2 armchair too"; in the middle of the room before, with a
+		3-seat sofa and two armchairs): a worn rug with a rust ring, a round wood table, a floor lamp on each side. The
+		wheel's mat stays clear: the rug stops short of it, with a walkway between the table and the mat.
 	]]
 	local rugX, rugZ = -33, 0
 	F.rug(rugX, rugZ, 12, 18, 8)
 	F.roundTable("CoffeeTable", rugX, rugZ, 5, 2.4)
-	F.sofa("ArmchairArenaSide", rugX, rugZ - 6.6, "North", { Seats = 1, Color = "Sofa" })
-	F.sofa("ArmchairBarSide", rugX, rugZ + 6.6, "South", { Seats = 1, Color = "Sofa" })
 	F.floorLamp(rugX + 4.5, rugZ - 6.6)
 	F.floorLamp(rugX + 4.5, rugZ + 6.6)
 	F.plant(-HALF_X + 3, -21.5) -- by the right wall, between the pillars past the wheel

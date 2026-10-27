@@ -109,7 +109,8 @@ Settings → Promo code, styles come from the style roll).
   light carpet, so check the room isn't too dim (raise a pendant's range or brightness in `maps/layouts/Hideout`, or
   the Dusk preset's `Ambient` in `Config.Lighting`, if it is).
 - **New lobby layout (2026-10-27):** the room is 98 × 72; left / right below are as you face the bar. Spawn: you land
-  beside the ARENA door and join pad (the wall opposite the bar). Check: the three leaderboards in the middle of the
+  in the middle of the room facing the bar, with no plate under you; coming back from a round several players land
+  spread over the spawn, not on top of each other. Check: the three leaderboards in the middle of the
   left wall fill in (Wins, KOs, Level from left to right) and their rows fit the smaller boards, and the pool and
   arm-wrestling tables in front of them don't hide the rows; the style coach stands left of the ARENA door by the
   jukebox in a red tracksuit (Output `[Npc] built the Coach`) and his prompt opens Styles; the spin wheel (right wall)

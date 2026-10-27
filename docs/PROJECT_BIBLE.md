@@ -162,13 +162,13 @@ right-hand corner with the chess table in front of it, high tables with stools i
 value with thousands separators, the top 3 outlined in gold / silver / bronze) with the pool table and the
 arm-wrestling table in front of them; a barrel and a dartboard at the bar end, the teal barrel in the corner. Right
 wall — the spin wheel in the middle (walk up and press the red button in front of it; each slice shows its prize and
-chance) with the lounge in front of it (worn dark rug with a rust ring, round wood table on an iron base between two red
-armchairs, floor lamps with white drum shades), a potted tree. South (the ARENA wall,
-opposite the bar) — the steel ARENA door with the glowing join pad and the spawns on both sides of it; left of it the
+chance) with a worn dark rug with a rust ring, a round wood table on an iron base and two floor lamps with white drum
+shades in front of it, a potted tree. South (the ARENA wall, opposite the bar) — the steel ARENA door with the
+glowing join pad in front of it; left of it the
 style coach (a standing Roblox character in a red tracksuit with a headband and a whistle, under a STYLES sign: walk
 up for the Styles screen, the style roll) by a jukebox (decor) and the street door in the corner; right of it the
-cork quest board and crates in the corner. Middle — open floor from the ARENA door to the bar, potted trees in black
-pots. The arm-wrestling table has two stools facing each other: sit down opposite someone, wait out
+cork quest board and crates in the corner. Middle — open floor from the ARENA door to the bar; players spawn in the
+centre of the room, facing the bar (no visible spawn pad); potted trees in black pots. The arm-wrestling table has two stools facing each other: sit down opposite someone, wait out
 a 3-second countdown, then mash Attack — or tap PUSH on a phone — to push the clasped hands over to your side; a pin
 wins at once, otherwise whoever is ahead after 15 seconds; the wrestlers' panel shows the match and, between matches,
 the table champion's wins in a row; no Coins at stake, wins count toward a lifetime arm-wrestling stat. The chess

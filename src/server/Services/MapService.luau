@@ -22,6 +22,7 @@ local LightingPresets = require(Shared:WaitForChild("Config"):WaitForChild("Ligh
 
 local FALL_CHECK_INTERVAL = 0.2
 local SPAWN_HEIGHT = 3
+local SPAWN_EDGE = 1 -- lobby spawn spots stay this far inside the spawn's edge
 
 export type FallZone = "Lobby" | "Arena"
 
@@ -232,12 +233,16 @@ local function teleport(player: Player, target: CFrame)
 	end
 end
 
--- A random lobby spawn, raised so the character stands on it.
+-- A random spot on a random lobby spawn (the lobby has one wide spawn since 2026-10-27, so players coming back
+-- together don't land on top of each other), raised so the character stands on it.
 function MapService.getLobbySpawn(): CFrame
 	local spawns = CollectionService:GetTagged("LobbySpawn")
 	local spawn = spawns[math.random(1, math.max(#spawns, 1))]
 	if spawn and spawn:IsA("BasePart") then
-		return spawn.CFrame + Vector3.new(0, SPAWN_HEIGHT, 0)
+		local spreadX = math.max(spawn.Size.X / 2 - SPAWN_EDGE, 0)
+		local spreadZ = math.max(spawn.Size.Z / 2 - SPAWN_EDGE, 0)
+		local offset = Vector3.new((math.random() * 2 - 1) * spreadX, 0, (math.random() * 2 - 1) * spreadZ)
+		return spawn.CFrame * CFrame.new(offset) + Vector3.new(0, SPAWN_HEIGHT, 0)
 	end
 	return CFrame.new(toVector(Config.Maps.LobbyOrigin) + Vector3.new(0, SPAWN_HEIGHT, 0))
 end
