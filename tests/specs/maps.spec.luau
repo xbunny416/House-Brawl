@@ -563,6 +563,19 @@ return {
 			expect.truthy(outside, `{spawn.Name} is on the join pad`)
 		end
 	end,
+	["lobby: one invisible, walk-through spawn in the middle of the room, facing the bar"] = function()
+		-- The owner, 2026-10-27: "set player spawn in center, no blue plate below".
+		local spawns = tagged(lobby, "LobbySpawn")
+		expect.equal(#spawns, 1, "lobby spawns")
+		local spawn = spawns[1]
+		expect.equal(spawn.Transparency, 1, "invisible")
+		expect.equal(spawn.CanCollide, false, "walk-through")
+		local origin = Config.Maps.LobbyOrigin
+		local position = spawn.CFrame.Position
+		expect.near(position.X, origin[1], 0.001, "centre (X)")
+		expect.near(position.Z, origin[3], 0.001, "centre (Z)")
+		expect.truthy(spawn.CFrame.LookVector.Z > 0.99, "faces the bar (+Z)")
+	end,
 	["lobby: enclosed (four walls and a ceiling)"] = function()
 		for _, name in { "NorthWall", "SouthWall", "LeftWall", "RightWall", "Ceiling" } do
 			expect.truthy(lobby:FindFirstChild(name, true), name)
