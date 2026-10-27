@@ -109,7 +109,10 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
   lobby's join pad is a visible `QueueZone`-tagged part (not a marker). Each arena platform is a `Platform`-tagged
   Model (Persistent streaming, `CanFall` attribute). Sign text comes from GameStrings keys (`LocKey` attribute on the
   label). For a final art pass a map can switch to a hand-built model: export it from Studio to `maps/<Name>.rbxmx`,
-  point `default.project.json` at it, and remove it from `maps/build.luau`.
+  point `default.project.json` at it, and remove it from `maps/build.luau`. **Directions:** the Builder's facing
+  names (North = +Z, East = +X) are a mirror image of a compass — facing +Z, +X is on your *left*. Tell the owner
+  where things are as left / right as you face the lobby's bar (+Z), never "east / west" (the lobby walls are
+  `LeftWall` = +X, `RightWall` = −X).
 - **Input:** gameplay code never reads raw keys. It listens to `Controllers/InputController` (`ActionBegan` /
   `ActionEnded` with an action from `Config.Controls.Actions`; `getDevice()` / `DeviceChanged` for key hints). A new
   action needs a keyboard and a gamepad binding, a `Controls.<Action>` string, and a touch button in

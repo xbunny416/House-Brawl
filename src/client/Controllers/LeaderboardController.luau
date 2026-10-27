@@ -26,7 +26,9 @@ local Kit = require(Client:WaitForChild("Ui"):WaitForChild("Kit"))
 
 local SCREEN_TAG = "LeaderboardScreen"
 local GUI_NAME = "LeaderboardGui"
-local PIXELS_PER_STUD = 40
+-- Pixels across a screen: the rows were laid out on a 15.5-stud screen at 40 px a stud, so a smaller board (the
+-- lobby's, since 2026-10-27) shows the same rows, just smaller.
+local CANVAS_WIDTH = 620
 local TOP_ROW = 1.35 -- height of a top-3 row, in plain rows
 
 local LeaderboardController = {}
@@ -156,7 +158,7 @@ local function addScreen(part: Instance)
 	surface.Name = GUI_NAME
 	surface.Face = Enum.NormalId.Front
 	surface.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
-	surface.PixelsPerStud = PIXELS_PER_STUD
+	surface.PixelsPerStud = CANVAS_WIDTH / (part :: BasePart).Size.X
 	surface.LightInfluence = 0
 	local frame = Instance.new("Frame")
 	frame.Name = "Rows"

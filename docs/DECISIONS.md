@@ -864,3 +864,18 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   tree south of it; the north end (where the coach stood) is open. The crates moved to the south-west corner, the east
   booth 6 studs west (x 29) so it doesn't hide the boards, the lounge 2 studs east (room in front of the wheel's mat),
   the street door to x 30 (clear of the south pillars at x ±36.5).
+- **Left and right were mirrored; smaller leaderboards (owner, 2026-10-27: "smaller leaderboard, rename wall or idk
+  why coordinate like this but from studio it opposite"):** the Builder's facing names put North at +Z and East at
+  +X, a mirror image of a compass: standing in the lobby facing the bar (+Z), +X is on your **left**. My notes and
+  replies today called +X "east" and "the right wall", so everything I described as right was on the owner's left.
+  Fixed: the lobby's side walls are named by what you see facing the bar — `LeftWall` (+X, was EastWall) and
+  `RightWall` (−X, was WestWall); the layout's comments, the bible and the Studio notes say left / right; CLAUDE.md
+  says never to tell the owner "east / west". The Builder's facing names stay (every map uses them; renaming would
+  turn every piece). What moved: the **chess table** to the bar's right-hand corner (−X), which is the "north right"
+  the owner asked for (it had been in the left-hand corner), with a booth in front of it; the two other booths to the
+  left side of the bar floor, clear of the leaderboards. The leaderboards (left wall), the jukebox and coach (the left
+  wall's corner by the ARENA wall) and the wheel (right wall) were already where the owner wanted them. **Leaderboards
+  smaller:** 12 × 16.5 (14 × 21 before, 17 × 21 at first), 1 stud apart; the screen keeps the first board's shape and
+  `LeaderboardController` sets PixelsPerStud from the screen's width (620 px across, as on the first 15.5-stud
+  screen), so the rows look the same, just smaller. The arenas use the same facing names (their "East" platforms are
+  at +X); not renamed.

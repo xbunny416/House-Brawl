@@ -92,8 +92,8 @@ Settings → Promo code, styles come from the style roll).
   vote offers only your choices and the round timer starts at 2:00; `[Rewards]` in Output pays nothing and stats don't change. Rejoin and turn
   it on again: your choices are remembered (with Studio API access on). Output shows `[PrivateServer]`.
 - **Walk-up test (Studio):** walk to the bartender behind the bar counter (north) — a "Shop" prompt shows within 12
-  studs; press E (gamepad B, or tap it) and the Shop opens. Same at the style coach (south-east corner) for the
-  Styles screen and at the quest board (south wall) for the Quests. The
+  studs; press E (gamepad B, or tap it) and the Shop opens. Same at the style coach (by the jukebox) for the
+  Styles screen and at the quest board (by the ARENA door) for the Quests. The
   prompts disappear while a screen is open. If the bartender's prompt is hard to reach from the counter, the range
   is `Config.Controls.Prompts.MaxDistance`.
 - **Animations are scripted poses** (2.6), tuned blind: angles may need flipping or softening after the first
@@ -108,10 +108,11 @@ Settings → Promo code, styles come from the style roll).
   and the booths: iron instead of gold, wood instead of marble, a concrete floor. The concrete is darker than the old
   light carpet, so check the room isn't too dim (raise a pendant's range or brightness in `maps/layouts/Hideout`, or
   the Dusk preset's `Ambient` in `Config.Lighting`, if it is).
-- **New lobby layout (2026-10-27):** the room is 98 × 72. Spawn: you land beside the ARENA door and join pad (south
-  wall, opposite the bar). Check: the three leaderboards in the middle of the east wall fill in (Wins, KOs, Level from
-  left to right); the style coach stands in the south-east corner by the jukebox in a red tracksuit (Output
-  `[Npc] built the Coach`) and his prompt opens Styles; the spin wheel (back on the west wall) spins and lands on the
-  prize it says; the chess table's armchairs (north-east, on the bar's wood
-  floor) seat both players and a game starts; three booths and the high tables can be sat at. The old locker booth and
-  codes jukebox are gone (Inventory and Promo code from the menu); the jukebox by the teal barrel is decor.
+- **New lobby layout (2026-10-27):** the room is 98 × 72; left / right below are as you face the bar. Spawn: you land
+  beside the ARENA door and join pad (the wall opposite the bar). Check: the three leaderboards in the middle of the
+  left wall fill in (Wins, KOs, Level from left to right) and their rows fit the smaller boards; the style coach
+  stands in the corner of the left wall by the jukebox in a red tracksuit (Output `[Npc] built the Coach`) and his
+  prompt opens Styles; the spin wheel (right wall) spins and lands on the prize it says; the chess table's armchairs
+  (the bar's right-hand corner) seat both players and a game starts; three booths and the high tables can be sat at.
+  The old locker booth and codes jukebox are gone (Inventory and Promo code from the menu); the jukebox by the teal
+  barrel is decor.
