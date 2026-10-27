@@ -403,20 +403,31 @@ function Furniture.roundTable(name: string, x: number, z: number, diameter: numb
 	end)
 end
 
--- A rectangular wood booth table on an iron pedestal.
-function Furniture.boothTable(name: string, x: number, z: number)
+-- A rectangular wood booth table on iron pedestals, `length` along X (6 for 2-seat benches; a long booth table stands
+-- on two pedestals).
+function Furniture.boothTable(name: string, x: number, z: number, length: number?)
 	local put = frame(x, z, "South")
+	local long = length or 6
 	B.model(name, function()
-		put({ Name = "Top", Size = { 6, 0.35, 3.4 }, Position = { 0, 3, 0 }, Color = "WoodMid", Material = "Wood" })
+		put({ Name = "Top", Size = { long, 0.35, 3.4 }, Position = { 0, 3, 0 }, Color = "WoodMid", Material = "Wood" })
 		put({
 			Name = "Edge",
-			Size = { 6.3, 0.15, 3.7 },
+			Size = { long + 0.3, 0.15, 3.7 },
 			Position = { 0, 2.78, 0 },
 			Color = "WoodDark",
 			Material = "Wood",
 		})
-		upright(put, "Pedestal", { 0, 1.4, 0 }, 2.8, 0.6, "Iron", "Metal", true)
-		put({ Name = "Foot", Size = { 3, 0.25, 1.6 }, Position = { 0, 0.12, 0 }, Color = "Iron", Material = "Metal" })
+		local legs = if long > 7 then { -long / 4, long / 4 } else { 0 }
+		for _, lx in legs do
+			upright(put, "Pedestal", { lx, 1.4, 0 }, 2.8, 0.6, "Iron", "Metal", true)
+			put({
+				Name = "Foot",
+				Size = { 3, 0.25, 1.6 },
+				Position = { lx, 0.12, 0 },
+				Color = "Iron",
+				Material = "Metal",
+			})
+		end
 	end)
 end
 
