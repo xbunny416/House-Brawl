@@ -17,13 +17,14 @@
 	a wood-framed mirror and shelves of bottles, map vote TVs hanging over the bar, news TVs on the counter ends, the
 	title sign; two long booths for six on the left side, another and the chess table on two armchairs in front of it
 	on the right side, high tables in front of the stools.
-	Left wall (+X): the three leaderboards in the middle with the pool table and the arm-wrestling table in front of
-	them; a barrel and a dartboard at the bar end, the teal barrel in the corner by the ARENA wall.
+	Left wall (+X): the three leaderboards in the middle with the pool table in front of them; a barrel and a dartboard
+	at the bar end, the teal barrel in the corner by the ARENA wall.
 	Right wall (−X): the spin wheel in the middle with open floor in front of it, and a potted tree.
 	South (the ARENA wall): the steel ARENA door with the join pad in front of it (QueueZone: only players standing on
 	it are taken into the next round); left of it the style coach (StyleNPC: opens the Styles screen) by the jukebox
 	(decor) and the street door in the corner; right of it the quest board and the crates in the corner.
-	Middle: open floor between the ARENA door and the bar with the spawn (invisible) in the centre.
+	Middle: open floor between the ARENA door and the bar with the spawn (invisible) in the centre; the arm-wrestling
+	table in front of the quest board, level with the pillar on the ARENA side of the spin wheel.
 	Furniture comes from maps/lib/Furniture.
 	Seats (sofas, armchairs, booth benches, stools) are LobbySeat-tagged Seats: walk up and press the Sit prompt.
 	Interactive objects carry CollectionService tags so code can attach prompts and UI.
@@ -753,8 +754,9 @@ local function jukebox()
 end
 
 -- The quest board on the ARENA wall, right of the door as you face the bar: a framed cork board with pinned notes.
+local QUEST_X = -27
 local function questBoard()
-	local at = F.at(-27, -HALF_Z, "North")
+	local at = F.at(QUEST_X, -HALF_Z, "North")
 	B.model("QuestBoard", function()
 		B.part(at({
 			Name = "Frame",
@@ -1197,11 +1199,11 @@ local function lounge()
 	end
 end
 
--- The arm-wrestling table (ArmWrestleService) by the left wall between the pool table and the booths (owner,
--- 2026-10-27: "arm wrestling and snooker move to side"; in the middle of the room before), on its own rug (its lamp
--- went with the other lamps over the concrete, 2026-10-27). The pull runs along X (toward and away from the left
--- wall).
-local ARM_WRESTLE = { 37, 3 }
+-- The arm-wrestling table (ArmWrestleService) where the line out from the quest board meets the line out from the
+-- spin wheel's left pillar (the one toward the ARENA wall), on its own rug (owner, 2026-10-27: "change wrestling to
+-- intercept in front of quest and left spin wheel pillar"; in the middle of the room, then by the left wall before).
+-- The pull runs along X (side to side).
+local ARM_WRESTLE = { QUEST_X, PILLARS.West[2] }
 local function armWrestle()
 	local x, z = ARM_WRESTLE[1], ARM_WRESTLE[2]
 	F.rug(x, z, 12, 9, 7)

@@ -913,3 +913,9 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   lamps (12 before). The concrete part is lit by the pillars' wall lamps, the join pad, the jukebox and the wheel's hub
   light; check it isn't too dark. **Booths:** all three are long 6-seat booths (two 3-seat benches and a 9-stud table
   on two pedestals); the two on the left moved 2 studs toward the wall to stay clear of the bar. 33 lobby seats.
+- **Arm wrestling in front of the quest board (owner, 2026-10-27: "change wrestling to intercept in front of quest and
+  left spin wheel pillar"):** read as where the line straight out from the quest board meets the line straight out
+  from the spin wheel's left pillar — left as the wheel faces the room, i.e. the pillar toward the ARENA wall (the
+  other pillar's line would run into the chess table). The table (with its rug) stands at x = the quest board's
+  centre, z = that pillar (`ARM_WRESTLE = { QUEST_X, PILLARS.West[2] }`), about 20 studs in front of the board, clear
+  of the join pad and the wheel's mat. The pool table stays alone in front of the leaderboards.

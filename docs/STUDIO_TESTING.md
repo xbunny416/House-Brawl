@@ -111,8 +111,9 @@ Settings → Promo code, styles come from the style roll).
 - **New lobby layout (2026-10-27):** the room is 98 × 72; left / right below are as you face the bar. Spawn: you land
   in the middle of the room facing the bar, with no plate under you; coming back from a round several players land
   spread over the spawn, not on top of each other. Check: the three leaderboards in the middle of the
-  left wall fill in (Wins, KOs, Level from left to right) and their rows fit the smaller boards, and the pool and
-  arm-wrestling tables in front of them don't hide the rows; the style coach stands left of the ARENA door by the
+  left wall fill in (Wins, KOs, Level from left to right) and their rows fit the smaller boards, and the pool
+  table in front of them doesn't hide the rows; the arm-wrestling table stands in front of the quest board; the
+  style coach stands left of the ARENA door by the
   jukebox in a red tracksuit (Output `[Npc] built the Coach`) and his prompt opens Styles; the spin wheel (right wall)
   spins and lands on the prize it says, with open floor in front of it; the
   chess table's armchairs (right side of the bar floor) seat both players and a game starts; all three booths

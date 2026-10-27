@@ -159,8 +159,8 @@ channel: fun headlines mixed with live news — the last winner, today's deal, t
 ticker), the "JUNKYARD BRAWL" sign; three long booths for six (two on the left side as you face the bar, one in the
 right-hand corner with the chess table in front of it), high tables with stools in front of the bar stools. Left wall
 — three dark leaderboard boards in the middle (cream title, gold underline; rows of rank, avatar headshot, name and
-value with thousands separators, the top 3 outlined in gold / silver / bronze) with the pool table and the
-arm-wrestling table in front of them; a barrel and a dartboard at the bar end, the teal barrel in the corner. Right
+value with thousands separators, the top 3 outlined in gold / silver / bronze) with the pool table in front
+of them; a barrel and a dartboard at the bar end, the teal barrel in the corner. Right
 wall — the spin wheel in the middle (walk up and press the red button in front of it; each slice shows its prize and
 chance) with open floor in front of it, a potted tree. South (the ARENA wall, opposite the bar) — the steel ARENA door with the
 glowing join pad in front of it; left of it the
@@ -168,7 +168,8 @@ style coach (a standing Roblox character in a red tracksuit with a headband and 
 up for the Styles screen, the style roll) by a jukebox (decor) and the street door in the corner; right of it the
 cork quest board and crates in the corner. Middle — open floor from the ARENA door to the bar; players spawn in the
 centre of the room, facing the bar (no visible spawn pad); potted trees in black pots by the walls; the lamps hang over
-the bar's wood floor only. The arm-wrestling table has two stools facing each other: sit down opposite someone, wait out
+the bar's wood floor only. The arm-wrestling table stands in front of the quest board, level with the pillar on the
+ARENA side of the spin wheel; it has two stools facing each other: sit down opposite someone, wait out
 a 3-second countdown, then mash Attack — or tap PUSH on a phone — to push the clasped hands over to your side; a pin
 wins at once, otherwise whoever is ahead after 15 seconds; the wrestlers' panel shows the match and, between matches,
 the table champion's wins in a row; no Coins at stake, wins count toward a lifetime arm-wrestling stat. The chess
