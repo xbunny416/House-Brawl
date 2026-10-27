@@ -503,7 +503,7 @@ return {
 		end
 		expect.truthy(#tagged(lobby, "LobbySpawn") >= 1, "lobby spawns")
 	end,
-	["lobby: the style coach's spot stands on the floor by the west wall, facing the room"] = function()
+	["lobby: the style coach's spot stands on the floor by the jukebox, facing the room"] = function()
 		local npc = tagged(lobby, "StyleNPC")[1]
 		local spot = npc:FindFirstChild("Spot")
 		expect.truthy(spot and spot:IsA("BasePart"), "Spot")
@@ -512,11 +512,16 @@ return {
 			math.abs(spot.CFrame.Position.Y - spot.Size.Y / 2 - Config.Maps.LobbyOrigin[2]) < 0.01,
 			"on the floor"
 		)
-		expect.truthy(spot.CFrame.LookVector.X > 0.99, "faces the room (east)")
-		expect.truthy(
-			spot.CFrame.Position.X - Config.Maps.LobbyOrigin[1] < -Hideout.Inner[1] / 2 + 5,
-			"by the west wall"
-		)
+		-- The owner: "move style npc to near music box" (2026-10-27).
+		local origin = Config.Maps.LobbyOrigin
+		local position, look = spot.CFrame.Position, spot.CFrame.LookVector
+		local toCentre = { origin[1] - position.X, origin[3] - position.Z }
+		expect.truthy(look.X * toCentre[1] + look.Z * toCentre[2] > 0, "faces the room")
+		local jukebox = lobby:FindFirstChild("Jukebox")
+		local body = jukebox and jukebox:FindFirstChild("Body")
+		expect.truthy(body, "the jukebox")
+		local gap = body.CFrame.Position - position
+		expect.truthy(math.sqrt(gap.X * gap.X + gap.Z * gap.Z) < 10, "next to the jukebox")
 		for _, part in npc:GetDescendants() do
 			if part:IsA("BasePart") then
 				expect.equal(part.Transparency, 1, `{part.Name} is an invisible anchor`)

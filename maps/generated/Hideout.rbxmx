@@ -6723,7 +6723,7 @@
           <CoordinateFrame name="CFrame">
             <X>47.800003</X>
             <Y>113</Y>
-            <Z>-28.5</Z>
+            <Z>-25.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -6754,7 +6754,7 @@
           <CoordinateFrame name="CFrame">
             <X>47.800003</X>
             <Y>100.40001</Y>
-            <Z>-28.5</Z>
+            <Z>-25.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -6785,7 +6785,7 @@
           <CoordinateFrame name="CFrame">
             <X>47.800003</X>
             <Y>100.90001</Y>
-            <Z>-28.5</Z>
+            <Z>-25.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -6817,7 +6817,7 @@
           <CoordinateFrame name="CFrame">
             <X>47.800003</X>
             <Y>125.7</Y>
-            <Z>-28.5</Z>
+            <Z>-25.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -6848,7 +6848,7 @@
           <CoordinateFrame name="CFrame">
             <X>47.800003</X>
             <Y>125.25</Y>
-            <Z>-28.5</Z>
+            <Z>-25.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -6885,7 +6885,7 @@
           <CoordinateFrame name="CFrame">
             <X>46.53</X>
             <Y>111</Y>
-            <Z>-28.5</Z>
+            <Z>-25.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -6917,7 +6917,7 @@
           <CoordinateFrame name="CFrame">
             <X>46</X>
             <Y>111</Y>
-            <Z>-28.5</Z>
+            <Z>-25.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -6949,7 +6949,7 @@
           <CoordinateFrame name="CFrame">
             <X>45.5</X>
             <Y>111.55</Y>
-            <Z>-28.5</Z>
+            <Z>-25.5</Z>
             <R00>0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -6981,7 +6981,7 @@
           <CoordinateFrame name="CFrame">
             <X>45.5</X>
             <Y>111.020004</Y>
-            <Z>-28.5</Z>
+            <Z>-25.5</Z>
             <R00>0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -7013,7 +7013,7 @@
           <CoordinateFrame name="CFrame">
             <X>45.5</X>
             <Y>111.3</Y>
-            <Z>-28.5</Z>
+            <Z>-25.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -7063,7 +7063,7 @@
           <CoordinateFrame name="CFrame">
             <X>47.800003</X>
             <Y>113</Y>
-            <Z>-14.5</Z>
+            <Z>25.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -7094,7 +7094,7 @@
           <CoordinateFrame name="CFrame">
             <X>47.800003</X>
             <Y>100.40001</Y>
-            <Z>-14.5</Z>
+            <Z>25.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -7125,7 +7125,7 @@
           <CoordinateFrame name="CFrame">
             <X>47.800003</X>
             <Y>100.90001</Y>
-            <Z>-14.5</Z>
+            <Z>25.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -7157,7 +7157,7 @@
           <CoordinateFrame name="CFrame">
             <X>47.800003</X>
             <Y>125.7</Y>
-            <Z>-14.5</Z>
+            <Z>25.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -7188,7 +7188,7 @@
           <CoordinateFrame name="CFrame">
             <X>47.800003</X>
             <Y>125.25</Y>
-            <Z>-14.5</Z>
+            <Z>25.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -7225,7 +7225,7 @@
           <CoordinateFrame name="CFrame">
             <X>46.53</X>
             <Y>111</Y>
-            <Z>-14.5</Z>
+            <Z>25.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -7257,7 +7257,7 @@
           <CoordinateFrame name="CFrame">
             <X>46</X>
             <Y>111</Y>
-            <Z>-14.5</Z>
+            <Z>25.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -7289,7 +7289,7 @@
           <CoordinateFrame name="CFrame">
             <X>45.5</X>
             <Y>111.55</Y>
-            <Z>-14.5</Z>
+            <Z>25.5</Z>
             <R00>0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -7321,7 +7321,7 @@
           <CoordinateFrame name="CFrame">
             <X>45.5</X>
             <Y>111.020004</Y>
-            <Z>-14.5</Z>
+            <Z>25.5</Z>
             <R00>0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -7353,7 +7353,7 @@
           <CoordinateFrame name="CFrame">
             <X>45.5</X>
             <Y>111.3</Y>
-            <Z>-14.5</Z>
+            <Z>25.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -7401,16 +7401,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>47.800003</X>
+            <X>-47.800003</X>
             <Y>113</Y>
-            <Z>14.5</Z>
+            <Z>-28.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>-1</R20>
+            <R20>1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -7432,16 +7432,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>47.800003</X>
+            <X>-47.800003</X>
             <Y>100.40001</Y>
-            <Z>14.5</Z>
+            <Z>-28.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>-1</R20>
+            <R20>1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -7463,16 +7463,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>47.800003</X>
+            <X>-47.800003</X>
             <Y>100.90001</Y>
-            <Z>14.5</Z>
+            <Z>-28.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>-1</R20>
+            <R20>1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -7495,16 +7495,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>47.800003</X>
+            <X>-47.800003</X>
             <Y>125.7</Y>
-            <Z>14.5</Z>
+            <Z>-28.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>-1</R20>
+            <R20>1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -7526,16 +7526,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>47.800003</X>
+            <X>-47.800003</X>
             <Y>125.25</Y>
-            <Z>14.5</Z>
+            <Z>-28.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>-1</R20>
+            <R20>1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -7563,16 +7563,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>46.53</X>
+            <X>-46.53</X>
             <Y>111</Y>
-            <Z>14.5</Z>
+            <Z>-28.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>-1</R20>
+            <R20>1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -7595,16 +7595,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>46</X>
+            <X>-46</X>
             <Y>111</Y>
-            <Z>14.5</Z>
+            <Z>-28.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>-1</R20>
+            <R20>1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -7627,17 +7627,17 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>45.5</X>
+            <X>-45.5</X>
             <Y>111.55</Y>
-            <Z>14.5</Z>
+            <Z>-28.5</Z>
             <R00>0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>1</R10>
             <R11>-0</R11>
             <R12>0</R12>
-            <R20>0</R20>
-            <R21>1</R21>
+            <R20>-0</R20>
+            <R21>-1</R21>
             <R22>-0</R22>
           </CoordinateFrame>
           <bool name="CanCollide">false</bool>
@@ -7659,17 +7659,17 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>45.5</X>
+            <X>-45.5</X>
             <Y>111.020004</Y>
-            <Z>14.5</Z>
+            <Z>-28.5</Z>
             <R00>0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>1</R10>
             <R11>-0</R11>
             <R12>0</R12>
-            <R20>0</R20>
-            <R21>1</R21>
+            <R20>-0</R20>
+            <R21>-1</R21>
             <R22>-0</R22>
           </CoordinateFrame>
           <bool name="CanCollide">false</bool>
@@ -7691,16 +7691,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>45.5</X>
+            <X>-45.5</X>
             <Y>111.3</Y>
-            <Z>14.5</Z>
+            <Z>-28.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>-1</R20>
+            <R20>1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -7741,16 +7741,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>47.800003</X>
+            <X>-47.800003</X>
             <Y>113</Y>
-            <Z>28.5</Z>
+            <Z>-14.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>-1</R20>
+            <R20>1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -7772,16 +7772,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>47.800003</X>
+            <X>-47.800003</X>
             <Y>100.40001</Y>
-            <Z>28.5</Z>
+            <Z>-14.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>-1</R20>
+            <R20>1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -7803,16 +7803,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>47.800003</X>
+            <X>-47.800003</X>
             <Y>100.90001</Y>
-            <Z>28.5</Z>
+            <Z>-14.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>-1</R20>
+            <R20>1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -7835,16 +7835,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>47.800003</X>
+            <X>-47.800003</X>
             <Y>125.7</Y>
-            <Z>28.5</Z>
+            <Z>-14.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>-1</R20>
+            <R20>1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -7866,16 +7866,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>47.800003</X>
+            <X>-47.800003</X>
             <Y>125.25</Y>
-            <Z>28.5</Z>
+            <Z>-14.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>-1</R20>
+            <R20>1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -7903,16 +7903,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>46.53</X>
+            <X>-46.53</X>
             <Y>111</Y>
-            <Z>28.5</Z>
+            <Z>-14.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>-1</R20>
+            <R20>1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -7935,16 +7935,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>46</X>
+            <X>-46</X>
             <Y>111</Y>
-            <Z>28.5</Z>
+            <Z>-14.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>-1</R20>
+            <R20>1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -7967,17 +7967,17 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>45.5</X>
+            <X>-45.5</X>
             <Y>111.55</Y>
-            <Z>28.5</Z>
+            <Z>-14.5</Z>
             <R00>0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>1</R10>
             <R11>-0</R11>
             <R12>0</R12>
-            <R20>0</R20>
-            <R21>1</R21>
+            <R20>-0</R20>
+            <R21>-1</R21>
             <R22>-0</R22>
           </CoordinateFrame>
           <bool name="CanCollide">false</bool>
@@ -7999,17 +7999,17 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>45.5</X>
+            <X>-45.5</X>
             <Y>111.020004</Y>
-            <Z>28.5</Z>
+            <Z>-14.5</Z>
             <R00>0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>1</R10>
             <R11>-0</R11>
             <R12>0</R12>
-            <R20>0</R20>
-            <R21>1</R21>
+            <R20>-0</R20>
+            <R21>-1</R21>
             <R22>-0</R22>
           </CoordinateFrame>
           <bool name="CanCollide">false</bool>
@@ -8031,16 +8031,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>45.5</X>
+            <X>-45.5</X>
             <Y>111.3</Y>
-            <Z>28.5</Z>
+            <Z>-14.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>-1</R20>
+            <R20>1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -8083,7 +8083,7 @@
           <CoordinateFrame name="CFrame">
             <X>-47.800003</X>
             <Y>113</Y>
-            <Z>-28.199997</Z>
+            <Z>14.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8114,7 +8114,7 @@
           <CoordinateFrame name="CFrame">
             <X>-47.800003</X>
             <Y>100.40001</Y>
-            <Z>-28.199997</Z>
+            <Z>14.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8145,7 +8145,7 @@
           <CoordinateFrame name="CFrame">
             <X>-47.800003</X>
             <Y>100.90001</Y>
-            <Z>-28.199997</Z>
+            <Z>14.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8177,7 +8177,7 @@
           <CoordinateFrame name="CFrame">
             <X>-47.800003</X>
             <Y>125.7</Y>
-            <Z>-28.199997</Z>
+            <Z>14.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8208,7 +8208,7 @@
           <CoordinateFrame name="CFrame">
             <X>-47.800003</X>
             <Y>125.25</Y>
-            <Z>-28.199997</Z>
+            <Z>14.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8245,7 +8245,7 @@
           <CoordinateFrame name="CFrame">
             <X>-46.53</X>
             <Y>111</Y>
-            <Z>-28.199997</Z>
+            <Z>14.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8277,7 +8277,7 @@
           <CoordinateFrame name="CFrame">
             <X>-46</X>
             <Y>111</Y>
-            <Z>-28.199997</Z>
+            <Z>14.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8309,7 +8309,7 @@
           <CoordinateFrame name="CFrame">
             <X>-45.5</X>
             <Y>111.55</Y>
-            <Z>-28.199997</Z>
+            <Z>14.5</Z>
             <R00>0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8341,7 +8341,7 @@
           <CoordinateFrame name="CFrame">
             <X>-45.5</X>
             <Y>111.020004</Y>
-            <Z>-28.199997</Z>
+            <Z>14.5</Z>
             <R00>0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8373,7 +8373,7 @@
           <CoordinateFrame name="CFrame">
             <X>-45.5</X>
             <Y>111.3</Y>
-            <Z>-28.199997</Z>
+            <Z>14.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8423,7 +8423,7 @@
           <CoordinateFrame name="CFrame">
             <X>-47.800003</X>
             <Y>113</Y>
-            <Z>28.199997</Z>
+            <Z>28.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8454,7 +8454,7 @@
           <CoordinateFrame name="CFrame">
             <X>-47.800003</X>
             <Y>100.40001</Y>
-            <Z>28.199997</Z>
+            <Z>28.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8485,7 +8485,7 @@
           <CoordinateFrame name="CFrame">
             <X>-47.800003</X>
             <Y>100.90001</Y>
-            <Z>28.199997</Z>
+            <Z>28.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8517,7 +8517,7 @@
           <CoordinateFrame name="CFrame">
             <X>-47.800003</X>
             <Y>125.7</Y>
-            <Z>28.199997</Z>
+            <Z>28.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8548,7 +8548,7 @@
           <CoordinateFrame name="CFrame">
             <X>-47.800003</X>
             <Y>125.25</Y>
-            <Z>28.199997</Z>
+            <Z>28.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8585,7 +8585,7 @@
           <CoordinateFrame name="CFrame">
             <X>-46.53</X>
             <Y>111</Y>
-            <Z>28.199997</Z>
+            <Z>28.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8617,7 +8617,7 @@
           <CoordinateFrame name="CFrame">
             <X>-46</X>
             <Y>111</Y>
-            <Z>28.199997</Z>
+            <Z>28.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8649,7 +8649,7 @@
           <CoordinateFrame name="CFrame">
             <X>-45.5</X>
             <Y>111.55</Y>
-            <Z>28.199997</Z>
+            <Z>28.5</Z>
             <R00>0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8681,7 +8681,7 @@
           <CoordinateFrame name="CFrame">
             <X>-45.5</X>
             <Y>111.020004</Y>
-            <Z>28.199997</Z>
+            <Z>28.5</Z>
             <R00>0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -8713,7 +8713,7 @@
           <CoordinateFrame name="CFrame">
             <X>-45.5</X>
             <Y>111.3</Y>
-            <Z>28.199997</Z>
+            <Z>28.5</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>-1</R02>
@@ -9415,7 +9415,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-38</X>
+            <X>-36.5</X>
             <Y>113</Y>
             <Z>-34.800003</Z>
             <R00>-1</R00>
@@ -9446,7 +9446,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-38</X>
+            <X>-36.5</X>
             <Y>100.40001</Y>
             <Z>-34.800003</Z>
             <R00>-1</R00>
@@ -9477,7 +9477,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-38</X>
+            <X>-36.5</X>
             <Y>100.90001</Y>
             <Z>-34.800003</Z>
             <R00>-1</R00>
@@ -9509,7 +9509,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-38</X>
+            <X>-36.5</X>
             <Y>125.7</Y>
             <Z>-34.800003</Z>
             <R00>-1</R00>
@@ -9540,7 +9540,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-38</X>
+            <X>-36.5</X>
             <Y>125.25</Y>
             <Z>-34.800003</Z>
             <R00>-1</R00>
@@ -9577,7 +9577,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-38</X>
+            <X>-36.5</X>
             <Y>111</Y>
             <Z>-33.53</Z>
             <R00>-1</R00>
@@ -9609,7 +9609,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-38</X>
+            <X>-36.5</X>
             <Y>111</Y>
             <Z>-33</Z>
             <R00>-1</R00>
@@ -9641,7 +9641,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-38</X>
+            <X>-36.5</X>
             <Y>111.55</Y>
             <Z>-32.5</Z>
             <R00>0</R00>
@@ -9673,7 +9673,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-38</X>
+            <X>-36.5</X>
             <Y>111.020004</Y>
             <Z>-32.5</Z>
             <R00>0</R00>
@@ -9705,7 +9705,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-38</X>
+            <X>-36.5</X>
             <Y>111.3</Y>
             <Z>-32.5</Z>
             <R00>-1</R00>
@@ -9755,7 +9755,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38</X>
+            <X>36.5</X>
             <Y>113</Y>
             <Z>-34.800003</Z>
             <R00>-1</R00>
@@ -9786,7 +9786,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38</X>
+            <X>36.5</X>
             <Y>100.40001</Y>
             <Z>-34.800003</Z>
             <R00>-1</R00>
@@ -9817,7 +9817,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38</X>
+            <X>36.5</X>
             <Y>100.90001</Y>
             <Z>-34.800003</Z>
             <R00>-1</R00>
@@ -9849,7 +9849,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38</X>
+            <X>36.5</X>
             <Y>125.7</Y>
             <Z>-34.800003</Z>
             <R00>-1</R00>
@@ -9880,7 +9880,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38</X>
+            <X>36.5</X>
             <Y>125.25</Y>
             <Z>-34.800003</Z>
             <R00>-1</R00>
@@ -9917,7 +9917,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38</X>
+            <X>36.5</X>
             <Y>111</Y>
             <Z>-33.53</Z>
             <R00>-1</R00>
@@ -9949,7 +9949,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38</X>
+            <X>36.5</X>
             <Y>111</Y>
             <Z>-33</Z>
             <R00>-1</R00>
@@ -9981,7 +9981,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38</X>
+            <X>36.5</X>
             <Y>111.55</Y>
             <Z>-32.5</Z>
             <R00>0</R00>
@@ -10013,7 +10013,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38</X>
+            <X>36.5</X>
             <Y>111.020004</Y>
             <Z>-32.5</Z>
             <R00>0</R00>
@@ -10045,7 +10045,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38</X>
+            <X>36.5</X>
             <Y>111.3</Y>
             <Z>-32.5</Z>
             <R00>-1</R00>
@@ -22183,7 +22183,7 @@
         <CoordinateFrame name="CFrame">
           <X>46.800003</X>
           <Y>102</Y>
-          <Z>11</Z>
+          <Z>30</Z>
           <R00>-0</R00>
           <R01>-1</R01>
           <R02>0</R02>
@@ -22214,7 +22214,7 @@
         <CoordinateFrame name="CFrame">
           <X>46.800003</X>
           <Y>100.90001</Y>
-          <Z>11</Z>
+          <Z>30</Z>
           <R00>-0</R00>
           <R01>-1</R01>
           <R02>0</R02>
@@ -22246,7 +22246,7 @@
         <CoordinateFrame name="CFrame">
           <X>46.800003</X>
           <Y>103.100006</Y>
-          <Z>11</Z>
+          <Z>30</Z>
           <R00>-0</R00>
           <R01>-1</R01>
           <R02>0</R02>
@@ -22278,7 +22278,7 @@
         <CoordinateFrame name="CFrame">
           <X>46.800003</X>
           <Y>102</Y>
-          <Z>-11</Z>
+          <Z>-34.300003</Z>
           <R00>-0</R00>
           <R01>-1</R01>
           <R02>0</R02>
@@ -22309,7 +22309,7 @@
         <CoordinateFrame name="CFrame">
           <X>46.800003</X>
           <Y>100.90001</Y>
-          <Z>-11</Z>
+          <Z>-34.300003</Z>
           <R00>-0</R00>
           <R01>-1</R01>
           <R02>0</R02>
@@ -22341,7 +22341,7 @@
         <CoordinateFrame name="CFrame">
           <X>46.800003</X>
           <Y>103.100006</Y>
-          <Z>-11</Z>
+          <Z>-34.300003</Z>
           <R00>-0</R00>
           <R01>-1</R01>
           <R02>0</R02>
@@ -22373,7 +22373,7 @@
         <CoordinateFrame name="CFrame">
           <X>48.40001</X>
           <Y>109</Y>
-          <Z>22</Z>
+          <Z>31</Z>
           <R00>1</R00>
           <R01>0</R01>
           <R02>0</R02>
@@ -22405,7 +22405,7 @@
         <CoordinateFrame name="CFrame">
           <X>48.40001</X>
           <Y>109</Y>
-          <Z>22</Z>
+          <Z>31</Z>
           <R00>1</R00>
           <R01>0</R01>
           <R02>0</R02>
@@ -22437,7 +22437,7 @@
         <CoordinateFrame name="CFrame">
           <X>48.40001</X>
           <Y>109</Y>
-          <Z>22</Z>
+          <Z>31</Z>
           <R00>1</R00>
           <R01>0</R01>
           <R02>0</R02>
@@ -22469,7 +22469,7 @@
         <CoordinateFrame name="CFrame">
           <X>48.40001</X>
           <Y>109</Y>
-          <Z>22</Z>
+          <Z>31</Z>
           <R00>1</R00>
           <R01>0</R01>
           <R02>0</R02>
@@ -22505,18 +22505,18 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-46</X>
+            <X>41</X>
             <Y>100.100006</Y>
-            <Z>33</Z>
-            <R00>-0</R00>
+            <Z>-33</Z>
+            <R00>-1</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>-0</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>0</R20>
             <R21>0</R21>
-            <R22>-0</R22>
+            <R22>-1</R22>
           </CoordinateFrame>
           <bool name="CanCollide">false</bool>
           <bool name="CastShadow">false</bool>
@@ -22538,18 +22538,18 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-46</X>
+            <X>41</X>
             <Y>103.90001</Y>
-            <Z>33</Z>
-            <R00>-0</R00>
+            <Z>-33</Z>
+            <R00>-1</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>-0</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>0</R20>
             <R21>0</R21>
-            <R22>-0</R22>
+            <R22>-1</R22>
           </CoordinateFrame>
           <bool name="CanCollide">false</bool>
           <bool name="CastShadow">false</bool>
@@ -22572,18 +22572,18 @@
         <bool name="Anchored">true</bool>
         <token name="BottomSurface">0</token>
         <CoordinateFrame name="CFrame">
-          <X>-48.600006</X>
+          <X>41</X>
           <Y>111</Y>
-          <Z>33</Z>
-          <R00>-0</R00>
+          <Z>-35.600006</Z>
+          <R00>-1</R00>
           <R01>0</R01>
-          <R02>-1</R02>
+          <R02>-0</R02>
           <R10>0</R10>
           <R11>1</R11>
           <R12>0</R12>
-          <R20>1</R20>
+          <R20>0</R20>
           <R21>0</R21>
-          <R22>-0</R22>
+          <R22>-1</R22>
         </CoordinateFrame>
         <bool name="CastShadow">false</bool>
         <Color3uint8 name="Color3uint8">1973794</Color3uint8>
@@ -22639,9 +22639,9 @@
         <bool name="Anchored">true</bool>
         <token name="BottomSurface">0</token>
         <CoordinateFrame name="CFrame">
-          <X>-45.5</X>
+          <X>41</X>
           <Y>100.12001</Y>
-          <Z>33</Z>
+          <Z>-32.5</Z>
           <R00>1</R00>
           <R01>0</R01>
           <R02>0</R02>
@@ -22658,9 +22658,9 @@
         <token name="Material">2305</token>
         <token name="shape">1</token>
         <Vector3 name="size">
-          <X>5</X>
+          <X>6</X>
           <Y>0.08000183</Y>
-          <Z>6</Z>
+          <Z>5</Z>
         </Vector3>
         <token name="TopSurface">0</token>
       </Properties>
@@ -22677,7 +22677,7 @@
           <CoordinateFrame name="CFrame">
             <X>46.5</X>
             <Y>103</Y>
-            <Z>-21.5</Z>
+            <Z>-30.300003</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -22720,7 +22720,7 @@
           <CoordinateFrame name="CFrame">
             <X>46.5</X>
             <Y>106</Y>
-            <Z>-21.5</Z>
+            <Z>-30.300003</Z>
             <R00>1</R00>
             <R01>0</R01>
             <R02>0</R02>
@@ -22750,7 +22750,7 @@
           <CoordinateFrame name="CFrame">
             <X>44.699997</X>
             <Y>106</Y>
-            <Z>-21.5</Z>
+            <Z>-30.300003</Z>
             <R00>1</R00>
             <R01>0</R01>
             <R02>0</R02>
@@ -22783,7 +22783,7 @@
           <CoordinateFrame name="CFrame">
             <X>44.699997</X>
             <Y>104.2</Y>
-            <Z>-21.5</Z>
+            <Z>-30.300003</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -22816,7 +22816,7 @@
           <CoordinateFrame name="CFrame">
             <X>44.850006</X>
             <Y>104.2</Y>
-            <Z>-22.699997</Z>
+            <Z>-31.5</Z>
             <R00>1</R00>
             <R01>0</R01>
             <R02>0</R02>
@@ -22848,7 +22848,7 @@
           <CoordinateFrame name="CFrame">
             <X>44.839996</X>
             <Y>104.2</Y>
-            <Z>-22.699997</Z>
+            <Z>-31.5</Z>
             <R00>1</R00>
             <R01>0</R01>
             <R02>0</R02>
@@ -22880,7 +22880,7 @@
           <CoordinateFrame name="CFrame">
             <X>44.850006</X>
             <Y>104.2</Y>
-            <Z>-21.5</Z>
+            <Z>-30.300003</Z>
             <R00>1</R00>
             <R01>0</R01>
             <R02>0</R02>
@@ -22912,7 +22912,7 @@
           <CoordinateFrame name="CFrame">
             <X>44.839996</X>
             <Y>104.2</Y>
-            <Z>-21.5</Z>
+            <Z>-30.300003</Z>
             <R00>1</R00>
             <R01>0</R01>
             <R02>0</R02>
@@ -22944,7 +22944,7 @@
           <CoordinateFrame name="CFrame">
             <X>44.850006</X>
             <Y>104.2</Y>
-            <Z>-20.300003</Z>
+            <Z>-29.100006</Z>
             <R00>1</R00>
             <R01>0</R01>
             <R02>0</R02>
@@ -22976,7 +22976,7 @@
           <CoordinateFrame name="CFrame">
             <X>44.839996</X>
             <Y>104.2</Y>
-            <Z>-20.300003</Z>
+            <Z>-29.100006</Z>
             <R00>1</R00>
             <R01>0</R01>
             <R02>0</R02>
@@ -23008,7 +23008,7 @@
           <CoordinateFrame name="CFrame">
             <X>44.65001</X>
             <Y>101.7</Y>
-            <Z>-21.5</Z>
+            <Z>-30.300003</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -23040,7 +23040,7 @@
           <CoordinateFrame name="CFrame">
             <X>44.65001</X>
             <Y>102.3</Y>
-            <Z>-21.5</Z>
+            <Z>-30.300003</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -23072,7 +23072,7 @@
           <CoordinateFrame name="CFrame">
             <X>44.65001</X>
             <Y>102.90001</Y>
-            <Z>-21.5</Z>
+            <Z>-30.300003</Z>
             <R00>-0</R00>
             <R01>0</R01>
             <R02>1</R02>
@@ -23104,7 +23104,7 @@
           <CoordinateFrame name="CFrame">
             <X>44.699997</X>
             <Y>100.7</Y>
-            <Z>-21.5</Z>
+            <Z>-30.300003</Z>
             <R00>1</R00>
             <R01>0</R01>
             <R02>0</R02>
@@ -23660,7 +23660,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>48.40001</X>
+            <X>-48.40001</X>
             <Y>111</Y>
             <Z>0</Z>
             <R00>1</R00>
@@ -23690,7 +23690,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>48</X>
+            <X>-48</X>
             <Y>111</Y>
             <Z>0</Z>
             <R00>1</R00>
@@ -23720,7 +23720,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>46.600006</X>
+            <X>-46.600006</X>
             <Y>117.850006</Y>
             <Z>0</Z>
             <R00>1</R00>
@@ -23752,16 +23752,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>48.300003</X>
+            <X>-48.300003</X>
             <Y>120.3</Y>
             <Z>0</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>1</R02>
+            <R02>-1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>-1</R20>
+            <R20>1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -23823,7 +23823,7 @@
             <bool name="Anchored">true</bool>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.699997</X>
+              <X>-47.699997</X>
               <Y>111</Y>
               <Z>0</Z>
               <R00>1</R00>
@@ -23856,7 +23856,7 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAgD8=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.449997</X>
+              <X>-47.449997</X>
               <Y>114.00261</Y>
               <Z>1.2064056</Z>
               <R00>1</R00>
@@ -23888,7 +23888,7 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAgD8=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.449997</X>
+              <X>-47.449997</X>
               <Y>114.00261</Y>
               <Z>-1.2064056</Z>
               <R00>-1</R00>
@@ -23920,16 +23920,16 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAgD8=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.320007</X>
+              <X>-47.320007</X>
               <Y>115.40001</Y>
               <Z>0</Z>
               <R00>0</R00>
               <R01>0</R01>
-              <R02>1</R02>
+              <R02>-1</R02>
               <R10>0</R10>
               <R11>1</R11>
               <R12>0</R12>
-              <R20>-1</R20>
+              <R20>1</R20>
               <R21>0</R21>
               <R22>0</R22>
             </CoordinateFrame>
@@ -23953,7 +23953,7 @@
             <bool name="Anchored">true</bool>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.350006</X>
+              <X>-47.350006</X>
               <Y>116.72806</Y>
               <Z>2.372635</Z>
               <R00>1</R00>
@@ -23986,7 +23986,7 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAAEA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.449997</X>
+              <X>-47.449997</X>
               <Y>112.27011</Y>
               <Z>2.9762268</Z>
               <R00>1</R00>
@@ -24018,7 +24018,7 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAAEA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.449997</X>
+              <X>-47.449997</X>
               <Y>113.97623</Y>
               <Z>1.2701111</Z>
               <R00>-1</R00>
@@ -24050,16 +24050,16 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAAEA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.320007</X>
+              <X>-47.320007</X>
               <Y>114.11127</Y>
               <Z>3.111267</Z>
               <R00>0</R00>
               <R01>0</R01>
-              <R02>1</R02>
-              <R10>0.70710754</R10>
+              <R02>-1</R02>
+              <R10>-0.70710754</R10>
               <R11>0.70710754</R11>
               <R12>0</R12>
-              <R20>-0.70710754</R20>
+              <R20>0.70710754</R20>
               <R21>0.70710754</R21>
               <R22>0</R22>
             </CoordinateFrame>
@@ -24083,7 +24083,7 @@
             <bool name="Anchored">true</bool>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.350006</X>
+              <X>-47.350006</X>
               <Y>113.372635</Y>
               <Z>5.728058</Z>
               <R00>1</R00>
@@ -24116,7 +24116,7 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAQEA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.449997</X>
+              <X>-47.449997</X>
               <Y>109.793594</Y>
               <Z>3.0026093</Z>
               <R00>1</R00>
@@ -24148,7 +24148,7 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAQEA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.449997</X>
+              <X>-47.449997</X>
               <Y>112.20642</Y>
               <Z>3.0026093</Z>
               <R00>-1</R00>
@@ -24180,16 +24180,16 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAQEA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.320007</X>
+              <X>-47.320007</X>
               <Y>111</Y>
               <Z>4.399994</Z>
               <R00>0</R00>
               <R01>0</R01>
-              <R02>1</R02>
-              <R10>1</R10>
+              <R02>-1</R02>
+              <R10>-1</R10>
               <R11>0</R11>
               <R12>0</R12>
-              <R20>-0</R20>
+              <R20>0</R20>
               <R21>1</R21>
               <R22>0</R22>
             </CoordinateFrame>
@@ -24213,7 +24213,7 @@
             <bool name="Anchored">true</bool>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.350006</X>
+              <X>-47.350006</X>
               <Y>108.627365</Y>
               <Z>5.728058</Z>
               <R00>1</R00>
@@ -24246,7 +24246,7 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAgEA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.449997</X>
+              <X>-47.449997</X>
               <Y>108.02377</Y>
               <Z>1.2701111</Z>
               <R00>1</R00>
@@ -24278,7 +24278,7 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAgEA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.449997</X>
+              <X>-47.449997</X>
               <Y>109.729904</Y>
               <Z>2.9762268</Z>
               <R00>-1</R00>
@@ -24310,16 +24310,16 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAgEA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.320007</X>
+              <X>-47.320007</X>
               <Y>107.88873</Y>
               <Z>3.111267</Z>
               <R00>0</R00>
               <R01>0</R01>
-              <R02>1</R02>
-              <R10>0.70710754</R10>
+              <R02>-1</R02>
+              <R10>-0.70710754</R10>
               <R11>-0.70710754</R11>
               <R12>0</R12>
-              <R20>0.70710754</R20>
+              <R20>-0.70710754</R20>
               <R21>0.70710754</R21>
               <R22>0</R22>
             </CoordinateFrame>
@@ -24343,7 +24343,7 @@
             <bool name="Anchored">true</bool>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.350006</X>
+              <X>-47.350006</X>
               <Y>105.27196</Y>
               <Z>2.372635</Z>
               <R00>1</R00>
@@ -24376,7 +24376,7 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAoEA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.449997</X>
+              <X>-47.449997</X>
               <Y>107.99739</Y>
               <Z>-1.2064056</Z>
               <R00>1</R00>
@@ -24408,7 +24408,7 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAoEA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.449997</X>
+              <X>-47.449997</X>
               <Y>107.99739</Y>
               <Z>1.2064056</Z>
               <R00>-1</R00>
@@ -24440,16 +24440,16 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAoEA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.320007</X>
+              <X>-47.320007</X>
               <Y>106.600006</Y>
               <Z>0</Z>
               <R00>0</R00>
               <R01>0</R01>
-              <R02>1</R02>
-              <R10>0</R10>
+              <R02>-1</R02>
+              <R10>-0</R10>
               <R11>-1</R11>
               <R12>0</R12>
-              <R20>1</R20>
+              <R20>-1</R20>
               <R21>0</R21>
               <R22>0</R22>
             </CoordinateFrame>
@@ -24473,7 +24473,7 @@
             <bool name="Anchored">true</bool>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.350006</X>
+              <X>-47.350006</X>
               <Y>105.27196</Y>
               <Z>-2.372635</Z>
               <R00>1</R00>
@@ -24506,7 +24506,7 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAwEA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.449997</X>
+              <X>-47.449997</X>
               <Y>109.729904</Y>
               <Z>-2.9762268</Z>
               <R00>1</R00>
@@ -24538,7 +24538,7 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAwEA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.449997</X>
+              <X>-47.449997</X>
               <Y>108.02377</Y>
               <Z>-1.2701111</Z>
               <R00>-1</R00>
@@ -24570,16 +24570,16 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAwEA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.320007</X>
+              <X>-47.320007</X>
               <Y>107.88873</Y>
               <Z>-3.111267</Z>
               <R00>0</R00>
               <R01>0</R01>
-              <R02>1</R02>
-              <R10>-0.70710754</R10>
+              <R02>-1</R02>
+              <R10>0.70710754</R10>
               <R11>-0.70710754</R11>
               <R12>0</R12>
-              <R20>0.70710754</R20>
+              <R20>-0.70710754</R20>
               <R21>-0.70710754</R21>
               <R22>0</R22>
             </CoordinateFrame>
@@ -24603,7 +24603,7 @@
             <bool name="Anchored">true</bool>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.350006</X>
+              <X>-47.350006</X>
               <Y>108.627365</Y>
               <Z>-5.728058</Z>
               <R00>1</R00>
@@ -24636,7 +24636,7 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAA4EA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.449997</X>
+              <X>-47.449997</X>
               <Y>112.20642</Y>
               <Z>-3.0026093</Z>
               <R00>1</R00>
@@ -24668,7 +24668,7 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAA4EA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.449997</X>
+              <X>-47.449997</X>
               <Y>109.793594</Y>
               <Z>-3.0026093</Z>
               <R00>-1</R00>
@@ -24700,16 +24700,16 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAA4EA=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.320007</X>
+              <X>-47.320007</X>
               <Y>111</Y>
               <Z>-4.399994</Z>
               <R00>0</R00>
               <R01>0</R01>
-              <R02>1</R02>
-              <R10>-1</R10>
+              <R02>-1</R02>
+              <R10>1</R10>
               <R11>-0</R11>
               <R12>0</R12>
-              <R20>0</R20>
+              <R20>-0</R20>
               <R21>-1</R21>
               <R22>0</R22>
             </CoordinateFrame>
@@ -24733,7 +24733,7 @@
             <bool name="Anchored">true</bool>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.350006</X>
+              <X>-47.350006</X>
               <Y>113.372635</Y>
               <Z>-5.728058</Z>
               <R00>1</R00>
@@ -24766,7 +24766,7 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAAEE=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.449997</X>
+              <X>-47.449997</X>
               <Y>113.97623</Y>
               <Z>-1.2701111</Z>
               <R00>1</R00>
@@ -24798,7 +24798,7 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAAEE=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.449997</X>
+              <X>-47.449997</X>
               <Y>112.27011</Y>
               <Z>-2.9762268</Z>
               <R00>-1</R00>
@@ -24830,16 +24830,16 @@
             <BinaryString name="AttributesSerialize">AQAAAAcAAABTZWdtZW50BQAAAEE=</BinaryString>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.320007</X>
+              <X>-47.320007</X>
               <Y>114.11127</Y>
               <Z>-3.111267</Z>
               <R00>0</R00>
               <R01>0</R01>
-              <R02>1</R02>
-              <R10>-0.70710754</R10>
+              <R02>-1</R02>
+              <R10>0.70710754</R10>
               <R11>0.70710754</R11>
               <R12>0</R12>
-              <R20>-0.70710754</R20>
+              <R20>0.70710754</R20>
               <R21>-0.70710754</R21>
               <R22>0</R22>
             </CoordinateFrame>
@@ -24863,7 +24863,7 @@
             <bool name="Anchored">true</bool>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.350006</X>
+              <X>-47.350006</X>
               <Y>116.72806</Y>
               <Z>-2.372635</Z>
               <R00>1</R00>
@@ -24895,7 +24895,7 @@
             <bool name="Anchored">true</bool>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>47.300003</X>
+              <X>-47.300003</X>
               <Y>111</Y>
               <Z>0</Z>
               <R00>1</R00>
@@ -24945,7 +24945,7 @@
             <bool name="Anchored">true</bool>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>43</X>
+              <X>-43</X>
               <Y>100.15001</Y>
               <Z>0</Z>
               <R00>-0</R00>
@@ -24977,7 +24977,7 @@
             <bool name="Anchored">true</bool>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>43</X>
+              <X>-43</X>
               <Y>101.8</Y>
               <Z>0</Z>
               <R00>-0</R00>
@@ -25009,7 +25009,7 @@
             <bool name="Anchored">true</bool>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>43</X>
+              <X>-43</X>
               <Y>103.55</Y>
               <Z>0</Z>
               <R00>-0</R00>
@@ -25041,7 +25041,7 @@
             <bool name="Anchored">true</bool>
             <token name="BottomSurface">0</token>
             <CoordinateFrame name="CFrame">
-              <X>43</X>
+              <X>-43</X>
               <Y>104</Y>
               <Z>0</Z>
               <R00>-0</R00>
@@ -25075,7 +25075,7 @@
         <bool name="Anchored">true</bool>
         <token name="BottomSurface">0</token>
         <CoordinateFrame name="CFrame">
-          <X>43</X>
+          <X>-43</X>
           <Y>100.12001</Y>
           <Z>0</Z>
           <R00>1</R00>
@@ -25113,16 +25113,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-48.5</X>
+            <X>48.5</X>
             <Y>112.5</Y>
-            <Z>18.199997</Z>
+            <Z>-16</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25130,7 +25130,7 @@
           <token name="Material">272</token>
           <token name="shape">1</token>
           <Vector3 name="size">
-            <X>15</X>
+            <X>14</X>
             <Y>21</Y>
             <Z>1</Z>
           </Vector3>
@@ -25143,16 +25143,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-48.350006</X>
+            <X>48.350006</X>
             <Y>123.2</Y>
-            <Z>18.199997</Z>
+            <Z>-16</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25161,7 +25161,7 @@
           <token name="Material">512</token>
           <token name="shape">1</token>
           <Vector3 name="size">
-            <X>15.600006</X>
+            <X>14.600006</X>
             <Y>0.6000061</Y>
             <Z>1.300003</Z>
           </Vector3>
@@ -25174,16 +25174,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-48.350006</X>
+            <X>48.350006</X>
             <Y>101.8</Y>
-            <Z>18.199997</Z>
+            <Z>-16</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25192,7 +25192,7 @@
           <token name="Material">512</token>
           <token name="shape">1</token>
           <Vector3 name="size">
-            <X>15.600006</X>
+            <X>14.600006</X>
             <Y>0.6000061</Y>
             <Z>1.300003</Z>
           </Vector3>
@@ -25205,16 +25205,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-48.350006</X>
+            <X>48.350006</X>
             <Y>112.5</Y>
-            <Z>10.399994</Z>
+            <Z>-8.699997</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25236,16 +25236,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-48.350006</X>
+            <X>48.350006</X>
             <Y>112.5</Y>
-            <Z>26</Z>
+            <Z>-23.300003</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25267,16 +25267,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.65001</X>
+            <X>47.65001</X>
             <Y>101.8</Y>
-            <Z>10.399994</Z>
+            <Z>-8.699997</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25299,16 +25299,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.65001</X>
+            <X>47.65001</X>
             <Y>123.2</Y>
-            <Z>10.399994</Z>
+            <Z>-8.699997</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25331,16 +25331,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.65001</X>
+            <X>47.65001</X>
             <Y>101.8</Y>
-            <Z>26</Z>
+            <Z>-23.300003</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25363,16 +25363,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.65001</X>
+            <X>47.65001</X>
             <Y>123.2</Y>
-            <Z>26</Z>
+            <Z>-23.300003</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25395,16 +25395,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.90001</X>
+            <X>47.90001</X>
             <Y>121.100006</Y>
-            <Z>18.199997</Z>
+            <Z>-16</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25413,7 +25413,7 @@
           <token name="Material">272</token>
           <token name="shape">1</token>
           <Vector3 name="size">
-            <X>13.5</X>
+            <X>12.5</X>
             <Y>2.399994</Y>
             <Z>0.19999695</Z>
           </Vector3>
@@ -25462,16 +25462,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.850006</X>
+            <X>47.850006</X>
             <Y>119.7</Y>
-            <Z>18.199997</Z>
+            <Z>-16</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25495,16 +25495,16 @@
           <BinaryString name="AttributesSerialize">AgAAAAUAAABPcmRlcgUAAIA/BAAAAFN0YXQCBAAAAFdpbnM=</BinaryString>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.90001</X>
+            <X>47.90001</X>
             <Y>111</Y>
-            <Z>18.199997</Z>
+            <Z>-16</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25513,7 +25513,7 @@
           <token name="Material">272</token>
           <token name="shape">1</token>
           <Vector3 name="size">
-            <X>13.5</X>
+            <X>12.5</X>
             <Y>16.199997</Y>
             <Z>0.19999695</Z>
           </Vector3>
@@ -25534,16 +25534,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-48.5</X>
+            <X>48.5</X>
             <Y>112.5</Y>
             <Z>-0</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25551,7 +25551,7 @@
           <token name="Material">272</token>
           <token name="shape">1</token>
           <Vector3 name="size">
-            <X>15</X>
+            <X>14</X>
             <Y>21</Y>
             <Z>1</Z>
           </Vector3>
@@ -25564,16 +25564,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-48.350006</X>
+            <X>48.350006</X>
             <Y>123.2</Y>
             <Z>-0</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25582,7 +25582,7 @@
           <token name="Material">512</token>
           <token name="shape">1</token>
           <Vector3 name="size">
-            <X>15.600006</X>
+            <X>14.600006</X>
             <Y>0.6000061</Y>
             <Z>1.300003</Z>
           </Vector3>
@@ -25595,16 +25595,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-48.350006</X>
+            <X>48.350006</X>
             <Y>101.8</Y>
             <Z>-0</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25613,7 +25613,7 @@
           <token name="Material">512</token>
           <token name="shape">1</token>
           <Vector3 name="size">
-            <X>15.600006</X>
+            <X>14.600006</X>
             <Y>0.6000061</Y>
             <Z>1.300003</Z>
           </Vector3>
@@ -25626,16 +25626,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-48.350006</X>
+            <X>48.350006</X>
             <Y>112.5</Y>
-            <Z>-7.800003</Z>
+            <Z>7.300003</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25657,16 +25657,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-48.350006</X>
+            <X>48.350006</X>
             <Y>112.5</Y>
-            <Z>7.800003</Z>
+            <Z>-7.300003</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25688,16 +25688,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.65001</X>
+            <X>47.65001</X>
             <Y>101.8</Y>
-            <Z>-7.800003</Z>
+            <Z>7.300003</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25720,16 +25720,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.65001</X>
+            <X>47.65001</X>
             <Y>123.2</Y>
-            <Z>-7.800003</Z>
+            <Z>7.300003</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25752,16 +25752,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.65001</X>
+            <X>47.65001</X>
             <Y>101.8</Y>
-            <Z>7.800003</Z>
+            <Z>-7.300003</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25784,16 +25784,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.65001</X>
+            <X>47.65001</X>
             <Y>123.2</Y>
-            <Z>7.800003</Z>
+            <Z>-7.300003</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25816,16 +25816,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.90001</X>
+            <X>47.90001</X>
             <Y>121.100006</Y>
             <Z>-0</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25834,7 +25834,7 @@
           <token name="Material">272</token>
           <token name="shape">1</token>
           <Vector3 name="size">
-            <X>13.5</X>
+            <X>12.5</X>
             <Y>2.399994</Y>
             <Z>0.19999695</Z>
           </Vector3>
@@ -25883,16 +25883,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.850006</X>
+            <X>47.850006</X>
             <Y>119.7</Y>
             <Z>-0</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25916,16 +25916,16 @@
           <BinaryString name="AttributesSerialize">AgAAAAUAAABPcmRlcgUAAABABAAAAFN0YXQCAwAAAEtPcw==</BinaryString>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.90001</X>
+            <X>47.90001</X>
             <Y>111</Y>
             <Z>-0</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25934,7 +25934,7 @@
           <token name="Material">272</token>
           <token name="shape">1</token>
           <Vector3 name="size">
-            <X>13.5</X>
+            <X>12.5</X>
             <Y>16.199997</Y>
             <Z>0.19999695</Z>
           </Vector3>
@@ -25955,16 +25955,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-48.5</X>
+            <X>48.5</X>
             <Y>112.5</Y>
-            <Z>-18.199997</Z>
+            <Z>16</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -25972,7 +25972,7 @@
           <token name="Material">272</token>
           <token name="shape">1</token>
           <Vector3 name="size">
-            <X>15</X>
+            <X>14</X>
             <Y>21</Y>
             <Z>1</Z>
           </Vector3>
@@ -25985,16 +25985,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-48.350006</X>
+            <X>48.350006</X>
             <Y>123.2</Y>
-            <Z>-18.199997</Z>
+            <Z>16</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -26003,7 +26003,7 @@
           <token name="Material">512</token>
           <token name="shape">1</token>
           <Vector3 name="size">
-            <X>15.600006</X>
+            <X>14.600006</X>
             <Y>0.6000061</Y>
             <Z>1.300003</Z>
           </Vector3>
@@ -26016,16 +26016,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-48.350006</X>
+            <X>48.350006</X>
             <Y>101.8</Y>
-            <Z>-18.199997</Z>
+            <Z>16</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -26034,7 +26034,7 @@
           <token name="Material">512</token>
           <token name="shape">1</token>
           <Vector3 name="size">
-            <X>15.600006</X>
+            <X>14.600006</X>
             <Y>0.6000061</Y>
             <Z>1.300003</Z>
           </Vector3>
@@ -26047,16 +26047,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-48.350006</X>
+            <X>48.350006</X>
             <Y>112.5</Y>
-            <Z>-26</Z>
+            <Z>23.300003</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -26078,16 +26078,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-48.350006</X>
+            <X>48.350006</X>
             <Y>112.5</Y>
-            <Z>-10.399994</Z>
+            <Z>8.699997</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -26109,16 +26109,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.65001</X>
+            <X>47.65001</X>
             <Y>101.8</Y>
-            <Z>-26</Z>
+            <Z>23.300003</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -26141,16 +26141,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.65001</X>
+            <X>47.65001</X>
             <Y>123.2</Y>
-            <Z>-26</Z>
+            <Z>23.300003</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -26173,16 +26173,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.65001</X>
+            <X>47.65001</X>
             <Y>101.8</Y>
-            <Z>-10.399994</Z>
+            <Z>8.699997</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -26205,16 +26205,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.65001</X>
+            <X>47.65001</X>
             <Y>123.2</Y>
-            <Z>-10.399994</Z>
+            <Z>8.699997</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -26237,16 +26237,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.90001</X>
+            <X>47.90001</X>
             <Y>121.100006</Y>
-            <Z>-18.199997</Z>
+            <Z>16</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -26255,7 +26255,7 @@
           <token name="Material">272</token>
           <token name="shape">1</token>
           <Vector3 name="size">
-            <X>13.5</X>
+            <X>12.5</X>
             <Y>2.399994</Y>
             <Z>0.19999695</Z>
           </Vector3>
@@ -26304,16 +26304,16 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.850006</X>
+            <X>47.850006</X>
             <Y>119.7</Y>
-            <Z>-18.199997</Z>
+            <Z>16</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -26337,16 +26337,16 @@
           <BinaryString name="AttributesSerialize">AgAAAAUAAABPcmRlcgUAAEBABAAAAFN0YXQCBQAAAExldmVs</BinaryString>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-47.90001</X>
+            <X>47.90001</X>
             <Y>111</Y>
-            <Z>-18.199997</Z>
+            <Z>16</Z>
             <R00>-0</R00>
             <R01>0</R01>
-            <R02>-1</R02>
+            <R02>1</R02>
             <R10>0</R10>
             <R11>1</R11>
             <R12>0</R12>
-            <R20>1</R20>
+            <R20>-1</R20>
             <R21>0</R21>
             <R22>-0</R22>
           </CoordinateFrame>
@@ -26355,7 +26355,7 @@
           <token name="Material">272</token>
           <token name="shape">1</token>
           <Vector3 name="size">
-            <X>13.5</X>
+            <X>12.5</X>
             <Y>16.199997</Y>
             <Z>0.19999695</Z>
           </Vector3>
@@ -26436,7 +26436,7 @@
         <bool name="Anchored">true</bool>
         <token name="BottomSurface">0</token>
         <CoordinateFrame name="CFrame">
-          <X>32</X>
+          <X>30</X>
           <Y>105</Y>
           <Z>-35.300003</Z>
           <R00>1</R00>
@@ -26467,7 +26467,7 @@
         <bool name="Anchored">true</bool>
         <token name="BottomSurface">0</token>
         <CoordinateFrame name="CFrame">
-          <X>32</X>
+          <X>30</X>
           <Y>102.8</Y>
           <Z>-35.050003</Z>
           <R00>1</R00>
@@ -26499,7 +26499,7 @@
         <bool name="Anchored">true</bool>
         <token name="BottomSurface">0</token>
         <CoordinateFrame name="CFrame">
-          <X>32</X>
+          <X>30</X>
           <Y>107.2</Y>
           <Z>-35.050003</Z>
           <R00>1</R00>
@@ -26531,7 +26531,7 @@
         <bool name="Anchored">true</bool>
         <token name="BottomSurface">0</token>
         <CoordinateFrame name="CFrame">
-          <X>34.600006</X>
+          <X>32.600006</X>
           <Y>105</Y>
           <Z>-34.90001</Z>
           <R00>1</R00>
@@ -26563,7 +26563,7 @@
         <bool name="Anchored">true</bool>
         <token name="BottomSurface">0</token>
         <CoordinateFrame name="CFrame">
-          <X>28.100006</X>
+          <X>26.100006</X>
           <Y>105.5</Y>
           <Z>-35.5</Z>
           <R00>1</R00>
@@ -26594,7 +26594,7 @@
         <bool name="Anchored">true</bool>
         <token name="BottomSurface">0</token>
         <CoordinateFrame name="CFrame">
-          <X>35.90001</X>
+          <X>33.90001</X>
           <Y>105.5</Y>
           <Z>-35.5</Z>
           <R00>1</R00>
@@ -26625,7 +26625,7 @@
         <bool name="Anchored">true</bool>
         <token name="BottomSurface">0</token>
         <CoordinateFrame name="CFrame">
-          <X>32</X>
+          <X>30</X>
           <Y>110.600006</Y>
           <Z>-35.5</Z>
           <R00>1</R00>
@@ -26660,7 +26660,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>32</X>
+            <X>30</X>
             <Y>112.5</Y>
             <Z>-35.83</Z>
             <R00>-1</R00>
@@ -26692,7 +26692,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>32</X>
+            <X>30</X>
             <Y>112.5</Y>
             <Z>-35.300003</Z>
             <R00>-1</R00>
@@ -26724,7 +26724,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>32</X>
+            <X>30</X>
             <Y>113.05</Y>
             <Z>-34.800003</Z>
             <R00>0</R00>
@@ -26756,7 +26756,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>32</X>
+            <X>30</X>
             <Y>112.520004</Y>
             <Z>-34.800003</Z>
             <R00>0</R00>
@@ -26788,7 +26788,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>32</X>
+            <X>30</X>
             <Y>112.8</Y>
             <Z>-34.800003</Z>
             <R00>-1</R00>
@@ -26838,7 +26838,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>25</X>
+            <X>23</X>
             <Y>101.3</Y>
             <Z>-32</Z>
             <R00>-0</R00>
@@ -26870,7 +26870,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>25</X>
+            <X>23</X>
             <Y>100.3</Y>
             <Z>-32</Z>
             <R00>-0</R00>
@@ -26902,7 +26902,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>25</X>
+            <X>23</X>
             <Y>102.65001</Y>
             <Z>-32</Z>
             <R00>-0</R00>
@@ -26934,7 +26934,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>25</X>
+            <X>23</X>
             <Y>102.62001</Y>
             <Z>-32</Z>
             <R00>-0</R00>
@@ -26966,7 +26966,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>25</X>
+            <X>23</X>
             <Y>104.600006</Y>
             <Z>-32</Z>
             <R00>-0</R00>
@@ -26998,7 +26998,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>25</X>
+            <X>23</X>
             <Y>106.90001</Y>
             <Z>-32</Z>
             <R00>1</R00>
@@ -27029,7 +27029,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>25</X>
+            <X>23</X>
             <Y>109.600006</Y>
             <Z>-32</Z>
             <R00>1</R00>
@@ -27294,7 +27294,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>100.08</Y>
             <Z>-4</Z>
             <R00>1</R00>
@@ -27326,7 +27326,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>100.100006</Y>
             <Z>-4</Z>
             <R00>1</R00>
@@ -27358,7 +27358,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>100.12001</Y>
             <Z>-4</Z>
             <R00>-0</R00>
@@ -27390,7 +27390,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>100.14</Y>
             <Z>-4</Z>
             <R00>-0</R00>
@@ -27422,7 +27422,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-37</X>
+            <X>-35</X>
             <Y>100.12001</Y>
             <Z>4</Z>
             <R00>0.70710754</R00>
@@ -27454,7 +27454,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-37</X>
+            <X>-35</X>
             <Y>100.12001</Y>
             <Z>-12</Z>
             <R00>0.70710754</R00>
@@ -27486,7 +27486,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-13</X>
+            <X>-11</X>
             <Y>100.12001</Y>
             <Z>4</Z>
             <R00>0.70710754</R00>
@@ -27518,7 +27518,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-13</X>
+            <X>-11</X>
             <Y>100.12001</Y>
             <Z>-12</Z>
             <R00>0.70710754</R00>
@@ -27555,7 +27555,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>102.40001</Y>
             <Z>-4</Z>
             <R00>-0</R00>
@@ -27587,7 +27587,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>102.28</Y>
             <Z>-4</Z>
             <R00>-0</R00>
@@ -27619,7 +27619,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>102.100006</Y>
             <Z>-4</Z>
             <R00>-0</R00>
@@ -27651,7 +27651,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>101.05</Y>
             <Z>-4</Z>
             <R00>-0</R00>
@@ -27683,7 +27683,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>100.84</Y>
             <Z>-4</Z>
             <R00>-0</R00>
@@ -27715,7 +27715,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>100.12001</Y>
             <Z>-4</Z>
             <R00>-0</R00>
@@ -27752,7 +27752,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>100.75</Y>
             <Z>-12.225006</Z>
             <R00>-1</R00>
@@ -27783,7 +27783,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>100.75</Y>
             <Z>-10.649994</Z>
             <R00>-1</R00>
@@ -27814,7 +27814,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-20.050003</X>
+            <X>-18.050003</X>
             <Y>100.15001</Y>
             <Z>-13.449997</Z>
             <R00>0</R00>
@@ -27846,7 +27846,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-20.050003</X>
+            <X>-18.050003</X>
             <Y>100.15001</Y>
             <Z>-10.550003</Z>
             <R00>0</R00>
@@ -27878,7 +27878,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-20.050003</X>
+            <X>-18.050003</X>
             <Y>101.90001</Y>
             <Z>-12</Z>
             <R00>-1</R00>
@@ -27909,7 +27909,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-20.050003</X>
+            <X>-18.050003</X>
             <Y>102.65001</Y>
             <Z>-12</Z>
             <R00>0</R00>
@@ -27940,7 +27940,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-20.050003</X>
+            <X>-18.050003</X>
             <Y>103.15001</Y>
             <Z>-12</Z>
             <R00>0</R00>
@@ -27972,7 +27972,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-29.949997</X>
+            <X>-27.949997</X>
             <Y>100.15001</Y>
             <Z>-13.449997</Z>
             <R00>0</R00>
@@ -28004,7 +28004,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-29.949997</X>
+            <X>-27.949997</X>
             <Y>100.15001</Y>
             <Z>-10.550003</Z>
             <R00>0</R00>
@@ -28036,7 +28036,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-29.949997</X>
+            <X>-27.949997</X>
             <Y>101.90001</Y>
             <Z>-12</Z>
             <R00>-1</R00>
@@ -28067,7 +28067,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-29.949997</X>
+            <X>-27.949997</X>
             <Y>102.65001</Y>
             <Z>-12</Z>
             <R00>0</R00>
@@ -28098,7 +28098,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-29.949997</X>
+            <X>-27.949997</X>
             <Y>103.15001</Y>
             <Z>-12</Z>
             <R00>0</R00>
@@ -28130,7 +28130,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>102.600006</Y>
             <Z>-13.399994</Z>
             <R00>-1</R00>
@@ -28161,7 +28161,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>104</Y>
             <Z>-13.399994</Z>
             <R00>-1</R00>
@@ -28192,7 +28192,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-22</X>
+            <X>-20</X>
             <Y>101.55</Y>
             <Z>-11.699997</Z>
             <R00>-1</R00>
@@ -28225,7 +28225,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-22</X>
+            <X>-20</X>
             <Y>101.90001</Y>
             <Z>-10.300003</Z>
             <R00>-1</R00>
@@ -28257,7 +28257,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-22</X>
+            <X>-20</X>
             <Y>102.90001</Y>
             <Z>-12.800003</Z>
             <R00>-1</R00>
@@ -28289,7 +28289,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>101.55</Y>
             <Z>-11.699997</Z>
             <R00>-1</R00>
@@ -28322,7 +28322,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>101.90001</Y>
             <Z>-10.300003</Z>
             <R00>-1</R00>
@@ -28354,7 +28354,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>102.90001</Y>
             <Z>-12.800003</Z>
             <R00>-1</R00>
@@ -28386,7 +28386,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-28</X>
+            <X>-26</X>
             <Y>101.55</Y>
             <Z>-11.699997</Z>
             <R00>-1</R00>
@@ -28419,7 +28419,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-28</X>
+            <X>-26</X>
             <Y>101.90001</Y>
             <Z>-10.300003</Z>
             <R00>-1</R00>
@@ -28451,7 +28451,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-28</X>
+            <X>-26</X>
             <Y>102.90001</Y>
             <Z>-12.800003</Z>
             <R00>-1</R00>
@@ -28488,7 +28488,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-36.725006</X>
+            <X>-34.725006</X>
             <Y>100.75</Y>
             <Z>-3.5</Z>
             <R00>-0</R00>
@@ -28519,7 +28519,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-35.15001</X>
+            <X>-33.15001</X>
             <Y>100.75</Y>
             <Z>-3.5</Z>
             <R00>-0</R00>
@@ -28550,7 +28550,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-37.949997</X>
+            <X>-35.949997</X>
             <Y>100.15001</Y>
             <Z>-5.449997</Z>
             <R00>0</R00>
@@ -28582,7 +28582,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-35.050003</X>
+            <X>-33.050003</X>
             <Y>100.15001</Y>
             <Z>-5.449997</Z>
             <R00>0</R00>
@@ -28614,7 +28614,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-36.5</X>
+            <X>-34.5</X>
             <Y>101.90001</Y>
             <Z>-5.449997</Z>
             <R00>-0</R00>
@@ -28645,7 +28645,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-36.5</X>
+            <X>-34.5</X>
             <Y>102.65001</Y>
             <Z>-5.449997</Z>
             <R00>1</R00>
@@ -28676,7 +28676,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-36.5</X>
+            <X>-34.5</X>
             <Y>103.15001</Y>
             <Z>-5.449997</Z>
             <R00>1</R00>
@@ -28708,7 +28708,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-37.949997</X>
+            <X>-35.949997</X>
             <Y>100.15001</Y>
             <Z>-1.550003</Z>
             <R00>0</R00>
@@ -28740,7 +28740,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-35.050003</X>
+            <X>-33.050003</X>
             <Y>100.15001</Y>
             <Z>-1.550003</Z>
             <R00>0</R00>
@@ -28772,7 +28772,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-36.5</X>
+            <X>-34.5</X>
             <Y>101.90001</Y>
             <Z>-1.550003</Z>
             <R00>-0</R00>
@@ -28803,7 +28803,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-36.5</X>
+            <X>-34.5</X>
             <Y>102.65001</Y>
             <Z>-1.550003</Z>
             <R00>1</R00>
@@ -28834,7 +28834,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-36.5</X>
+            <X>-34.5</X>
             <Y>103.15001</Y>
             <Z>-1.550003</Z>
             <R00>1</R00>
@@ -28866,7 +28866,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-37.90001</X>
+            <X>-35.90001</X>
             <Y>102.600006</Y>
             <Z>-3.5</Z>
             <R00>-0</R00>
@@ -28897,7 +28897,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-37.90001</X>
+            <X>-35.90001</X>
             <Y>104</Y>
             <Z>-3.5</Z>
             <R00>-0</R00>
@@ -28928,7 +28928,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-36.199997</X>
+            <X>-34.199997</X>
             <Y>101.55</Y>
             <Z>-3.5</Z>
             <R00>-0</R00>
@@ -28961,7 +28961,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-34.800003</X>
+            <X>-32.800003</X>
             <Y>101.90001</Y>
             <Z>-3.5</Z>
             <R00>-0</R00>
@@ -28993,7 +28993,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-37.300003</X>
+            <X>-35.300003</X>
             <Y>102.90001</Y>
             <Z>-3.5</Z>
             <R00>-0</R00>
@@ -29030,7 +29030,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-13.274994</X>
+            <X>-11.274994</X>
             <Y>100.75</Y>
             <Z>-3.5</Z>
             <R00>-0</R00>
@@ -29061,7 +29061,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-14.850006</X>
+            <X>-12.850006</X>
             <Y>100.75</Y>
             <Z>-3.5</Z>
             <R00>-0</R00>
@@ -29092,7 +29092,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-12.050003</X>
+            <X>-10.050003</X>
             <Y>100.15001</Y>
             <Z>-1.550003</Z>
             <R00>0</R00>
@@ -29124,7 +29124,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-14.949997</X>
+            <X>-12.949997</X>
             <Y>100.15001</Y>
             <Z>-1.550003</Z>
             <R00>0</R00>
@@ -29156,7 +29156,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-13.5</X>
+            <X>-11.5</X>
             <Y>101.90001</Y>
             <Z>-1.550003</Z>
             <R00>-0</R00>
@@ -29187,7 +29187,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-13.5</X>
+            <X>-11.5</X>
             <Y>102.65001</Y>
             <Z>-1.550003</Z>
             <R00>-1</R00>
@@ -29218,7 +29218,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-13.5</X>
+            <X>-11.5</X>
             <Y>103.15001</Y>
             <Z>-1.550003</Z>
             <R00>-1</R00>
@@ -29250,7 +29250,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-12.050003</X>
+            <X>-10.050003</X>
             <Y>100.15001</Y>
             <Z>-5.449997</Z>
             <R00>0</R00>
@@ -29282,7 +29282,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-14.949997</X>
+            <X>-12.949997</X>
             <Y>100.15001</Y>
             <Z>-5.449997</Z>
             <R00>0</R00>
@@ -29314,7 +29314,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-13.5</X>
+            <X>-11.5</X>
             <Y>101.90001</Y>
             <Z>-5.449997</Z>
             <R00>-0</R00>
@@ -29345,7 +29345,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-13.5</X>
+            <X>-11.5</X>
             <Y>102.65001</Y>
             <Z>-5.449997</Z>
             <R00>-1</R00>
@@ -29376,7 +29376,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-13.5</X>
+            <X>-11.5</X>
             <Y>103.15001</Y>
             <Z>-5.449997</Z>
             <R00>-1</R00>
@@ -29408,7 +29408,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-12.100006</X>
+            <X>-10.100006</X>
             <Y>102.600006</Y>
             <Z>-3.5</Z>
             <R00>-0</R00>
@@ -29439,7 +29439,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-12.100006</X>
+            <X>-10.100006</X>
             <Y>104</Y>
             <Z>-3.5</Z>
             <R00>-0</R00>
@@ -29470,7 +29470,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-13.800003</X>
+            <X>-11.800003</X>
             <Y>101.55</Y>
             <Z>-3.5</Z>
             <R00>-0</R00>
@@ -29503,7 +29503,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-15.199997</X>
+            <X>-13.199997</X>
             <Y>101.90001</Y>
             <Z>-3.5</Z>
             <R00>-0</R00>
@@ -29535,7 +29535,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-12.699997</X>
+            <X>-10.699997</X>
             <Y>102.90001</Y>
             <Z>-3.5</Z>
             <R00>-0</R00>
@@ -29572,7 +29572,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-34</X>
+            <X>-32</X>
             <Y>100.12001</Y>
             <Z>-13.5</Z>
             <R00>-0</R00>
@@ -29604,7 +29604,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-34</X>
+            <X>-32</X>
             <Y>100.32001</Y>
             <Z>-13.5</Z>
             <R00>-0</R00>
@@ -29636,7 +29636,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-34</X>
+            <X>-32</X>
             <Y>103.90001</Y>
             <Z>-13.5</Z>
             <R00>-0</R00>
@@ -29668,7 +29668,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-34</X>
+            <X>-32</X>
             <Y>104.600006</Y>
             <Z>-13.5</Z>
             <R00>1</R00>
@@ -29700,7 +29700,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-34</X>
+            <X>-32</X>
             <Y>108.3</Y>
             <Z>-13.5</Z>
             <R00>-0</R00>
@@ -29732,7 +29732,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-34</X>
+            <X>-32</X>
             <Y>107.90001</Y>
             <Z>-13.5</Z>
             <R00>1</R00>
@@ -29783,7 +29783,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-16</X>
+            <X>-14</X>
             <Y>100.12001</Y>
             <Z>-13.5</Z>
             <R00>-0</R00>
@@ -29815,7 +29815,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-16</X>
+            <X>-14</X>
             <Y>100.32001</Y>
             <Z>-13.5</Z>
             <R00>-0</R00>
@@ -29847,7 +29847,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-16</X>
+            <X>-14</X>
             <Y>103.90001</Y>
             <Z>-13.5</Z>
             <R00>-0</R00>
@@ -29879,7 +29879,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-16</X>
+            <X>-14</X>
             <Y>104.600006</Y>
             <Z>-13.5</Z>
             <R00>1</R00>
@@ -29911,7 +29911,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-16</X>
+            <X>-14</X>
             <Y>108.3</Y>
             <Z>-13.5</Z>
             <R00>-0</R00>
@@ -29943,7 +29943,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-16</X>
+            <X>-14</X>
             <Y>107.90001</Y>
             <Z>-13.5</Z>
             <R00>1</R00>
@@ -29994,9 +29994,9 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-44</X>
+            <X>-46</X>
             <Y>101.3</Y>
-            <Z>-31</Z>
+            <Z>-21.5</Z>
             <R00>-0</R00>
             <R01>-1</R01>
             <R02>0</R02>
@@ -30026,9 +30026,9 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-44</X>
+            <X>-46</X>
             <Y>100.3</Y>
-            <Z>-31</Z>
+            <Z>-21.5</Z>
             <R00>-0</R00>
             <R01>-1</R01>
             <R02>0</R02>
@@ -30058,9 +30058,9 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-44</X>
+            <X>-46</X>
             <Y>102.65001</Y>
-            <Z>-31</Z>
+            <Z>-21.5</Z>
             <R00>-0</R00>
             <R01>-1</R01>
             <R02>0</R02>
@@ -30090,9 +30090,9 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-44</X>
+            <X>-46</X>
             <Y>102.62001</Y>
-            <Z>-31</Z>
+            <Z>-21.5</Z>
             <R00>-0</R00>
             <R01>-1</R01>
             <R02>0</R02>
@@ -30122,9 +30122,9 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-44</X>
+            <X>-46</X>
             <Y>104.600006</Y>
-            <Z>-31</Z>
+            <Z>-21.5</Z>
             <R00>-0</R00>
             <R01>-1</R01>
             <R02>0</R02>
@@ -30154,9 +30154,9 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-44</X>
+            <X>-46</X>
             <Y>106.90001</Y>
-            <Z>-31</Z>
+            <Z>-21.5</Z>
             <R00>1</R00>
             <R01>0</R01>
             <R02>0</R02>
@@ -30185,9 +30185,9 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-44</X>
+            <X>-46</X>
             <Y>109.600006</Y>
-            <Z>-31</Z>
+            <Z>-21.5</Z>
             <R00>1</R00>
             <R01>0</R01>
             <R02>0</R02>
@@ -30222,7 +30222,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-9</X>
+            <X>-7</X>
             <Y>101.3</Y>
             <Z>6</Z>
             <R00>-0</R00>
@@ -30254,7 +30254,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-9</X>
+            <X>-7</X>
             <Y>100.3</Y>
             <Z>6</Z>
             <R00>-0</R00>
@@ -30286,7 +30286,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-9</X>
+            <X>-7</X>
             <Y>102.65001</Y>
             <Z>6</Z>
             <R00>-0</R00>
@@ -30318,7 +30318,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-9</X>
+            <X>-7</X>
             <Y>102.62001</Y>
             <Z>6</Z>
             <R00>-0</R00>
@@ -30350,7 +30350,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-9</X>
+            <X>-7</X>
             <Y>104.600006</Y>
             <Z>6</Z>
             <R00>-0</R00>
@@ -30382,7 +30382,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-9</X>
+            <X>-7</X>
             <Y>106.90001</Y>
             <Z>6</Z>
             <R00>1</R00>
@@ -30413,7 +30413,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-9</X>
+            <X>-7</X>
             <Y>109.600006</Y>
             <Z>6</Z>
             <R00>1</R00>
@@ -30450,7 +30450,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>125.850006</Y>
             <Z>-4</Z>
             <R00>-0</R00>
@@ -30482,7 +30482,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>122.100006</Y>
             <Z>-4</Z>
             <R00>-0</R00>
@@ -30514,7 +30514,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>118</Y>
             <Z>-4</Z>
             <R00>-0</R00>
@@ -30546,7 +30546,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>117.55</Y>
             <Z>-4</Z>
             <R00>-0</R00>
@@ -30578,7 +30578,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>117.100006</Y>
             <Z>-4</Z>
             <R00>-0</R00>
@@ -30610,7 +30610,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>-25</X>
+            <X>-23</X>
             <Y>116.600006</Y>
             <Z>-4</Z>
             <R00>1</R00>
@@ -37013,7 +37013,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>103</Y>
             <Z>15</Z>
             <R00>1</R00>
@@ -37044,7 +37044,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>102.78</Y>
             <Z>15</Z>
             <R00>1</R00>
@@ -37075,7 +37075,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>101.40001</Y>
             <Z>15</Z>
             <R00>-0</R00>
@@ -37107,7 +37107,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>100.12001</Y>
             <Z>15</Z>
             <R00>1</R00>
@@ -37143,7 +37143,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>100.75</Y>
             <Z>10.975006</Z>
             <R00>-1</R00>
@@ -37174,7 +37174,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>100.75</Y>
             <Z>12.550003</Z>
             <R00>-1</R00>
@@ -37205,7 +37205,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38.449997</X>
+            <X>32.449997</X>
             <Y>100.15001</Y>
             <Z>9.75</Z>
             <R00>0</R00>
@@ -37237,7 +37237,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38.449997</X>
+            <X>32.449997</X>
             <Y>100.15001</Y>
             <Z>12.649994</Z>
             <R00>0</R00>
@@ -37269,7 +37269,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38.449997</X>
+            <X>32.449997</X>
             <Y>101.90001</Y>
             <Z>11.199997</Z>
             <R00>-1</R00>
@@ -37300,7 +37300,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38.449997</X>
+            <X>32.449997</X>
             <Y>102.65001</Y>
             <Z>11.199997</Z>
             <R00>0</R00>
@@ -37331,7 +37331,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38.449997</X>
+            <X>32.449997</X>
             <Y>103.15001</Y>
             <Z>11.199997</Z>
             <R00>0</R00>
@@ -37363,7 +37363,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>31.550003</X>
+            <X>25.550003</X>
             <Y>100.15001</Y>
             <Z>9.75</Z>
             <R00>0</R00>
@@ -37395,7 +37395,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>31.550003</X>
+            <X>25.550003</X>
             <Y>100.15001</Y>
             <Z>12.649994</Z>
             <R00>0</R00>
@@ -37427,7 +37427,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>31.550003</X>
+            <X>25.550003</X>
             <Y>101.90001</Y>
             <Z>11.199997</Z>
             <R00>-1</R00>
@@ -37458,7 +37458,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>31.550003</X>
+            <X>25.550003</X>
             <Y>102.65001</Y>
             <Z>11.199997</Z>
             <R00>0</R00>
@@ -37489,7 +37489,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>31.550003</X>
+            <X>25.550003</X>
             <Y>103.15001</Y>
             <Z>11.199997</Z>
             <R00>0</R00>
@@ -37521,7 +37521,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>103.5</Y>
             <Z>9.800003</Z>
             <R00>-1</R00>
@@ -37552,7 +37552,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>105.8</Y>
             <Z>9.800003</Z>
             <R00>-1</R00>
@@ -37583,7 +37583,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>36.5</X>
+            <X>30.5</X>
             <Y>101.55</Y>
             <Z>11.5</Z>
             <R00>-1</R00>
@@ -37616,7 +37616,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>36.5</X>
+            <X>30.5</X>
             <Y>101.90001</Y>
             <Z>12.899994</Z>
             <R00>-1</R00>
@@ -37648,7 +37648,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>36.5</X>
+            <X>30.5</X>
             <Y>103.8</Y>
             <Z>10.399994</Z>
             <R00>-1</R00>
@@ -37680,7 +37680,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>37.199997</X>
+            <X>31.199997</X>
             <Y>103.8</Y>
             <Z>10.729996</Z>
             <R00>-1</R00>
@@ -37712,7 +37712,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35.800003</X>
+            <X>29.800003</X>
             <Y>103.8</Y>
             <Z>10.729996</Z>
             <R00>-1</R00>
@@ -37744,7 +37744,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>33.5</X>
+            <X>27.5</X>
             <Y>101.55</Y>
             <Z>11.5</Z>
             <R00>-1</R00>
@@ -37777,7 +37777,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>33.5</X>
+            <X>27.5</X>
             <Y>101.90001</Y>
             <Z>12.899994</Z>
             <R00>-1</R00>
@@ -37809,7 +37809,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>33.5</X>
+            <X>27.5</X>
             <Y>103.8</Y>
             <Z>10.399994</Z>
             <R00>-1</R00>
@@ -37841,7 +37841,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>34.199997</X>
+            <X>28.199997</X>
             <Y>103.8</Y>
             <Z>10.729996</Z>
             <R00>-1</R00>
@@ -37873,7 +37873,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>32.800003</X>
+            <X>26.800003</X>
             <Y>103.8</Y>
             <Z>10.729996</Z>
             <R00>-1</R00>
@@ -37910,7 +37910,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>100.75</Y>
             <Z>19.024994</Z>
             <R00>1</R00>
@@ -37941,7 +37941,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>100.75</Y>
             <Z>17.449997</Z>
             <R00>1</R00>
@@ -37972,7 +37972,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>31.550003</X>
+            <X>25.550003</X>
             <Y>100.15001</Y>
             <Z>20.25</Z>
             <R00>-0</R00>
@@ -38004,7 +38004,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>31.550003</X>
+            <X>25.550003</X>
             <Y>100.15001</Y>
             <Z>17.350006</Z>
             <R00>-0</R00>
@@ -38036,7 +38036,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>31.550003</X>
+            <X>25.550003</X>
             <Y>101.90001</Y>
             <Z>18.800003</Z>
             <R00>1</R00>
@@ -38067,7 +38067,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>31.550003</X>
+            <X>25.550003</X>
             <Y>102.65001</Y>
             <Z>18.800003</Z>
             <R00>-0</R00>
@@ -38098,7 +38098,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>31.550003</X>
+            <X>25.550003</X>
             <Y>103.15001</Y>
             <Z>18.800003</Z>
             <R00>-0</R00>
@@ -38130,7 +38130,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38.449997</X>
+            <X>32.449997</X>
             <Y>100.15001</Y>
             <Z>20.25</Z>
             <R00>-0</R00>
@@ -38162,7 +38162,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38.449997</X>
+            <X>32.449997</X>
             <Y>100.15001</Y>
             <Z>17.350006</Z>
             <R00>-0</R00>
@@ -38194,7 +38194,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38.449997</X>
+            <X>32.449997</X>
             <Y>101.90001</Y>
             <Z>18.800003</Z>
             <R00>1</R00>
@@ -38225,7 +38225,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38.449997</X>
+            <X>32.449997</X>
             <Y>102.65001</Y>
             <Z>18.800003</Z>
             <R00>-0</R00>
@@ -38256,7 +38256,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>38.449997</X>
+            <X>32.449997</X>
             <Y>103.15001</Y>
             <Z>18.800003</Z>
             <R00>-0</R00>
@@ -38288,7 +38288,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>103.5</Y>
             <Z>20.199997</Z>
             <R00>1</R00>
@@ -38319,7 +38319,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>105.8</Y>
             <Z>20.199997</Z>
             <R00>1</R00>
@@ -38350,7 +38350,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>33.5</X>
+            <X>27.5</X>
             <Y>101.55</Y>
             <Z>18.5</Z>
             <R00>1</R00>
@@ -38383,7 +38383,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>33.5</X>
+            <X>27.5</X>
             <Y>101.90001</Y>
             <Z>17.100006</Z>
             <R00>1</R00>
@@ -38415,7 +38415,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>33.5</X>
+            <X>27.5</X>
             <Y>103.8</Y>
             <Z>19.600006</Z>
             <R00>1</R00>
@@ -38447,7 +38447,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>32.800003</X>
+            <X>26.800003</X>
             <Y>103.8</Y>
             <Z>19.270004</Z>
             <R00>1</R00>
@@ -38479,7 +38479,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>34.199997</X>
+            <X>28.199997</X>
             <Y>103.8</Y>
             <Z>19.270004</Z>
             <R00>1</R00>
@@ -38511,7 +38511,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>36.5</X>
+            <X>30.5</X>
             <Y>101.55</Y>
             <Z>18.5</Z>
             <R00>1</R00>
@@ -38544,7 +38544,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>36.5</X>
+            <X>30.5</X>
             <Y>101.90001</Y>
             <Z>17.100006</Z>
             <R00>1</R00>
@@ -38576,7 +38576,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>36.5</X>
+            <X>30.5</X>
             <Y>103.8</Y>
             <Z>19.600006</Z>
             <R00>1</R00>
@@ -38608,7 +38608,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35.800003</X>
+            <X>29.800003</X>
             <Y>103.8</Y>
             <Z>19.270004</Z>
             <R00>1</R00>
@@ -38640,7 +38640,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>37.199997</X>
+            <X>31.199997</X>
             <Y>103.8</Y>
             <Z>19.270004</Z>
             <R00>1</R00>
@@ -38677,7 +38677,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>125.850006</Y>
             <Z>15</Z>
             <R00>-0</R00>
@@ -38709,7 +38709,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>121.100006</Y>
             <Z>15</Z>
             <R00>-0</R00>
@@ -38741,7 +38741,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>116</Y>
             <Z>15</Z>
             <R00>-0</R00>
@@ -38773,7 +38773,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>115.55</Y>
             <Z>15</Z>
             <R00>-0</R00>
@@ -38805,7 +38805,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>115.100006</Y>
             <Z>15</Z>
             <R00>-0</R00>
@@ -38837,7 +38837,7 @@
           <bool name="Anchored">true</bool>
           <token name="BottomSurface">0</token>
           <CoordinateFrame name="CFrame">
-            <X>35</X>
+            <X>29</X>
             <Y>114.600006</Y>
             <Z>15</Z>
             <R00>1</R00>
@@ -38884,7 +38884,7 @@
         <bool name="Anchored">true</bool>
         <token name="BottomSurface">0</token>
         <CoordinateFrame name="CFrame">
-          <X>46</X>
+          <X>-46</X>
           <Y>102</Y>
           <Z>-33</Z>
           <R00>0.9205017</R00>
@@ -38914,7 +38914,7 @@
         <bool name="Anchored">true</bool>
         <token name="BottomSurface">0</token>
         <CoordinateFrame name="CFrame">
-          <X>41</X>
+          <X>-41</X>
           <Y>101.5</Y>
           <Z>-28.5</Z>
           <R00>0.6946564</R00>
@@ -38945,7 +38945,7 @@
         <bool name="Anchored">true</bool>
         <token name="BottomSurface">0</token>
         <CoordinateFrame name="CFrame">
-          <X>41.5</X>
+          <X>-41.5</X>
           <Y>101.5</Y>
           <Z>-33</Z>
           <R00>0.35836792</R00>
@@ -38976,7 +38976,7 @@
         <bool name="Anchored">true</bool>
         <token name="BottomSurface">0</token>
         <CoordinateFrame name="CFrame">
-          <X>45.800003</X>
+          <X>-45.800003</X>
           <Y>105.25</Y>
           <Z>-33</Z>
           <R00>-0.03489685</R00>
