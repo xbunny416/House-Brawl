@@ -91,6 +91,7 @@ One row per merged PR, newest last. Add a row with every PR (see [CLAUDE.md](../
 | 2026-10-27 | Lobby shuffle (owner: chess ↔ the red booth, a longer booth for six, the style coach + music box ↔ the green street door, arm wrestling and pool to the side, a smaller sofa set in front of the spin wheel): long 6-seat booth in the bar's right-hand corner with chess in front (`Furniture.boothTable` length, two pedestals); coach and jukebox left of the ARENA door, street door in the left corner; pool and arm-wrestling tables along the left wall; lounge (2-seat sofa, two armchairs, round table) in front of the wheel; open middle | #88 |
 | 2026-10-27 | Lobby: the sofa in front of the spin wheel removed (owner: "just remove that 3 sofa"); the lounge is the round table between two armchairs on a smaller rug, a floor lamp by each armchair | #89 |
 | 2026-10-27 | Lobby clean-up (owner: "remove the 2 armchair too, remove stand here to fight sign, set player spawn in center no blue plate below"): the armchairs in front of the wheel and the join-pad signs (and `Lobby.Sign.Join`) removed; one invisible, walk-through 10 × 10 spawn in the centre facing the bar; `MapService.getLobbySpawn` spreads returning players over it; maps spec for the spawn | #90 |
+| 2026-10-27 | Lobby: the rest of the lounge by the wheel (rug, round table, floor lamps, the tree near it) and the three hanging lamps over the concrete removed (owner); all three red booths are long 6-seaters; 7 shadow-casting lamps, all over the bar floor | #91 |
 
 ## Build order (approved 2026-10-15)
 

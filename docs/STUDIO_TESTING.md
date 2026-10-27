@@ -114,7 +114,8 @@ Settings → Promo code, styles come from the style roll).
   left wall fill in (Wins, KOs, Level from left to right) and their rows fit the smaller boards, and the pool and
   arm-wrestling tables in front of them don't hide the rows; the style coach stands left of the ARENA door by the
   jukebox in a red tracksuit (Output `[Npc] built the Coach`) and his prompt opens Styles; the spin wheel (right wall)
-  spins and lands on the prize it says, and you can still walk to its button past the lounge in front of it; the
-  chess table's armchairs (right side of the bar floor) seat both players and a game starts; the long booth in the
-  right-hand corner seats six; the other booths and the high tables can be sat at. The old locker booth and codes
+  spins and lands on the prize it says, with open floor in front of it; the
+  chess table's armchairs (right side of the bar floor) seat both players and a game starts; all three booths
+  seat six and the high tables can be sat at; the concrete floor has no hanging lamps now, so check the middle of
+  the room isn't too dark (the pillars' wall lamps light it). The old locker booth and codes
   jukebox are gone (Inventory and Promo code from the menu); the jukebox is decor.
