@@ -853,3 +853,14 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   tables in front of the bar stools under one lamp. The lounge, the arm-wrestling table and the pool table keep their
   look, moved in for the smaller room. 12 shadow-casting lamps as before (the spawn lamp went, the new booth has one).
   `Furniture.at` (the local → world placement the furniture uses) is now public for wall pieces.
+- **Leaderboards on the other side, the coach by the jukebox (owner, 2026-10-27: "i mean opposite side of what i
+  want, also move style npc to near music box"):** read as the leaderboards only (the "left wall" they meant is the
+  east one); the chess table stays in the north-east. **East wall:** the three leaderboards in the middle (14 wide
+  now, Wins → KOs → Level from left to right as you face them, i.e. south to north; pillars at z ±25.5 just outside
+  them), the jukebox moved south into the corner past the last pillar with the teal barrel beside it, the rust barrel
+  and the dartboard at the north end. **The style coach** stands against the south wall in the south-east corner,
+  facing north, next to the jukebox (STYLES sign on the south wall over him); the maps spec checks he is within 10
+  studs of the jukebox and faces the room. **West wall:** the spin wheel is back in the middle (`ROOM` = 1), a potted
+  tree south of it; the north end (where the coach stood) is open. The crates moved to the south-west corner, the east
+  booth 6 studs west (x 29) so it doesn't hide the boards, the lounge 2 studs east (room in front of the wheel's mat),
+  the street door to x 30 (clear of the south pillars at x ±36.5).

@@ -157,14 +157,14 @@ when you open the Shop or buy something), bar stools, a mirrored back bar with b
 the middle one the live match during a round, the news otherwise) and news TVs on the counter ends (a "JUNKYARD NEWS"
 channel: fun headlines mixed with live news — the last winner, today's deal, the Wins leader — and a scrolling
 ticker), the "JUNKYARD BRAWL" sign; two booths on the west side, the chess table and a booth on the east side, high
-tables with stools in front of the bar stools. West (the left wall as you face the bar) — three tall dark leaderboard
+tables with stools in front of the bar stools. East (the right wall as you face the bar) — three tall dark leaderboard
 boards in the middle (cream title, gold underline; rows of rank, avatar headshot, name and value with thousands
-separators, the top 3 outlined in gold / silver / bronze), and at the north end the style coach (a standing Roblox
-character in a red tracksuit with a headband and a whistle, under a STYLES sign: walk up for the Styles screen, the
-style roll). East — the spin wheel in the middle (walk up and press the red button in front of it; each slice shows
-its prize and chance) between two barrels, a jukebox (decor) further south, a dartboard. South (opposite the bar) —
-the steel ARENA door with the glowing join pad, the spawns on both sides of it, the cork quest board, the street door,
-crates in the corner. Middle — the lounge (worn dark rug with a rust ring, round wood table on an iron base, red sofa
+separators, the top 3 outlined in gold / silver / bronze); in the south-east corner a jukebox (decor) by the teal
+barrel and the style coach (a standing Roblox character in a red tracksuit with a headband and a whistle, under a
+STYLES sign: walk up for the Styles screen, the style roll); a barrel and a dartboard at the north end. West — the
+spin wheel in the middle (walk up and press the red button in front of it; each slice shows its prize and chance), a
+potted tree. South (opposite the bar) — the steel ARENA door with the glowing join pad, the spawns on both sides of
+it, the cork quest board, the street door, crates in the south-west corner. Middle — the lounge (worn dark rug with a rust ring, round wood table on an iron base, red sofa
 and two armchairs, floor lamps with white drum shades, potted trees in black pots), a pool table; the
 arm-wrestling table in the open middle of the room (two stools facing each other: sit down opposite someone, wait out
 a 3-second countdown, then mash Attack — or tap PUSH on a phone — to push the clasped hands over to your side; a pin
