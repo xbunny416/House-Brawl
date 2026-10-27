@@ -162,8 +162,8 @@ right-hand corner with the chess table in front of it, high tables with stools i
 value with thousands separators, the top 3 outlined in gold / silver / bronze) with the pool table and the
 arm-wrestling table in front of them; a barrel and a dartboard at the bar end, the teal barrel in the corner. Right
 wall — the spin wheel in the middle (walk up and press the red button in front of it; each slice shows its prize and
-chance) with the lounge in front of it (worn dark rug with a rust ring, round wood table on an iron base, a red 2-seat
-sofa facing the wheel and two armchairs, floor lamps with white drum shades), a potted tree. South (the ARENA wall,
+chance) with the lounge in front of it (worn dark rug with a rust ring, round wood table on an iron base between two red
+armchairs, floor lamps with white drum shades), a potted tree. South (the ARENA wall,
 opposite the bar) — the steel ARENA door with the glowing join pad and the spawns on both sides of it; left of it the
 style coach (a standing Roblox character in a red tracksuit with a headband and a whistle, under a STYLES sign: walk
 up for the Styles screen, the style roll) by a jukebox (decor) and the street door in the corner; right of it the
