@@ -15,16 +15,17 @@
 	and wall lamps, wood beams under a dark ceiling. Floor: concrete, wood planks in the bar.
 	North (the bar's wood floor): the wood-topped counter (Shop) with the bartender (Shop NPC), stools, a back bar with
 	a wood-framed mirror and shelves of bottles, map vote TVs hanging over the bar, news TVs on the counter ends, the
-	title sign; two booths on the left side, the chess table on two armchairs and a booth on the right side, high
-	tables in front of the stools.
-	Left wall (+X): the three leaderboards in the middle; in the corner by the ARENA wall the jukebox (decor) by the
-	teal barrel and the style coach (StyleNPC: opens the Styles screen); a barrel and a dartboard at the bar end.
-	Right wall (−X): the spin wheel in the middle, a potted tree.
+	title sign; two booths on the left side, a long booth for six and the chess table on two armchairs in front of it
+	on the right side, high tables in front of the stools.
+	Left wall (+X): the three leaderboards in the middle with the pool table and the arm-wrestling table in front of
+	them; a barrel and a dartboard at the bar end, the teal barrel in the corner by the ARENA wall.
+	Right wall (−X): the spin wheel in the middle with the lounge in front of it — a worn rug with a rust ring, a round
+	wood table, a red 2-seat sofa facing the wheel and two armchairs, floor lamps — and a potted tree.
 	South (the ARENA wall): the steel ARENA door with the join pad in front of it (QueueZone: only players standing on
-	it are taken into the next round), the spawn pads on both sides of it, the quest board, the street door, crates in
-	the right-hand corner.
-	Middle: the lounge — a worn rug with a rust ring, a round wood table, a red sofa and two armchairs, floor lamps,
-	potted trees — the arm-wrestling table and the pool table. Furniture comes from maps/lib/Furniture.
+	it are taken into the next round), the spawn pads on both sides of it; left of it the style coach (StyleNPC: opens
+	the Styles screen) by the jukebox (decor) and the street door in the corner; right of it the quest board and the
+	crates in the corner.
+	Middle: open floor between the ARENA door and the bar, potted trees. Furniture comes from maps/lib/Furniture.
 	Seats (sofas, armchairs, booth benches, stools) are LobbySeat-tagged Seats: walk up and press the Sit prompt.
 	Interactive objects carry CollectionService tags so code can attach prompts and UI.
 ]]
@@ -49,7 +50,7 @@ local BAR_DEPTH = 27 -- the wood floor in front of the north wall
 -- right wall (−X), the Builder's names), clear of what hangs there.
 local PILLARS = {
 	North = { -30, 30 },
-	South = { -36.5, 36.5 },
+	South = { -36.5, 34.8 }, -- clear of the street door (left) and the quest board (right)
 	East = { -23, 23 }, -- the left wall, around the leaderboards
 	West = { -28.5, -14.5, 14.5, 28.5 }, -- the right wall
 }
@@ -591,7 +592,7 @@ local function arenaDoor()
 end
 
 -- The left wall's decor: a rust barrel with a dartboard over it at the bar end, the teal barrel in the corner by the
--- jukebox.
+-- street door.
 local function leftWall()
 	for index, z in { 30, -HALF_Z + 1.7 } do
 		B.part({
@@ -630,14 +631,16 @@ local function leftWall()
 end
 
 --[[
-	The style coach in the corner of the left wall and the ARENA wall, by the jukebox (owner, 2026-10-27: "delete
-	locker area, replace with an interactive NPC for the style roll", then "move style npc to near music box"; at the
-	bar end of the right wall for a day): NpcService builds a Roblox character on the invisible Spot, facing the room
-	(like the bartender); the Styles prompt sits on the invisible Torso anchor (LobbyPromptController), so it works even
-	if the character can't be built. He stands against the ARENA wall, a STYLES sign over him, a mat under him.
+	The style coach on the ARENA wall left of the door, by the jukebox, where the street door was (owner, 2026-10-27:
+	"delete locker area, replace with an interactive NPC for the style roll", "move style npc to near music box", then
+	"swap place of npc style + music box with green door"; at the bar end of the right wall, then in the left-hand
+	corner, before): NpcService builds a Roblox character on the invisible Spot, facing the room (like the bartender);
+	the Styles prompt sits on the invisible Torso anchor (LobbyPromptController), so it works even if the character
+	can't be built. He stands against the ARENA wall, a STYLES sign over him, a mat under him.
 ]]
+local COACH_X, JUKEBOX_X = 24.5, 30.5
 local function styleCoach()
-	local x, z = 41, -HALF_Z + 3
+	local x, z = COACH_X, -HALF_Z + 3
 	B.model("StyleNPC", function()
 		B.part({
 			Name = "Spot",
@@ -682,89 +685,90 @@ local function styleCoach()
 	})
 end
 
--- The jukebox on the left wall between the last pillar and the teal barrel in the corner, the style coach beside it
--- (owner, 2026-10-27: "add music box between pillar … green barrel and box"; the Codes jukebox on the right wall
--- went): decor only, no prompt. A wood cabinet with a glowing arch, a window with records, neon stripes and a
--- speaker grille.
+-- The jukebox against the ARENA wall beside the style coach, where the street door was (owner, 2026-10-27: "add
+-- music box between pillar … green barrel and box", then "swap place of npc style + music box with green door"; the
+-- Codes jukebox on the right wall went): decor only, no prompt. A wood cabinet with a glowing arch, a window with
+-- records, neon stripes and a speaker grille. Local spots: along the wall, up, out from the wall.
 local function jukebox()
-	local x, z = HALF_X - 2.5, -30.3
-	local front = -1 -- its front faces the room (−X)
+	local at = F.at(JUKEBOX_X, -HALF_Z, "North")
+	local ACROSS = { 0, 90, 0 } -- a cylinder's axis turned out from the wall
 	B.model("Jukebox", function()
-		local body = B.part({
+		local body = B.part(at({
 			Name = "Body",
 			Size = { 5, 6, 3.5 },
-			Position = { x, 3, z },
-			Rotation = B.yaw("West"),
+			Position = { 0, 3, 2.5 },
 			Color = "WoodMid",
 			Material = "Wood",
-		})
-		B.part({
+		}))
+		B.part(at({
 			Name = "Arch",
-			Size = { 3.5, 5, 5 }, -- a cylinder front to back: the rounded top
-			Position = { x, 6, z },
+			Size = { 3.5, 5, 5 }, -- the rounded top
+			Position = { 0, 6, 2.5 },
+			Rotation = ACROSS,
 			Shape = "Cylinder",
 			Color = "WoodMid",
 			Material = "Wood",
-		})
-		B.part({
+		}))
+		B.part(at({
 			Name = "ArchGlass",
 			Size = { 0.2, 3.6, 3.6 },
-			Position = { x + 1.8 * front, 6, z },
+			Position = { 0, 6, 4.3 },
+			Rotation = ACROSS,
 			Shape = "Cylinder",
 			Color = "NeonOrange",
 			Material = "Neon",
 			Transparency = 0.3,
 			CanCollide = false,
-		})
-		B.part({
+		}))
+		B.part(at({
 			Name = "Window",
 			Size = { 3.8, 1.8, 0.15 },
-			Position = { x + 1.8 * front, 4.2, z },
-			Rotation = B.yaw("West"),
+			Position = { 0, 4.2, 4.3 },
 			Color = "Black",
 			Material = "Glass",
 			Transparency = 0.3,
 			CanCollide = false,
-		})
-		for index, dz in { -1.2, 0, 1.2 } do
-			B.part({
+		}))
+		for index, dx in { -1.2, 0, 1.2 } do
+			B.part(at({
 				Name = `Record{index}`,
 				Size = { 0.08, 1.1, 1.1 },
-				Position = { x + 1.65 * front, 4.2, z + dz },
+				Position = { dx, 4.2, 4.15 },
+				Rotation = ACROSS,
 				Shape = "Cylinder",
 				Color = "Black",
 				Material = "SmoothPlastic",
 				CanCollide = false,
-			})
-			B.part({
+			}))
+			B.part(at({
 				Name = `RecordLabel{index}`,
 				Size = { 0.1, 0.4, 0.4 },
-				Position = { x + 1.66 * front, 4.2, z + dz },
+				Position = { dx, 4.2, 4.16 },
+				Rotation = ACROSS,
 				Shape = "Cylinder",
 				Color = if index == 2 then "LaneYellow" else "Red",
 				Material = "SmoothPlastic",
 				CanCollide = false,
-			})
+			}))
 		end
 		for index, color in { "NeonPink", "NeonTeal", "NeonOrange" } do
-			B.part({
+			B.part(at({
 				Name = "Stripe",
 				Size = { 4.2, 0.3, 0.2 },
-				Position = { x + 1.85 * front, 1.1 + index * 0.6, z },
-				Rotation = B.yaw("West"),
+				Position = { 0, 1.1 + index * 0.6, 4.35 },
 				Color = color,
 				Material = "Neon",
 				CanCollide = false,
-			})
+			}))
 		end
-		B.part({
+		B.part(at({
 			Name = "Grille",
-			Size = { 0.15, 1.2, 3 },
-			Position = { x + 1.8 * front, 0.7, z },
+			Size = { 3, 1.2, 0.15 },
+			Position = { 0, 0.7, 4.3 },
 			Color = "Metal",
 			Material = "Metal",
 			CanCollide = false,
-		})
+		}))
 		B.light(body, "NeonPink", 12, 1.5)
 	end)
 end
@@ -1089,8 +1093,9 @@ local function spawns()
 			Tags = { "LobbySpawn" },
 		})
 	end
-	-- The street door the crew comes in through (decor): a panelled door in a wood frame with a lamp over it.
-	local doorX = 30
+	-- The street door the crew comes in through (decor): a panelled door in a wood frame with a lamp over it, in the
+	-- left-hand corner of the ARENA wall since 2026-10-27 (owner: "swap place of npc style + music box with green door").
+	local doorX = 41
 	B.part({
 		Name = "StreetDoor",
 		Size = { 7, 10, 0.4 },
@@ -1134,47 +1139,56 @@ local function spawns()
 		Material = "Wood",
 	})
 	F.sconce(doorX, 12.5, -HALF_Z + 0.1, "North", true)
-	F.plant(23, -HALF_Z + 4)
+	F.plant(19, -HALF_Z + 4)
 	F.plant(-14, -HALF_Z + 4) -- on the bar's wood floor until 2026-10-27 (owner: "move tree off bar platform")
 end
 
--- A booth: a wood table between two channel-stitched benches that face each other, under its own lamp.
-local function booth(name: string, x: number, z: number)
-	F.boothTable(`{name}Table`, x, z)
+-- A booth: a wood table between two channel-stitched benches that face each other, under its own lamp. `seats` per
+-- bench (2 by default; 3 seat six people).
+local function booth(name: string, x: number, z: number, seats: number?)
+	local perBench = seats or 2
+	F.boothTable(`{name}Table`, x, z, perBench * 3)
 	F.sofa(
 		`{name}BenchSouth`,
 		x,
 		z - 3.8,
 		"North",
-		{ Seats = 2, Color = "Sofa", Material = "Leather", TallBack = true }
+		{ Seats = perBench, Color = "Sofa", Material = "Leather", TallBack = true }
 	)
 	F.sofa(
 		`{name}BenchNorth`,
 		x,
 		z + 3.8,
 		"South",
-		{ Seats = 2, Color = "Sofa", Material = "Leather", TallBack = true }
+		{ Seats = perBench, Color = "Sofa", Material = "Leather", TallBack = true }
 	)
 	F.pendant(x, 15, z, HEIGHT, 22)
 end
 
 local function lounge()
-	-- The sitting area: a worn rug with a rust ring, a round wood table, a red sofa and two armchairs.
-	local rugX, rugZ = -23, -4
-	F.rug(rugX, rugZ, 28, 20, 13)
-	F.roundTable("CoffeeTable", rugX, rugZ, 6.5, 2.4)
-	F.sofa("Sofa", rugX, rugZ - 8, "North", { Seats = 3, Color = "Sofa" })
-	F.sofa("ArmchairWest", rugX - 11.5, rugZ + 0.5, "East", { Seats = 1, Color = "Sofa" })
-	F.sofa("ArmchairEast", rugX + 11.5, rugZ + 0.5, "West", { Seats = 1, Color = "Sofa" })
-	F.floorLamp(rugX - 9, rugZ - 9.5)
-	F.floorLamp(rugX + 9, rugZ - 9.5)
+	--[[
+		The sitting area in front of the spin wheel (owner, 2026-10-27: "bit smaller 2 chair sofa circle table in front
+		spin wheel"; in the middle of the room before, with a 3-seat sofa): a worn rug with a rust ring, a round wood
+		table, a red 2-seat sofa facing the wheel and an armchair on each side, two floor lamps. The wheel's mat stays
+		clear: the rug stops short of it, with a walkway between the table and the mat.
+	]]
+	local rugX, rugZ = -31.5, 0
+	local tableX = -33
+	F.rug(rugX, rugZ, 16, 18, 10)
+	F.roundTable("CoffeeTable", tableX, rugZ, 5, 2.4)
+	F.sofa("Sofa", -26, rugZ, "West", { Seats = 2, Color = "Sofa" })
+	F.sofa("ArmchairArenaSide", tableX, rugZ - 6.6, "North", { Seats = 1, Color = "Sofa" })
+	F.sofa("ArmchairBarSide", tableX, rugZ + 6.6, "South", { Seats = 1, Color = "Sofa" })
+	F.floorLamp(-25, rugZ - 6.5)
+	F.floorLamp(-25, rugZ + 6.5)
 	F.plant(-HALF_X + 3, -21.5) -- by the right wall, between the pillars past the wheel
-	F.plant(rugX + 16, rugZ + 10)
+	F.plant(-21, -8)
 	F.pendant(rugX, 17, rugZ, HEIGHT, 30)
 
-	-- Pool table with its own lamp.
-	F.poolTable(22, -4, "South")
-	F.pendant(22, 14, -4, HEIGHT, 24)
+	-- The pool table along the left wall, in front of the leaderboards (it stands lower than their screens), with its
+	-- own lamp (owner, 2026-10-27: "arm wrestling and snooker move to side"; left of the middle before).
+	F.poolTable(37, -10, "East")
+	F.pendant(37, 14, -10, HEIGHT, 24)
 
 	-- High tables with stools in front of the bar stools, under one lamp.
 	for index, x in { -10, 10 } do
@@ -1185,10 +1199,11 @@ local function lounge()
 	F.pendant(0, 18, 13, HEIGHT, 26)
 
 	-- Booths on the bar's wood floor (one more since 2026-10-27, owner: "add more tables with sofas"): two on the left
-	-- side, clear of the leaderboards, one on the right side in front of the chess table.
+	-- side, clear of the leaderboards, and a long one for six in the right-hand corner (owner: "swap place chess chair
+	-- table and red booth, longer red booth for 6 people"; it stood in front of the chess table before).
 	booth("BoothLeftNorth", 31, HALF_Z - 8.5)
 	booth("BoothLeft", 31, 15)
-	booth("BoothRight", -33, 15)
+	booth("BoothRight", -35, HALF_Z - 8.5, 3)
 
 	-- Crates: the hideout's junk, in the right-hand corner by the ARENA wall (the left one is the jukebox's).
 	for index, crate in
@@ -1211,9 +1226,10 @@ local function lounge()
 	end
 end
 
--- The arm-wrestling table (ArmWrestleService) in the open middle of the room, between the lounge and the pool table,
--- on its own rug under its own lamp. The pull runs along X (side to side).
-local ARM_WRESTLE = { 0, -4 }
+-- The arm-wrestling table (ArmWrestleService) by the left wall between the pool table and the booths (owner,
+-- 2026-10-27: "arm wrestling and snooker move to side"; in the middle of the room before), on its own rug under its
+-- own lamp. The pull runs along X (toward and away from the left wall).
+local ARM_WRESTLE = { 37, 3 }
 local function armWrestle()
 	local x, z = ARM_WRESTLE[1], ARM_WRESTLE[2]
 	F.rug(x, z, 12, 9, 7)
@@ -1221,11 +1237,11 @@ local function armWrestle()
 	F.pendant(x, 15, z, HEIGHT, 22)
 end
 
--- The chess table (ChessService) in the right-hand corner of the bar's wood floor as you face the bar, on two
--- armchairs and no rug (owner, 2026-10-27: "chess to north right, change chair to sofa, no rug"; it stood in the
--- left-hand corner for a day, the Builder's mirrored "east"), under its own lamp. White sits in the −X armchair (the
--- one nearer the right wall).
-local CHESS = { -35, 28.5 }
+-- The chess table (ChessService) on the right side of the bar's wood floor as you face the bar, in front of the long
+-- booth, on two armchairs and no rug (owner, 2026-10-27: "chess to north right, change chair to sofa, no rug", then
+-- "swap place chess chair table and red booth"; in the left-hand corner for a day, the Builder's mirrored "east",
+-- then in the right-hand corner), under its own lamp. White sits in the −X armchair (the one nearer the right wall).
+local CHESS = { -35, 15 }
 local function chess()
 	local x, z = CHESS[1], CHESS[2]
 	F.chessTable("ChessTable", x, z, 3)

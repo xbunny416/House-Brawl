@@ -879,3 +879,16 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   `LeaderboardController` sets PixelsPerStud from the screen's width (620 px across, as on the first 15.5-stud
   screen), so the rows look the same, just smaller. The arenas use the same facing names (their "East" platforms are
   at +X); not renamed.
+- **Lobby shuffle (owner, 2026-10-27: "swap place chess chair table and red booth, longer red booth for 6 people.
+  swap place of npc style + music box with green door, arm wrestling and snooker move to side. bit smaller 2 chair
+  sofa circle table in front spin wheel"):** left / right as you face the bar. **Bar floor, right side:** the booth
+  in front of the chess table and the chess table swapped: a long booth for six (two 3-seat benches; `booth` takes
+  the seats per bench, `Furniture.boothTable` a length and two pedestals when it's long) in the corner, the chess
+  table in front of it. **ARENA wall:** the style coach and the jukebox (now against the ARENA wall, facing the bar)
+  stand where the street door ("green door", teal) was, left of the ARENA door; the street door moved into the
+  left-hand corner by the teal barrel. **Left wall:** the pool table (turned along the wall) and the arm-wrestling
+  table stand in front of the leaderboards, lower than the screens, with a walkway between; the middle of the room
+  is open. **The lounge** moved in front of the spin wheel and got a bit smaller: read as the sofa set made smaller,
+  not a second set — a 2-seat sofa (3 before) facing the wheel, the two armchairs on its sides, a 5-stud round table
+  (6.5 before), a 16 × 18 rug that stops short of the wheel's mat, with a walkway to the spin button. Still 12
+  shadow-casting lamps.
