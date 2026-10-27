@@ -11,8 +11,8 @@ notes).
 - **Built:** every build-order item (Phases 1–3) except 2.9 Tutorial and 3.5 Badges (skipped by the owner), and the
   owner's fix list (`docs/reference/README.md`, 2026-10-19). Since then: the bartender NPC with speech lines, lobby
   arm wrestling and chess, all three arenas rebuilt (higher places, moving parts, bridges, a dark abyss, cloudy skies),
-  the walk-up spin wheel, the store art (`docs/store`) and a less luxurious lobby finish (iron and wood, not gold and
-  marble).
+  the walk-up spin wheel, the store art (`docs/store`), a less luxurious lobby finish (iron and wood, not gold and
+  marble) and a new, 15% smaller lobby layout with a style-roll coach NPC.
 - **Playtested:** Phase 1 ("all clear" 2026-10-16), the animations, 3.1 (from Studio logs). Everything else is built
   but not playtested yet; 3.11 (low-end mobile) not tried on a phone.
 - **Owner-side** ([docs/LAUNCH.md](docs/LAUNCH.md), `lune run tools/launch-check`): create the VIP pass and the

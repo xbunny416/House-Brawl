@@ -83,7 +83,7 @@ local Controls: ControlsConfig = {
 			},
 		},
 	},
-	-- Walk-up prompts in the lobby (bartender → Shop, locker booth → Locker): the keys are Grab's, which has nothing
+	-- Walk-up prompts in the lobby (bartender → Shop, style coach → Styles): the keys are Grab's, which has nothing
 	-- to grab in the lobby; touch taps the prompt. MaxDistance in studs.
 	-- SitDistance: how close a lobby seat's Sit prompt shows (studs); the server allows SitTolerance more (lag).
 	Prompts = { Keyboard = "E", Gamepad = "ButtonB", MaxDistance = 12, SitDistance = 7, SitTolerance = 4 },

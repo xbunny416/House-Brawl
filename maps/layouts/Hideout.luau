@@ -3,19 +3,22 @@
 	Lobby: "The Hideout" — an enclosed hideout bar (owner's choices: a closed space instead of the open Rust Diner
 	rooftop, 2026-10-16; 25% bigger and in the style of the reference pictures in docs/reference — wood, gold trim,
 	warm lamps, a red sofa corner — with detailed furniture instead of plain blocks, 2026-10-19; a bit less luxury,
-	2026-10-27: worn iron, old brass and wood instead of gold and marble, a concrete floor instead of the light carpet).
+	2026-10-27: worn iron, old brass and wood instead of gold and marble, a concrete floor instead of the light carpet;
+	the new layout and 15% smaller, 2026-10-27).
 
 	Walls: grey-green plaster over dark wood wainscoting (framed panels, a wood rail), dark wood pillars with iron bands
 	and wall lamps, wood beams under a dark ceiling. Floor: concrete, wood planks in the bar.
-	North: the bar — wood-topped counter (Shop) with the bartender (Shop NPC), stools, a back bar with a wood-framed
-	mirror and shelves of bottles, map vote TVs hanging over the bar, news TVs on the counter ends, the title sign.
-	Booths with channel-stitched benches in both north corners.
-	East: the steel ARENA door with the join pad in front of it (QueueZone: only players standing on it are taken into
-	the next round), barrels, a dartboard.
-	West: Locker booth (Inventory), Codes jukebox, the cork quest board.
-	South: three tall leaderboard boards, the spawn pads, the street door.
+	North (the bar's wood floor): the wood-topped counter (Shop) with the bartender (Shop NPC), stools, a back bar with
+	a wood-framed mirror and shelves of bottles, map vote TVs hanging over the bar, news TVs on the counter ends, the
+	title sign; two booths on the west side, the chess table on two armchairs and a booth on the east side, high tables
+	in front of the stools.
+	West (the left wall as you face the bar): the three leaderboards in the middle, the style coach (StyleNPC: opens the
+	Styles screen) at the north end.
+	East: the spin wheel in the middle with a barrel on each side, the jukebox (decor) further south, a dartboard.
+	South: the steel ARENA door with the join pad in front of it (QueueZone: only players standing on it are taken into
+	the next round), the spawn pads on both sides of it, the quest board, the street door, crates in the corner.
 	Middle: the lounge — a worn rug with a rust ring, a round wood table, a red sofa and two armchairs, floor lamps,
-	potted trees — a pool table and high tables with stools. Furniture comes from maps/lib/Furniture.
+	potted trees — the arm-wrestling table and the pool table. Furniture comes from maps/lib/Furniture.
 	Seats (sofas, armchairs, booth benches, stools) are LobbySeat-tagged Seats: walk up and press the Sit prompt.
 	Interactive objects carry CollectionService tags so code can attach prompts and UI.
 ]]
@@ -27,20 +30,26 @@ local Layout = {}
 Layout.Id = "Hideout"
 Layout.Lighting = "Dusk"
 
--- X, Z: floor space inside the walls (92 × 68 until 2026-10-19; 138 × 102 for a day, "too big"; now 1.25×).
-local INNER = { 115, 85 }
+-- X, Z: floor space inside the walls (92 × 68 until 2026-10-19; 138 × 102 for a day, "too big"; 115 × 85 until
+-- 2026-10-27, then 15% smaller: owner, "make lobby 15% smaller").
+local INNER = { 98, 72 }
 local HALF_X, HALF_Z = INNER[1] / 2, INNER[2] / 2
 local HEIGHT = 26 -- floor to ceiling
 local WALL = 2
 local KILL_DEPTH = 40 -- falling this far below the floor returns you to a spawn
 local WAINSCOT = 6 -- height of the wood panelling
-local BAR_DEPTH = 32 -- the wood floor in front of the north wall
-local PILLARS_X = { -38, 38 } -- pillars on the north / south walls
-local PILLARS_Z = { -34, -17, 17, 34 } -- pillars on the east / west walls
+local BAR_DEPTH = 27 -- the wood floor in front of the north wall
+-- Pillars along each wall (X on the north / south walls, Z on the east / west walls), clear of what hangs there.
+local PILLARS = {
+	North = { -30, 30 },
+	South = { -38, 38 },
+	East = { -28.5, -14.5, 14.5, 28.5 },
+	West = { -28.2, 28.2 }, -- around the leaderboards
+}
 
--- Join pad in front of the ARENA door (east wall).
-local PAD_SIZE = { 14, 18 } -- X, Z
-local PAD_X = HALF_X - 2 - PAD_SIZE[1] / 2
+-- Join pad in front of the ARENA door (south wall, opposite the bar; the east wall until 2026-10-27).
+local PAD_SIZE = { 18, 14 } -- X, Z
+local PAD_Z = -HALF_Z + 2 + PAD_SIZE[2] / 2
 
 ---------------------------------------------------------------------------------------------------------------------
 -- Room
@@ -113,7 +122,7 @@ local function shell()
 		CastShadow = true,
 	})
 	-- Plain wood beams.
-	for _, z in { -28, -14, 0, 14, 28 } do
+	for _, z in { -24, -12, 0, 12, 24 } do
 		B.part({
 			Name = "Beam",
 			Size = { INNER[1], 1.6, 1.4 },
@@ -122,14 +131,18 @@ local function shell()
 			Material = "Wood",
 		})
 	end
-	-- Pillars along the walls; the east / west ones carry lit wall lamps.
-	for _, z in PILLARS_Z do
+	-- Pillars along the walls; the east, west and south ones carry lit wall lamps (the south ones light the spawns).
+	for _, z in PILLARS.East do
 		F.pillar(HALF_X - 1.2, z, "West", HEIGHT, true)
+	end
+	for _, z in PILLARS.West do
 		F.pillar(-HALF_X + 1.2, z, "East", HEIGHT, true)
 	end
-	for _, x in PILLARS_X do
+	for _, x in PILLARS.North do
 		F.pillar(x, HALF_Z - 1.2, "South", HEIGHT, false)
-		F.pillar(x, -HALF_Z + 1.2, "North", HEIGHT, false)
+	end
+	for _, x in PILLARS.South do
+		F.pillar(x, -HALF_Z + 1.2, "North", HEIGHT, true)
 	end
 end
 
@@ -449,31 +462,35 @@ local function bar()
 	end
 end
 
+-- The steel ARENA door in the middle of the south wall, opposite the bar (the east wall until 2026-10-27; owner:
+-- "arena entry in place of the old leaderboards, opposite the bar"), with the join pad in front of it.
 local function arenaDoor()
-	local x = HALF_X - 0.3
+	local z = -HALF_Z + 0.3
+	local width = PAD_SIZE[1]
 	B.model("ArenaDoor", function()
 		B.part({
 			Name = "Door",
-			Size = { 0.6, 14, PAD_SIZE[2] },
-			Position = { x, 7, 0 },
+			Size = { width, 14, 0.6 },
+			Position = { 0, 7, z },
 			Color = "MetalDark",
 			Material = "CorrodedMetal",
 		})
 		for index = 1, 6 do
 			B.part({
 				Name = "Rib",
-				Size = { 0.3, 0.4, PAD_SIZE[2] },
-				Position = { x - 0.4, index * 2, 0 },
+				Size = { width, 0.4, 0.3 },
+				Position = { 0, index * 2, z + 0.4 },
 				Color = "Metal",
 				Material = "Metal",
 				CanCollide = false,
 			})
 		end
 		for _, side in { -1, 1 } do
+			local frameX = side * (width / 2 + 0.6)
 			B.part({
 				Name = "Frame",
 				Size = { 1.2, 15, 1.2 },
-				Position = { x - 0.3, 7.5, side * (PAD_SIZE[2] / 2 + 0.6) },
+				Position = { frameX, 7.5, z + 0.3 },
 				Color = "LaneYellow",
 				Material = "Metal",
 			})
@@ -481,7 +498,7 @@ local function arenaDoor()
 				B.part({
 					Name = "Rivet",
 					Size = { 0.3, 0.3, 0.3 },
-					Position = { x - 0.95, rivet * 2.6, side * (PAD_SIZE[2] / 2 + 0.6) },
+					Position = { frameX, rivet * 2.6, z + 0.95 },
 					Shape = "Ball",
 					Color = "MetalDark",
 					Material = "Metal",
@@ -491,16 +508,16 @@ local function arenaDoor()
 		end
 		B.part({
 			Name = "Lintel",
-			Size = { 1.2, 1.2, PAD_SIZE[2] + 2.4 },
-			Position = { x - 0.3, 14.6, 0 },
+			Size = { width + 2.4, 1.2, 1.2 },
+			Position = { 0, 14.6, z + 0.3 },
 			Color = "LaneYellow",
 			Material = "Metal",
 		})
 		B.sign({
 			Name = "ArenaSign",
 			Size = { 14, 3, 0.4 },
-			Position = { x - 1, 17.4, 0 },
-			Rotation = B.yaw("West"),
+			Position = { 0, 17.4, z + 1 },
+			Rotation = B.yaw("North"),
 			Color = "Black",
 			Material = "SmoothPlastic",
 			Key = "Lobby.Sign.Arena",
@@ -513,7 +530,7 @@ local function arenaDoor()
 	local pad = B.part({
 		Name = "JoinPad",
 		Size = { PAD_SIZE[1], 0.2, PAD_SIZE[2] },
-		Position = { PAD_X, 0.1, 0 },
+		Position = { 0, 0.1, PAD_Z },
 		Color = "NeonOrange",
 		Material = "Neon",
 		Transparency = 0.45,
@@ -522,12 +539,13 @@ local function arenaDoor()
 		Tags = { "QueueZone" },
 	})
 	B.light(pad, "NeonOrange", 18, 1.2)
-	-- Hazard border around the pad.
+	-- Hazard border on the pad's three open sides.
+	local front = PAD_Z + PAD_SIZE[2] / 2
 	for _, edge in
 		{
-			{ size = { PAD_SIZE[1] + 1.2, 0.12, 0.6 }, pos = { PAD_X, PAD_SIZE[2] / 2 + 0.3 } },
-			{ size = { PAD_SIZE[1] + 1.2, 0.12, 0.6 }, pos = { PAD_X, -PAD_SIZE[2] / 2 - 0.3 } },
-			{ size = { 0.6, 0.12, PAD_SIZE[2] }, pos = { PAD_X - PAD_SIZE[1] / 2 - 0.3, 0 } },
+			{ size = { PAD_SIZE[1] + 1.2, 0.12, 0.6 }, pos = { 0, front + 0.3 } },
+			{ size = { 0.6, 0.12, PAD_SIZE[2] }, pos = { -PAD_SIZE[1] / 2 - 0.3, PAD_Z } },
+			{ size = { 0.6, 0.12, PAD_SIZE[2] }, pos = { PAD_SIZE[1] / 2 + 0.3, PAD_Z } },
 		}
 	do
 		B.part({
@@ -542,7 +560,7 @@ local function arenaDoor()
 	end
 	-- "Stand here" signs on posts at both front corners of the pad, facing the room.
 	for _, side in { -1, 1 } do
-		local signX, signZ = PAD_X - PAD_SIZE[1] / 2 - 1.5, side * (PAD_SIZE[2] / 2 + 1.5)
+		local signX, signZ = side * (PAD_SIZE[1] / 2 + 1.5), front + 1.5
 		B.part({
 			Name = "JoinSignPost",
 			Size = { 0.5, 4, 0.5 },
@@ -554,7 +572,7 @@ local function arenaDoor()
 			Name = "JoinSign",
 			Size = { 7, 2.4, 0.3 },
 			Position = { signX, 5.2, signZ },
-			Rotation = B.yaw("West"),
+			Rotation = B.yaw("North"),
 			Color = "Black",
 			Material = "SmoothPlastic",
 			Key = "Lobby.Sign.Join",
@@ -562,8 +580,12 @@ local function arenaDoor()
 			Glow = true,
 		})
 	end
-	-- Barrels beside the door, a dartboard further along the wall.
-	for index, z in { PAD_SIZE[2] / 2 + 4, -PAD_SIZE[2] / 2 - 4 } do
+end
+
+-- The east wall's decor: a barrel on each side of the spin wheel (the teal one by the jukebox), a dartboard further
+-- north.
+local function eastWall()
+	for index, z in { 11, -11 } do
 		B.part({
 			Name = `Barrel{index}`,
 			Size = { 4, 2.6, 2.6 },
@@ -590,7 +612,7 @@ local function arenaDoor()
 		B.part({
 			Name = `Dartboard{index}`,
 			Size = { 0.1 + index * 0.05, ring[1], ring[1] },
-			Position = { HALF_X - 0.6, 9, 26 },
+			Position = { HALF_X - 0.6, 9, 22 },
 			Shape = "Cylinder",
 			Color = ring[2],
 			Material = "SmoothPlastic",
@@ -599,118 +621,127 @@ local function arenaDoor()
 	end
 end
 
-local function locker()
-	local x, z = -HALF_X + 6.5, 25.5 -- between the wall pillars at z 17 and 34
-	B.model("Locker", function()
+--[[
+	The style coach at the north end of the west wall, where the locker booth was (owner, 2026-10-27: "delete locker
+	area, replace with an interactive NPC for the style roll"): NpcService builds a Roblox character on the invisible
+	Spot, facing the room (like the bartender); the Styles prompt sits on the invisible Torso anchor
+	(LobbyPromptController), so it works even if the character can't be built. A STYLES sign over him, a mat under him.
+]]
+local function styleCoach()
+	local x, z = -HALF_X + 3, 33
+	B.model("StyleNPC", function()
 		B.part({
-			Name = "Back",
-			Size = { 1, 10, 12 },
-			Position = { x - 5.5, 5, z },
-			Color = "WoodDark",
-			Material = "Wood",
-		})
-		for _, side in { -1, 1 } do
-			B.part({
-				Name = "Side",
-				Size = { 10, 10, 1 },
-				Position = { x, 5, z + side * 6 },
-				Color = "WoodDark",
-				Material = "Wood",
-			})
-			B.part({
-				Name = "SideTrim",
-				Size = { 10, 0.25, 1.1 },
-				Position = { x, 6.1, z + side * 6 },
-				Color = "Iron",
-				Material = "Metal",
-				CanCollide = false,
-			})
-		end
-		B.part({ Name = "Top", Size = { 12, 1, 14 }, Position = { x, 10.5, z }, Color = "WoodDark", Material = "Wood" })
-		B.part({
-			Name = "TopTrim",
-			Size = { 12.2, 0.25, 14.2 },
-			Position = { x, 10, z },
-			Color = "Iron",
-			Material = "Metal",
-		})
-		for index = 1, 5 do
-			local doorZ = z + (index - 3) * 2.2
-			B.part({
-				Name = "LockerDoor",
-				Size = { 0.4, 7, 2 },
-				Position = { x - 4.8, 3.6, doorZ },
-				Color = if index % 2 == 0 then "Teal" else "TealDark",
-				Material = "Metal",
-			})
-			for vent = 1, 3 do
-				B.part({
-					Name = "Vent",
-					Size = { 0.1, 0.12, 1.2 },
-					Position = { x - 4.57, 6.2 - vent * 0.3, doorZ },
-					Color = "Black",
-					Material = "Metal",
-					CanCollide = false,
-				})
-			end
-			B.part({
-				Name = "Handle",
-				Size = { 0.2, 0.9, 0.2 },
-				Position = { x - 4.5, 3.6, doorZ + 0.6 },
-				Color = "Metal",
-				Material = "Metal",
-				CanCollide = false,
-			})
-		end
-		B.sign({
-			Name = "LockerSign",
-			Size = { 10, 2.2, 0.4 },
-			Position = { x + 4.8, 12.3, z },
+			Name = "Spot",
+			Size = { 2, 0.2, 2 },
+			Position = { x, 0.1, z },
 			Rotation = B.yaw("East"),
-			Color = "Black",
-			Material = "SmoothPlastic",
-			Key = "Lobby.Sign.Locker",
-			TextColor = "NeonTeal",
-			Glow = true,
+			Color = "NeonTeal",
+			Transparency = 1,
+			CanCollide = false,
+			CastShadow = false,
 		})
-	end):AddTag("Locker")
+		B.part({
+			Name = "Torso",
+			Size = { 2, 2, 1 },
+			Position = { x, 3.9, z },
+			Rotation = B.yaw("East"),
+			Color = "NeonTeal",
+			Transparency = 1,
+			CanCollide = false,
+			CastShadow = false,
+		})
+	end, { Role = "Styles" }):AddTag("StyleNPC")
+	B.sign({
+		Name = "StylesSign",
+		Size = { 5, 1.6, 0.4 },
+		Position = { -HALF_X + 0.4, 11, z },
+		Rotation = B.yaw("East"),
+		Color = "Black",
+		Material = "SmoothPlastic",
+		Key = "Lobby.Sign.Styles",
+		TextColor = "NeonPink",
+		Glow = true,
+	})
+	B.part({
+		Name = "CoachMat",
+		Size = { 5, 0.08, 6 },
+		Position = { x + 0.5, 0.12, z },
+		Color = "Teal",
+		Material = "Carpet",
+		CanCollide = false,
+		CastShadow = false,
+	})
 end
 
+-- The jukebox on the east wall between the pillars south of the wheel, by the teal barrel and the crates (owner,
+-- 2026-10-27: "add music box between pillar … green barrel and box"; the Codes jukebox on the west wall went): decor
+-- only, no prompt. A wood cabinet with a glowing arch, a window with records, neon stripes and a speaker grille.
 local function jukebox()
-	local x, z = -HALF_X + 2.5, 6
-	B.model("CodesJukebox", function()
+	local x, z = HALF_X - 2.5, -21.5
+	local front = -1 -- its front faces the room (−X)
+	B.model("Jukebox", function()
 		local body = B.part({
 			Name = "Body",
 			Size = { 5, 6, 3.5 },
 			Position = { x, 3, z },
-			Rotation = B.yaw("East"),
-			Color = "RustDark",
-			Material = "SmoothPlastic",
+			Rotation = B.yaw("West"),
+			Color = "WoodMid",
+			Material = "Wood",
 		})
 		B.part({
 			Name = "Arch",
 			Size = { 3.5, 5, 5 }, -- a cylinder front to back: the rounded top
 			Position = { x, 6, z },
 			Shape = "Cylinder",
-			Color = "RustDark",
-			Material = "SmoothPlastic",
+			Color = "WoodMid",
+			Material = "Wood",
 		})
 		B.part({
 			Name = "ArchGlass",
 			Size = { 0.2, 3.6, 3.6 },
-			Position = { x + 1.8, 6, z },
+			Position = { x + 1.8 * front, 6, z },
 			Shape = "Cylinder",
 			Color = "NeonOrange",
 			Material = "Neon",
 			Transparency = 0.3,
 			CanCollide = false,
 		})
+		B.part({
+			Name = "Window",
+			Size = { 3.8, 1.8, 0.15 },
+			Position = { x + 1.8 * front, 4.2, z },
+			Rotation = B.yaw("West"),
+			Color = "Black",
+			Material = "Glass",
+			Transparency = 0.3,
+			CanCollide = false,
+		})
+		for index, dz in { -1.2, 0, 1.2 } do
+			B.part({
+				Name = `Record{index}`,
+				Size = { 0.08, 1.1, 1.1 },
+				Position = { x + 1.65 * front, 4.2, z + dz },
+				Shape = "Cylinder",
+				Color = "Black",
+				Material = "SmoothPlastic",
+				CanCollide = false,
+			})
+			B.part({
+				Name = `RecordLabel{index}`,
+				Size = { 0.1, 0.4, 0.4 },
+				Position = { x + 1.66 * front, 4.2, z + dz },
+				Shape = "Cylinder",
+				Color = if index == 2 then "LaneYellow" else "Red",
+				Material = "SmoothPlastic",
+				CanCollide = false,
+			})
+		end
 		for index, color in { "NeonPink", "NeonTeal", "NeonOrange" } do
 			B.part({
 				Name = "Stripe",
 				Size = { 4.2, 0.3, 0.2 },
-				Position = { x + 1.85, 0.8 + index * 1.2, z },
-				Rotation = B.yaw("East"),
+				Position = { x + 1.85 * front, 1.1 + index * 0.6, z },
+				Rotation = B.yaw("West"),
 				Color = color,
 				Material = "Neon",
 				CanCollide = false,
@@ -719,95 +750,85 @@ local function jukebox()
 		B.part({
 			Name = "Grille",
 			Size = { 0.15, 1.2, 3 },
-			Position = { x + 1.8, 0.7, z },
+			Position = { x + 1.8 * front, 0.7, z },
 			Color = "Metal",
 			Material = "Metal",
 			CanCollide = false,
 		})
 		B.light(body, "NeonPink", 12, 1.5)
-		B.sign({
-			Name = "CodesSign",
-			Size = { 6, 1.6, 0.4 },
-			Position = { x + 0.5, 9.8, z },
-			Rotation = B.yaw("East"),
-			Color = "Black",
-			Material = "SmoothPlastic",
-			Key = "Lobby.Sign.Codes",
-			TextColor = "NeonOrange",
-			Glow = true,
-		})
-	end):AddTag("CodesJukebox")
+	end)
 end
 
--- The quest board: a framed cork board with pinned notes.
+-- The quest board on the south wall, west of the ARENA door: a framed cork board with pinned notes.
 local function questBoard()
-	local x, z = -HALF_X + 0.8, -8
+	local at = F.at(-27, -HALF_Z, "North")
 	B.model("QuestBoard", function()
-		B.part({
+		B.part(at({
 			Name = "Frame",
-			Size = { 0.5, 8.4, 13.4 },
-			Position = { x - 0.1, 9, z },
+			Size = { 13.4, 8.4, 0.5 },
+			Position = { 0, 9, 0.7 },
 			Color = "WoodDark",
 			Material = "Wood",
-		})
-		B.part({
+		}))
+		B.part(at({
 			Name = "Board",
-			Size = { 0.6, 7, 12 },
-			Position = { x, 9, z },
+			Size = { 12, 7, 0.6 },
+			Position = { 0, 9, 0.8 },
 			Color = "Cork",
 			Material = "Fabric",
-		})
+		}))
 		for index, note in { { -3.5, 1.5 }, { 0, 2 }, { 3.6, 1.2 }, { -2, -1.6 }, { 2.4, -1.8 }, { 4.6, -0.8 } } do
-			B.part({
+			B.part(at({
 				Name = `Note{index}`,
-				Size = { 0.1, 1.8, 1.5 },
-				Position = { x + 0.35, 9 + note[2], z + note[1] },
-				Rotation = { index * 7 - 20, 0, 0 },
+				Size = { 1.5, 1.8, 0.1 },
+				Position = { note[1], 9 + note[2], 1.15 },
+				Rotation = { 0, 0, index * 7 - 20 },
 				Color = "OffWhite",
 				Material = "SmoothPlastic",
 				CanCollide = false,
-			})
-			B.part({
+			}))
+			B.part(at({
 				Name = `Pin{index}`,
-				Size = { 0.2, 0.3, 0.3 },
-				Position = { x + 0.45, 9.6 + note[2], z + note[1] },
+				Size = { 0.3, 0.3, 0.2 },
+				Position = { note[1], 9.6 + note[2], 1.25 },
 				Color = "Red",
 				Material = "SmoothPlastic",
 				CanCollide = false,
-			})
+			}))
 		end
-		B.sign({
+		B.sign(at({
 			Name = "QuestSign",
 			Size = { 10, 2, 0.4 },
-			Position = { x + 0.4, 14.2, z },
-			Rotation = B.yaw("East"),
+			Position = { 0, 14.2, 1.2 },
 			Color = "RustOrange",
 			Material = "Metal",
 			Key = "Lobby.Sign.Quests",
 			TextColor = "OffWhite",
-		})
+		}))
 	end):AddTag("QuestBoard")
 end
 
 --[[
-	The spin wheel on the west wall (owner's fix list, 2026-10-19: "a spin wheel"). A wood backboard with a gold rim,
-	and a Rotor: a black face, WHEEL_SEGMENTS pie slices (each two wedges; attribute Segment = its prize's index, the
-	client paints them in the prize colours from Config.Retention.Wheel and turns the Rotor to each spin's prize), an
-	invisible Label on each slice (same Segment; facing the room, its up pointing out to the rim: the client writes the
-	prize and its chance on it), a gold hub and pegs. Slice 1 starts under the pointer at the top; slices go round toward
-	+Z (south). In front, on the mat, the SpinButton: a post with a big red Button that carries the spin prompt
-	(WheelController; since 2026-10-20 there is no wheel screen — owner: "no click UI, have to walk to spin"). The model
-	streams in whole (Atomic), so the client always finds every slice and label.
+	The spin wheel in the middle of the east wall, where the ARENA door was (on the west wall until 2026-10-27, when
+	the leaderboards took it). A wood backboard with a gold rim, and a Rotor: a black face, WHEEL_SEGMENTS pie slices
+	(each two wedges; attribute Segment = its prize's index, the client paints them in the prize colours from
+	Config.Retention.Wheel and turns the Rotor to each spin's prize about the hub's X axis), an invisible Label on each
+	slice (same Segment; facing the room, its up pointing out to the rim: the client writes the prize and its chance on
+	it), a gold hub and pegs. Slice 1 starts under the pointer at the top; slices go round toward +Z. In front, on the
+	mat, the SpinButton: a post with a big red Button that carries the spin prompt (WheelController; since 2026-10-20
+	there is no wheel screen — owner: "no click UI, have to walk to spin"). The model streams in whole (Atomic), so the
+	client always finds every slice and label. `ROOM` is the side of the wall the room is on (−1: toward −X).
 ]]
 local WHEEL_SEGMENTS = 8 -- one per prize in Config.Retention.Wheel.Prizes (the maps spec checks)
 local function spinWheel()
-	local centerX, centerY, centerZ = -HALF_X + 2, 11, -25.5 -- between the wall pillars at z -17 and -34
+	local ROOM = -1
+	local centerX, centerY, centerZ = HALF_X - 2, 11, 0
 	local radius = 6.5
 	local wheel = B.model("SpinWheel", function()
 		B.part({
 			Name = "Backboard",
 			Size = { 0.5, radius * 2 + 1.6, radius * 2 + 1.6 },
-			Position = { centerX - 1.4, centerY, centerZ },
+			Position = { centerX - 1.4 * ROOM, centerY, centerZ },
 			Shape = "Cylinder",
 			Color = "WoodDark",
 			Material = "Wood",
@@ -815,7 +836,7 @@ local function spinWheel()
 		B.part({
 			Name = "Rim",
 			Size = { 0.4, radius * 2 + 0.8, radius * 2 + 0.8 },
-			Position = { centerX - 1, centerY, centerZ },
+			Position = { centerX - 1 * ROOM, centerY, centerZ },
 			Shape = "Cylinder",
 			Color = "Gold",
 			Material = "Metal",
@@ -823,7 +844,7 @@ local function spinWheel()
 		B.part({
 			Name = "Pointer",
 			Size = { 0.5, 1.5, 1.5 },
-			Position = { centerX + 0.4, centerY + radius + 0.35, centerZ },
+			Position = { centerX + 0.4 * ROOM, centerY + radius + 0.35, centerZ },
 			Rotation = { 45, 0, 0 },
 			Color = "Red",
 			Material = "SmoothPlastic",
@@ -832,8 +853,8 @@ local function spinWheel()
 		B.sign({
 			Name = "WheelSign",
 			Size = { 12, 2.4, 0.4 },
-			Position = { centerX - 1.3, centerY + radius + 2.8, centerZ },
-			Rotation = B.yaw("East"),
+			Position = { centerX - 1.3 * ROOM, centerY + radius + 2.8, centerZ },
+			Rotation = B.yaw("West"),
 			Color = "Black",
 			Material = "SmoothPlastic",
 			Key = "Lobby.Sign.Wheel",
@@ -844,7 +865,7 @@ local function spinWheel()
 			B.part({
 				Name = "Face",
 				Size = { 0.3, radius * 2, radius * 2 },
-				Position = { centerX - 0.7, centerY, centerZ },
+				Position = { centerX - 0.7 * ROOM, centerY, centerZ },
 				Shape = "Cylinder",
 				Color = "Black",
 				Material = "SmoothPlastic",
@@ -863,11 +884,12 @@ local function spinWheel()
 						Name = `Slice{index}`,
 						Size = { 0.2, inner, side },
 						Position = {
-							centerX - 0.45,
+							centerX - 0.45 * ROOM,
 							middle[1] - inner / 2 * up[2] + sign * side / 2 * along[2],
 							middle[2] - inner / 2 * up[3] + sign * side / 2 * along[3],
 						},
 						-- Up runs inward (chord middle → centre); Right flips for the second half so its slope faces out.
+						-- The wedge is a thin slab across X, so its shape doesn't depend on the wall it hangs on.
 						Axes = { Right = { sign, 0, 0 }, Up = { 0, -up[2], -up[3] } },
 						Shape = "Wedge",
 						Color = "OffWhite",
@@ -877,12 +899,13 @@ local function spinWheel()
 						Attributes = { Segment = index },
 					})
 				end
-				-- The prize label: across the slice at mid-radius, facing the room (+X), its up toward the rim.
+				-- The prize label: across the slice at mid-radius, facing the room (its front toward ROOM along X), its
+				-- up toward the rim.
 				B.part({
 					Name = "Label",
 					Size = { 3.2, 3.4, 0.05 },
-					Position = { centerX - 0.32, centerY + 4.4 * up[2], centerZ + 4.4 * up[3] },
-					Axes = { Right = { 0, -up[3], up[2] }, Up = up },
+					Position = { centerX - 0.32 * ROOM, centerY + 4.4 * up[2], centerZ + 4.4 * up[3] },
+					Axes = { Right = { 0, -up[3] * ROOM, up[2] * ROOM }, Up = up },
 					Color = "Black",
 					Transparency = 1,
 					CanCollide = false,
@@ -893,7 +916,7 @@ local function spinWheel()
 					Name = "Peg",
 					Size = { 0.45, 0.45, 0.45 },
 					Position = {
-						centerX - 0.35,
+						centerX - 0.35 * ROOM,
 						centerY + (radius - 0.3) * math.cos(angle + half),
 						centerZ + (radius - 0.3) * math.sin(angle + half),
 					},
@@ -906,7 +929,7 @@ local function spinWheel()
 			local hub = B.part({
 				Name = "Hub",
 				Size = { 0.6, 2.2, 2.2 },
-				Position = { centerX - 0.3, centerY, centerZ },
+				Position = { centerX - 0.3 * ROOM, centerY, centerZ },
 				Shape = "Cylinder",
 				Color = "Gold",
 				Material = "Metal",
@@ -916,7 +939,7 @@ local function spinWheel()
 		end)
 		-- The spin button on the mat: a base, a wood post, a gold housing and the big red Button (the prompt's part).
 		B.model("SpinButton", function()
-			local x = centerX + 4
+			local x = centerX + 4 * ROOM
 			for _, piece in
 				{
 					{ "Base", { 0.3, 2.4, 2.4 }, 0.15, "Gold", "Metal", true },
@@ -944,7 +967,7 @@ local function spinWheel()
 	B.part({
 		Name = "WheelMat",
 		Size = { 6, 0.08, 10 },
-		Position = { -HALF_X + 6, 0.12, centerZ },
+		Position = { centerX + 4 * ROOM, 0.12, centerZ },
 		Color = "Sofa",
 		Material = "Carpet",
 		CanCollide = false,
@@ -952,102 +975,105 @@ local function spinWheel()
 	})
 end
 
--- Three tall dark leaderboard boards on the south wall (reference: leaderboard-boards.png): a wood frame with iron
--- corners, a cream title with a thin gold underline, and the screen the rows are drawn on (LeaderboardController).
+--[[
+	Three tall dark leaderboard boards in the middle of the west wall, the left wall as you face the bar (owner,
+	2026-10-27: "center of left wall"; the south wall until then) — reference: leaderboard-boards.png. Each: a wood
+	frame with iron corners, a cream title with a thin gold underline, and the screen the rows are drawn on
+	(LeaderboardController). Read from left to right (north to south): Wins, KOs, Level.
+]]
 local function leaderboards()
-	local z = -HALF_Z + 0.5
+	local width = 15 -- 17 until 2026-10-27; three fit between the west wall's pillars
 	for index, board in
 		{
-			{ x = -20, stat = "Wins" },
-			{ x = 0, stat = "KOs" },
-			{ x = 20, stat = "Level" },
+			{ z = 18.2, stat = "Wins" },
+			{ z = 0, stat = "KOs" },
+			{ z = -18.2, stat = "Level" },
 		}
 	do
+		local at = F.at(-HALF_X, board.z, "East")
 		B.model(`Leaderboard{board.stat}`, function()
-			B.part({
+			B.part(at({
 				Name = "Frame",
-				Size = { 17, 21, 1 },
-				Position = { board.x, 12.5, z },
+				Size = { width, 21, 1 },
+				Position = { 0, 12.5, 0.5 },
 				Color = "BoardDark",
 				Material = "SmoothPlastic",
-			})
+			}))
 			for _, edge in
 				{
-					{ size = { 17.6, 0.6, 1.3 }, at = { 0, 23.2 } },
-					{ size = { 17.6, 0.6, 1.3 }, at = { 0, 1.8 } },
-					{ size = { 0.6, 21.4, 1.3 }, at = { -8.8, 12.5 } },
-					{ size = { 0.6, 21.4, 1.3 }, at = { 8.8, 12.5 } },
+					{ size = { width + 0.6, 0.6, 1.3 }, at = { 0, 23.2 } },
+					{ size = { width + 0.6, 0.6, 1.3 }, at = { 0, 1.8 } },
+					{ size = { 0.6, 21.4, 1.3 }, at = { -width / 2 - 0.3, 12.5 } },
+					{ size = { 0.6, 21.4, 1.3 }, at = { width / 2 + 0.3, 12.5 } },
 				}
 			do
-				B.part({
+				B.part(at({
 					Name = "FrameWood",
 					Size = edge.size,
-					Position = { board.x + edge.at[1], edge.at[2], z + 0.15 },
+					Position = { edge.at[1], edge.at[2], 0.65 },
 					Color = "WoodDark",
 					Material = "Wood",
-				})
+				}))
 			end
-			for _, cx in { -8.8, 8.8 } do
+			for _, cx in { -width / 2 - 0.3, width / 2 + 0.3 } do
 				for _, cy in { 1.8, 23.2 } do
-					B.part({
+					B.part(at({
 						Name = "Corner",
 						Size = { 0.9, 0.9, 0.2 },
-						Position = { board.x + cx, cy, z + 0.85 },
+						Position = { cx, cy, 1.35 },
 						Color = "Iron",
 						Material = "Metal",
 						CanCollide = false,
-					})
+					}))
 				end
 			end
-			B.sign({
+			B.sign(at({
 				Name = "Title",
-				Size = { 15.5, 2.4, 0.2 },
-				Position = { board.x, 21.1, z + 0.6 },
-				Rotation = B.yaw("North"),
+				Size = { width - 1.5, 2.4, 0.2 },
+				Position = { 0, 21.1, 1.1 },
 				Color = "BoardDark",
 				Material = "SmoothPlastic",
 				Key = `Lobby.Sign.Leaderboard.{board.stat}`,
 				TextColor = "Cream",
 				Glow = true,
-			})
-			B.part({
+			}))
+			B.part(at({
 				Name = "Underline",
 				Size = { 10, 0.15, 0.2 },
-				Position = { board.x, 19.7, z + 0.65 },
+				Position = { 0, 19.7, 1.15 },
 				Color = "Gold",
 				Material = "Neon",
 				CanCollide = false,
 				CastShadow = false,
-			})
-			B.part({
+			}))
+			B.part(at({
 				Name = "Screen",
-				Size = { 15.5, 16.2, 0.2 },
-				Position = { board.x, 11, z + 0.6 },
-				Rotation = B.yaw("North"),
+				Size = { width - 1.5, 16.2, 0.2 },
+				Position = { 0, 11, 1.1 },
 				Color = "BoardDark",
 				Material = "SmoothPlastic",
 				Tags = { "LeaderboardScreen" },
 				Attributes = { Stat = board.stat, Order = index },
-			})
+			}))
 		end, { Stat = board.stat }):AddTag("Leaderboard")
 	end
 end
 
+-- The spawn pads on both sides of the join pad, facing the bar, two trees by the walls, and the street door.
 local function spawns()
-	for index, x in { -12, 0, 12 } do
+	for index, x in { -19, 19 } do
 		B.spawnLocation({
 			Name = `LobbySpawn{index}`,
 			Size = { 6, 1, 6 },
-			Position = { x, 0.5, -HALF_Z + 13 },
+			Position = { x, 0.5, PAD_Z + 3 },
 			Rotation = B.yaw("North"), -- players spawn facing the bar
 			Color = "Teal",
 			Material = "SmoothPlastic",
 			Tags = { "LobbySpawn" },
 		})
 	end
-	F.pendant(0, 18, -HALF_Z + 13, HEIGHT, 30)
 	-- The street door the crew comes in through (decor): a panelled door in a wood frame with a lamp over it.
-	local doorX = 46
+	local doorX = 32
 	B.part({
 		Name = "StreetDoor",
 		Size = { 7, 10, 0.4 },
@@ -1091,10 +1117,11 @@ local function spawns()
 		Material = "Wood",
 	})
 	F.sconce(doorX, 12.5, -HALF_Z + 0.1, "North", true)
-	F.plant(31, -HALF_Z + 3)
+	F.plant(25, -HALF_Z + 4)
+	F.plant(-14, -HALF_Z + 4) -- on the bar's wood floor until 2026-10-27 (owner: "move tree off bar platform")
 end
 
--- Booths in the north corners: a wood table between two channel-stitched benches that face each other.
+-- A booth: a wood table between two channel-stitched benches that face each other, under its own lamp.
 local function booth(name: string, x: number, z: number)
 	F.boothTable(`{name}Table`, x, z)
 	F.sofa(
@@ -1116,33 +1143,35 @@ end
 
 local function lounge()
 	-- The sitting area: a worn rug with a rust ring, a round wood table, a red sofa and two armchairs.
-	local rugX, rugZ = -27, -6
-	F.rug(rugX, rugZ, 30, 24, 15)
+	local rugX, rugZ = -25, -4
+	F.rug(rugX, rugZ, 28, 20, 13)
 	F.roundTable("CoffeeTable", rugX, rugZ, 6.5, 2.4)
 	F.sofa("Sofa", rugX, rugZ - 8, "North", { Seats = 3, Color = "Sofa" })
 	F.sofa("ArmchairWest", rugX - 11.5, rugZ + 0.5, "East", { Seats = 1, Color = "Sofa" })
 	F.sofa("ArmchairEast", rugX + 11.5, rugZ + 0.5, "West", { Seats = 1, Color = "Sofa" })
 	F.floorLamp(rugX - 9, rugZ - 9.5)
 	F.floorLamp(rugX + 9, rugZ - 9.5)
-	F.plant(rugX - 17, rugZ - 11)
-	F.plant(rugX + 17, rugZ + 12)
+	F.plant(-HALF_X + 5, -HALF_Z + 5) -- in the corner, clear of the leaderboards
+	F.plant(rugX + 16, rugZ + 10)
 	F.pendant(rugX, 17, rugZ, HEIGHT, 30)
 
 	-- Pool table with its own lamp.
-	F.poolTable(20, -8, "South")
-	F.pendant(20, 14, -8, HEIGHT, 24)
+	F.poolTable(22, -4, "South")
+	F.pendant(22, 14, -4, HEIGHT, 24)
 
-	-- High tables with stools between the bar and the arena door.
-	for index, spot in { { 14, 13 }, { 29, 13 } } do
-		F.roundTable(`HighTable{index}`, spot[1], spot[2], 3.4, 3.9)
-		F.stool(`HighStool{index}West`, spot[1] - 2.9, spot[2], "East", 2.1, "Sofa")
-		F.stool(`HighStool{index}East`, spot[1] + 2.9, spot[2], "West", 2.1, "Sofa")
+	-- High tables with stools in front of the bar stools, under one lamp.
+	for index, x in { -10, 10 } do
+		F.roundTable(`HighTable{index}`, x, 13, 3.4, 3.9)
+		F.stool(`HighStool{index}West`, x - 2.9, 13, "East", 2.1, "Sofa")
+		F.stool(`HighStool{index}East`, x + 2.9, 13, "West", 2.1, "Sofa")
 	end
-	F.pendant(21.5, 18, 13, HEIGHT, 26)
-	F.plant(4, 20)
+	F.pendant(0, 18, 13, HEIGHT, 26)
 
-	booth("BoothWest", -41.5, HALF_Z - 8.5) -- clear of the locker booth and the north wall pillars
-	booth("BoothEast", 41.5, HALF_Z - 8.5)
+	-- Booths on the bar's wood floor: two on the west side (one more since 2026-10-27, owner: "add more tables with
+	-- sofas"), one on the east side south of the chess table (in the north-east corner until then).
+	booth("BoothNorthWest", -33, HALF_Z - 8.5)
+	booth("BoothWest", -33, 15)
+	booth("BoothEast", 35, 15)
 
 	-- Crates: the hideout's junk, in the south-east corner.
 	for index, crate in
@@ -1167,7 +1196,7 @@ end
 
 -- The arm-wrestling table (ArmWrestleService) in the open middle of the room, between the lounge and the pool table,
 -- on its own rug under its own lamp. The pull runs east-west.
-local ARM_WRESTLE = { 0, -10 }
+local ARM_WRESTLE = { 0, -4 }
 local function armWrestle()
 	local x, z = ARM_WRESTLE[1], ARM_WRESTLE[2]
 	F.rug(x, z, 12, 9, 7)
@@ -1175,13 +1204,13 @@ local function armWrestle()
 	F.pendant(x, 15, z, HEIGHT, 22)
 end
 
--- The chess table (ChessService) on the bar's wood floor, west of the high tables, on a rug under its own lamp.
--- White sits on the west stool.
-local CHESS = { -22, 15 }
+-- The chess table (ChessService) in the north-east corner of the bar's wood floor, right of the bar, on two armchairs
+-- and no rug (owner, 2026-10-27: "chess to north right, change chair to sofa, no rug"), under its own lamp. White sits
+-- in the west armchair.
+local CHESS = { 35, 28.5 }
 local function chess()
 	local x, z = CHESS[1], CHESS[2]
-	F.rug(x, z, 13, 10, 8)
-	F.chessTable("ChessTable", x, z, 3, 1.4)
+	F.chessTable("ChessTable", x, z, 3)
 	F.pendant(x, 15, z, HEIGHT, 22)
 end
 
@@ -1192,7 +1221,8 @@ function Layout.build(origin: { number }): any
 			shell()
 			bar()
 			arenaDoor()
-			locker()
+			eastWall()
+			styleCoach()
 			jukebox()
 			questBoard()
 			spinWheel()
@@ -1211,7 +1241,7 @@ end
 
 -- The room's inside floor size (X, Z) and the join pad's footprint (X, Z) and centre, for specs.
 Layout.Inner = INNER
-Layout.JoinPad = { Size = PAD_SIZE, Center = { PAD_X, 0 } }
+Layout.JoinPad = { Size = PAD_SIZE, Center = { 0, PAD_Z } }
 Layout.ArmWrestle = ARM_WRESTLE
 Layout.Chess = CHESS
 

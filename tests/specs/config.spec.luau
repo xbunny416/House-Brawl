@@ -98,9 +98,11 @@ return {
 		end
 		expect.truthy(#Config.Retention.Quests.Daily >= Config.Retention.Quests.DailyCount, "quest pool size")
 	end,
-	["the bartender's avatar is a user id or 0"] = function()
-		local userId = Config.World.Bartender.UserId
-		expect.truthy(userId >= 0 and userId == math.floor(userId), "Bartender.UserId")
+	["the bartender's and the style coach's avatars are user ids or 0"] = function()
+		for _, npc in { "Bartender", "Coach" } do
+			local userId = Config.World[npc].UserId
+			expect.truthy(userId >= 0 and userId == math.floor(userId), `{npc}.UserId`)
+		end
 	end,
 	["lighting presets: cloud cover and density between 0 and 1"] = function()
 		for id, preset in Config.Lighting do

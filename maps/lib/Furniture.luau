@@ -19,11 +19,15 @@ type Put = (spec: any) -> any
 
 local YAW: { [string]: number } = { South = 0, North = 180, East = -90, West = 90 }
 
--- Returns part / seat builders that place local specs around (x, z) turned to `facing`.
-local function frame(x: number, z: number, facing: string): (Put, Put)
+--[[
+	Returns a function that turns a local spec (Position = { lx, y, lz }: lx to the piece's right, lz toward its front)
+	into a world spec around (x, z) facing `facing`. Layouts use it for wall pieces (leaderboards, the quest board) that
+	face a wall's room side.
+]]
+function Furniture.at(x: number, z: number, facing: string): (spec: any) -> any
 	local yaw = assert(YAW[facing], `unknown facing {facing}`)
 	local cos, sin = math.cos(math.rad(yaw)), math.sin(math.rad(yaw))
-	local function convert(spec: any): any
+	return function(spec: any): any
 		local copy = table.clone(spec)
 		local lx, y, lz = spec.Position[1], spec.Position[2], spec.Position[3]
 		-- The part's +X points (cos, -sin) and its front (-Z) points (-sin, -cos) on the floor (X, Z).
@@ -31,6 +35,11 @@ local function frame(x: number, z: number, facing: string): (Put, Put)
 		copy.Yaw = yaw
 		return copy
 	end
+end
+
+-- Returns part / seat builders that place local specs around (x, z) turned to `facing`.
+local function frame(x: number, z: number, facing: string): (Put, Put)
+	local convert = Furniture.at(x, z, facing)
 	return function(spec: any): any
 		return B.part(convert(spec))
 	end, function(spec: any): any
@@ -75,9 +84,10 @@ export type SofaOptions = {
 
 --[[
 	A sofa / armchair / booth bench: a plinth on short wood legs with a rounded front edge, one Seat cushion per seat
-	(with piping along the front), a back with tilted cushions (channels on tall booth backs), and rolled arms.
+	(with piping along the front), a back with tilted cushions (channels on tall booth backs), and rolled arms. Returns
+	the model (its Seats are Cushion1, Cushion2, ...).
 ]]
-function Furniture.sofa(name: string, x: number, z: number, facing: string, options: SofaOptions)
+function Furniture.sofa(name: string, x: number, z: number, facing: string, options: SofaOptions): any
 	local put, seat = frame(x, z, facing)
 	local seats = options.Seats
 	local inner = seats * 3
@@ -85,7 +95,7 @@ function Furniture.sofa(name: string, x: number, z: number, facing: string, opti
 	local fabric = options.Material or "Fabric"
 	local trim = options.Trim or "SofaDark"
 	local backHeight = if options.TallBack then 4.6 else 2.8
-	B.model(name, function()
+	return B.model(name, function()
 		put({
 			Name = "Plinth",
 			Size = { width, 0.9, 3.15 },
@@ -301,13 +311,14 @@ end
 
 --[[
 	The chess table (ChessService): a square dark wood table with an iron edge on a pedestal with a cross foot, a board of
-	64 squares in a wood frame, and a stool at each end facing the other. White plays from −X (side 1), Black from +X
-	(side 2): ranks run toward +X, files a → h toward +Z (White's right). The board's frame is the part "Board" with a
-	SquareSize attribute; square (file f, rank r, 0-7) sits at Board.CFrame * (( r − 3.5 ) × size, top, ( f − 3.5 ) ×
-	size), where the client stands the pieces (ChessController). The model is tagged ChessTable; each stool's Seat is
-	tagged ChessSeat with a Side attribute (and stays a LobbySeat, so the normal Sit prompt seats players).
+	64 squares in a wood frame, and an armchair at each end facing the other (stools until 2026-10-27; owner: "change
+	chair to sofa"). White plays from −X (side 1), Black from +X (side 2): ranks run toward +X, files a → h toward +Z
+	(White's right). The board's frame is the part "Board" with a SquareSize attribute; square (file f, rank r, 0-7)
+	sits at Board.CFrame * (( r − 3.5 ) × size, top, ( f − 3.5 ) × size), where the client stands the pieces
+	(ChessController). The model is tagged ChessTable; each armchair's Seat (Cushion1) is tagged ChessSeat with a Side
+	attribute (and stays a LobbySeat, so the normal Sit prompt seats players).
 ]]
-function Furniture.chessTable(name: string, x: number, z: number, top: number, seatHeight: number): any
+function Furniture.chessTable(name: string, x: number, z: number, top: number): any
 	local put = frame(x, z, "South")
 	local square = 0.55
 	local frameSize = square * 8 + 0.5
@@ -358,10 +369,16 @@ function Furniture.chessTable(name: string, x: number, z: number, top: number, s
 		end
 	end)
 	for side, dx in { -1, 1 } do
-		local stool =
-			Furniture.stool(`Stool{side}`, x + dx * 3.4, z, if side == 1 then "East" else "West", seatHeight, "Sofa")
-		stool.Parent = model
-		local seat = stool:FindFirstChild("Seat")
+		-- The armchair's front edge stops just short of the table (its centre sits 1.8 behind its front).
+		local chair = Furniture.sofa(
+			`Armchair{side}`,
+			x + dx * 4.8,
+			z,
+			if side == 1 then "East" else "West",
+			{ Seats = 1, Color = "Sofa" }
+		)
+		chair.Parent = model
+		local seat = chair:FindFirstChild("Cushion1")
 		seat:AddTag("ChessSeat")
 		seat:SetAttribute("Side", side)
 	end
