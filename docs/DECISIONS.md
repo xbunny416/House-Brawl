@@ -824,3 +824,6 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   carpet (the bar keeps its wood planks). Kept as it was: the plaster walls and wood wainscoting, the red upholstery,
   the neon signs, the leaderboards' gold underline, and the spin wheel's gold (a prize game may shine). The lobby
   went from 1572 to 1497 instances.
+- **The old tree is back (owner, 2026-10-27: "want old tree bush, no rusty"):** the lobby's three potted plants are
+  the two-tier tree in a black pot again (trunk, a big ball of leaves and a small one on top), not shrubs in rusty
+  buckets. The pot's band and rim stay iron, not gold, to keep the less-luxury look.

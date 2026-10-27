@@ -15,7 +15,7 @@
 	West: Locker booth (Inventory), Codes jukebox, the cork quest board.
 	South: three tall leaderboard boards, the spawn pads, the street door.
 	Middle: the lounge — a worn rug with a rust ring, a round wood table, a red sofa and two armchairs, floor lamps,
-	potted shrubs in old buckets — a pool table and high tables with stools. Furniture comes from maps/lib/Furniture.
+	potted trees — a pool table and high tables with stools. Furniture comes from maps/lib/Furniture.
 	Seats (sofas, armchairs, booth benches, stools) are LobbySeat-tagged Seats: walk up and press the Sit prompt.
 	Interactive objects carry CollectionService tags so code can attach prompts and UI.
 ]]

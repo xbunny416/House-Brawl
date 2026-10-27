@@ -2,9 +2,9 @@
 --[[
 	Furniture — detailed lobby furniture built from parts (owner, 2026-10-19: "style like the reference … right now it
 	looks too blocky, items with no detail"). Every piece is many small parts: rolled sofa arms, cushioned backs,
-	piping, wood legs, round seats on iron poles, drum lamp shades, iron dome lamps, potted shrubs, wood table tops on
+	piping, wood legs, round seats on iron poles, drum lamp shades, iron dome lamps, potted trees, wood table tops on
 	iron bases. Since 2026-10-27 it is a bit less luxury (owner: "make lobby a bit less luxury"): worn iron, old brass
-	and wood instead of gold and marble, no button tufting, no topiaries. Real meshes (free Creator Store models or
+	and wood instead of gold and marble, no button tufting. Real meshes (free Creator Store models or
 	Studio's AI generator) could replace any piece later; these keep the look while the game is code-first.
 
 	Each builder takes the floor spot (x, z) and a facing (where the front looks: "North" / "South" / "East" / "West").
@@ -536,25 +536,35 @@ end
 -- Decor
 ---------------------------------------------------------------------------------------------------------------------
 
--- A shrub in an old rusty bucket: an iron rim and soil, a short trunk, a bushy clump of leaves.
+-- A potted two-tier tree: black pot with an iron band and rim and soil, a trunk, two balls of leaves (owner,
+-- 2026-10-27: "want old tree bush, no rusty" — the tree is back after a day as a shrub in a rusty bucket; its pot's
+-- trim stays iron, not gold).
 function Furniture.plant(x: number, z: number)
 	local put = frame(x, z, "South")
 	B.model("Plant", function()
-		upright(put, "Pot", { 0, 1.3, 0 }, 2.6, 3, "RustDark", "CorrodedMetal", true)
-		upright(put, "Rim", { 0, 2.65, 0 }, 0.25, 3.2, "Iron", "Metal")
+		upright(put, "Pot", { 0, 1.3, 0 }, 2.6, 3, "Black", "SmoothPlastic", true)
+		upright(put, "PotBand", { 0, 0.3, 0 }, 0.3, 3.1, "Iron", "Metal")
+		upright(put, "Rim", { 0, 2.65, 0 }, 0.25, 3.3, "Iron", "Metal")
 		upright(put, "Soil", { 0, 2.62, 0 }, 0.2, 2.7, "Soil", "Ground")
-		upright(put, "Trunk", { 0, 3.4, 0 }, 1.6, 0.35, "Wood", "Wood")
-		for index, leaves in { { 0, 5, 0, 4.2 }, { -1.2, 5.9, 0.6, 2.6 }, { 1.1, 6.2, -0.5, 2.4 } } do
-			put({
-				Name = if index == 1 then "Leaves" else `Leaves{index}`,
-				Size = { leaves[4], leaves[4], leaves[4] },
-				Position = { leaves[1], leaves[2], leaves[3] },
-				Shape = "Ball",
-				Color = "Leaf",
-				Material = "LeafyGrass",
-				CanCollide = false,
-			})
-		end
+		upright(put, "Trunk", { 0, 4.6, 0 }, 4, 0.35, "Wood", "Wood")
+		put({
+			Name = "Leaves",
+			Size = { 4.4, 4.4, 4.4 },
+			Position = { 0, 6.9, 0 },
+			Shape = "Ball",
+			Color = "Leaf",
+			Material = "LeafyGrass",
+			CanCollide = false,
+		})
+		put({
+			Name = "LeavesTop",
+			Size = { 2.8, 2.8, 2.8 },
+			Position = { 0, 9.6, 0 },
+			Shape = "Ball",
+			Color = "Leaf",
+			Material = "LeafyGrass",
+			CanCollide = false,
+		})
 	end)
 end
 
