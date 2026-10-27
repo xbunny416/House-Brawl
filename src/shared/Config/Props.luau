@@ -70,7 +70,7 @@ local Props: PropsConfig = {
 		},
 		Crate = { Class = "Medium", Size = { X = 3, Y = 3, Z = 3 }, Material = "WoodPlanks", Color = "#9C6B3E" },
 		TV = { Class = "Medium", Size = { X = 2.6, Y = 2.2, Z = 2.2 }, Material = "SmoothPlastic", Color = "#6E5A4A" },
-		Barrel = { Class = "Medium", Size = { X = 2.2, Y = 3, Z = 2.2 }, Material = "CorrodedMetal", Color = "#3E6E8C" },
+		Barrel = { Class = "Medium", Size = { X = 2.2, Y = 3, Z = 2.2 }, Material = "Metal", Color = "#3E6E8C" },
 		Fridge = { Class = "Heavy", Size = { X = 3, Y = 5.5, Z = 3 }, Material = "SmoothPlastic", Color = "#EDE6D6" },
 		CarDoor = { Class = "Heavy", Size = { X = 4.5, Y = 3, Z = 0.5 }, Material = "Metal", Color = "#D97A8A" },
 		VendingChunk = { Class = "Heavy", Size = { X = 3, Y = 3, Z = 2 }, Material = "Metal", Color = "#C8463C" },

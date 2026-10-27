@@ -19,7 +19,7 @@ local Structures: StructuresConfig = {
 			MaxDrops = 4,
 			DropTable = { "CarDoor", "Tire", "Barrel" },
 			Size = { X = 4.6, Y = 3.6, Z = 9 },
-			Material = "CorrodedMetal",
+			Material = "Metal",
 			Color = "#8C4A3A",
 		},
 		VendingMachine = {
@@ -47,7 +47,7 @@ local Structures: StructuresConfig = {
 			MaxDrops = 4,
 			DropTable = { "CarDoor", "Tire", "Barrel" },
 			Size = { X = 5, Y = 5, Z = 8 },
-			Material = "CorrodedMetal",
+			Material = "Metal",
 			Color = "#6E5A4A",
 		},
 		ScrapPile = {
@@ -56,7 +56,7 @@ local Structures: StructuresConfig = {
 			MaxDrops = 4,
 			DropTable = { "Crate", "Bucket", "Tire" },
 			Size = { X = 6, Y = 3, Z = 6 },
-			Material = "CorrodedMetal",
+			Material = "Metal",
 			Color = "#7A6A55",
 		},
 		-- Neon Motel (step 2.5).

@@ -93,6 +93,7 @@ One row per merged PR, newest last. Add a row with every PR (see [CLAUDE.md](../
 | 2026-10-27 | Lobby clean-up (owner: "remove the 2 armchair too, remove stand here to fight sign, set player spawn in center no blue plate below"): the armchairs in front of the wheel and the join-pad signs (and `Lobby.Sign.Join`) removed; one invisible, walk-through 10 × 10 spawn in the centre facing the bar; `MapService.getLobbySpawn` spreads returning players over it; maps spec for the spawn | #90 |
 | 2026-10-27 | Lobby: the rest of the lounge by the wheel (rug, round table, floor lamps, the tree near it) and the three hanging lamps over the concrete removed (owner); all three red booths are long 6-seaters; 7 shadow-casting lamps, all over the bar floor | #91 |
 | 2026-10-27 | Lobby: the arm-wrestling table moves from the left wall to where the lines out from the quest board and the spin wheel's ARENA-side pillar meet (owner: "change wrestling to intercept in front of quest and left spin wheel pillar") | #92 |
+| 2026-10-27 | No rusty texture on Junkyard Isles (owner: "i really dont like that rusty texture"): CorrodedMetal → Metal in the same colours on the map, and on the containers, the wrecked car / crushed car stack / scrap pile structures, the barrel prop, the fridge patch and explosion debris (shared, so Broken Highway's containers change too) | #93 |
 
 ## Build order (approved 2026-10-15)
 

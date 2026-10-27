@@ -919,3 +919,13 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   other pillar's line would run into the chess table). The table (with its rug) stands at x = the quest board's
   centre, z = that pillar (`ARM_WRESTLE = { QUEST_X, PILLARS.West[2] }`), about 20 studs in front of the board, clear
   of the join pad and the wheel's mat. The pool table stays alone in front of the leaderboards.
+- **No rusty texture on Junkyard Isles (owner, 2026-10-27: "about junkyard map i really dont like that rusty
+  texture"):** Roblox's CorrodedMetal material is gone from everything you see there; it is plain Metal now, in the
+  same colours (rust orange / dark rust / teal stay, so the junk still reads as rusty paint): the Center, East and West
+  platforms, the scrap deck's underside, the flat car, the containers, the crushed cars, the barge hull and
+  smokestack, the junk heaps, spires, mounds, floating barrels, the drifting car and the raft drums. Things that also
+  appear elsewhere changed with them, so they look the same on every map: the containers (`Pieces.container`, also
+  Broken Highway's four), the wrecked car, crushed car stack and scrap pile structures (Config.Structures and
+  `ItemShapes`), the barrel and the fridge's rust patch (props), and the explosion debris chunks (VfxController).
+  Left as they were: Broken Highway's rebar rods and the lobby's barrels and ARENA door (not asked). The smash sound
+  for Metal is the same as for CorrodedMetal (`AudioRules`).

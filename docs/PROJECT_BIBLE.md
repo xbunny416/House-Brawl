@@ -266,7 +266,9 @@ machine (HP 80) ×3, lawn chair stack (HP 60) ×3.
 **Art & performance:**
 
 - Low-poly retro post-apocalypse, fun and chaotic (not grim). Faded 80s/90s palette: rust orange, teal, dusty pink,
-  off-white, neon accents. Materials: SmoothPlastic, Metal, CorrodedMetal, Concrete, Neon (sparingly). Chunky comic
+  off-white, neon accents. Materials: SmoothPlastic, Metal, Concrete, Neon (sparingly); no CorrodedMetal on Junkyard
+  Isles, props, structures or containers (owner, 2026-10-27: "i really dont like that rusty texture" — rust shows in
+  the colours only). Chunky comic
   shapes.
 - Late-afternoon dusk, orange sky, dusty haze (Atmosphere density ~0.35), light fog, faint toxic-green glow from below.
   Neon Motel is night. Lighting: **LightingStyle Realistic** (Roblox's Future look; owner, 2026-10-19;

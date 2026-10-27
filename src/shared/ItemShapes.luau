@@ -215,7 +215,7 @@ ItemShapes.Props = {
 		block({ 2.86, 0.06, 0.1 }, { 0, 1.07, -1.33 }, { Color = "#8C877C" }),
 		block({ 0.12, 0.8, 0.12 }, { 1.15, 1.6, -1.42 }, { Color = CHROME, Material = "Metal" }),
 		block({ 0.12, 1.6, 0.12 }, { 1.15, 0.2, -1.42 }, { Color = CHROME, Material = "Metal" }),
-		block({ 0.6, 0.4, 0.04 }, { -0.8, -2.0, -1.37 }, { Color = "#8A5A32", Material = "CorrodedMetal" }),
+		block({ 0.6, 0.4, 0.04 }, { -0.8, -2.0, -1.37 }, { Color = "#8A5A32", Material = "Metal" }),
 		block({ 0.3, 0.12, 0.3 }, { 1.2, -2.69, 1.2 }, { Color = DARK }),
 		block({ 0.3, 0.12, 0.3 }, { -1.2, -2.69, 1.2 }, { Color = DARK }),
 		block({ 0.3, 0.12, 0.3 }, { 1.2, -2.69, -1.2 }, { Color = DARK }),
@@ -287,8 +287,8 @@ ItemShapes.Structures = {
 			block({ 0.7, 0.3, 0.1 }, { 1.5, -0.25, 4.42 }, { Color = RED_LIGHT, Material = "Glass" }),
 			block({ 0.7, 0.3, 0.1 }, { -1.5, -0.25, 4.42 }, { Color = RED_LIGHT, Material = "Glass" }),
 			block({ 1.8, 0.45, 0.1 }, { 0, -0.35, -4.43 }, { Color = DARK }),
-			block({ 0.04, 0.6, 1.4 }, { 2.21, -0.7, 1.5 }, { Color = "#5A2E1E", Material = "CorrodedMetal" }),
-			block({ 0.04, 0.5, 1.1 }, { -2.21, -0.5, -1.8 }, { Color = "#5A2E1E", Material = "CorrodedMetal" }),
+			block({ 0.04, 0.6, 1.4 }, { 2.21, -0.7, 1.5 }, { Color = "#5A2E1E", Material = "Metal" }),
+			block({ 0.04, 0.5, 1.1 }, { -2.21, -0.5, -1.8 }, { Color = "#5A2E1E", Material = "Metal" }),
 		}
 		-- Pillars hold up the roof.
 		for _, x in { -1.84, 1.84 } do
@@ -304,7 +304,7 @@ ItemShapes.Structures = {
 				lying(0.8, 0.62, { wheel[1], -0.95, wheel[2] }, { Color = CHROME, Material = "Metal" })
 			)
 		end
-		table.insert(shapes, lying(0.9, 0.4, { -1.95, -1.1, 2.8 }, { Color = "#5A5550", Material = "CorrodedMetal" }))
+		table.insert(shapes, lying(0.9, 0.4, { -1.95, -1.1, 2.8 }, { Color = "#5A5550", Material = "Metal" }))
 		return shapes
 	end)(),
 	-- A drinks machine: red cabinet, lit sign, glass front with shelves of cans, the control panel with buttons and
@@ -378,7 +378,7 @@ ItemShapes.Structures = {
 			local sx, sy, sz = car.size[1], car.size[2], car.size[3]
 			table.insert(
 				shapes,
-				block(car.size, { 0, car.y, 0 }, { Turn = turn, Color = car.color, Material = "CorrodedMetal" })
+				block(car.size, { 0, car.y, 0 }, { Turn = turn, Color = car.color, Material = "Metal" })
 			)
 			table.insert(
 				shapes,
@@ -419,16 +419,16 @@ ItemShapes.Structures = {
 		block({ 6, 1.6, 3 }, { 0, -0.7, -1.5 }, { Shape = "Wedge" } :: any),
 		block({ 6, 1.6, 3 }, { 0, -0.7, 1.5 }, { Shape = "Wedge", Turn = { 0, 180, 0 } } :: any),
 		block({ 3.2, 1, 3 }, { 0, 0.3, 0 }, { Tint = 0.8 }),
-		lying(0.5, 4.2, { -0.6, 0.65, 0.6 }, { Turn = { 0, 30, 8 }, Color = STEEL, Material = "CorrodedMetal" }),
-		lying(0.4, 3.6, { 0.9, 0.35, -1 }, { Turn = { 0, -50, 0 }, Color = "#8A5A32", Material = "CorrodedMetal" }),
+		lying(0.5, 4.2, { -0.6, 0.65, 0.6 }, { Turn = { 0, 30, 8 }, Color = STEEL, Material = "Metal" }),
+		lying(0.4, 3.6, { 0.9, 0.35, -1 }, { Turn = { 0, -50, 0 }, Color = "#8A5A32", Material = "Metal" }),
 		block({ 2.8, 0.1, 1.8 }, { 0.8, 0.95, 0.2 }, { Turn = { 15, 20, -10 }, Color = "#55595E", Material = "Metal" }),
 		block(
 			{ 2.2, 0.1, 1.6 },
 			{ -1.2, 0.55, -1.2 },
-			{ Turn = { -12, -35, 8 }, Color = "#8C4A2A", Material = "CorrodedMetal" }
+			{ Turn = { -12, -35, 8 }, Color = "#8C4A2A", Material = "Metal" }
 		),
 		upright(1.8, 0.55, { 1.5, 0.75, 1.5 }, { Turn = { 25, 0, 0 }, Color = RUBBER }),
-		lying(1.1, 1.8, { -1.7, -0.75, 1.9 }, { Color = "#2F8C8C", Material = "CorrodedMetal" }),
+		lying(1.1, 1.8, { -1.7, -0.75, 1.9 }, { Color = "#2F8C8C", Material = "Metal" }),
 		upright(1.1, 0.25, { 0.2, 1.05, -0.4 }, { Color = "#55595E", Material = "Metal" }),
 	},
 	-- Neon Motel: an ice machine — its cabinet, a glowing blue ICE header, the bin door with a chrome handle, a vent
