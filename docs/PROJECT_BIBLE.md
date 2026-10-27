@@ -156,19 +156,19 @@ speech bubble: a greeting when you walk up, a line about your last round, tips a
 when you open the Shop or buy something), bar stools, a mirrored back bar with bottle shelves, three big CRT TVs over the bar (each shows one map of the ballot with its votes during the vote,
 the middle one the live match during a round, the news otherwise) and news TVs on the counter ends (a "JUNKYARD NEWS"
 channel: fun headlines mixed with live news — the last winner, today's deal, the Wins leader — and a scrolling
-ticker), the "JUNKYARD BRAWL" sign; two booths on the left side (as you face the bar), a long booth for six in the
-right-hand corner with the chess table in front of it, high tables with stools in front of the bar stools. Left wall
+ticker), the "JUNKYARD BRAWL" sign; three long booths for six (two on the left side as you face the bar, one in the
+right-hand corner with the chess table in front of it), high tables with stools in front of the bar stools. Left wall
 — three dark leaderboard boards in the middle (cream title, gold underline; rows of rank, avatar headshot, name and
 value with thousands separators, the top 3 outlined in gold / silver / bronze) with the pool table and the
 arm-wrestling table in front of them; a barrel and a dartboard at the bar end, the teal barrel in the corner. Right
 wall — the spin wheel in the middle (walk up and press the red button in front of it; each slice shows its prize and
-chance) with a worn dark rug with a rust ring, a round wood table on an iron base and two floor lamps with white drum
-shades in front of it, a potted tree. South (the ARENA wall, opposite the bar) — the steel ARENA door with the
+chance) with open floor in front of it, a potted tree. South (the ARENA wall, opposite the bar) — the steel ARENA door with the
 glowing join pad in front of it; left of it the
 style coach (a standing Roblox character in a red tracksuit with a headband and a whistle, under a STYLES sign: walk
 up for the Styles screen, the style roll) by a jukebox (decor) and the street door in the corner; right of it the
 cork quest board and crates in the corner. Middle — open floor from the ARENA door to the bar; players spawn in the
-centre of the room, facing the bar (no visible spawn pad); potted trees in black pots. The arm-wrestling table has two stools facing each other: sit down opposite someone, wait out
+centre of the room, facing the bar (no visible spawn pad); potted trees in black pots by the walls; the lamps hang over
+the bar's wood floor only. The arm-wrestling table has two stools facing each other: sit down opposite someone, wait out
 a 3-second countdown, then mash Attack — or tap PUSH on a phone — to push the clasped hands over to your side; a pin
 wins at once, otherwise whoever is ahead after 15 seconds; the wrestlers' panel shows the match and, between matches,
 the table champion's wins in a row; no Coins at stake, wins count toward a lifetime arm-wrestling stat. The chess

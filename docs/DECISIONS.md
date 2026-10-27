@@ -904,3 +904,12 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   join pad were visible: LobbySpawn isn't a hidden marker), facing the bar. `MapService.getLobbySpawn` now puts each
   returning player on a random spot of it (1 stud inside its edge), so players back from a round don't stack. The
   maps spec checks one invisible, walk-through spawn at the room's centre facing the bar. 29 lobby seats.
+- **No lounge, no lamps over the concrete, three long booths (owner, 2026-10-27: "i mean that entire circle table
+  area + rug + floor lamp + tree, remove 3 lamp above concrete. also make 3 red booth all 6 seat plus longer"):** the
+  rest of the lounge in front of the spin wheel is gone — the rug, the round table, both floor lamps and the tree that
+  stood in the open floor near it (the one by the right wall past the wheel stays). The three pendant lamps over the
+  concrete floor went (the lounge's, the pool table's and the arm-wrestling table's), so every hanging lamp is over
+  the bar's wood floor now: 2 at the bar, 3 over the booths, the chess table's and the high tables' — 7 shadow-casting
+  lamps (12 before). The concrete part is lit by the pillars' wall lamps, the join pad, the jukebox and the wheel's hub
+  light; check it isn't too dark. **Booths:** all three are long 6-seat booths (two 3-seat benches and a 9-stud table
+  on two pedestals); the two on the left moved 2 studs toward the wall to stay clear of the bar. 33 lobby seats.

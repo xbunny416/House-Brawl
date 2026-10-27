@@ -15,16 +15,15 @@
 	and wall lamps, wood beams under a dark ceiling. Floor: concrete, wood planks in the bar.
 	North (the bar's wood floor): the wood-topped counter (Shop) with the bartender (Shop NPC), stools, a back bar with
 	a wood-framed mirror and shelves of bottles, map vote TVs hanging over the bar, news TVs on the counter ends, the
-	title sign; two booths on the left side, a long booth for six and the chess table on two armchairs in front of it
+	title sign; two long booths for six on the left side, another and the chess table on two armchairs in front of it
 	on the right side, high tables in front of the stools.
 	Left wall (+X): the three leaderboards in the middle with the pool table and the arm-wrestling table in front of
 	them; a barrel and a dartboard at the bar end, the teal barrel in the corner by the ARENA wall.
-	Right wall (−X): the spin wheel in the middle with a worn rug, a round wood table and two floor lamps in front of
-	it, and a potted tree.
+	Right wall (−X): the spin wheel in the middle with open floor in front of it, and a potted tree.
 	South (the ARENA wall): the steel ARENA door with the join pad in front of it (QueueZone: only players standing on
 	it are taken into the next round); left of it the style coach (StyleNPC: opens the Styles screen) by the jukebox
 	(decor) and the street door in the corner; right of it the quest board and the crates in the corner.
-	Middle: open floor between the ARENA door and the bar with the spawn (invisible) in the centre, potted trees.
+	Middle: open floor between the ARENA door and the bar with the spawn (invisible) in the centre.
 	Furniture comes from maps/lib/Furniture.
 	Seats (sofas, armchairs, booth benches, stools) are LobbySeat-tagged Seats: walk up and press the Sit prompt.
 	Interactive objects carry CollectionService tags so code can attach prompts and UI.
@@ -1152,25 +1151,15 @@ local function booth(name: string, x: number, z: number, seats: number?)
 end
 
 local function lounge()
-	--[[
-		The sitting area in front of the spin wheel (owner, 2026-10-27: "bit smaller 2 chair sofa circle table in front
-		spin wheel", "just remove that 3 sofa", then "remove the 2 armchair too"; in the middle of the room before, with a
-		3-seat sofa and two armchairs): a worn rug with a rust ring, a round wood table, a floor lamp on each side. The
-		wheel's mat stays clear: the rug stops short of it, with a walkway between the table and the mat.
-	]]
-	local rugX, rugZ = -33, 0
-	F.rug(rugX, rugZ, 12, 18, 8)
-	F.roundTable("CoffeeTable", rugX, rugZ, 5, 2.4)
-	F.floorLamp(rugX + 4.5, rugZ - 6.6)
-	F.floorLamp(rugX + 4.5, rugZ + 6.6)
-	F.plant(-HALF_X + 3, -21.5) -- by the right wall, between the pillars past the wheel
-	F.plant(-21, -8)
-	F.pendant(rugX, 17, rugZ, HEIGHT, 30)
+	-- The lounge (a rug, a round table, a sofa, armchairs, floor lamps, a tree and a lamp over it, in front of the spin
+	-- wheel at the end) is gone (owner, 2026-10-27: "that entire circle table area + rug + floor lamp + tree"), and so
+	-- are the lamps that hung over the concrete floor ("remove 3 lamp above concrete": the lounge's, the pool table's
+	-- and the arm-wrestling table's). A tree stays by the right wall past the wheel.
+	F.plant(-HALF_X + 3, -21.5)
 
-	-- The pool table along the left wall, in front of the leaderboards (it stands lower than their screens), with its
-	-- own lamp (owner, 2026-10-27: "arm wrestling and snooker move to side"; left of the middle before).
+	-- The pool table along the left wall, in front of the leaderboards (it stands lower than their screens) (owner,
+	-- 2026-10-27: "arm wrestling and snooker move to side"; left of the middle before).
 	F.poolTable(37, -10, "East")
-	F.pendant(37, 14, -10, HEIGHT, 24)
 
 	-- High tables with stools in front of the bar stools, under one lamp.
 	for index, x in { -10, 10 } do
@@ -1180,11 +1169,11 @@ local function lounge()
 	end
 	F.pendant(0, 18, 13, HEIGHT, 26)
 
-	-- Booths on the bar's wood floor (one more since 2026-10-27, owner: "add more tables with sofas"): two on the left
-	-- side, clear of the leaderboards, and a long one for six in the right-hand corner (owner: "swap place chess chair
-	-- table and red booth, longer red booth for 6 people"; it stood in front of the chess table before).
-	booth("BoothLeftNorth", 31, HALF_Z - 8.5)
-	booth("BoothLeft", 31, 15)
+	-- Three long booths for six on the bar's wood floor (owner, 2026-10-27: "add more tables with sofas", "longer red
+	-- booth for 6 people", then "make 3 red booth all 6 seat plus longer"): two on the left side, clear of the
+	-- leaderboards, and one in the right-hand corner behind the chess table.
+	booth("BoothLeftNorth", 33, HALF_Z - 8.5, 3)
+	booth("BoothLeft", 33, 15, 3)
 	booth("BoothRight", -35, HALF_Z - 8.5, 3)
 
 	-- Crates: the hideout's junk, in the right-hand corner by the ARENA wall (the left one is the jukebox's).
@@ -1209,14 +1198,14 @@ local function lounge()
 end
 
 -- The arm-wrestling table (ArmWrestleService) by the left wall between the pool table and the booths (owner,
--- 2026-10-27: "arm wrestling and snooker move to side"; in the middle of the room before), on its own rug under its
--- own lamp. The pull runs along X (toward and away from the left wall).
+-- 2026-10-27: "arm wrestling and snooker move to side"; in the middle of the room before), on its own rug (its lamp
+-- went with the other lamps over the concrete, 2026-10-27). The pull runs along X (toward and away from the left
+-- wall).
 local ARM_WRESTLE = { 37, 3 }
 local function armWrestle()
 	local x, z = ARM_WRESTLE[1], ARM_WRESTLE[2]
 	F.rug(x, z, 12, 9, 7)
 	F.armWrestleTable("ArmWrestleTable", x, z, 3.2, 1.4)
-	F.pendant(x, 15, z, HEIGHT, 22)
 end
 
 -- The chess table (ChessService) on the right side of the bar's wood floor as you face the bar, in front of the long
