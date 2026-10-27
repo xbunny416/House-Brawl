@@ -1,9 +1,10 @@
 --!strict
 --[[
 	LobbyPromptController — walk-up menus in the lobby (owner, 2026-10-17): a ProximityPrompt on the bartender
-	(ShopNPC tag) opens the Shop, one in the locker booth (Locker tag) opens the Inventory, one at the quest board
-	(QuestBoard tag) opens the Quests screen, one at the codes jukebox (CodesJukebox tag) opens Settings on the Promo
-	code tab (the spin wheel has its own prompt: WheelController). They open through MenuController, so its
+	(ShopNPC tag) opens the Shop, one on the style coach (StyleNPC tag) opens the Styles screen (the style roll), one at
+	the quest board (QuestBoard tag) opens the Quests screen (the spin wheel has its own prompt: WheelController). The
+	locker booth (Inventory) and the codes jukebox (Settings on the Promo code tab) had prompts too until the lobby's
+	new layout (owner, 2026-10-27); both screens still open from the menu. They open through MenuController, so its
 	rules apply (one screen at a time, never while fighting), and hide while a menu screen is open or the player is
 	fighting. Keys and range: Config.Controls.Prompts (E / gamepad B; touch taps). The prompts are made here on the
 	client — opening a screen needs nothing from the server — and come back when a streamed-out part streams in again.
@@ -39,11 +40,11 @@ local function targets(): { Target }
 			Object = Localization.format("Prompt.Shop.Object"),
 		},
 		{
-			Tag = "Locker",
-			Part = "Back",
-			Screen = "Locker",
-			Action = Localization.format("Prompt.Locker"),
-			Object = Localization.format("Prompt.Locker.Object"),
+			Tag = "StyleNPC",
+			Part = "Torso",
+			Screen = "StyleRoll",
+			Action = Localization.format("Prompt.Styles"),
+			Object = Localization.format("Prompt.Styles.Object"),
 		},
 		{
 			Tag = "QuestBoard",
@@ -51,14 +52,6 @@ local function targets(): { Target }
 			Screen = "Quests",
 			Action = Localization.format("Prompt.Quests"),
 			Object = Localization.format("Prompt.Quests.Object"),
-		},
-		{
-			Tag = "CodesJukebox",
-			Part = "Body",
-			Screen = "Settings",
-			Arg = "Codes", -- the Promo code tab
-			Action = Localization.format("Prompt.Codes"),
-			Object = Localization.format("Prompt.Codes.Object"),
 		},
 	}
 end

@@ -827,3 +827,29 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
 - **The old tree is back (owner, 2026-10-27: "want old tree bush, no rusty"):** the lobby's three potted plants are
   the two-tier tree in a black pot again (trunk, a big ball of leaves and a small one on top), not shrubs in rusty
   buckets. The pot's band and rim stay iron, not gold, to keep the less-luxury look.
+- **New lobby layout, 15% smaller (owner, 2026-10-27):** "all leaderboards to the left (of the TVs)" — asked: "center
+  of left wall" (the west wall, the left one as you face the bar); "chess to north right, change chair to sofa, no
+  rug"; "add more tables with sofas like on the bar platform"; "move the tree off the bar platform"; "remove the code
+  item and name" (the Codes jukebox and its CODES sign); "add a music box between the pillars in the front corner, by
+  the green barrel and the box"; "arena entry in place of the old leaderboards, opposite the bar"; "delete the locker
+  area, replace it with an interactive NPC for the style roll"; "make the lobby 15% smaller". The owner left the music
+  box's job open, so it is **decor only**. My calls: the room is 98 × 72 (115 × 85 × 0.85, rounded; the height stays
+  26); the bar keeps its size. **West wall:** the three leaderboards in the middle (15 wide instead of 17 so they fit
+  between the pillars at z ±28.2; Wins, KOs, Level from left to right), the **style coach** at the north end where
+  the locker booth was: a `StyleNPC`-tagged model (Spot + invisible Torso anchor, like the bartender's) that
+  NpcService dresses as a coach (red tracksuit with white stripes, a headband, a whistle; `Config.World.Coach.UserId`
+  can give him an avatar), a STYLES sign and a mat; its prompt (LobbyPromptController) opens the Styles screen. No
+  speech lines. The Locker and CodesJukebox prompts are gone with their strings; the Inventory and the Promo code
+  tab still open from the menu. **South wall:** the ARENA door in the middle with the join pad in front (18 × 14 now,
+  the same area turned to the wall), the two spawn pads on both sides of the pad (facing the bar; 3 in a row before),
+  the quest board west of the door (the west wall was full), the street door and the crates in the corner, and the
+  tree from the bar floor by the door. **East wall:** the spin wheel moved to the middle (the west wall went to the
+  leaderboards), mirrored so it faces the room (`ROOM` in the layout; the client turns it about the hub's X axis as
+  before; the wheel spec now checks the labels face the room from either wall), a barrel on each side (the teal one
+  south), the **jukebox** between the pillars south of it (decor: a wood cabinet with a glowing arch, a window with
+  records, neon stripes and a grille), the dartboard. **Bar floor:** two booths on the west side (one new), the chess
+  table in the north-east corner on two armchairs (`Furniture.chessTable` builds them with `Furniture.sofa`; each
+  armchair's Cushion1 is the ChessSeat) with no rug, a booth south of it (the north-east booth moved there), the high
+  tables in front of the bar stools under one lamp. The lounge, the arm-wrestling table and the pool table keep their
+  look, moved in for the smaller room. 12 shadow-casting lamps as before (the spawn lamp went, the new booth has one).
+  `Furniture.at` (the local → world placement the furniture uses) is now public for wall pieces.

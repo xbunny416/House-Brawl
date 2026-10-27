@@ -28,6 +28,9 @@ return {
 			Lines = { Greet = 6, Idle = 14, Shop = 4, Thanks = 4, Won = 4, Lost = 4 },
 		},
 	},
+	-- The style coach by the west wall (NpcService; walk up to open the Styles screen, the style roll): a Roblox user
+	-- id whose avatar the coach wears, or 0 for the built-in coach outfit (red tracksuit, headband, whistle).
+	Coach = { UserId = 0 },
 	-- Arm wrestling at the lobby table (ArmWrestleService, Shared/ArmWrestleRules). When both seats are taken a
 	-- CountdownTime countdown starts, then the pull: every press of Attack (the PUSH button on touch) moves the clasped
 	-- hands PushPerTap toward the presser (they start in the middle; 1 wins). Presses count up to TapRate a second (a

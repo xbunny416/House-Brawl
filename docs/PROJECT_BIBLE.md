@@ -138,7 +138,7 @@ Not used. No pets, eggs, or paid random items.
 
 | Zone | Description |
 | --- | --- |
-| Lobby — "The Hideout" (enclosed hideout lounge) | Shop (bar counter), Locker booth (Inventory), Quest board, leaderboards, join pad, seats |
+| Lobby — "The Hideout" (enclosed hideout lounge) | Shop (bar counter), style coach (Styles), Quest board, leaderboards, spin wheel, join pad, seats |
 | Map 1 — Broken Highway | Shattered overpass chunks, abandoned cars, road signs |
 | Map 2 — Junkyard Isles | Stacked car and container islands over toxic sludge |
 | Map 3 — Neon Motel | Sinking motel rooftops, flickering retro neon, pool on one roof |
@@ -146,32 +146,38 @@ Not used. No pets, eggs, or paid random items.
 ### 3.2 Visual & spatial guidelines
 
 **Lobby (The Hideout):** an enclosed hideout bar (owner's changes: a closed space, not the open Rust Diner rooftop,
-no Training Yard, 2026-10-16; 25% bigger — 115 × 85 studs, 26 high — in the style of the reference pictures with
-detailed furniture, 2026-10-19; a bit less luxury, 2026-10-27: worn iron, old brass and wood instead of gold and marble).
-Grey-green plaster walls over dark wood wainscoting with a wood rail, dark wood pillars with iron bands and white wall
-lamps, wood beams, iron workshop pendant lamps, a concrete floor (wood planks in the bar). North — the wood-topped bar counter with the Shop NPC
+no Training Yard, 2026-10-16; 25% bigger in the style of the reference pictures with detailed furniture, 2026-10-19;
+a bit less luxury, 2026-10-27: worn iron, old brass and wood instead of gold and marble; the same day a new layout,
+15% smaller — 98 × 72 studs, 26 high). Grey-green plaster walls over dark wood wainscoting with a wood rail, dark wood
+pillars with iron bands and white wall lamps, wood beams, iron workshop pendant lamps, a concrete floor (wood planks
+under the bar). North (the bar's wood floor) — the wood-topped bar counter with the Shop NPC
 (the bartender: a standing Roblox character in a white shirt, dark vest, apron, bow tie and bandana, who talks in a
 speech bubble: a greeting when you walk up, a line about your last round, tips and jokes while you hang around, and lines
 when you open the Shop or buy something), bar stools, a mirrored back bar with bottle shelves, three big CRT TVs over the bar (each shows one map of the ballot with its votes during the vote,
 the middle one the live match during a round, the news otherwise) and news TVs on the counter ends (a "JUNKYARD NEWS"
 channel: fun headlines mixed with live news — the last winner, today's deal, the Wins leader — and a scrolling
-ticker), the "JUNKYARD BRAWL" sign; booths in both corners. East — the steel ARENA door with the glowing join pad. West — Locker
-booth, Codes jukebox, the cork quest board. South — three tall dark leaderboard boards (cream title, gold underline; rows of rank,
-avatar headshot, name and value with thousands separators, the top 3 outlined in gold / silver / bronze), the spawns
-and the street door. Middle — the
-lounge (worn dark rug with a rust ring, round wood table on an iron base, red sofa and two armchairs, floor
-lamps with white drum shades, potted trees in black pots), a pool table and high tables with stools; the spin wheel on the west wall (walk up and press the red button in front of it; each slice shows its prize and chance); the
+ticker), the "JUNKYARD BRAWL" sign; two booths on the west side, the chess table and a booth on the east side, high
+tables with stools in front of the bar stools. West (the left wall as you face the bar) — three tall dark leaderboard
+boards in the middle (cream title, gold underline; rows of rank, avatar headshot, name and value with thousands
+separators, the top 3 outlined in gold / silver / bronze), and at the north end the style coach (a standing Roblox
+character in a red tracksuit with a headband and a whistle, under a STYLES sign: walk up for the Styles screen, the
+style roll). East — the spin wheel in the middle (walk up and press the red button in front of it; each slice shows
+its prize and chance) between two barrels, a jukebox (decor) further south, a dartboard. South (opposite the bar) —
+the steel ARENA door with the glowing join pad, the spawns on both sides of it, the cork quest board, the street door,
+crates in the corner. Middle — the lounge (worn dark rug with a rust ring, round wood table on an iron base, red sofa
+and two armchairs, floor lamps with white drum shades, potted trees in black pots), a pool table; the
 arm-wrestling table in the open middle of the room (two stools facing each other: sit down opposite someone, wait out
 a 3-second countdown, then mash Attack — or tap PUSH on a phone — to push the clasped hands over to your side; a pin
 wins at once, otherwise whoever is ahead after 15 seconds; the wrestlers' panel shows the match and, between matches,
-the table champion's wins in a row; no Coins at stake, wins count toward a lifetime arm-wrestling stat); the chess table on
-the bar's wood floor west of the high tables (sit down opposite someone: the west seat plays White; a board screen
+the table champion's wins in a row; no Coins at stake, wins count toward a lifetime arm-wrestling stat); the chess table in
+the north-east corner of the bar's wood floor, between two armchairs (sit down opposite someone: the west seat plays White; a board screen
 shows the game from your side — tap a piece to see where it can go, tap the square to move; full chess rules, 5
 minutes each plus 3 seconds a move, resign or offer a draw; the pieces stand on the lobby board for everyone to watch; a new game starts 10 seconds after one ends while
 both stay; no Coins at stake, wins count toward a lifetime chess stat). Every sofa,
 armchair, booth bench and
-stool can be sat on: walk up and press Sit (E / gamepad B / tap); jump to stand up. Walk up to the bartender for the Shop and into the locker booth for the Inventory (a prompt: E / gamepad B /
-tap); both also open from the left-edge menu.
+stool can be sat on: walk up and press Sit (E / gamepad B / tap); jump to stand up. Walk up to the bartender for the
+Shop, to the style coach for the Styles screen and to the quest board for the Quests (a prompt: E / gamepad B / tap);
+they also open from the left-edge menu, like the Inventory and Settings (Promo code tab).
 
 **Broken Highway arena:**
 

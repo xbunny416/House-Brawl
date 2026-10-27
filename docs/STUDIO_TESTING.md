@@ -72,7 +72,7 @@ Settings → Promo code, styles come from the style roll).
 - **Settings test (Studio):** the loading screen shows on Play (title, a tip, "Loading...") and fades out once you
   load. Settings (left menu): − / + change music / SFX volume (hear it once audio ids are set), Camera shake and Low
   graphics switch On / Off and stay after rejoining (with saving on); How to play shows the rules and your controls.
-- **Codes test (Studio):** Codes (menu, or walk up to the jukebox on the west wall) → type `launch` → +250 Scrap;
+- **Codes test (Studio):** Settings (menu) → Promo code tab → type `launch` → +250 Scrap;
   again → "already used"; a made-up code → "doesn't exist". Dev panel → Daily → "Reset codes" to use it again. Output
   shows `[Codes]`.
 - **Group perks** need a group: put its id in `Config.Retention.Group.GroupId` ([Crew] chat tag, one-time 150 Scrap).
@@ -92,7 +92,8 @@ Settings → Promo code, styles come from the style roll).
   vote offers only your choices and the round timer starts at 2:00; `[Rewards]` in Output pays nothing and stats don't change. Rejoin and turn
   it on again: your choices are remembered (with Studio API access on). Output shows `[PrivateServer]`.
 - **Walk-up test (Studio):** walk to the bartender behind the bar counter (north) — a "Shop" prompt shows within 12
-  studs; press E (gamepad B, or tap it) and the Shop opens. Same in the locker booth (west wall) for the Locker. The
+  studs; press E (gamepad B, or tap it) and the Shop opens. Same at the style coach (west wall, north end) for the
+  Styles screen and at the quest board (south wall) for the Quests. The
   prompts disappear while a screen is open. If the bartender's prompt is hard to reach from the counter, the range
   is `Config.Controls.Prompts.MaxDistance`.
 - **Animations are scripted poses** (2.6), tuned blind: angles may need flipping or softening after the first
@@ -107,3 +108,10 @@ Settings → Promo code, styles come from the style roll).
   and the booths: iron instead of gold, wood instead of marble, a concrete floor. The concrete is darker than the old
   light carpet, so check the room isn't too dim (raise a pendant's range or brightness in `maps/layouts/Hideout`, or
   the Dusk preset's `Ambient` in `Config.Lighting`, if it is).
+- **New lobby layout (2026-10-27):** the room is 98 × 72. Spawn: you land beside the ARENA door and join pad (south
+  wall, opposite the bar). Check: the three leaderboards in the middle of the west wall fill in (Wins, KOs, Level from
+  left to right); the style coach stands at the north end of the west wall in a red tracksuit (Output
+  `[Npc] built the Coach`) and his prompt opens Styles; the spin wheel on the east wall spins and lands on the prize it
+  says (its slice labels read normally, not mirrored); the chess table's armchairs (north-east, on the bar's wood
+  floor) seat both players and a game starts; three booths and the high tables can be sat at. The old locker booth and
+  codes jukebox are gone (Inventory and Promo code from the menu); the jukebox by the teal barrel is decor.

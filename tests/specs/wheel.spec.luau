@@ -112,17 +112,19 @@ return {
 		local rotor = wheel:FindFirstChild("Rotor")
 		expect.truthy(rotor and rotor:FindFirstChild("Hub"), "Rotor with a Hub")
 		local hub = rotor.Hub.CFrame.Position
+		-- The wheel hangs on the east wall since 2026-10-27 (the west wall before): the room is toward −X from it.
+		local room = if hub.X > Config.Maps.LobbyOrigin[1] then -1 else 1
 		local slices: { [number]: number } = {}
 		local labels: { [number]: number } = {}
 		for _, part in rotor:GetDescendants() do
 			local segment = part:GetAttribute("Segment")
 			if segment and part.Name == "Label" then
 				labels[segment] = (labels[segment] or 0) + 1
-				-- Its front (where the client writes the prize) faces the room (+X); its up points from the hub out
+				-- Its front (where the client writes the prize) faces the room; its up points from the hub out
 				-- through the middle of its slice (slice i at (i - 1) / count of a turn from the top, toward +Z).
 				local angle = (segment - 1) / #Wheel.Prizes * 2 * math.pi
 				local look, up = part.CFrame.LookVector, part.CFrame.UpVector
-				expect.near(look.X, 1, 1e-3, `label {segment} faces the room`)
+				expect.near(look.X, room, 1e-3, `label {segment} faces the room`)
 				expect.near(up.Y, math.cos(angle), 1e-3, `label {segment} up`)
 				expect.near(up.Z, math.sin(angle), 1e-3, `label {segment} up`)
 				local out = part.CFrame.Position - hub

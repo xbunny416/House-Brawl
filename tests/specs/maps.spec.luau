@@ -490,14 +490,38 @@ return {
 			end
 		end)
 	end,
-	["lobby: interactive objects and spawns exist; no Training Yard"] = function()
-		for _, tag in { "ShopNPC", "ShopCounter", "Locker", "CodesJukebox", "QuestBoard", "ArenaDoor" } do
+	["lobby: interactive objects and spawns exist; no Training Yard, locker booth or codes jukebox"] = function()
+		for _, tag in { "ShopNPC", "ShopCounter", "StyleNPC", "QuestBoard", "ArenaDoor" } do
 			expect.equal(#tagged(lobby, tag), 1, tag)
 		end
 		for _, tag in { "TrainingYard", "TrainingDummySpot", "TrainingPropSpot", "TrainingStart", "TrainingDashGoal" } do
 			expect.equal(#tagged(lobby, tag), 0, tag)
 		end
+		-- The owner swapped them for the style coach and a decor jukebox (2026-10-27).
+		for _, tag in { "Locker", "CodesJukebox" } do
+			expect.equal(#tagged(lobby, tag), 0, tag)
+		end
 		expect.truthy(#tagged(lobby, "LobbySpawn") >= 1, "lobby spawns")
+	end,
+	["lobby: the style coach's spot stands on the floor by the west wall, facing the room"] = function()
+		local npc = tagged(lobby, "StyleNPC")[1]
+		local spot = npc:FindFirstChild("Spot")
+		expect.truthy(spot and spot:IsA("BasePart"), "Spot")
+		expect.truthy(npc:FindFirstChild("Torso"), "Torso (the Styles prompt's part)")
+		expect.truthy(
+			math.abs(spot.CFrame.Position.Y - spot.Size.Y / 2 - Config.Maps.LobbyOrigin[2]) < 0.01,
+			"on the floor"
+		)
+		expect.truthy(spot.CFrame.LookVector.X > 0.99, "faces the room (east)")
+		expect.truthy(
+			spot.CFrame.Position.X - Config.Maps.LobbyOrigin[1] < -Hideout.Inner[1] / 2 + 5,
+			"by the west wall"
+		)
+		for _, part in npc:GetDescendants() do
+			if part:IsA("BasePart") then
+				expect.equal(part.Transparency, 1, `{part.Name} is an invisible anchor`)
+			end
+		end
 	end,
 	["lobby: the bartender's spot stands on the floor behind the counter, facing the room"] = function()
 		local npc = tagged(lobby, "ShopNPC")[1]
@@ -557,9 +581,9 @@ return {
 			expect.truthy(stats[stat], `leaderboard {stat}`)
 		end
 	end,
-	["lobby: 25% bigger than the first Hideout (92 × 68 → 115 × 85; 138 × 102 was too big)"] = function()
-		expect.equal(Hideout.Inner[1], 115)
-		expect.equal(Hideout.Inner[2], 85)
+	["lobby: 15% smaller than 115 × 85 (98 × 72; the owner, 2026-10-27)"] = function()
+		expect.equal(Hideout.Inner[1], 98)
+		expect.equal(Hideout.Inner[2], 72)
 		local north = lobby:FindFirstChild("NorthWall", true)
 		expect.near(north.Size.X, Hideout.Inner[1] + 4, 0.001, "north wall spans the room")
 	end,
