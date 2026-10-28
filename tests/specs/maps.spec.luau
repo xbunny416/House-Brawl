@@ -396,18 +396,149 @@ return {
 				"BowlingAlley",
 				"Jail",
 				"Courthouse",
+				-- The owner, 2026-10-28: "more dimension … also bigger buildings".
+				"Pachinko",
+				"Karaoke",
+				"CarPark",
+				"YokochoNorth",
+				"YokochoSouth",
+				"DeptStore",
+				"Hotel",
+				"FireStation",
+				"ApartmentsNorth",
+				"ApartmentsSouth",
+				"Temple",
+				"Koban",
 			}
 		do
 			local building = model:FindFirstChild(name, true)
 			expect.truthy(building, `{name} is built`)
 			expect.truthy(building:FindFirstChild("GroundFloor"), `{name} has a floor inside`)
 		end
-		for _, name in { "TowerWest", "TowerEast", "Cafe", "Mall", "Jail", "Shop1", "Mansion" } do
+		for _, name in
+			{
+				"TowerWest",
+				"TowerEast",
+				"Cafe",
+				"Mall",
+				"Jail",
+				"Shop1",
+				"Mansion",
+				"Ramen",
+				"Karaoke",
+				"CarPark",
+				"DeptStore",
+				"Hotel",
+				"ApartmentsSouth",
+			}
+		do
 			local building = model:FindFirstChild(name, true)
 			expect.truthy(
 				building and building:FindFirstChild("Stair") and building:FindFirstChild("Floor"),
 				`{name} has stairs`
 			)
+		end
+		-- "Literally include inside structure too": every building you can walk into has something solid inside it
+		-- that isn't its own shell (furniture, counters, partitions, cars), upstairs too when it has floors.
+		local district = model:FindFirstChild("Center", true)
+		local furnishings = {}
+		for _, part in district:GetDescendants() do
+			if
+				part:IsA("BasePart")
+				and part.CanCollide
+				and part.Name ~= "Base"
+				and not (part:HasTag("SpawnPoint") or part:HasTag("PropSpot"))
+				and not (part:HasTag("ExplosiveSpot") or part:HasTag("StructureSpot"))
+			then
+				table.insert(furnishings, part)
+			end
+		end
+		local buildings = 0
+		for _, building in district:GetChildren() do
+			local ground = building:FindFirstChild("GroundFloor")
+			if ground then
+				buildings += 1
+				local floor = boxOf(ground)
+				local upstairs = math.huge
+				for _, slab in building:GetChildren() do
+					if slab.Name == "Floor" then
+						upstairs = math.min(upstairs, boxOf(slab).max[2])
+					end
+				end
+				local inside, above = false, false
+				for _, part in furnishings do
+					local p = part.CFrame.Position
+					local within = p.X > floor.min[1]
+						and p.X < floor.max[1]
+						and p.Z > floor.min[3]
+						and p.Z < floor.max[3]
+					if within and p.Y > 0 and not part:IsDescendantOf(building) then
+						inside = true
+						above = above or p.Y > upstairs
+					end
+				end
+				expect.truthy(inside, `{building.Name} is furnished`)
+				expect.truthy(upstairs == math.huge or above, `{building.Name} is furnished upstairs`)
+			end
+		end
+		expect.truthy(buildings >= 30, `{buildings} buildings to walk into`)
+		-- "I don't want too much flat area except the fountain area or the road": off the streets (and their
+		-- pavements), the plaza and the edge's margin, at most a third of the ground is open (samples every 5; built
+		-- up = under a building's floor, a solid part 2+ tall, or a deck overhead).
+		local covers, streets = {}, {}
+		for _, part in district:GetDescendants() do
+			if part:IsA("BasePart") and part.Name ~= "Base" then
+				local box = boxOf(part)
+				if part.Name == "GroundFloor" then
+					table.insert(covers, box)
+				elseif part.Name == "Road" or part.Name == "PlazaPavers" then
+					table.insert(streets, box)
+				elseif part.CanCollide and part.Transparency < 1 then
+					local bottom, top = box.min[2], box.max[2]
+					if top - math.max(bottom, 0) >= 2 or (bottom >= 2 and bottom <= 30) then
+						table.insert(covers, box)
+					end
+				end
+			end
+		end
+		local function under(list: { any }, x: number, z: number, pad: number): boolean
+			for _, box in list do
+				if
+					x >= box.min[1] - pad
+					and x <= box.max[1] + pad
+					and z >= box.min[3] - pad
+					and z <= box.max[3] + pad
+				then
+					return true
+				end
+			end
+			return false
+		end
+		local open, lots = 0, 0
+		for z = centerZ - halfZ + 8, centerZ + halfZ - 10, 5 do
+			for x = centerX - halfX + 8, centerX + halfX - 8, 5 do
+				if not under(streets, x, z, 6) then
+					lots += 1
+					if not under(covers, x, z, 1.5) then
+						open += 1
+					end
+				end
+			end
+		end
+		expect.truthy(open <= lots / 3, `{open} of {lots} samples are open flat ground`)
+		-- "More dynamic": things that move — the towers' glass lifts (up to the roof's parapet), the site's hoist, the
+		-- crane, the Ferris wheel, the carousel, the pachinko sign.
+		local kinds = {}
+		for _, mover in tagged(model, "Mover") do
+			local kind = mover:GetAttribute("Kind")
+			kinds[kind] = (kinds[kind] or 0) + 1
+		end
+		expect.truthy((kinds.Lift or 0) >= 3 and (kinds.Spin or 0) >= 4, "lifts and things that turn")
+		local towerTop = boxOf(model:FindFirstChild("TowerWest", true):FindFirstChild("Parapet")).max[2]
+		for _, name in { "TowerLift1", "TowerLift2" } do
+			local lift = model:FindFirstChild(name, true)
+			local floor = boxOf(lift:FindFirstChild("LiftFloor"))
+			expect.truthy(floor.max[2] + lift:GetAttribute("Offset").Y >= towerTop - 0.01, `{name} reaches the roof`)
 		end
 		-- Every spot is at least 10 in from the edge (the spacing checks above cover the rest).
 		for _, tag in { "SpawnPoint", "PropSpot", "ExplosiveSpot", "StructureSpot" } do

@@ -325,14 +325,22 @@ end
 	(positions from the arena origin). `attributes`: Kind ("Lift" / "Slide" / "Swing" / "Spin"), Period, Pause, Offset
 	(Vector3), Angle, Axis, Phase. Hazard-tagged parts knock fighters they touch (MoverService). Movers sit in the arena's
 	Movers folder, not on a platform, so they never crumble. (The lobby's ceiling fans are Spin movers too, from
-	Furniture.ceilingFan.)
+	Furniture.ceilingFan.) `tilt` (degrees about X, Y, Z) turns the pivot itself: a Spin then turns about the tilted
+	up axis (tilt { 90, 0, 0 }: about world Z, a Ferris wheel).
 ]]
-function Arena.mover(name: string, pivot: { number }, attributes: { [string]: any }, fill: () -> ()): any
+function Arena.mover(
+	name: string,
+	pivot: { number },
+	attributes: { [string]: any },
+	fill: () -> (),
+	tilt: { number }?
+): any
 	local model = B.model(name, function()
 		B.part({
 			Name = "Pivot",
 			Size = { 1, 1, 1 },
 			Position = pivot,
+			Rotation = tilt,
 			Color = "Metal",
 			Transparency = 1,
 			CanCollide = false,
