@@ -43,6 +43,7 @@ export type Contents = {
 	Props: { Spot }?,
 	Explosive: Spot?,
 	Explosives: { Spot }?, -- several barrel spots on one platform (a ground arena's single one)
+	TypedProps: { { At: Spot, Type: string } }?, -- prop spots that always get this prop (PropType attribute)
 	Structures: { { Type: string, At: Spot, Yaw: number } }?,
 }
 
@@ -279,8 +280,18 @@ local function buildPlatform(platform: Platform, contents: Contents, decorate: (
 					facingCenter(centerX + spot[1], centerZ + spot[2])
 				)
 			end
-			for index, spot in contents.Props or {} do
+			local props = contents.Props or {}
+			for index, spot in props do
 				B.marker("PropSpot", `PropSpot{index}`, { spot[1], spot[3] or 0, spot[2] })
+			end
+			for index, typed in contents.TypedProps or {} do
+				local spot = typed.At
+				B.marker(
+					"PropSpot",
+					`PropSpot{#props + index}`,
+					{ spot[1], spot[3] or 0, spot[2] },
+					{ PropType = typed.Type }
+				)
 			end
 			if contents.Explosive then
 				B.marker("ExplosiveSpot", "ExplosiveSpot", { contents.Explosive[1], 0, contents.Explosive[2] })

@@ -1055,3 +1055,16 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     tower roofs and terrace, the skybridge, the station roof and platforms, and the cafe's deck.
   - *Same counts:* 16 spawns (JJS spawns players by the station, so seven are in the station plaza), 24 props, 8
     breakables, 6 barrels. KOs by HP.
+- **Breakable walls, trash cans, walk-in buildings (owner, 2026-10-28: "add breakable walls and trash can throwables.
+  more detail more look alike, town structure more bigger and can enter"):**
+  - *Breakable walls:* every arena part tagged BreakableWall can be destroyed (Services/WallService, Server/Structures/WallRules).
+    Attacks, thrown props and blasts damage it. Health comes from `Config.Structures.Walls`: glass 6 (one punch), wood
+    20, everything else 32 (four punches). A broken wall is gone until the next round's fresh arena. Pieces are at most
+    16 wide (glass panes 26).
+  - *Trash can:* a new Medium prop with its own shape (`ItemShapes`), and one of the loose-spot types. Prop spots can
+    name their prop (`Arena.Contents.TypedProps`, the PropType attribute), so trash cans and chairs stand where they
+    belong.
+  - *Walk-in buildings:* `maps/lib/Rooms` builds hollow storeys 7 high, floors with a stair well, switchback ramps and
+    roofs. Its wall pieces and windows break.
+  - *Shinjuku:* rebuilt at 480 × 400 with walk-in towers (11 storeys), station and train, shops and the rest. Ground
+    arenas may have more than 24 prop spots (at most `Props.MaxActive`).

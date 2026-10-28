@@ -201,6 +201,17 @@ ItemShapes.Props = {
 	},
 	-- A corroded steel drum.
 	Barrel = drum(),
+	-- A street trash can: a ribbed green can on a dark foot ring, a domed lid with a handle, a white sticker.
+	TrashCan = {
+		upright(1.8, 2.3, { 0, -0.25, 0 }),
+		upright(1.9, 0.12, { 0, -1.32, 0 }, { Tint = 0.6 }),
+		upright(1.86, 0.1, { 0, -0.6, 0 }, { Tint = 0.8 }),
+		upright(1.86, 0.1, { 0, 0.3, 0 }, { Tint = 0.8 }),
+		upright(1.98, 0.3, { 0, 1.05, 0 }, { Tint = 1.15 }),
+		upright(1.4, 0.12, { 0, 1.26, 0 }, { Tint = 1.15 }),
+		block({ 0.5, 0.08, 0.14 }, { 0, 1.36, 0 }, { Color = STEEL, Material = "Metal" }),
+		block({ 0.7, 0.5, 0.02 }, { 0, 0, -0.91 }, { Color = WHITE, Material = "SmoothPlastic" }),
+	},
 	-- The explosive drum: red, with a yellow hazard band and black warning diamonds; it glows when lit.
 	ExplosiveBarrel = add(drum(true), {
 		upright(2.1, 0.5, { 0, 0, 0 }, { Color = "#E8C547" }),
