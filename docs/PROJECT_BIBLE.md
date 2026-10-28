@@ -146,7 +146,7 @@ Not used. No pets, eggs, or paid random items.
 | Map 1 — Broken Highway | Shattered overpass chunks, abandoned cars, road signs |
 | Map 2 — Junkyard Isles | Stacked car and container islands over toxic sludge |
 | Map 3 — Neon Motel | Sinking motel rooftops, flickering retro neon, pool on one roof |
-| Map 4 — Shinjuku (the only arena in the vote) | A Tokyo street block on the ground with open edges over a cliff: twin towers with a skybridge, a cafe and plaza, shops, a graveyard, a jail, a mall with a bowling alley (in the spirit of Jujutsu Shenanigans' Shinjuku) |
+| Map 4 — Shinjuku (the only arena in the vote) | A Tokyo street block on the ground with open edges over a cliff, built up and furnished inside: twin towers with a skybridge and glass lifts, a yokocho, pachinko, karaoke, a car park, a department store with a rooftop Ferris wheel, a hotel, a building site with a turning crane, shops, a graveyard, a jail, a mall with a bowling alley (in the spirit of Jujutsu Shenanigans' Shinjuku) |
 
 Maps 1–3 are switched off (kept built) since 2026-10-28.
 
@@ -280,51 +280,76 @@ machine (HP 80) ×3, lawn chair stack (HP 60) ×3.
 
 **Shinjuku arena** (day; owner, 2026-10-28: "make another only one arena …", "no floating island", then "want arena
 to look like jjk shenanigans" — the Shinjuku battleground of the Roblox game Jujutsu Shenanigans; this is our own
-Shinjuku-style district in that spirit, with generic shop names): a ground arena, one flat Tokyo street block
-(560×340, it never falls; grown twice: "town structure more bigger and can enter", then "bit bigger structures like
-shop, tower"; then shrunk: "shrink the arena by delete entire school area"). The `Day` preset: a blue sky with white
-clouds.
+Shinjuku-style district in that spirit, with generic shop names): a ground arena, one Tokyo street block (560×340, it
+never falls; grown twice: "town structure more bigger and can enter", then "bit bigger structures like shop, tower";
+then shrunk: "shrink the arena by delete entire school area"; then built up: "more dimension and dynamic, literally
+include inside structure too, also bigger building, I don't want too much flat area except that fountain area or
+road"). The `Day` preset: a blue sky with white clouds.
 - *Edges:* open on every side (owner, 2026-10-28: "remove tower boundary so player can fall dead"; until then
   invisible walls and a ring of tall city blocks closed it in). The ground ends in a cliff: a layer of soil, then rock
   going down into the old arenas' dark mist, fading to black. Nothing out there to land on.
 - *Knockouts:* a fall off the edge (below KillY, 60 under the district's slab) is a KO, as on the floating arenas;
   a Classic life also ends when its HP runs out.
+- *Built up:* only the streets (with their pavements) and the fountain plaza are open ground; every block is built
+  up at many heights (a spec keeps open flat ground under a third of the rest), joined by bridges, decks, ladders and
+  planks.
 - *Buildings you walk into* (`maps/lib/Rooms`): hollow storeys 7 high (6.5 of headroom), a floor on every storey,
-  switchback ramps up a stair well, a roof (some with a hatch to it).
-- *Breakable walls:* their walls and windows break (see §3.3), as do the block walls, the graveyard's wall and stones,
-  and the hedges.
+  switchback ramps up a stair well, a roof (most with a hatch to it). Every one is furnished inside, upstairs too
+  (desks, beds, sofas, counters, shelves, racks, booths, cells; inside walls are partitions that break).
+- *Breakable walls:* their walls and windows break (see §3.3), as do the partitions, the block walls, the graveyard's
+  wall and stones, the hedges and the building site's fence.
+- *Things that move* (`Arena.mover`): glass lifts up the twin towers' north faces (street to roof), the building site's
+  hoist, its tower crane turning slowly overhead, a Ferris wheel and a carousel on the department store's roof, the
+  pachinko parlor's spinning sign.
 - *The main street* runs across the district along its north edge, with taxis, vending machines and trash cans; a
   short pavement past it, then the drop. (North of it stood a train station, then a high school with its gym and
   yard and a shrine, until the owner cut the strip on 2026-10-28.)
 - *The middle, either side of the avenue:*
-  - The twin towers, 40 wide: eleven storeys you can climb inside to the roof (+77.6), glass lobbies, a ribbon of
-    glass on every face of every upper storey, a glass skybridge between their 9th floors (+56), ladders up the
-    outside to the roofs, CURSED COLA and TOKYO NIGHTS billboards, AC units and a water tank on each roof.
-  - West: the RAMEN shop (a counter with stools, tables and chairs, curtains, lanterns, a rooftop sign), and the
-    plaza (a fountain) with the two-storey CAFE in its corner (tables and chairs, a stair to the upstairs and a roof
-    terrace).
-  - East: the 24H MART (a big glass front, three rows of shelves, a drinks cooler, a counter, vending machines and
-    trash cans), the graveyard (a breakable stone wall, gravestones, bare trees) and the ARCADE (two rows of game
-    cabinets, neon trim, a ladder onto its roof).
+  - The twin towers, 40 wide: eleven storeys of offices (desks, water coolers; a lobby with a reception desk and
+    sofas) you can climb inside to the roof (+77.6), glass lobbies, a ribbon of glass on every face of every upper
+    storey, a glass skybridge between their 9th floors (+56), ladders and glass lifts up the outside to the roofs,
+    CURSED COLA and TOKYO NIGHTS billboards, AC units and a water tank on each roof.
+  - West: the two-storey RAMEN shop facing the main street (a counter with stools, a kitchen, tables; an izakaya
+    upstairs with low tables and a paper screen), the PACHINKO parlor (rows of machines on two floors, a spinning
+    rooftop sign), the YOKOCHO (two two-storey rows of eight tiny bars on a lantern-lit lane, rooms joined upstairs, an
+    arch sign, a plank to the pachinko roof), and the plaza (a fountain) with the two-storey CAFE in its corner.
+  - East: the four-storey KARAOKE tower (booths off a corridor on every floor), the 24H MART, the multi-storey car park
+    (four open decks and a roof deck, parked cars, a stair, a PARKING sign, a gangway to the karaoke roof), the gas
+    station (a canopy you can climb onto, pumps, a kiosk), the KOBAN police box, a bus stop, the graveyard (a stone
+    wall, gravestones, a temple with an altar, stone lanterns, a four-tier pagoda you can climb) and the two-storey
+    ARCADE (cabinets downstairs, prize grabbers upstairs, a ladder onto its roof).
 - *The second street:* across the district.
 - *The south:*
-  - A row of five three-storey shops (BOOKS, ELECTRONICS, KARAOKE, SUBS, SWEETS: shopfronts, awnings, vertical signs,
-    balconies, a stair to the top floor, back doors, AC units and water tanks on the roofs), bicycles out front, and a
-    back lot behind them with dumpsters and block walls.
-  - The three-storey purple JAIL with a barred cell, and the COMEDY CLUB (a stage, chairs).
-  - The white COURT (a judge's bench, pews, a portico), and a two-storey mansion with a garage and a hedge.
-  - A pocket park with cherry trees and a swing set.
-- *The west strip:* the MALL (two floors joined by a ramp, stalls on both, graffiti, a big sign on its roof, a ladder
-  to it) and the BOWLING alley (five lanes with pins, a giant pin on its roof).
-- *The east:* two apartment blocks with balconies and water tanks (solid).
+  - A row of five three-storey shops (BOOKS, ELECTRONICS, DRUGSTORE, SUBS, SWEETS: shopfronts, awnings, vertical
+    signs, balconies, a stockroom and a flat upstairs, back doors, AC units and water tanks), bicycles out front; the
+    back lot behind them (dumpsters, block walls), the four-storey DEPT. STORE (cosmetics counters, fashion racks and
+    mannequins, homeware, a restaurant; the rooftop Ferris wheel, carousel and ticket booth), a mechanical parking
+    rack with cars up it and a water tower with a ladder.
+  - The three-storey purple JAIL (holding cells behind bars, offices, a canteen, a barred cell outside, a yard with a
+    watchtower) and the COMEDY CLUB (a stage, three tiers of seats, a bar).
+  - The white COURT (a judge's bench, a witness stand, a jury box, pews, a portico), the FIRE STATION behind it (two
+    fire engines, a crew floor, a drill tower on the roof with a ladder up from the street), the six-storey HOTEL
+    (a glass lobby, rooms off a corridor on every floor, a helipad on the roof) and the two-storey mansion (a sitting
+    room, a kitchen, bedrooms) with a garage and a car.
+  - The building site in the corner (a pocket park until 2026-10-28): a hoarding fence and an UNDER CONSTRUCTION
+    board, a steel frame (decks at 8, 16 with a gap, 24; bare beams at 32) with ladders, scaffolding planks, the hoist,
+    the tower crane (a climbable mast), a two-storey site office, a stack of containers, a dirt mound with an
+    excavator, pipes, sand, a cement mixer, portable toilets.
+- *The west strip:* the MALL (three floors joined by a wide stair to the roof, stalls on every floor, benches, a food
+  court on top, graffiti, a big sign on its roof, a ladder to it) and the BOWLING alley (five lanes, ball returns,
+  score screens, a raised seating platform, a shoe counter, a giant pin on its roof).
+- *The east:* two walk-in apartment blocks (four and five storeys: flats with beds, sofas and tables either side of a
+  partition, balconies, stairs to the roof), a deck over the lane between them at their 2nd floors (a ramp up from
+  the side street) and a footbridge between their 3rd floors.
 - *Streets:* Japanese style — utility poles with power lines, crosswalks, kerbs, street trees, bicycles, vending
   machines.
 
-Props: 18 loose spots (some on the tower roofs and floors, the skybridge, the cafe), plus 14 that always get their
-prop: trash cans on the main street, by the ramen shop, the mart, the shops and the park, and chairs in the ramen
-shop, the cafe, the comedy club and the court (`TypedProps`). Structures: vending machine (HP 80) ×4, wrecked car
+Props: 22 loose spots (some on the tower roofs and floors, the skybridge, the cafe, the car park's decks, the
+department store, the hotel's roof, the building site's deck), plus 16 that always get their prop: trash cans on the
+main street, in the yokocho's lane, by the mart and the shops, by the site's fence and at the hotel, and chairs in the
+ramen shop, the cafe, the comedy club and the court (`TypedProps`). Structures: vending machine (HP 80) ×4, wrecked car
 (HP 100) ×2, ice machine (HP 80), road barrier stack (HP 60). 16 spawns (the main street, the streets, the plaza), 6
-explosive barrels.
+explosive barrels (one by the gas pumps, one at the building site).
 
 **Art & performance:**
 
@@ -375,7 +400,8 @@ explosive barrels.
   2–4 random props from their drop table; drops nobody picks up vanish after 30 s.
 - **Breakable walls** (owner, 2026-10-28: "add breakable walls"): arena parts tagged BreakableWall take the same
   damage (Services/WallService).
-  - *What breaks:* building walls and windows, block walls, gravestones, hedges.
+  - *What breaks:* building walls and windows, inside partitions, block walls, gravestones, hedges, the building
+    site's fence, the bus shelter's glass.
   - *Health:* it depends on the material (`Config.Structures.Walls`): glass goes with one punch, wood takes three,
     everything else four.
   - *Breaking:* a wall darkens as it loses health. At 0 it shatters and is gone for the rest of the round (each round

@@ -1104,3 +1104,31 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   - *What's past the edge:* the ground ends in a cliff (a soil layer, then a rock face, walk-through) going down into
     the old arenas' dark mist, fading to black, so the drop reads as deep and there is nothing to land on.
   - *Size:* about 3,400 instances (4,500 before).
+- **Shinjuku built up, furnished inside, things that move (owner, 2026-10-28: "add overall arena more dimention and
+  dynamic. i mean literally include inside structure too, also bigger building i dont want too much flat area except
+  that fountain area or road"):**
+  - *Less flat ground:* every block off the streets and the plaza is built up. Open flat ground there went from about
+    61% to 27% (samples every 5 studs; pavements and the edge's margin count as street). A spec keeps it under a
+    third. The plaza (the fountain) stays open, as the owner asked.
+  - *New buildings:*
+    - In the old empty lots: the yokocho (two rows of tiny bars), the pachinko parlor, the karaoke tower, the
+      multi-storey car park, a gas station, the police box, a bus stop, the graveyard's temple and pagoda.
+    - South of the second street: the department store, a parking rack, a water tower, the fire station, the hotel.
+    - The building site replaces the flat pocket park.
+  - *Bigger:*
+    - The ramen shop, arcade and mall each gained a storey; the arcade is also wider.
+    - The jail and the comedy club are bigger.
+    - The apartment blocks are now walk-in buildings of four and five storeys, joined by a deck over their lane and a
+      footbridge.
+    - The shop row's KARAOKE shop became a DRUGSTORE, since the karaoke tower took the name.
+  - *Inside:* "inside structure" read as every walk-in building furnished, upstairs too, and a spec checks it.
+    Rooms with walls (karaoke booths, hotel rooms, bars, flats) have partitions, which break like other walls. The
+    car park's decks are 6.5 apart, not 6, so a prop spot there has the 6 studs of headroom the spot spec needs.
+  - *Dynamic:* moving parts, as in the lobby and the old arenas:
+    - Two glass lifts up the towers, from the street to the roof.
+    - The site's hoist, the turning crane jib.
+    - A Ferris wheel and a carousel on the department store's roof.
+    - The pachinko parlor's spinning sign.
+    - `Arena.mover` gained a `tilt` so a Spin can turn about a horizontal axis (the Ferris wheel). The wheel and the
+      sign are walk-through decor; the carousel's floor, the lifts and the crane jib are solid and can be ridden.
+  - *Size:* about 6,600 instances (3,400 before). Everything is anchored, but check the frame rate on a phone.

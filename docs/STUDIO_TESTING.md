@@ -172,3 +172,28 @@ Settings → Promo code, styles come from the style roll).
     and respawn on their spots.
   - *Look:* from the edge, the soil and rock face under the street going down into the mist (no gap between the
     street slab and the rock). The arena is about 3,400 instances now.
+- **Shinjuku built up and furnished (2026-10-28):** every block off the streets and the plaza now has buildings.
+  Where things are, with north (+Z) as the main street:
+  - *Moving parts (watch them turn, and ride them):*
+    - *Glass lifts:* on the towers' north faces (by the doors onto the main street). Stand on one and it takes you to
+      the roof in about 8 s, waits, then comes back down. You step off over the low roof wall.
+    - *Building site (south-east corner):* the hoist on the steel frame's east side goes up to the 24 deck. The crane
+      jib turns once a minute; climb the yellow mast (a truss) and jump onto the jib.
+    - *Department store roof (south-west, behind the shops):* the Ferris wheel turns (walk-through decor). The carousel
+      turns too: stand on it and you ride round.
+    - *Pachinko parlor roof (north-west, by the west tower):* the sign spins.
+  - *Inside:* walk through every building. Each one has furniture on every floor:
+    - The towers' offices, the karaoke booths, the hotel rooms.
+    - The yokocho's tiny bars (doors off the lane; its stair is at the row's west end).
+    - The car park's decks with cars, the department store's floors, the fire station's engines and bunks.
+    - The jail's cells, the club's tiered seats, the apartments' flats.
+    Punch a partition: it breaks like a wall.
+  - *Climbing:* ladders onto the gas station's canopy, the yokocho's roof, the fire station's drill tower, the water
+    tower, the parking rack, the site office and the steel frame's levels. The pagoda's eaves step up. The gangway
+    goes from the car park roof to the karaoke tower's roof; the deck over the apartments' lane has a ramp from the
+    side street.
+  - *Check:*
+    - Nothing in a doorway or on a stair.
+    - Props land on the car park's 2nd deck, the department store's 2nd floor and roof, the hotel roof and the site's
+      first deck.
+    - Frame rate, especially on a phone: about 6,600 instances, up from 3,400.
