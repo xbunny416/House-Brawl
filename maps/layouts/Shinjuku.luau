@@ -5,27 +5,27 @@
 	switched off in Config.Maps.List), then "no floating island", then "want arena to look like jjk shenanigans" (the
 	Shinjuku battleground of the Roblox game Jujutsu Shenanigans), then "add breakable walls and trash can throwables,
 	town structures bigger and can enter", then: "replace the train station with another thing; bit bigger structures
-	like the shops and towers; more polish and detail". This is our own Shinjuku-style district in that spirit (generic
+	like the shops and towers; more polish and detail", then: "shrink the arena by deleting the entire school area;
+	remove the boundary so players can fall dead". This is our own Shinjuku-style district in that spirit (generic
 	names, nothing copied).
 
-	A ground arena (Layout.Ground): one flat district (the Center platform, 560 × 460, never falls) walled in by
-	invisible walls, with tall city blocks behind them all round. Nobody falls: a Classic life ends at 0 HP. Day light.
-	Its buildings are ones you can walk into (maps/lib/Rooms: hollow storeys 7 high, floors, switchback ramps, roofs), and
-	their walls and windows break (BreakableWall pieces, Services/WallService), as do the block walls, the graveyard's
-	stones and the hedges.
+	A ground arena (Layout.Ground): one flat district (the Center platform, 560 × 340, never falls) with open edges: no
+	walls, nothing round it, and the ground ends in a cliff over a dark abyss. Falling off is a KO (below KillY, as on
+	the floating arenas), and so is 0 HP in Classic. Day light. Its buildings are ones you can walk into
+	(maps/lib/Rooms: hollow storeys 7 high, floors, switchback ramps, roofs), and their walls and windows break
+	(BreakableWall pieces, Services/WallService), as do the block walls, the graveyard's stones and the hedges.
 
-	Plan (north = +Z): along the north edge a high school (three storeys, a clock tower, a roof you can reach) with its
-	gym and its schoolyard (a running track round a football pitch, a flagpole, a bike shed, a gate onto the main
-	street), and a small shrine (torii gates, stone lanterns, a shrine hall) in the corner — where the station was until
-	2026-10-28; the main street across (z 90); below it, either side of the avenue (x 0), the twin towers (11 storeys,
+	Plan (north = +Z): the main street across along the north edge (z 90; the school, its gym and yard and the shrine
+	stood north of it until 2026-10-28); below it, either side of the avenue (x 0), the twin towers (11 storeys,
 	a skybridge at the 9th, ladders up the outside to the roof); west of them the ramen shop and the plaza (a fountain)
 	with the two-storey cafe, east the 24-hour mart, the graveyard and the arcade; the second street across (z −90);
 	south of it a row of five three-storey shops, the three-storey jail with its cell and the comedy club with a stage,
 	the courthouse and a two-storey mansion with a garage, a pocket park with cherry trees and swings. The mall (two
 	floors, a ramp between them) and the bowling alley fill the west strip, apartments the east. Japanese streets:
-	utility poles with wires, crosswalks, guardrails, street trees, bicycles, vending machines.
-	Spots: 16 spawns (the schoolyard and the streets), 22 loose prop spots (on roofs, upper floors, the skybridge),
-	trash cans and chairs where they belong (TypedProps), 8 breakables, 6 explosive barrels.
+	utility poles with wires, crosswalks, street trees, bicycles, vending machines.
+	Spots: 16 spawns (the streets and the plaza), 18 loose prop spots (on roofs, upper floors, the skybridge), trash
+	cans and chairs where they belong (TypedProps), 8 breakables, 6 explosive barrels. Spots and pieces are written from
+	the arena origin (the main street's crossing with the avenue is at z 90); the district's centre is at z −60.
 ]]
 local Arena = require("../lib/Arena")
 local B = require("../lib/Builder")
@@ -38,10 +38,10 @@ local Layout = {}
 
 Layout.Id = "Shinjuku"
 Layout.Lighting = "Day"
-Layout.Ground = true -- one walled-in ground platform instead of floating ones (the maps spec checks it differently)
+Layout.Ground = true -- one ground platform instead of floating ones (the maps spec checks it differently)
 
-local DISTRICT = { 560, 460 } -- X, Z: the playable ground inside the walls
-local WALL_HEIGHT = 260
+local DISTRICT = { 560, 340 } -- X, Z: the playable ground, from z −230 (the south edge) to z 110 (the north edge)
+local CENTER_Z = -60 -- the district's centre from the arena origin
 local ROAD = 20
 local BREAKABLE = { "BreakableWall" }
 -- The twin towers (x ±38): 40 wide, 11 storeys of 7, the skybridge on the 9th.
@@ -49,15 +49,13 @@ local TOWER = { X = 38, Z = 35, Size = 40, Floors = 11, Storey = 7, BridgeFloor 
 local TOWER_ROOF = TOWER.Floors * TOWER.Storey + 0.6
 local BRIDGE_Y = (TOWER.BridgeFloor - 1) * TOWER.Storey
 local STOREY = 7 -- every other building's storey (6.5 of headroom)
-local SCHOOL = { At = { 0, 196 }, Size = { 220, 40 }, Floors = 3 }
-local SCHOOL_ROOF = SCHOOL.Floors * STOREY + 0.6
 local CAFE = { At = { -40, -52 }, Size = { 42, 32 } }
 
 Layout.Platforms = {
 	{
 		Id = "Center",
 		Kind = "Center",
-		Center = { 0, 0 },
+		Center = { 0, CENTER_Z },
 		Size = DISTRICT,
 		Top = 0,
 		Thickness = 6,
@@ -66,16 +64,46 @@ Layout.Platforms = {
 	},
 } :: { Platform }
 
+-- The spots below are written from the arena origin, like the pieces; a platform's contents are from its centre.
+local function fromOrigin(spot: Arena.Spot): Arena.Spot
+	return { spot[1], spot[2] - CENTER_Z, spot[3] }
+end
+
+local function onDistrict(contents: Arena.Contents): Arena.Contents
+	local function each(spots: { Arena.Spot }?): { Arena.Spot }
+		local moved = {}
+		for _, spot in spots or {} do
+			table.insert(moved, fromOrigin(spot))
+		end
+		return moved
+	end
+	local typed = {}
+	for _, prop in contents.TypedProps or {} do
+		table.insert(typed, { At = fromOrigin(prop.At), Type = prop.Type })
+	end
+	local structures = {}
+	for _, structure in contents.Structures or {} do
+		table.insert(structures, { Type = structure.Type, At = fromOrigin(structure.At), Yaw = structure.Yaw })
+	end
+	return {
+		Spawns = each(contents.Spawns),
+		Props = each(contents.Props),
+		Explosives = each(contents.Explosives),
+		TypedProps = typed,
+		Structures = structures,
+	}
+end
+
 Layout.Contents = {
-	Center = {
+	Center = onDistrict({
 		Spawns = {
-			{ -150, 130 }, -- the schoolyard
-			{ -50, 118 },
-			{ 0, 136 },
-			{ 50, 118 },
-			{ 150, 130 },
-			{ -100, 160 },
-			{ 100, 160 },
+			{ -240, 90 }, -- the main street along the north edge
+			{ -120, 90 },
+			{ 0, 90 },
+			{ 120, 90 },
+			{ 240, 90 },
+			{ -175, 45 }, -- the streets along the strips
+			{ 175, 45 },
 			{ -80, -90 }, -- the second street
 			{ 80, -90 },
 			{ -230, -90 },
@@ -92,10 +120,6 @@ Layout.Contents = {
 			{ 0, TOWER.Z, BRIDGE_Y }, -- the skybridge
 			{ -40, 25, BRIDGE_Y }, -- the west tower's 9th floor
 			{ 40, 25, 4 * TOWER.Storey }, -- the east tower's 5th floor
-			{ 40, 196, STOREY }, -- the school's 2nd floor and roof
-			{ 60, 190, SCHOOL_ROOF },
-			{ -225, 160 }, -- the gym
-			{ 228, 198 }, -- the shrine hall
 			{ -28, -45, STOREY }, -- the cafe upstairs and on its roof
 			{ -30, -62, 2 * STOREY + 0.6 },
 			{ 120, 46 }, -- the mart
@@ -111,9 +135,9 @@ Layout.Contents = {
 			{ -232, -110 }, -- by the jail
 		},
 		TypedProps = {
-			-- Trash cans where a street has them: the school's front, the ramen shop, the mart, the shops, the park.
-			{ At = { -30, 172 }, Type = "TrashCan" },
-			{ At = { 40, 172 }, Type = "TrashCan" },
+			-- Trash cans where a street has them: the main street, the ramen shop, the mart, the shops, the park.
+			{ At = { -30, 70 }, Type = "TrashCan" },
+			{ At = { 30, 70 }, Type = "TrashCan" },
 			{ At = { -97, 38 }, Type = "TrashCan" },
 			{ At = { 110, 35 }, Type = "TrashCan" },
 			{ At = { 140, 35 }, Type = "TrashCan" },
@@ -129,7 +153,7 @@ Layout.Contents = {
 			{ At = { 45, -152 }, Type = "Chair" },
 		},
 		Explosives = {
-			{ -175, 108 },
+			{ 175, 90 },
 			{ -140, -90 },
 			{ 0, 45 }, -- under the skybridge
 			{ -200, -200 },
@@ -137,8 +161,8 @@ Layout.Contents = {
 			{ 210, -210 },
 		},
 		Structures = {
-			{ Type = "VendingMachine", At = { -40, 106 }, Yaw = 0 },
-			{ Type = "VendingMachine", At = { 40, 106 }, Yaw = 0 },
+			{ Type = "VendingMachine", At = { -80, 70 }, Yaw = 0 },
+			{ Type = "VendingMachine", At = { 80, 70 }, Yaw = 0 },
 			{ Type = "VendingMachine", At = { 95, 35 }, Yaw = 0 },
 			{ Type = "IceMachine", At = { 155, 35 }, Yaw = 0 },
 			{ Type = "VendingMachine", At = { -64, 10 }, Yaw = 0 },
@@ -146,7 +170,7 @@ Layout.Contents = {
 			{ Type = "WreckedCar", At = { -175, -40 }, Yaw = 0 },
 			{ Type = "RoadBarrierStack", At = { 175, -150 }, Yaw = 0 },
 		},
-	},
+	}),
 } :: { [string]: Arena.Contents }
 
 function Layout.killY(): number
@@ -267,20 +291,6 @@ local function faceSign(
 	})
 end
 
--- A glass band wrapped round a box at height `y` (a little wider than the box, so it shows on all four sides).
-local function glassBand(at: { number }, size: { number }, y: number, height: number?)
-	B.part({
-		Name = "GlassBand",
-		Size = { size[1] + 0.3, height or 2.2, size[2] + 0.3 },
-		Position = { at[1], y, at[2] },
-		Color = "Glass",
-		Material = "Glass",
-		Transparency = 0.1,
-		CanCollide = false,
-		CastShadow = false,
-	})
-end
-
 -- A ladder (a climbable truss) standing on `y`, `height` tall (even).
 local function ladder(at: { number }, y: number, height: number)
 	B.truss({
@@ -310,33 +320,6 @@ local function blockWall(a: { number }, b: { number })
 			Tags = BREAKABLE,
 		})
 	end
-end
-
--- A white roadside guardrail along X from `x0` to `x1` at `z`: a top rail (solid) and a lower one, a post every 8.
-local function guardrail(x0: number, x1: number, z: number)
-	B.model("Guardrail", function()
-		for _, rail in { { 2.1, 0.25, true }, { 1.1, 0.18, false } } do
-			B.part({
-				Name = "Rail",
-				Size = { x1 - x0, rail[2], rail[2] },
-				Position = { (x0 + x1) / 2, rail[1], z },
-				Color = "OffWhite",
-				Material = "Metal",
-				CanCollide = rail[3],
-			})
-		end
-		local posts = math.max(1, math.floor((x1 - x0) / 8))
-		for index = 0, posts do
-			B.part({
-				Name = "Post",
-				Size = { 0.25, 2.2, 0.25 },
-				Position = { x0 + (x1 - x0) * index / posts, 1.1, z },
-				Color = "OffWhite",
-				Material = "Metal",
-				CanCollide = false,
-			})
-		end
-	end)
 end
 
 -- A parked car (solid: you can be knocked into it or stand on it), its length along Z turned `yaw`.
@@ -626,32 +609,6 @@ local function wires(a: { number }, b: { number })
 	end
 end
 
--- A basketball hoop (a pole, an arm, a backboard, a rim and a net) facing −`side` along X from `poleX`.
-local function hoop(poleX: number, z: number, side: number, y: number?)
-	local base = y or 0
-	B.model("Hoop", function()
-		upright("Pole", { poleX, z }, base, 10, 0.6, "MetalDark", "Metal")
-		B.part({
-			Name = "Backboard",
-			Size = { 0.2, 3.6, 6 },
-			Position = { poleX - side * 2, base + 9.6, z },
-			Color = "OffWhite",
-			Material = "SmoothPlastic",
-			CanCollide = false,
-		})
-		B.part({
-			Name = "Arm",
-			Size = { 2, 0.3, 0.3 },
-			Position = { poleX - side * 1, base + 9.6, z },
-			Color = "MetalDark",
-			Material = "Metal",
-			CanCollide = false,
-		})
-		upright("Rim", { poleX - side * 3, z }, base + 8.4, 0.12, 1.8, "NeonOrange", "Metal", false)
-		upright("Net", { poleX - side * 3, z }, base + 7.2, 1.2, 1.5, "OffWhite", "Fabric", false).Transparency = 0.5
-	end)
-end
-
 -- The roof furniture of a building `size` (X, Z) at `at` whose roof is at `y`: AC units and, when `tank`, a water tank,
 -- along its back half (clear of the roof's middle, where props land).
 local function roofKit(at: { number }, size: { number }, y: number, tank: boolean)
@@ -734,7 +691,7 @@ local function streets()
 		for _, edge in { -1, 1 } do
 			local kz = z + edge * (ROAD / 2 + 0.25)
 			if z > 0 and edge > 0 then
-				kerb({ 0, kz }, { DISTRICT[1], 0.5 }) -- the school side has no crossings
+				kerb({ 0, kz }, { DISTRICT[1], 0.5 }) -- the north edge side has no crossings
 			else
 				for _, segment in segments do
 					kerb({ (segment[1] + segment[2]) / 2, kz }, { segment[2] - segment[1], 0.5 })
@@ -765,7 +722,7 @@ local function streets()
 			streetTree({ x, z })
 		end
 	end
-	-- Taxis by the school gate, parked cars, bicycles.
+	-- Taxis on the main street, parked cars, bicycles.
 	car("Taxi", { -45, 85 }, 90, "LaneYellow")
 	car("Taxi", { -56, 85 }, 90, "LaneYellow")
 	car("ParkedCar", { 45, 95 }, -90, "OffWhite")
@@ -773,293 +730,6 @@ local function streets()
 	car("ParkedCar", { -179, -170 }, 0, "Red")
 	for index, x in { -150, -147.5, -90, -87.5, -30 } do
 		bike({ x, -101.5 }, 90, if index % 2 == 0 then "Red" else "CityBlue")
-	end
-end
-
----------------------------------------------------------------------------------------------------------------------
--- The north: the school, its gym and yard, the shrine (where the station was until 2026-10-28)
----------------------------------------------------------------------------------------------------------------------
-
--- The high school: three storeys with rows of classroom windows front and back, a main door and two side doors onto
--- the yard, a stair up to the roof, a clock tower on the roof, the school's name over the door.
-local function school()
-	local at, size = SCHOOL.At, SCHOOL.Size
-	Rooms.building({
-		Name = "School",
-		At = at,
-		Size = size,
-		Floors = SCHOOL.Floors,
-		Storey = STOREY,
-		Color = "Cream",
-		FloorColor = "WoodMid",
-		FloorMaterial = "WoodPlanks",
-		Openings = {
-			{ Face = "-Z", At = 0, Width = 10, Height = 5.5 },
-			{ Face = "-Z", At = -70, Width = 6, Height = 5.2 },
-			{ Face = "-Z", At = 70, Width = 6, Height = 5.2 },
-			{ Face = "+Z", At = 0, Width = 6, Height = 5.2 },
-		},
-		Windows = { Faces = { "-Z", "+Z" }, Width = 16, Height = 3.6, Sill = 1.4, Spacing = 22 },
-		Stair = { At = { -20, 8 }, Along = "X", Width = 4 },
-		Roof = { Color = "ConcreteDark", Hatch = true, Parapet = true },
-	})
-	-- Horizontal bands between the storeys (the school's look), the entrance canopy, the name over the door.
-	for floor = 1, SCHOOL.Floors - 1 do
-		glassBand(at, size, floor * STOREY, 0.5)
-	end
-	B.part({
-		Name = "EntranceCanopy",
-		Size = { 16, 0.4, 5 },
-		Position = { at[1], 5.9, at[2] - size[2] / 2 - 2.5 },
-		Color = "MetalDark",
-		Material = "Metal",
-		CanCollide = false,
-	})
-	faceSign(at, size, "-Z", 0, 6.4, 24, 1.4, "Map.Shinjuku.Sign.School", "OffWhite", "Black")
-	-- The clock tower on the roof.
-	local tower = { at[1], at[2] - 6 }
-	Pieces.block("ClockTower", tower, { 14, 12, 10 }, "OffWhite", "Concrete", SCHOOL_ROOF)
-	Pieces.block("ClockTowerCap", tower, { 15, 1, 11 }, "ConcreteDark", "Concrete", SCHOOL_ROOF + 12)
-	B.part({
-		Name = "ClockFace",
-		Size = { 0.3, 6, 6 },
-		Position = { tower[1], SCHOOL_ROOF + 7, tower[2] - 5.1 },
-		Rotation = { 0, 90, 0 },
-		Shape = "Cylinder",
-		Color = "OffWhite",
-		Material = "SmoothPlastic",
-		CanCollide = false,
-	})
-	for _, hand in { { 0, 2.2 }, { 90, 1.6 } } do
-		B.part({
-			Name = "ClockHand",
-			Size = { 0.3, hand[2], 0.1 },
-			Position = { tower[1], SCHOOL_ROOF + 7 + hand[2] / 2 * math.cos(math.rad(hand[1])), tower[2] - 5.3 },
-			Rotation = { 0, 0, hand[1] },
-			Color = "Black",
-			CanCollide = false,
-		})
-	end
-	roofKit({ at[1] + 60, at[2] }, { 60, size[2] }, SCHOOL_ROOF, true)
-	roofKit({ at[1] - 60, at[2] }, { 60, size[2] }, SCHOOL_ROOF, false)
-	vendingRow({ 20, 172.5 }, 3, 180)
-end
-
--- The gym: one tall hall with a wooden court, its lines and two hoops, high windows, doors onto the yard.
-local function gym()
-	local at, size = { -225, 170 }, { 80, 60 }
-	Rooms.building({
-		Name = "Gym",
-		At = at,
-		Size = size,
-		Floors = 1,
-		Storey = 14,
-		Color = "CityBlue",
-		FloorColor = "WoodMid",
-		FloorMaterial = "WoodPlanks",
-		Openings = {
-			{ Face = "+X", At = -15, Width = 8, Height = 6 },
-			{ Face = "+X", At = 15, Width = 8, Height = 6 },
-			{ Face = "-Z", At = 0, Width = 8, Height = 6 },
-		},
-		Windows = { Faces = { "+X", "-X", "+Z", "-Z" }, Width = 10, Height = 3, Sill = 9, Spacing = 14 },
-		Roof = { Color = "ConcreteDark", Parapet = true },
-	})
-	local cx, cz, length, width = at[1], at[2], 56, 30
-	for _, edge in
-		{
-			{ { cx, cz - width / 2 }, { length, 0.4 } },
-			{ { cx, cz + width / 2 }, { length, 0.4 } },
-			{ { cx - length / 2, cz }, { 0.4, width } },
-			{ { cx + length / 2, cz }, { 0.4, width } },
-			{ { cx, cz }, { 0.4, width } },
-		}
-	do
-		paint("CourtLine", edge[1], edge[2], "OffWhite", nil, 0.13)
-	end
-	hoop(cx - length / 2 - 1.5, cz, -1)
-	hoop(cx + length / 2 + 1.5, cz, 1)
-	faceSign(at, size, "+X", 0, 10, 10, 2, "Map.Shinjuku.Sign.Gym", "OffWhite", "CityBlue")
-	roofKit(at, size, 14.6, false)
-	ladder({ at[1] + size[1] / 2 + 1, at[2] + 26 }, 0, 16) -- onto the roof, by the yard
-end
-
--- The schoolyard: dirt with a red running track round a green football pitch, two goals, a flagpole, a bike shed,
--- benches and cherry trees, a guardrail along the main street with the gate in it.
-local function schoolyard()
-	paint("Yard", { 7.5, 138 }, { 375, 76 }, "SchoolYard", "Ground")
-	-- The track: a rectangle and two half-circle ends, and the pitch inside it a little higher.
-	paint("Track", { 0, 136 }, { 180, 56 }, "TrackRed", "Ground", 0.12)
-	upright("TrackEnd", { -90, 136 }, 0.11, 0.02, 56, "TrackRed", "Ground", false)
-	upright("TrackEnd", { 90, 136 }, 0.11, 0.02, 56, "TrackRed", "Ground", false)
-	paint("Pitch", { 0, 136 }, { 180, 40 }, "Lawn", "Grass", 0.15)
-	upright("PitchEnd", { -90, 136 }, 0.14, 0.02, 40, "Lawn", "Grass", false)
-	upright("PitchEnd", { 90, 136 }, 0.14, 0.02, 40, "Lawn", "Grass", false)
-	paint("HalfwayLine", { 0, 136 }, { 0.4, 40 }, "OffWhite", nil, 0.17)
-	for _, side in { -1, 1 } do
-		B.model("Goal", function()
-			local x = side * 80
-			for _, z in { 130, 142 } do
-				upright("Post", { x, z }, 0, 4, 0.3, "OffWhite", "Metal")
-			end
-			B.part({
-				Name = "Crossbar",
-				Size = { 0.3, 0.3, 12 },
-				Position = { x, 4, 136 },
-				Color = "OffWhite",
-				Material = "Metal",
-				CanCollide = false,
-			})
-			B.part({
-				Name = "Net",
-				Size = { 0.1, 4, 12 },
-				Position = { x + side * 2, 2, 136 },
-				Color = "OffWhite",
-				Material = "Fabric",
-				Transparency = 0.6,
-				CanCollide = false,
-			})
-		end)
-	end
-	-- The flagpole and its flag.
-	upright("Flagpole", { -95, 172 }, 0, 20, 0.4, "Metal", "Metal")
-	B.part({
-		Name = "Flag",
-		Size = { 4, 2.6, 0.1 },
-		Position = { -92.8, 18.6, 172 },
-		Color = "OffWhite",
-		Material = "Fabric",
-		CanCollide = false,
-	})
-	B.part({
-		Name = "FlagSun",
-		Size = { 0.12, 1.4, 1.4 },
-		Position = { -92.8, 18.6, 171.9 },
-		Rotation = { 0, 90, 0 },
-		Shape = "Cylinder",
-		Color = "Red",
-		CanCollide = false,
-	})
-	-- The bike shed: a roof on posts over a row of bicycles.
-	B.model("BikeShed", function()
-		Pieces.block("Roof", { -150, 172 }, { 30, 0.4, 6 }, "TealDark", "Metal", 6)
-		for _, x in { -164, -150, -136 } do
-			for _, z in { 169.4, 174.6 } do
-				Pieces.column("Post", { x, z }, 0, 6, 0.3, "MetalDark", "Metal")
-			end
-		end
-	end)
-	for index = 0, 5 do
-		bike({ -161 + index * 4.4, 172 }, 0, if index % 2 == 0 then "Red" else "OffWhite")
-	end
-	bench({ -60, 170 }, 180)
-	bench({ 60, 170 }, 180)
-	for _, x in { -160, -130, 130, 160 } do
-		tree("CherryTree", { x, 106 }, "SakuraPink")
-	end
-	-- The guardrail along the main street with the gate (two pillars, the school's name on a plate).
-	guardrail(-180, -14, 101.5)
-	guardrail(14, 195, 101.5)
-	for _, side in { -1, 1 } do
-		Pieces.block("GatePillar", { side * 12, 101.5 }, { 2, 6, 2 }, "ConcreteLight", "Concrete")
-		Pieces.block("GateCap", { side * 12, 101.5 }, { 2.6, 0.5, 2.6 }, "ConcreteDark", "Concrete", 6)
-	end
-	B.sign({
-		Name = "GatePlate",
-		Size = { 1.8, 3.6, 0.2 },
-		Position = { -12, 3.6, 100.4 },
-		Color = "OffWhite",
-		Material = "Marble",
-		Key = "Map.Shinjuku.Sign.School",
-		TextColor = "Black",
-		CanCollide = false,
-	})
-end
-
--- The shrine in the north-east corner: two red torii over a stone path, stone lanterns, a shrine hall open at the front
--- (an offering box, a bell rope) under a gabled roof, cherry trees.
-local function shrine()
-	local x = 235
-	paint("ShrinePath", { x, 150 }, { 6, 96 }, "Stone", "Cobblestone")
-	local function torii(z: number)
-		B.model("Torii", function()
-			for _, side in { -1, 1 } do
-				upright("Pillar", { x + side * 7, z }, 0, 12, 1.6, "ToriiRed", "SmoothPlastic")
-			end
-			B.part({
-				Name = "Kasagi",
-				Size = { 20, 1.2, 1.8 },
-				Position = { x, 12.6, z },
-				Color = "Black",
-				Material = "SmoothPlastic",
-			})
-			B.part({
-				Name = "Shimaki",
-				Size = { 18, 0.8, 1.4 },
-				Position = { x, 11.6, z },
-				Color = "ToriiRed",
-				Material = "SmoothPlastic",
-			})
-			B.part({
-				Name = "Nuki",
-				Size = { 16, 0.7, 1 },
-				Position = { x, 9.6, z },
-				Color = "ToriiRed",
-				Material = "SmoothPlastic",
-				CanCollide = false,
-			})
-		end)
-	end
-	torii(112)
-	torii(150)
-	for _, z in { 130, 170 } do
-		for _, side in { -1, 1 } do
-			B.model("StoneLantern", function()
-				local spot = { x + side * 6, z }
-				Pieces.block("Base", spot, { 1.6, 0.6, 1.6 }, "Stone", "Slate")
-				Pieces.block("Pillar", spot, { 0.7, 2.4, 0.7 }, "Stone", "Slate", 0.6)
-				Pieces.block("Light", spot, { 1.4, 1.2, 1.4 }, "WarmLight", "Neon", 3)
-				Pieces.block("Cap", spot, { 2, 0.5, 2 }, "Stone", "Slate", 4.2)
-			end)
-		end
-	end
-	local hall, hallSize = { x, 200 }, { 34, 24 }
-	Rooms.building({
-		Name = "ShrineHall",
-		At = hall,
-		Size = hallSize,
-		Floors = 1,
-		Storey = 10,
-		Color = "Wood",
-		Material = "WoodPlanks",
-		FloorColor = "WoodMid",
-		FloorMaterial = "WoodPlanks",
-		Openings = { { Face = "-Z", At = 0, Width = 16, Height = 7.5 } },
-		Roof = { Color = "WoodDark", Material = "Wood" },
-	})
-	-- A gabled roof over it (two wedges meeting along X).
-	for _, side in { -1, 1 } do
-		B.part({
-			Name = "Gable",
-			Size = { hallSize[1] + 4, 5, hallSize[2] / 2 + 2 },
-			Position = { hall[1], 10.6 + 2.5, hall[2] + side * (hallSize[2] / 4 + 1) },
-			Rotation = { 0, if side < 0 then 0 else 180, 0 }, -- each wedge's tall end toward the ridge
-			Shape = "Wedge",
-			Color = "AsphaltDark",
-			Material = "Slate",
-		})
-	end
-	Pieces.block("OfferingBox", { x, 206 }, { 5, 2.4, 2.4 }, "WoodDark", "Wood")
-	B.part({
-		Name = "BellRope",
-		Size = { 0.3, 6, 0.3 },
-		Position = { x, 6, 203.5 },
-		Color = "ToriiRed",
-		Material = "Fabric",
-		CanCollide = false,
-	})
-	for _, spot in { { 212, 125 }, { 258, 125 }, { 212, 175 }, { 258, 175 } } do
-		tree("CherryTree", spot, "SakuraPink")
 	end
 end
 
@@ -1845,35 +1515,8 @@ end
 -- The district
 ---------------------------------------------------------------------------------------------------------------------
 
--- The invisible walls along the district's edge (the city blocks behind rise past them).
-local function walls()
-	local halfX, halfZ = DISTRICT[1] / 2, DISTRICT[2] / 2
-	for _, wall in
-		{
-			{ { halfX + 2, 0 }, { 4, DISTRICT[2] + 8 } },
-			{ { -halfX - 2, 0 }, { 4, DISTRICT[2] + 8 } },
-			{ { 0, halfZ + 2 }, { DISTRICT[1] + 8, 4 } },
-			{ { 0, -halfZ - 2 }, { DISTRICT[1] + 8, 4 } },
-		}
-	do
-		B.part({
-			Name = "BoundaryWall",
-			Size = { wall[2][1], WALL_HEIGHT, wall[2][2] },
-			Position = { wall[1][1], WALL_HEIGHT / 2, wall[1][2] },
-			Color = "Glass",
-			Transparency = 1,
-			CastShadow = false,
-		})
-	end
-end
-
-local function decorate(plat: Platform)
-	assert(plat.Id == "Center", "Shinjuku has one platform")
+local function district()
 	streets()
-	school()
-	gym()
-	schoolyard()
-	shrine()
 	twinTowers()
 	plaza()
 	cafe()
@@ -1890,52 +1533,55 @@ local function decorate(plat: Platform)
 	jailAndClub()
 	courtAndMansion()
 	pocketPark()
-	walls()
+end
+
+-- The pieces are written from the arena origin; the platform's own frame is at its centre (z CENTER_Z).
+local function decorate(plat: Platform)
+	assert(plat.Id == "Center", "Shinjuku has one platform")
+	B.within({ 0, 0, -CENTER_Z }, district)
 end
 
 --[[
-	Off the district: a ring of city blocks right behind the walls on every side (offices and apartment towers with
-	glass bands, roof units and a few vertical neon signs facing in), so the city seems to go on; Persistent, so it
-	never streams out. Grey ground under everything.
+	Off the district: nothing round it (owner, 2026-10-28: "remove the boundary so players can fall dead"; until then
+	invisible walls and a ring of city blocks closed it in). The ground ends in a cliff: under the street slab a layer of
+	soil, then a face of rock going down into the abyss, the old arenas' dark mist fading to black far below. Fall past
+	KillY (60 below the slab) and it's a KO.
 ]]
-local function scenery(_killY: number)
-	local halfX, halfZ = DISTRICT[1] / 2, DISTRICT[2] / 2
-	local colors = { "CityGrey", "CityTan", "CityBlue", "Cream", "ConcreteDark", "LightPurple" }
-	local heights = { 46, 78, 58, 104, 66, 92, 52, 120, 70 }
-	local count = 0
-	local skyline = B.model("Skyline", function()
-		local function block(at: { number }, size: { number }, faceIn: string)
-			count += 1
-			local height = heights[(count - 1) % #heights + 1]
-			Pieces.block("Building", at, { size[1], height, size[2] }, colors[(count - 1) % #colors + 1], "Concrete")
-			for y = 8, height - 6, 9 do
-				glassBand(at, size, y, 2.6)
-			end
-			Pieces.block("RoofUnit", at, { size[1] * 0.4, 4, size[2] * 0.4 }, "Metal", "Metal", height)
-			if count % 3 == 0 then
-				local neon = if count % 2 == 0 then "NeonPink" else "NeonTeal"
-				panel("NeonSign", at, size, faceIn, size[1] * 0.2, height * 0.55, 3, 14, neon, "Neon")
-			end
-		end
-		for x = -308, 308, 44 do
-			block({ x, halfZ + 24 }, { 42, 40 }, "-Z")
-			block({ x, -halfZ - 24 }, { 42, 40 }, "+Z")
-		end
-		for z = -210, 210, 42 do
-			block({ halfX + 24, z }, { 40, 40 }, "-X")
-			block({ -halfX - 24, z }, { 40, 40 }, "+X")
-		end
-	end)
-	skyline.ModelStreamingMode = B.Enum.ModelStreamingMode.Persistent
-	B.part({
-		Name = "FarGround",
-		Size = { 4000, 1, 4000 },
-		Position = { 0, -2.5, 0 },
-		Color = "ConcreteDark",
-		Material = "Concrete",
-		CanCollide = false,
-		CastShadow = false,
-	})
+local function scenery(killY: number)
+	-- A layer under the district from `top` down to `base`, `inset` in from its edges (walk-through: nothing to land on).
+	local function layer(name: string, top: number, base: number, inset: number, color: string, material: string)
+		B.part({
+			Name = name,
+			Size = { DISTRICT[1] - 2 * inset, top - base, DISTRICT[2] - 2 * inset },
+			Position = { 0, (top + base) / 2, CENTER_Z },
+			Color = color,
+			Material = material,
+			CanCollide = false,
+			CastShadow = false,
+		})
+	end
+	layer("Soil", -6, -18, 0.5, "Soil", "Ground")
+	layer("Bedrock", -18, killY - 200, 1.5, "Bedrock", "Rock")
+	for index, mist in
+		{
+			{ 12, 0.82, "#2A2630" },
+			{ 40, 0.7, "#1E1B24" },
+			{ 80, 0.55, "#141218" },
+			{ 130, 0.35, "#0C0B0F" },
+			{ 200, 0, "#050507" },
+		}
+	do
+		B.part({
+			Name = `AbyssMist{index}`,
+			Size = { 2800, 1, 2800 },
+			Position = { 0, killY - mist[1], CENTER_Z },
+			Color = mist[3],
+			Material = "SmoothPlastic",
+			Transparency = mist[2],
+			CanCollide = false,
+			CastShadow = false,
+		})
+	end
 end
 
 -- Builds the arena model at `origin` (world position of the district floor's centre).

@@ -14,9 +14,9 @@ notes).
   the walk-up spin wheel, the store art (`docs/store`), a less luxurious lobby finish (iron and wood, not gold and
   marble), a new, 15% smaller lobby layout with a style-roll coach NPC, and a more detailed lobby (a raised bar
   platform, ceiling lamps and slowly turning fans over the concrete, boarded windows, an air duct, arcade cabinets).
-  Shinjuku (a Tokyo street block on the ground in the style of Jujutsu Shenanigans' map, a high school where the
-  station was, walk-in buildings with breakable walls, trash can props) is now the only arena; the old three are
-  kept, switched off.
+  Shinjuku (a Tokyo street block on the ground in the style of Jujutsu Shenanigans' map, open edges you can fall off,
+  walk-in buildings with breakable walls, trash can props) is now the only arena; the old three are kept, switched
+  off.
 - **Playtested:** Phase 1 ("all clear" 2026-10-16), the animations, 3.1 (from Studio logs). Everything else is built
   but not playtested yet; 3.11 (low-end mobile) not tried on a phone.
 - **Owner-side** ([docs/LAUNCH.md](docs/LAUNCH.md), `lune run tools/launch-check`): create the VIP pass and the

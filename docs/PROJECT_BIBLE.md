@@ -132,7 +132,8 @@ Not used. No pets, eggs, or paid random items.
   just store them somewhere, don't delete them"). Broken Highway, Junkyard Isles and Neon Motel stay built in
   ServerStorage, switched off in `Config.Maps.List` (`Enabled = true` brings one back into the vote). The old three
   are floating platforms over a void (KillY) with a dark abyss or toxic sludge far below; Shinjuku is a ground arena,
-  one walled-in city district (owner, 2026-10-28: "no floating island", then "look like jjk shenanigans").
+  one city district with open edges you can fall off (owner, 2026-10-28: "no floating island", then "look like jjk
+  shenanigans", then "remove tower boundary so player can fall dead").
 - Lobby → (vote) → arena via server-side teleport of characters within the same place. After the round, everyone
   returns to the Lobby. Arenas live in ServerStorage; only the active one is in Workspace.
 - All maps free. Players enter the arena only when the server starts a round, and only if they stand on the lobby's
@@ -145,7 +146,7 @@ Not used. No pets, eggs, or paid random items.
 | Map 1 — Broken Highway | Shattered overpass chunks, abandoned cars, road signs |
 | Map 2 — Junkyard Isles | Stacked car and container islands over toxic sludge |
 | Map 3 — Neon Motel | Sinking motel rooftops, flickering retro neon, pool on one roof |
-| Map 4 — Shinjuku (the only arena in the vote) | A Tokyo street block on the ground, walled in by city blocks: the station, twin towers with a skybridge, a cafe and plaza, shops, a graveyard, a jail, a mall with a bowling alley (in the spirit of Jujutsu Shenanigans' Shinjuku) |
+| Map 4 — Shinjuku (the only arena in the vote) | A Tokyo street block on the ground with open edges over a cliff: twin towers with a skybridge, a cafe and plaza, shops, a graveyard, a jail, a mall with a bowling alley (in the spirit of Jujutsu Shenanigans' Shinjuku) |
 
 Maps 1–3 are switched off (kept built) since 2026-10-28.
 
@@ -280,25 +281,21 @@ machine (HP 80) ×3, lawn chair stack (HP 60) ×3.
 **Shinjuku arena** (day; owner, 2026-10-28: "make another only one arena …", "no floating island", then "want arena
 to look like jjk shenanigans" — the Shinjuku battleground of the Roblox game Jujutsu Shenanigans; this is our own
 Shinjuku-style district in that spirit, with generic shop names): a ground arena, one flat Tokyo street block
-(560×460, it never falls; grown twice: "town structure more bigger and can enter", then "bit bigger structures like
-shop, tower"). The `Day` preset: a blue sky with white clouds.
-- *Edges:* invisible walls along the district's edge keep everyone in. Tall city blocks rise right behind them on every
-  side (glass bands, roof units, a few vertical neon signs), so the city seems to go on.
-- *Knockouts:* nobody falls, so a Classic life ends when its HP runs out.
+(560×340, it never falls; grown twice: "town structure more bigger and can enter", then "bit bigger structures like
+shop, tower"; then shrunk: "shrink the arena by delete entire school area"). The `Day` preset: a blue sky with white
+clouds.
+- *Edges:* open on every side (owner, 2026-10-28: "remove tower boundary so player can fall dead"; until then
+  invisible walls and a ring of tall city blocks closed it in). The ground ends in a cliff: a layer of soil, then rock
+  going down into the old arenas' dark mist, fading to black. Nothing out there to land on.
+- *Knockouts:* a fall off the edge (below KillY, 60 under the district's slab) is a KO, as on the floating arenas;
+  a Classic life also ends when its HP runs out.
 - *Buildings you walk into* (`maps/lib/Rooms`): hollow storeys 7 high (6.5 of headroom), a floor on every storey,
   switchback ramps up a stair well, a roof (some with a hatch to it).
 - *Breakable walls:* their walls and windows break (see §3.3), as do the block walls, the graveyard's wall and stones,
   and the hedges.
-- *North* (a train station until 2026-10-28: the owner, "replace train station with other thing"):
-  - SHINJUKU HIGH: three storeys of classrooms (rows of windows front and back, bands between the floors), a main
-    door under a canopy and two side doors onto the yard, a stair up to the roof, a clock tower on the roof.
-  - Its gym: a tall hall with a wooden court and two hoops, high windows, a ladder onto its roof.
-  - The schoolyard: a red running track round a football pitch with two goals, a flagpole, a bike shed with bicycles,
-    benches, cherry trees, vending machines and trash cans by the school's door, a white guardrail along the main
-    street with the school gate in it.
-  - A shrine in the corner: two red torii over a stone path, stone lanterns, a shrine hall open at the front (an
-    offering box, a bell rope) under a gabled roof, cherry trees.
-- *The main street:* runs across the district, with taxis at the school gate.
+- *The main street* runs across the district along its north edge, with taxis, vending machines and trash cans; a
+  short pavement past it, then the drop. (North of it stood a train station, then a high school with its gym and
+  yard and a shrine, until the owner cut the strip on 2026-10-28.)
 - *The middle, either side of the avenue:*
   - The twin towers, 40 wide: eleven storeys you can climb inside to the roof (+77.6), glass lobbies, a ribbon of
     glass on every face of every upper storey, a glass skybridge between their 9th floors (+56), ladders up the
@@ -320,14 +317,14 @@ shop, tower"). The `Day` preset: a blue sky with white clouds.
 - *The west strip:* the MALL (two floors joined by a ramp, stalls on both, graffiti, a big sign on its roof, a ladder
   to it) and the BOWLING alley (five lanes with pins, a giant pin on its roof).
 - *The east:* two apartment blocks with balconies and water tanks (solid).
-- *Streets:* Japanese style — utility poles with power lines, crosswalks, kerbs, guardrails, street trees, bicycles,
-  vending machines.
+- *Streets:* Japanese style — utility poles with power lines, crosswalks, kerbs, street trees, bicycles, vending
+  machines.
 
-Props: 22 loose spots (some on the tower roofs and floors, the skybridge, the school, the cafe), plus 14 that always
-get their prop: trash cans by the school, the ramen shop, the mart, the shops and the park, and chairs in the ramen
+Props: 18 loose spots (some on the tower roofs and floors, the skybridge, the cafe), plus 14 that always get their
+prop: trash cans on the main street, by the ramen shop, the mart, the shops and the park, and chairs in the ramen
 shop, the cafe, the comedy club and the court (`TypedProps`). Structures: vending machine (HP 80) ×4, wrecked car
-(HP 100) ×2, ice machine (HP 80), road barrier stack (HP 60). 16 spawns (the schoolyard and the streets), 6 explosive
-barrels.
+(HP 100) ×2, ice machine (HP 80), road barrier stack (HP 60). 16 spawns (the main street, the streets, the plaza), 6
+explosive barrels.
 
 **Art & performance:**
 

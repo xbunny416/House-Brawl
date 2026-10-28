@@ -1091,3 +1091,16 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
       guardrail.
     - Extra ladders onto the gym and the arcade roofs.
   - *Size:* the arena is about 4,500 instances (3,500 before), so check the frame rate on a phone.
+- **No school strip; open edges you can fall off (owner, 2026-10-28: "i think just shrink the arena by delete entire
+  scholl area. remove tower boundary so player can fall dead"):**
+  - *Shrunk:* the school, gym, schoolyard and shrine are gone, and the district now ends a 10-stud pavement past the
+    main street: 560 × 460 → 560 × 340 (z −230 to 110). The Center platform's centre moved to z −60; the layout keeps
+    writing pieces and spots from the arena origin (`B.within` and `onDistrict` shift them), so nothing else moved.
+    The yard's spawns went to the main street and the streets along the strips; its vending machines, trash cans and
+    barrel to the main street. `Map.Shinjuku.Sign.School` and `.Gym` went.
+  - *"Tower boundary":* read as both the invisible walls and the ring of tall city blocks behind them (the towers you
+    saw at the edge). Both are gone, with the grey far ground, so every edge is open. A fall below KillY (60 under the
+    slab, as on the floating arenas) is a KO through the usual fall handler. Ground arenas may now have open edges.
+  - *What's past the edge:* the ground ends in a cliff (a soil layer, then a rock face, walk-through) going down into
+    the old arenas' dark mist, fading to black, so the drop reads as deep and there is nothing to land on.
+  - *Size:* about 3,400 instances (4,500 before).
