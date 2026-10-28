@@ -4250,6 +4250,187 @@ local function corners()
 	wallPanel("FloodlightGlow", { 195, 16.7, -150.55 }, { 2.6, 1, 0.1 }, "WarmLight", "Neon")
 end
 
+--[[
+	More dressing (owner, 2026-10-28: "more detail"):
+	- *Buildings:* vertical fins up the towers', the hotel's, the department store's and the karaoke tower's faces (they
+	  cross the floor ledges into a grid); planters on the flats' and the shops' balconies; flower boxes under the
+	  yokocho's upstairs windows; vents and posters on the walls that face the drop.
+	- *Streets:* strings of festival lanterns across the main street from the utility poles to new posts on the far
+	  pavement; four more parked cars; wires from the poles to the buildings; goods racks outside the shops.
+	- *The plaza:* hedges along its west side, four more fountain jets.
+]]
+local function cityDressing()
+	local function fin(at: { number }, face: string, y0: number, y1: number, color: string)
+		local alongX = string.sub(face, 2) == "Z" -- a fin on a Z face stands out along Z
+		local out = if string.sub(face, 1, 1) == "+" then 0.4 else -0.4
+		B.part({
+			Name = "Fin",
+			Size = if alongX then { 0.4, y1 - y0, 0.8 } else { 0.8, y1 - y0, 0.4 },
+			Position = if alongX then { at[1], (y0 + y1) / 2, at[2] + out } else { at[1] + out, (y0 + y1) / 2, at[2] },
+			Color = color,
+			Material = "Metal",
+			CanCollide = false,
+		})
+	end
+	-- The towers: fins on the outer face, the north face, the avenue face (clear of the skybridge) and the south
+	-- face (below its billboard).
+	for _, side in { -1, 1 } do
+		local x0, z0, half = side * TOWER.X, TOWER.Z, TOWER.Size / 2
+		local outer = if side > 0 then "+X" else "-X"
+		local inner = if side > 0 then "-X" else "+X"
+		for _, dz in { -10, -5, 0, 5, 10 } do
+			fin({ x0 + side * half, z0 + dz }, outer, STOREY, TOWER_ROOF, "OffWhite")
+		end
+		for _, dx in { -5, 0, 5 } do
+			fin({ x0 + dx, z0 + half }, "+Z", STOREY, TOWER_ROOF, "OffWhite")
+		end
+		for _, dz in { -12, 12 } do
+			fin({ x0 - side * half, z0 + dz }, inner, STOREY, TOWER_ROOF, "OffWhite")
+		end
+		for _, dx in { -10, 0, 10 } do
+			fin({ x0 + dx, z0 - half }, "-Z", STOREY, 84, "OffWhite")
+		end
+	end
+	for _, dx in { -18, -6, 6, 18 } do
+		for _, face in { "+Z", "-Z" } do
+			local z = HOTEL.At[2] + (if face == "+Z" then 1 else -1) * HOTEL.Size[2] / 2
+			fin({ HOTEL.At[1] + dx, z }, face, STOREY, HOTEL_ROOF, "WoodMid")
+		end
+	end
+	for _, dx in { -32, -16, 0, 16, 32 } do
+		fin({ DEPT.At[1] + dx, DEPT.At[2] + DEPT.Size[2] / 2 }, "+Z", 13, DEPT_ROOF, "ConcreteDark")
+	end
+	local karaokeRoof = KARAOKE.Floors * STOREY + 0.6
+	for _, dx in { -8, 0, 8 } do
+		fin({ KARAOKE.At[1] + dx, KARAOKE.At[2] + KARAOKE.Size[2] / 2 }, "+Z", STOREY, karaokeRoof, "NeonTeal")
+	end
+	-- Planters on the balconies; flower boxes under the yokocho's upstairs windows.
+	local function planterBox(at: { number }, y: number, size: { number })
+		Pieces.block("PlanterBox", at, size, "WoodDark", "Wood", y).CanCollide = false
+		B.part({
+			Name = "PlanterLeaves",
+			Size = { size[1] * 0.9, 0.7, size[3] * 0.9 },
+			Position = { at[1], y + size[2] + 0.3, at[2] },
+			Color = "Leaf",
+			Material = "LeafyGrass",
+			CanCollide = false,
+		})
+	end
+	for _, block in { { 45, 4 }, { -45, 5 } } do
+		for floor = 2, block[2] do
+			planterBox({ 191.2, block[1] }, (floor - 1) * STOREY + 0.15, { 0.8, 0.8, 4 })
+		end
+	end
+	for _, x in { -147, -117, -87, -57, -27 } do
+		for floor = 2, 3 do
+			planterBox({ x - 2, SHOP_Z + 13 + 0.7 }, (floor - 1) * STOREY + 0.15, { 3, 0.8, 0.8 })
+		end
+	end
+	for _, side in { 1, -1 } do
+		local face = YOKOCHO.LaneZ + side * YOKOCHO.Lane / 2
+		for _, bay in { -23.5, -10.5, 2.5, 15.5, 28.5, 41.5 } do
+			planterBox({ YOKOCHO.X + bay, face - side * 0.5 }, STOREY + 2.6, { 4, 0.5, 0.8 })
+		end
+	end
+	-- Vents and posters on the walls that face the drop.
+	for _, z in { 0, 25, 50 } do
+		wallPanel("Vent", { -272.1, 6, z }, { 0.1, 3, 5 }, "MetalDark", "DiamondPlate")
+	end
+	for index, x in { -140, -108, -76 } do
+		wallPanel("Poster", { x, 6, -222.1 }, { 6, 8, 0.1 }, ({ "ShopPink", "ShopTeal", "ShopYellow" })[index])
+	end
+	for _, z in { 45, -45 } do
+		wallPanel("Vent", { 272.1, 6, z }, { 0.1, 3, 5 }, "MetalDark", "DiamondPlate")
+	end
+	-- Festival lanterns across the main street, from the utility poles to posts on the far pavement.
+	for index, x in { -220, -140, 140, 220 } do
+		upright("LanternPost", { x, 104 }, 0, 16, 0.4, "MetalDark", "Metal")
+		B.part({
+			Name = "LanternString",
+			Size = { 0.08, 0.08, 104 - 77.5 },
+			Position = { x, 15.5, (104 + 77.5) / 2 },
+			Color = "Black",
+			CanCollide = false,
+			CastShadow = false,
+		})
+		for lantern = 1, 6 do
+			glow(
+				"FestivalLantern",
+				{ x, 14.7, 77.5 + lantern * (104 - 77.5) / 7 },
+				1.1,
+				if (lantern + index) % 2 == 0 then "Red" else "OffWhite"
+			)
+		end
+	end
+	-- Four more parked cars; wires from the poles to the buildings; goods racks outside the shops.
+	car("ParkedCar", { -250, -83 }, 90, "CityGrey")
+	car("ParkedCar", { 140, -83 }, -90, "Red")
+	car("ParkedCar", { -150, 84 }, 90, "OffWhite")
+	car("ParkedCar", { 200, 84 }, -90, "LaneYellow")
+	for _, wire in
+		{
+			{ { -140, 77.5 }, { -140, 70 } },
+			{ { -100, 77.5 }, { -96, 72 } },
+			{ { -60, 77.5 }, { -66, 72 } },
+			{ { 60, 77.5 }, { 66, 72 } },
+			{ { 100, 77.5 }, { 104, 70 } },
+			{ { 140, 77.5 }, { 140, 70 } },
+		}
+	do
+		local a, b = wire[1], wire[2]
+		local dx, dz = b[1] - a[1], b[2] - a[2]
+		local length = math.sqrt(dx * dx + dz * dz)
+		B.part({
+			Name = "DropWire",
+			Size = { 0.06, 0.06, length },
+			Position = { (a[1] + b[1]) / 2, 17.5, (a[2] + b[2]) / 2 },
+			Rotation = { 0, math.deg(math.atan2(dx, dz)), 0 },
+			Color = "Black",
+			CanCollide = false,
+			CastShadow = false,
+		})
+	end
+	for index, x in { -138, -108, -78, -48, -18 } do
+		Pieces.block("GoodsRack", { x, -102.5 }, { 4, 1.6, 1.4 }, "WoodMid", "Wood")
+		Pieces.block(
+			"Goods",
+			{ x, -102.5 },
+			{ 3.6, 0.6, 1.2 },
+			({ "ShopRed", "ShopYellow", "Lawn", "ShopOrange", "ShopPink" })[index],
+			"SmoothPlastic",
+			1.6
+		).CanCollide =
+			false
+	end
+	-- The plaza: hedges along its west side, more jets round the fountain.
+	for _, run in { { -74, -46 }, { -34, -14 } } do
+		local length = run[2] - run[1]
+		for piece = 1, 2 do
+			B.part({
+				Name = "Hedge",
+				Size = { 1.4, 1.8, length / 2 },
+				Position = { -158, 0.9, run[1] + (piece - 0.5) * length / 2 },
+				Color = "Leaf",
+				Material = "LeafyGrass",
+				Tags = BREAKABLE,
+			})
+		end
+	end
+	for angle = 45, 315, 90 do
+		local c, s = math.cos(math.rad(angle)), math.sin(math.rad(angle))
+		B.part({
+			Name = "FountainJet",
+			Size = { 0.25, 3, 0.25 },
+			Position = { -100 + c * 4.5, 2.6, -35 + s * 4.5 },
+			Rotation = { s * 25, 0, -c * 25 }, -- leaning out from the middle
+			Color = "Glass",
+			Material = "Glass",
+			Transparency = 0.35,
+			CanCollide = false,
+		})
+	end
+end
+
 local function district()
 	streets()
 	streetDetail()
@@ -4288,6 +4469,7 @@ local function district()
 	streetLife()
 	facades()
 	corners()
+	cityDressing()
 end
 
 -- The pieces are written from the arena origin; the platform's own frame is at its centre (z CENTER_Z).

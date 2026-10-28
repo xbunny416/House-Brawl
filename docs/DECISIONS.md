@@ -1217,3 +1217,12 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     - a net, signs, rebar and a floodlight at the site.
   - *Budget:* the road centre lines are longer dashes (6.5 every 13 instead of 4 every 8), kept clear of the
     crosswalks. That saved about 95 parts; the total is 8,731 instances (8,467 before).
+- **More detail again (owner, 2026-10-28: "more detail"):** a `cityDressing` pass of high-impact parts.
+  - *Fins:* vertical fins up the tall faces, one part per fin across every floor, so with the ledges they read as a
+    grid. They are kept clear of the towers' glass lifts, the skybridge and the billboards.
+  - *Streets:* festival lantern strings across the main street (from the utility poles to new posts), four parked
+    cars, drop wires to the buildings, goods racks outside the shops.
+  - *Smaller touches:* balcony planters, the yokocho's flower boxes, vents and posters on the walls facing the drop,
+    plaza hedges (they break), four leaning fountain jets.
+  - *Size:* 8,943 instances (8,731 before). The arena is near 9,000, so the next passes should swap rather than add,
+    unless a phone test shows room.
