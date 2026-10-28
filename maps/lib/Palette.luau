@@ -62,5 +62,7 @@ return {
 	CityTan = "#C9B595",
 	CityBlue = "#7D94AB",
 	CityGrey = "#A3A6AB",
-	Slate = "#5C5650", -- the rock under the street blocks
+	MountainGreen = "#4F7F3B", -- the grass slopes of the mountains round the valley
+	MountainRock = "#7E776C", -- their rock
+	Snow = "#F2F4F7", -- their snowy tops
 }

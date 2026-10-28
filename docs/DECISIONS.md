@@ -998,3 +998,31 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     the traffic lights' arms are walk-through. Edge decor stays low.
   - *Signs:* five new GameStrings keys under `Map.SmallCity.Sign.*`, plus `Map.SmallCity.Name`.
   - *Music:* `Config.Audio.Music.Arenas.SmallCity` (0 = silent until the owner picks a track).
+- **Small City on the ground (owner, 2026-10-28: "fix new 1 arena i forget to tell that no floating island just roblox
+  default city with mountain around, you can find ref like this mostly internet"):**
+  - *References:* only search results could be read here, not the pages themselves. They describe:
+    - the old Roblox "City" template: streets and four urban buildings, later replaced by "Modern City";
+    - "Suburban": streets, houses, garages, a gas station with a store, a school;
+    - the "Starting Place" and "Castle" templates: surrounded by hills and mountains.
+    The new Small City mixes those: a street grid with four office towers in the middle, a gas station and houses
+    round them, and a valley rim of mountains.
+  - *One ground platform:* a 400 × 336 green valley, the Center, which never falls (`Layout.Ground = true`). There
+    are no floating blocks, gaps or bridges.
+  - *Edges:* invisible 260-high walls along the valley's edge keep fighters in, and the mountains (solid wedges: grass
+    slopes, a grey rock core, snow caps on the tall ones) rise right behind them. A bigger, hazier ring stands farther
+    out as backdrop. The mountains are Persistent, so they never stream out.
+  - *The avenue:* it runs into a tunnel at both ends: a concrete portal in a rock face, behind the wall.
+  - *Knockouts:* nobody can fall, so in Classic a life ends when its 100 HP runs out (the KO cause "Health" already
+    existed). KillY stays 60 under the ground's bottom, for anyone who slips through. Crumbling does nothing here,
+    since no platform can fall (CrumbleRules picks none).
+  - *Same counts as before:* 16 spawns (in the streets), 24 loose prop spots, 8 breakables, 6 explosive barrels.
+    Arena.Contents gained an `Explosives` list, since six barrels now share one platform.
+  - *Higher places for fights:* the diner roof (+9.5, fire escape), the construction site's steel frame (+6 and +12,
+    stairs), the playground tower (+5), the bus (+5.5), bleachers and cars.
+  - *Specs:*
+    - The floating-arena rules (13 platforms in four layers, the centre's deck, a barrel per side and low platform) now
+      run on the floating arenas only.
+    - A new check makes sure Small City is one never-falling platform, walled in on all four sides, with solid,
+      Persistent mountains and every spot inside the walls.
+    - Everything else (spot counts and spacing, nothing solid on a spot, structure types, KillY) runs on every arena.
+  - *Also:* the "WELCOME TO SMALL CITY" billboard string went with the rooftops; a DINER sign came in.

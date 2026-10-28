@@ -42,6 +42,7 @@ export type Contents = {
 	Spawns: { Spot }?,
 	Props: { Spot }?,
 	Explosive: Spot?,
+	Explosives: { Spot }?, -- several barrel spots on one platform (a ground arena's single one)
 	Structures: { { Type: string, At: Spot, Yaw: number } }?,
 }
 
@@ -282,6 +283,9 @@ local function buildPlatform(platform: Platform, contents: Contents, decorate: (
 			end
 			if contents.Explosive then
 				B.marker("ExplosiveSpot", "ExplosiveSpot", { contents.Explosive[1], 0, contents.Explosive[2] })
+			end
+			for index, spot in contents.Explosives or {} do
+				B.marker("ExplosiveSpot", `ExplosiveSpot{index}`, { spot[1], 0, spot[2] })
 			end
 			for index, structure in contents.Structures or {} do
 				B.marker(
