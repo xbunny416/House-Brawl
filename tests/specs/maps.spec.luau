@@ -482,6 +482,22 @@ return {
 			end
 		end
 		expect.truthy(buildings >= 30, `{buildings} buildings to walk into`)
+		-- "Structure and building want to match avatar size" (owner, 2026-10-28): an avatar stands about 5.3 studs, so
+		-- every building's ground storey has at least 8.5 of headroom (the first slab above it 9+ up) and every stair
+		-- lane is at least 3.5 wide.
+		for _, building in district:GetChildren() do
+			if building:FindFirstChild("GroundFloor") then
+				local lowest = math.huge
+				for _, part in building:GetChildren() do
+					if part:IsA("BasePart") and (part.Name == "Floor" or part.Name == "Roof") then
+						lowest = math.min(lowest, boxOf(part).max[2])
+					elseif part:IsA("BasePart") and part.Name == "Stair" then
+						expect.truthy(part.Size.X >= 3.5 - 0.01, `{building.Name}'s stair is {part.Size.X} wide`)
+					end
+				end
+				expect.truthy(lowest >= 9 - 0.01, `{building.Name}'s ground storey is {lowest} high`)
+			end
+		end
 		-- "I don't want too much flat area except the fountain area or the road": off the streets (and their
 		-- pavements), the plaza and the edge's margin, at most a third of the ground is open (samples every 5; built
 		-- up = under a building's floor, a solid part 2+ tall, or a deck overhead).

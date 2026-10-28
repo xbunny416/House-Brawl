@@ -67,6 +67,18 @@ local function ball(diameter: number, at: { number }, extra: { [string]: any }?)
 	return shape
 end
 
+-- The same shapes made `factor` times bigger about the item's centre (sizes and offsets; turns stay).
+local function scaled(shapes: { Shape }, factor: number): { Shape }
+	local out: { Shape } = {}
+	for _, shape in shapes do
+		local copy: { [string]: any } = table.clone(shape :: any)
+		copy.Size = { shape.Size[1] * factor, shape.Size[2] * factor, shape.Size[3] * factor }
+		copy.At = { shape.At[1] * factor, shape.At[2] * factor, shape.At[3] * factor }
+		table.insert(out, copy :: any)
+	end
+	return out
+end
+
 -- Appends every shape of `more` to `list`.
 local function add(list: { Shape }, more: { Shape }): { Shape }
 	for _, shape in more do
@@ -212,6 +224,175 @@ ItemShapes.Props = {
 		block({ 0.5, 0.08, 0.14 }, { 0, 1.36, 0 }, { Color = STEEL, Material = "Metal" }),
 		block({ 0.7, 0.5, 0.02 }, { 0, 0, -0.91 }, { Color = WHITE, Material = "SmoothPlastic" }),
 	},
+	-- A bar stool: a round red seat on a chrome post, a foot ring, a heavy dark base.
+	Stool = {
+		upright(1.36, 0.3, { 0, 0.95, 0 }),
+		upright(1.2, 0.06, { 0, 1.07, 0 }, { Tint = 1.15 }),
+		upright(0.24, 1.6, { 0, 0, 0 }, { Color = CHROME, Material = "Metal" }),
+		upright(0.9, 0.08, { 0, -0.45, 0 }, { Color = CHROME, Material = "Metal" }),
+		upright(1.1, 0.14, { 0, -1.03, 0 }, { Color = DARK, Material = "Metal" }),
+	},
+	-- A red paper lantern: a glowing ball with two ribs, black caps, a hook and a gold tassel.
+	PaperLantern = {
+		ball(1.36, { 0, 0, 0 }, { Material = "Neon" }),
+		upright(1.25, 0.06, { 0, 0.3, 0 }, { Tint = 0.6 }),
+		upright(1.25, 0.06, { 0, -0.3, 0 }, { Tint = 0.6 }),
+		upright(0.8, 0.14, { 0, 0.72, 0 }, { Color = DARK }),
+		upright(0.8, 0.14, { 0, -0.72, 0 }, { Color = DARK }),
+		upright(0.12, 0.18, { 0, 0.88, 0 }, { Color = DARK, Material = "Metal" }),
+		upright(0.14, 0.2, { 0, -0.89, 0 }, { Color = AMBER }),
+	},
+	-- A potted plant: a concrete pot with a rim and soil, a stem, two balls of leaves.
+	PottedPlant = {
+		upright(1.3, 1.2, { 0, -0.9, 0 }),
+		upright(1.4, 0.12, { 0, -0.3, 0 }, { Tint = 1.2 }),
+		upright(1.2, 0.04, { 0, -0.25, 0 }, { Color = "#3B2A1E", Material = "Ground" }),
+		upright(0.14, 0.5, { 0, -0.05, 0 }, { Color = "#4A3324", Material = "Wood" }),
+		ball(1.6, { 0, 0.6, 0 }, { Color = "#4E8A3E", Material = "LeafyGrass" }),
+		ball(1.0, { 0.15, 0.95, -0.1 }, { Color = "#5E9C48", Material = "LeafyGrass" }),
+	},
+	-- A swivel office chair: a padded seat and back, armrests, a chrome gas post, a five-wheel star base.
+	OfficeChair = {
+		block({ 1.7, 0.3, 1.7 }, { 0, -0.1, -0.05 }),
+		block({ 1.6, 1.5, 0.2 }, { 0, 0.9, 0.8 }),
+		block({ 0.15, 0.8, 0.15 }, { 0, 0.05, 0.8 }, { Color = DARK, Material = "Metal" }),
+		block({ 0.15, 0.1, 1 }, { 0.85, 0.45, -0.05 }, { Color = DARK }),
+		block({ 0.15, 0.1, 1 }, { -0.85, 0.45, -0.05 }, { Color = DARK }),
+		block({ 0.1, 0.5, 0.1 }, { 0.85, 0.2, 0.1 }, { Color = DARK }),
+		block({ 0.1, 0.5, 0.1 }, { -0.85, 0.2, 0.1 }, { Color = DARK }),
+		upright(0.25, 0.9, { 0, -0.7, 0 }, { Color = CHROME, Material = "Metal" }),
+		block({ 1.8, 0.12, 0.2 }, { 0, -1.25, 0 }, { Color = DARK, Material = "Metal" }),
+		block({ 0.2, 0.12, 1.8 }, { 0, -1.25, 0 }, { Color = DARK, Material = "Metal" }),
+		ball(0.3, { 0.85, -1.5, 0 }, { Color = RUBBER }),
+		ball(0.3, { -0.85, -1.5, 0 }, { Color = RUBBER }),
+		ball(0.3, { 0, -1.5, 0.85 }, { Color = RUBBER }),
+		ball(0.3, { 0, -1.5, -0.85 }, { Color = RUBBER }),
+	},
+	-- A flat computer screen: a thin frame and dark glass, a bulge at the back, a neck, a foot, a green power light.
+	Monitor = {
+		block({ 2.2, 1.3, 0.15 }, { 0, 0.25, -0.2 }),
+		block({ 2, 1.1, 0.04 }, { 0, 0.27, -0.29 }, { Color = "#1E3A4E", Reflectance = 0.2 }),
+		block({ 1.2, 0.8, 0.2 }, { 0, 0.25, -0.02 }, { Tint = 0.8 }),
+		block({ 0.2, 0.5, 0.12 }, { 0, -0.55, 0 }, { Color = DARK }),
+		block({ 0.9, 0.08, 0.6 }, { 0, -0.86, 0 }, { Color = DARK }),
+		block({ 0.08, 0.04, 0.02 }, { 0.9, -0.33, -0.29 }, { Color = "#4FD07A", Material = "Neon" }),
+	},
+	-- A red plastic shopping basket: a floor and four sides, two handles, some shopping inside.
+	ShoppingBasket = {
+		block({ 1.8, 0.1, 1.2 }, { 0, -0.6, 0 }),
+		block({ 1.8, 0.9, 0.08 }, { 0, -0.15, 0.6 }),
+		block({ 1.8, 0.9, 0.08 }, { 0, -0.15, -0.6 }),
+		block({ 0.08, 0.9, 1.2 }, { 0.9, -0.15, 0 }),
+		block({ 0.08, 0.9, 1.2 }, { -0.9, -0.15, 0 }),
+		block({ 0.1, 0.1, 1.2 }, { 0.4, 0.62, 0 }, { Color = DARK }),
+		block({ 0.1, 0.1, 1.2 }, { -0.4, 0.62, 0 }, { Color = DARK }),
+		block({ 0.5, 0.5, 0.4 }, { -0.4, -0.3, 0.1 }, { Color = AMBER }),
+		upright(0.35, 0.6, { 0.3, -0.25, -0.2 }, { Color = "#3FA7B5" }),
+	},
+	-- A bowling pin: a white body and belly, a slim neck with two red stripes, a round head, a flat foot.
+	BowlingPin = {
+		upright(0.76, 1.1, { 0, -0.55, 0 }),
+		ball(0.8, { 0, -0.5, 0 }),
+		upright(0.36, 0.7, { 0, 0.35, 0 }),
+		upright(0.4, 0.08, { 0, 0.25, 0 }, { Color = RED_LIGHT }),
+		upright(0.38, 0.08, { 0, 0.4, 0 }, { Color = RED_LIGHT }),
+		ball(0.5, { 0, 0.88, 0 }),
+		upright(0.5, 0.1, { 0, -1.15, 0 }, { Tint = 0.9 }),
+	},
+	-- A fire extinguisher: a red cylinder with a domed top, a valve and handle, a black hose, a white label.
+	FireExtinguisher = {
+		upright(0.8, 1.7, { 0, -0.25, 0 }),
+		ball(0.8, { 0, 0.6, 0 }),
+		upright(0.25, 0.25, { 0, 0.95, 0 }, { Color = DARK }),
+		block({ 0.5, 0.08, 0.15 }, { 0.05, 1.05, 0 }, { Color = DARK }),
+		block({ 0.1, 0.9, 0.1 }, { 0.38, 0.2, 0 }, { Color = DARK, Material = "Fabric" }),
+		block({ 0.4, 0.6, 0.02 }, { 0, -0.3, -0.41 }, { Color = WHITE, Material = "SmoothPlastic" }),
+	},
+	-- A stack of five books, a little askew, page edges showing.
+	BookStack = {
+		block({ 1.5, 0.26, 1.1 }, { 0, -0.57, 0 }),
+		block({ 1.4, 0.24, 1 }, { 0.05, -0.32, 0.02 }, { Color = "#2E4A7A", Turn = { 0, 6, 0 } }),
+		block({ 1.5, 0.28, 1.1 }, { -0.03, -0.06, -0.02 }, { Color = "#3C7A4A" }),
+		block({ 1.3, 0.24, 1 }, { 0.04, 0.2, 0 }, { Color = "#C9A227", Turn = { 0, -8, 0 } }),
+		block({ 1.4, 0.26, 1.05 }, { 0, 0.46, 0.01 }, { Color = "#7A2E5A" }),
+		block({ 1.42, 0.2, 0.02 }, { 0, -0.57, -0.56 }, { Color = WHITE }),
+	},
+	-- A red metal toolbox: a box and lid, a handle on two posts, chrome latches.
+	Toolbox = {
+		block({ 1.96, 0.9, 0.96 }, { 0, -0.2, 0 }),
+		block({ 2, 0.2, 1 }, { 0, 0.32, 0 }, { Tint = 0.85 }),
+		block({ 0.9, 0.1, 0.15 }, { 0, 0.6, 0 }, { Color = DARK }),
+		block({ 0.1, 0.2, 0.15 }, { 0.4, 0.5, 0 }, { Color = DARK }),
+		block({ 0.1, 0.2, 0.15 }, { -0.4, 0.5, 0 }, { Color = DARK }),
+		block({ 0.2, 0.2, 0.04 }, { 0.5, 0.2, -0.48 }, { Color = CHROME }),
+		block({ 0.2, 0.2, 0.04 }, { -0.5, 0.2, -0.48 }, { Color = CHROME }),
+	},
+	-- A loudspeaker: a black cabinet, a grille, a woofer and a tweeter, a handle, steel corners.
+	Speaker = {
+		block({ 2, 3.2, 1.6 }, { 0, 0, 0.1 }),
+		block({ 1.8, 3, 0.06 }, { 0, 0, -0.73 }, { Color = "#2E2E33", Material = "Fabric" }),
+		lying(1.3, 0.12, { 0, -0.6, -0.8 }, { Facing = true, Color = "#3A3A3A" }),
+		lying(0.5, 0.14, { 0, -0.6, -0.82 }, { Facing = true, Color = DARK }),
+		lying(0.5, 0.12, { 0, 0.8, -0.8 }, { Facing = true, Color = "#3A3A3A" }),
+		block({ 0.8, 0.1, 0.2 }, { 0, 1.55, 0.1 }, { Color = STEEL, Material = "Metal" }),
+		block({ 0.15, 0.15, 1.6 }, { 0.92, 1.53, 0.1 }, { Color = STEEL, Material = "Metal" }),
+		block({ 0.15, 0.15, 1.6 }, { -0.92, 1.53, 0.1 }, { Color = STEEL, Material = "Metal" }),
+		block({ 0.15, 0.15, 1.6 }, { 0.92, -1.53, 0.1 }, { Color = STEEL, Material = "Metal" }),
+		block({ 0.15, 0.15, 1.6 }, { -0.92, -1.53, 0.1 }, { Color = STEEL, Material = "Metal" }),
+	},
+	-- A hard suitcase: a ribbed shell, a handle on two posts, two wheels, a luggage tag.
+	Suitcase = {
+		block({ 2.1, 2.4, 0.9 }, { 0, -0.1, 0 }),
+		block({ 2.14, 0.08, 0.94 }, { 0, 0.5, 0 }, { Tint = 0.8 }),
+		block({ 2.14, 0.08, 0.94 }, { 0, -0.7, 0 }, { Tint = 0.8 }),
+		block({ 0.8, 0.12, 0.2 }, { 0, 1.3, 0 }, { Color = DARK }),
+		block({ 0.1, 0.2, 0.15 }, { 0.35, 1.18, 0 }, { Color = DARK }),
+		block({ 0.1, 0.2, 0.15 }, { -0.35, 1.18, 0 }, { Color = DARK }),
+		ball(0.3, { 0.8, -1.25, 0.3 }, { Color = RUBBER }),
+		ball(0.3, { -0.8, -1.25, 0.3 }, { Color = RUBBER }),
+		block({ 0.3, 0.4, 0.04 }, { 0.6, 0.6, -0.47 }, { Color = AMBER }),
+	},
+	-- A bowling ball: glossy, three finger holes, a swirl band.
+	BowlingBall = {
+		ball(1.58, { 0, 0, 0 }, { Reflectance = 0.2 }),
+		lying(0.22, 0.1, { 0.2, 0.55, -0.53 }, { Facing = true, Color = DARK }),
+		lying(0.22, 0.1, { -0.2, 0.55, -0.53 }, { Facing = true, Color = DARK }),
+		lying(0.26, 0.1, { 0, 0.1, -0.74 }, { Facing = true, Color = DARK }),
+		upright(1.6, 0.06, { 0, -0.2, 0 }, { Tint = 1.3 }),
+	},
+	-- A concrete cinderblock: two dark holes through it, a chipped corner.
+	Cinderblock = {
+		block({ 2.36, 1.16, 1.16 }, { 0, 0, 0 }),
+		block({ 0.8, 0.04, 0.6 }, { -0.55, 0.58, 0 }, { Color = "#4A4640" }),
+		block({ 0.8, 0.04, 0.6 }, { 0.55, 0.58, 0 }, { Color = "#4A4640" }),
+		block({ 0.8, 0.04, 0.6 }, { -0.55, -0.58, 0 }, { Color = "#4A4640" }),
+		block({ 0.8, 0.04, 0.6 }, { 0.55, -0.58, 0 }, { Color = "#4A4640" }),
+		block({ 0.3, 0.3, 0.1 }, { 1, 0.3, -0.55 }, { Tint = 0.8 }),
+	},
+	-- A red jerry can: a ribbed body, a handle on two posts, a yellow spout with a black cap.
+	GasCan = {
+		block({ 1.6, 1.4, 0.9 }, { 0, -0.2, 0 }),
+		block({ 1.62, 0.08, 0.92 }, { 0, -0.5, 0 }, { Tint = 0.8 }),
+		block({ 1.62, 0.08, 0.92 }, { 0, 0.1, 0 }, { Tint = 0.8 }),
+		block({ 0.9, 0.12, 0.3 }, { -0.2, 0.74, 0 }, { Tint = 0.9 }),
+		block({ 0.12, 0.3, 0.3 }, { -0.6, 0.6, 0 }, { Tint = 0.9 }),
+		block({ 0.12, 0.3, 0.3 }, { 0.2, 0.6, 0 }, { Tint = 0.9 }),
+		upright(0.3, 0.4, { 0.6, 0.7, 0 }, { Color = AMBER }),
+		upright(0.34, 0.1, { 0.6, 0.85, 0 }, { Color = DARK }),
+	},
+	-- A shop mannequin on a stand: legs, a torso in a red top, arms, a neck and head, a chrome pole, a round foot.
+	Mannequin = {
+		block({ 1.4, 1.8, 0.7 }, { 0, 0.7, 0 }),
+		block({ 1.44, 1, 0.74 }, { 0, 1.05, 0 }, { Color = "#C8463C", Material = "Fabric" }),
+		block({ 0.3, 1.6, 0.4 }, { 0.64, 0.6, 0 }),
+		block({ 0.3, 1.6, 0.4 }, { -0.64, 0.6, 0 }),
+		upright(0.3, 0.3, { 0, 1.65, 0 }),
+		ball(0.8, { 0, 2.1, 0 }),
+		block({ 0.5, 2, 0.5 }, { 0.33, -1.2, 0 }),
+		block({ 0.5, 2, 0.5 }, { -0.33, -1.2, 0 }),
+		upright(0.2, 0.4, { 0, -2.4, 0 }, { Color = CHROME, Material = "Metal" }),
+		upright(1, 0.1, { 0, -2.65, 0 }, { Color = DARK }),
+	},
 	-- The explosive drum: red, with a yellow hazard band and black warning diamonds; it glows when lit.
 	ExplosiveBarrel = add(drum(true), {
 		upright(2.1, 0.5, { 0, 0, 0 }, { Color = "#E8C547" }),
@@ -271,53 +452,57 @@ ItemShapes.Props = {
 ItemShapes.Structures = {
 	-- A rusted wreck: body, hood and trunk, a caved-in roof on pillars, cracked windows, three wheels and a bare
 	-- drum, chrome bumpers, lights and grille, rust patches.
-	WreckedCar = (function(): { Shape }
-		local glass = { Color = GLASS, Material = "Glass", Transparency = 0.55 }
-		local shapes = {
-			block({ 4.4, 1.4, 8.8 }, { 0, -0.6, 0 }),
-			block({ 4.2, 0.3, 2.6 }, { 0, 0.2, -2.9 }, { Turn = { -4, 0, 0 }, Tint = 1.08 }),
-			block({ 4.2, 0.3, 1.8 }, { 0, 0.2, 3.3 }, { Tint = 1.08 }),
-			block({ 3.8, 0.25, 3.4 }, { 0, 1.62, 0.4 }, { Turn = { 0, 0, 4 }, Tint = 1.08 }),
-			-- The windscreen and rear window lean back over the cabin.
-			block(
-				{ 3.5, 1.3, 0.08 },
-				{ 0, 0.95, -1.75 },
-				{ Turn = { -32, 0, 0 }, Color = GLASS, Material = "Glass", Transparency = 0.55 }
-			),
-			block(
-				{ 3.5, 1.2, 0.08 },
-				{ 0, 0.95, 2.45 },
-				{ Turn = { 30, 0, 0 }, Color = GLASS, Material = "Glass", Transparency = 0.55 }
-			),
-			block({ 0.06, 0.95, 3.0 }, { 1.86, 0.98, 0.4 }, glass),
-			block({ 0.06, 0.95, 3.0 }, { -1.86, 0.98, 0.4 }, glass),
-			block({ 4.5, 0.4, 0.3 }, { 0, -0.9, -4.42 }, { Color = CHROME, Material = "Metal" }),
-			block({ 4.5, 0.4, 0.3 }, { 0, -0.9, 4.42 }, { Color = CHROME, Material = "Metal" }),
-			block({ 0.7, 0.35, 0.1 }, { 1.4, -0.25, -4.42 }, { Color = "#F5E6B8", Material = "Glass" }),
-			block({ 0.7, 0.35, 0.1 }, { -1.4, -0.25, -4.42 }, { Color = "#F5E6B8", Material = "Glass" }),
-			block({ 0.7, 0.3, 0.1 }, { 1.5, -0.25, 4.42 }, { Color = RED_LIGHT, Material = "Glass" }),
-			block({ 0.7, 0.3, 0.1 }, { -1.5, -0.25, 4.42 }, { Color = RED_LIGHT, Material = "Glass" }),
-			block({ 1.8, 0.45, 0.1 }, { 0, -0.35, -4.43 }, { Color = DARK }),
-			block({ 0.04, 0.6, 1.4 }, { 2.21, -0.7, 1.5 }, { Color = "#5A2E1E", Material = "Metal" }),
-			block({ 0.04, 0.5, 1.1 }, { -2.21, -0.5, -1.8 }, { Color = "#5A2E1E", Material = "Metal" }),
-		}
-		-- Pillars hold up the roof.
-		for _, x in { -1.84, 1.84 } do
-			table.insert(shapes, block({ 0.2, 1.4, 0.2 }, { x, 0.95, -1.75 }, { Turn = { -32, 0, 0 }, Tint = 0.9 }))
-			table.insert(shapes, block({ 0.2, 1.3, 0.2 }, { x, 0.95, 0.4 }, { Tint = 0.9 }))
-			table.insert(shapes, block({ 0.2, 1.3, 0.2 }, { x, 0.95, 2.45 }, { Turn = { 30, 0, 0 }, Tint = 0.9 }))
-		end
-		-- Wheels (one gone: a bare brake drum), each with a hubcap.
-		for _, wheel in { { 2.0, -2.8 }, { -2.0, -2.8 }, { 2.0, 2.8 } } do
-			table.insert(shapes, lying(1.7, 0.6, { wheel[1], -0.95, wheel[2] }, { Color = RUBBER }))
-			table.insert(
-				shapes,
-				lying(0.8, 0.62, { wheel[1], -0.95, wheel[2] }, { Color = CHROME, Material = "Metal" })
-			)
-		end
-		table.insert(shapes, lying(0.9, 0.4, { -1.95, -1.1, 2.8 }, { Color = "#5A5550", Material = "Metal" }))
-		return shapes
-	end)(),
+	-- (Life-size beside an avatar since 2026-10-28: the owner, "match avatar size". Drawn at its old size, scaled up.)
+	WreckedCar = scaled(
+		(function(): { Shape }
+			local glass = { Color = GLASS, Material = "Glass", Transparency = 0.55 }
+			local shapes = {
+				block({ 4.4, 1.4, 8.8 }, { 0, -0.6, 0 }),
+				block({ 4.2, 0.3, 2.6 }, { 0, 0.2, -2.9 }, { Turn = { -4, 0, 0 }, Tint = 1.08 }),
+				block({ 4.2, 0.3, 1.8 }, { 0, 0.2, 3.3 }, { Tint = 1.08 }),
+				block({ 3.8, 0.25, 3.4 }, { 0, 1.62, 0.4 }, { Turn = { 0, 0, 4 }, Tint = 1.08 }),
+				-- The windscreen and rear window lean back over the cabin.
+				block(
+					{ 3.5, 1.3, 0.08 },
+					{ 0, 0.95, -1.75 },
+					{ Turn = { -32, 0, 0 }, Color = GLASS, Material = "Glass", Transparency = 0.55 }
+				),
+				block(
+					{ 3.5, 1.2, 0.08 },
+					{ 0, 0.95, 2.45 },
+					{ Turn = { 30, 0, 0 }, Color = GLASS, Material = "Glass", Transparency = 0.55 }
+				),
+				block({ 0.06, 0.95, 3.0 }, { 1.86, 0.98, 0.4 }, glass),
+				block({ 0.06, 0.95, 3.0 }, { -1.86, 0.98, 0.4 }, glass),
+				block({ 4.5, 0.4, 0.3 }, { 0, -0.9, -4.42 }, { Color = CHROME, Material = "Metal" }),
+				block({ 4.5, 0.4, 0.3 }, { 0, -0.9, 4.42 }, { Color = CHROME, Material = "Metal" }),
+				block({ 0.7, 0.35, 0.1 }, { 1.4, -0.25, -4.42 }, { Color = "#F5E6B8", Material = "Glass" }),
+				block({ 0.7, 0.35, 0.1 }, { -1.4, -0.25, -4.42 }, { Color = "#F5E6B8", Material = "Glass" }),
+				block({ 0.7, 0.3, 0.1 }, { 1.5, -0.25, 4.42 }, { Color = RED_LIGHT, Material = "Glass" }),
+				block({ 0.7, 0.3, 0.1 }, { -1.5, -0.25, 4.42 }, { Color = RED_LIGHT, Material = "Glass" }),
+				block({ 1.8, 0.45, 0.1 }, { 0, -0.35, -4.43 }, { Color = DARK }),
+				block({ 0.04, 0.6, 1.4 }, { 2.21, -0.7, 1.5 }, { Color = "#5A2E1E", Material = "Metal" }),
+				block({ 0.04, 0.5, 1.1 }, { -2.21, -0.5, -1.8 }, { Color = "#5A2E1E", Material = "Metal" }),
+			}
+			-- Pillars hold up the roof.
+			for _, x in { -1.84, 1.84 } do
+				table.insert(shapes, block({ 0.2, 1.4, 0.2 }, { x, 0.95, -1.75 }, { Turn = { -32, 0, 0 }, Tint = 0.9 }))
+				table.insert(shapes, block({ 0.2, 1.3, 0.2 }, { x, 0.95, 0.4 }, { Tint = 0.9 }))
+				table.insert(shapes, block({ 0.2, 1.3, 0.2 }, { x, 0.95, 2.45 }, { Turn = { 30, 0, 0 }, Tint = 0.9 }))
+			end
+			-- Wheels (one gone: a bare brake drum), each with a hubcap.
+			for _, wheel in { { 2.0, -2.8 }, { -2.0, -2.8 }, { 2.0, 2.8 } } do
+				table.insert(shapes, lying(1.7, 0.6, { wheel[1], -0.95, wheel[2] }, { Color = RUBBER }))
+				table.insert(
+					shapes,
+					lying(0.8, 0.62, { wheel[1], -0.95, wheel[2] }, { Color = CHROME, Material = "Metal" })
+				)
+			end
+			table.insert(shapes, lying(0.9, 0.4, { -1.95, -1.1, 2.8 }, { Color = "#5A5550", Material = "Metal" }))
+			return shapes
+		end)(),
+		1.35
+	),
 	-- A drinks machine: red cabinet, lit sign, glass front with shelves of cans, the control panel with buttons and
 	-- coin slot, the pickup bin and a kick plate.
 	VendingMachine = (function(): { Shape }

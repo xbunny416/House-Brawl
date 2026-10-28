@@ -293,9 +293,13 @@ road"). The `Day` preset: a blue sky with white clouds.
 - *Built up:* only the streets (with their pavements) and the fountain plaza are open ground; every block is built
   up at many heights (a spec keeps open flat ground under a third of the rest), joined by bridges, decks, ladders and
   planks.
-- *Buildings you walk into* (`maps/lib/Rooms`): hollow storeys 7 high (6.5 of headroom), a floor on every storey,
-  switchback ramps up a stair well, a roof (most with a hatch to it). Every one is furnished inside, upstairs too
-  (desks, beds, sofas, counters, shelves, racks, booths, cells; inside walls are partitions that break).
+- *Sized to the avatar* (owner, 2026-10-28: "structure and building want to match avatar size cus some still small";
+  an avatar stands about 5.3 studs): storeys 10 high (9.5 of headroom; until then 7), doors 8 high and at least 5
+  wide, stair lanes at least 3.5 wide, inside doorways 4 wide; cars about 12 long and 5 high (the wrecked-car
+  structure as big), trees about 18 tall, utility poles 20. A spec checks the headroom and the stair widths.
+- *Buildings you walk into* (`maps/lib/Rooms`): hollow storeys, a floor on every storey, switchback ramps up a stair
+  well, a roof (most with a hatch to it). Every one is furnished inside, upstairs too (desks, beds, sofas, counters,
+  shelves, racks, booths, cells; inside walls are partitions that break).
 - *Breakable walls:* their walls and windows break (see §3.3), as do the partitions, the block walls, the graveyard's
   wall and stones, the hedges and the building site's fence.
 - *Things that move* (`Arena.mover`): glass lifts up the twin towers' north faces (street to roof), the building site's
@@ -306,12 +310,12 @@ road"). The `Day` preset: a blue sky with white clouds.
   yard and a shrine, until the owner cut the strip on 2026-10-28.)
 - *The middle, either side of the avenue:*
   - The twin towers, 40 wide: eleven storeys of offices (desks, water coolers; a lobby with a reception desk and
-    sofas) you can climb inside to the roof (+77.6), glass lobbies, a ribbon of glass on every face of every upper
-    storey, a glass skybridge between their 9th floors (+56), ladders and glass lifts up the outside to the roofs,
+    sofas) you can climb inside to the roof (+110.6), glass lobbies, a ribbon of glass on every face of every upper
+    storey, a glass skybridge between their 9th floors (+80), ladders and glass lifts up the outside to the roofs,
     CURSED COLA and TOKYO NIGHTS billboards, AC units and a water tank on each roof.
   - West: the two-storey RAMEN shop facing the main street (a counter with stools, a kitchen, tables; an izakaya
     upstairs with low tables and a paper screen), the PACHINKO parlor (rows of machines on two floors, a spinning
-    rooftop sign), the YOKOCHO (two two-storey rows of eight tiny bars on a lantern-lit lane, rooms joined upstairs, an
+    rooftop sign), the YOKOCHO (two two-storey rows of six small bars on a lantern-lit lane, rooms joined upstairs, an
     arch sign, a plank to the pachinko roof), and the plaza (a fountain) with the two-storey CAFE in its corner.
   - East: the four-storey KARAOKE tower (booths off a corridor on every floor), the 24H MART, the multi-storey car park
     (four open decks and a roof deck, parked cars, a stair, a PARKING sign, a gangway to the karaoke roof), the gas
@@ -332,22 +336,36 @@ road"). The `Day` preset: a blue sky with white clouds.
     (a glass lobby, rooms off a corridor on every floor, a helipad on the roof) and the two-storey mansion (a sitting
     room, a kitchen, bedrooms) with a garage and a car.
   - The building site in the corner (a pocket park until 2026-10-28): a hoarding fence and an UNDER CONSTRUCTION
-    board, a steel frame (decks at 8, 16 with a gap, 24; bare beams at 32) with ladders, scaffolding planks, the hoist,
+    board, a steel frame (decks at 10, 20 with a gap, 30; bare beams at 40) with ladders, scaffolding planks, the hoist,
     the tower crane (a climbable mast), a two-storey site office, a stack of containers, a dirt mound with an
     excavator, pipes, sand, a cement mixer, portable toilets.
 - *The west strip:* the MALL (three floors joined by a wide stair to the roof, stalls on every floor, benches, a food
   court on top, graffiti, a big sign on its roof, a ladder to it) and the BOWLING alley (five lanes, ball returns,
   score screens, a raised seating platform, a shoe counter, a giant pin on its roof).
 - *The east:* two walk-in apartment blocks (four and five storeys: flats with beds, sofas and tables either side of a
-  partition, balconies, stairs to the roof), a deck over the lane between them at their 2nd floors (a ramp up from
-  the side street) and a footbridge between their 3rd floors.
+  partition, balconies, stairs to the roof), a deck over the lane between them at their 2nd floors (a ramp up the
+  lane) and a footbridge between their 3rd floors.
 - *Streets:* Japanese style — utility poles with power lines, crosswalks, kerbs, street trees, bicycles, vending
   machines.
 
-Props: 22 loose spots (some on the tower roofs and floors, the skybridge, the cafe, the car park's decks, the
-department store, the hotel's roof, the building site's deck), plus 16 that always get their prop: trash cans on the
-main street, in the yokocho's lane, by the mart and the shops, by the site's fence and at the hotel, and chairs in the
-ramen shop, the cafe, the comedy club and the court (`TypedProps`). Structures: vending machine (HP 80) ×4, wrecked car
+Props: 72 spots (owner, 2026-10-28: "add more throwable item also match that found area too"). 9 loose ones (a random
+junk prop: the tower roofs, the skybridge, the cafe's, the department store's and the hotel's roofs, a few lots) and 63
+that always get the prop that belongs there (`TypedProps`):
+- *Streets:* trash cans along the streets, the yokocho's lane, the mart, the shops, the site's fence, the hotel.
+- *Shops and eating:*
+  - Stools and a paper lantern in the ramen shop, and in the yokocho's bars and lane.
+  - Stools in the pachinko parlor and the arcade; chairs and a potted plant in the cafe.
+  - Shopping baskets in the mart, the mall, the drugstore and the department store, with mannequins in the last two.
+  - A stack of books in the bookshop, a screen in the electronics shop.
+- *Offices and homes:* plants and office chairs in the towers, TVs in an apartment and the mansion, suitcases in the
+  hotel, a chair in the jail's office.
+- *Places to go out:* speakers in the karaoke booths and on the comedy club's stage, chairs in the club and the court,
+  bowling balls and a pin in the bowling alley.
+- *Work places:* tyres and cones in the car park, gas cans at the pumps, a lantern at the temple, an extinguisher and
+  a toolbox in the fire station, cinderblocks and cones at the building site, crates in the back lot.
+New prop types for them: Stool, PaperLantern, PottedPlant, OfficeChair, Monitor, ShoppingBasket, BowlingPin,
+FireExtinguisher, BookStack, Toolbox (Light); Speaker, Suitcase, BowlingBall, Cinderblock, GasCan, Mannequin (Medium).
+`Props.MaxActive` is 80. Structures: vending machine (HP 80) ×4, wrecked car
 (HP 100) ×2, ice machine (HP 80), road barrier stack (HP 60). 16 spawns (the main street, the streets, the plaza), 6
 explosive barrels (one by the gas pumps, one at the building site).
 
@@ -363,7 +381,7 @@ explosive barrels (one by the gas pumps, one at the building site).
   set in `default.project.json`): local lights light and shade properly; in the lobby the main hanging and ceiling lamps
   cast soft shadows. The lobby is gloomy (owner, 2026-10-28: "more gloomy, less bright"): a dark ambient, dimmed lamps
   and a darker, more contrasty colour grade (the `Dusk` preset), so the light falls in warm pools.
-- Low draw calls (reuse meshes, no high-tri unions, CastShadow off on small props), cap 40 active props per arena,
+- Low draw calls (reuse meshes, no high-tri unions, CastShadow off on small props), cap 80 active props per arena,
   "Low Graphics" setting disables particles, post-effects and shadows (the sun's and the lobby lamps'). StreamingEnabled ON (target 256, min 128). Arena
   platforms use ModelStreamingMode = Persistent.
 
@@ -386,12 +404,12 @@ explosive barrels (one by the gas pumps, one at the building site).
 - Grab range 6 studs (server-checked). Hold 1 prop. Holding replaces Punch with Throw and blocks charging.
 - Throw speed 90 studs/s the way the character faces (owner's choice), with a slight arc under 25% gravity so long
   throws stay level, and a gentle aim assist toward a fighter within 15° (80 studs). Thrown and dropped props despawn
-  8 s after landing. Max 40 props per arena.
+  8 s after landing. Max 80 props per arena (40 until 2026-10-28, when Shinjuku got 72 spots: "add more throwable item").
 
 | Class | Examples | Damage / Percent | KB scale | Carrier slow |
 | --- | --- | --- | --- | --- |
-| Light | chair, bucket, tire | 10 HP / 8% | 1.0 | none |
-| Medium | crate, TV, barrel | 18 HP / 14% | 1.3 | 15% |
+| Light | chair, bucket, tire, stool, paper lantern, potted plant, office chair, monitor, shopping basket, bowling pin, fire extinguisher, books, toolbox | 10 HP / 8% | 1.0 | none |
+| Medium | crate, TV, barrel, trash can, speaker, suitcase, bowling ball, cinderblock, gas can, mannequin | 18 HP / 14% | 1.3 | 15% |
 | Heavy | fridge, car door, vending machine chunk | 28 HP / 22% | 1.7 | 30% |
 | Explosive barrel | — | 25 HP / 20% in 10-stud radius | 1.5 | 15% (explodes on impact or 3 s after being hit) |
 
@@ -417,7 +435,10 @@ explosive barrels (one by the gas pumps, one at the building site).
   animations, sounds). Weapons are welded accessory models, not Tools (mobile buttons stay consistent).
 - Weapons: baseball bat, shovel, wrench, hubcap shield (each < 1,500 triangles).
 - Props: folding chair, wooden crate, tire, bucket, CRT TV, oil barrel, explosive barrel, fridge, car door, traffic
-  cone, trash can (a medium prop, also a loose-spot type; owner, 2026-10-28).
+  cone, trash can (a medium prop, also a loose-spot type; owner, 2026-10-28), and for Shinjuku's places (owner,
+  2026-10-28: "add more throwable item also match that found area"): bar stool, paper lantern, potted plant, office
+  chair, computer screen, shopping basket, bowling pin and ball, fire extinguisher, stack of books, toolbox,
+  loudspeaker, suitcase, cinderblock, gas can, mannequin.
 - Structures: wrecked car, vending machine, road barrier stack, broken road signs, billboards.
 - Launch cosmetics: 6 skins, 6 hats, 4 dash trails, 4 KO effects.
 

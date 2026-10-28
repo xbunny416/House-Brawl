@@ -77,7 +77,7 @@ return {
 		expect.equal(Props.Classes.Heavy.KnockbackScale, 1.7)
 		expect.equal(Props.Classes.Explosive.Radius, 10)
 		expect.equal(Props.Classes.Explosive.FuseTime, 3)
-		expect.equal(Props.MaxActive, 40)
+		expect.equal(Props.MaxActive, 80)
 		for _, typeId in Props.LooseSpotTypes do
 			expect.truthy(Props.Types[typeId], typeId)
 			expect.truthy(Props.Types[typeId].Class ~= "Explosive", `{typeId} is not a barrel`)
