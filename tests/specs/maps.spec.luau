@@ -49,6 +49,15 @@ local function eachArena(check: (layout: any, model: any) -> ())
 	end
 end
 
+-- Only the floating arenas (platforms over a void), not a ground arena like Small City (one walled-in valley).
+local function eachFloating(check: (layout: any, model: any) -> ())
+	for _, arena in arenas do
+		if not arena.Layout.Ground then
+			check(arena.Layout, arena.Model)
+		end
+	end
+end
+
 -- A part's world-axis bounding box (corners of its rotated box), with its name.
 local function boxOf(part: any): { min: { number }, max: { number }, name: string, part: any }
 	local cframe, size = part.CFrame, part.Size
@@ -193,8 +202,8 @@ return {
 			expect.equal(platform.Size[2], expectedSize[2], `{platform.Id} Z`)
 		end
 	end,
-	["arenas: one centre, four sides, four ledges, two peaks, two lows; platforms never overlap"] = function()
-		eachArena(function(layout)
+	["floating arenas: one centre, four sides, four ledges, two peaks, two lows; platforms never overlap"] = function()
+		eachFloating(function(layout)
 			local counts = { Center = 0, Side = 0, Ledge = 0, Peak = 0, Low = 0 }
 			for index, platform in layout.Platforms do
 				counts[platform.Kind] += 1
@@ -263,8 +272,8 @@ return {
 			end
 		end)
 	end,
-	["arenas: the centre's raised deck fits on it, is climbable and keeps clear of every spot"] = function()
-		eachArena(function(layout)
+	["floating arenas: the centre's raised deck fits on it, is climbable and keeps clear of every spot"] = function()
+		eachFloating(function(layout)
 			for _, platform in layout.Platforms do
 				local deck = platform.Deck
 				expect.equal(deck ~= nil, platform.Kind == "Center", `{layout.Id} {platform.Id} deck`)
@@ -302,11 +311,60 @@ return {
 			expect.equal(#tagged(model, "PropSpot"), 24, `{layout.Id} loose prop spots`)
 			expect.equal(#tagged(model, "StructureSpot"), 8, `{layout.Id} breakable structures`)
 			expect.equal(#tagged(model, "ExplosiveSpot"), 6, `{layout.Id} explosive barrel spots`)
-			expect.equal(#tagged(model, "Platform"), 13, `{layout.Id} platforms`)
+			expect.equal(#tagged(model, "Platform"), if layout.Ground then 1 else 13, `{layout.Id} platforms`)
 		end)
 	end,
-	["arenas: one explosive spot per side and low platform"] = function()
-		eachArena(function(layout)
+	["Small City: one walled-in valley on the ground (owner: no floating islands), with mountains all round"] = function()
+		-- The owner, 2026-10-28: "no floating island, just roblox default city with mountain around".
+		expect.equal(SmallCity.Ground, true, "a ground arena")
+		expect.equal(#SmallCity.Platforms, 1, "one platform")
+		local valley = SmallCity.Platforms[1]
+		expect.equal(valley.Kind, "Center", "the valley never falls")
+		local model = SmallCity.build(ORIGIN)
+		-- Invisible, solid walls on all four sides of the valley, tall enough that knockback doesn't carry anyone over.
+		local halfX, halfZ = valley.Size[1] / 2, valley.Size[2] / 2
+		local sides = { px = false, nx = false, pz = false, nz = false }
+		for _, wall in model:GetDescendants() do
+			if wall:IsA("BasePart") and wall.Name == "BoundaryWall" then
+				expect.equal(wall.Transparency, 1, "invisible")
+				expect.equal(wall.CanCollide, true, "solid")
+				expect.truthy(wall.Size.Y >= 200, "tall")
+				local p = wall.CFrame.Position
+				if p.X >= halfX then
+					sides.px = wall.Size.Z >= valley.Size[2]
+				elseif p.X <= -halfX then
+					sides.nx = wall.Size.Z >= valley.Size[2]
+				elseif p.Z >= halfZ then
+					sides.pz = wall.Size.X >= valley.Size[1]
+				elseif p.Z <= -halfZ then
+					sides.nz = wall.Size.X >= valley.Size[1]
+				end
+			end
+		end
+		for side, closed in sides do
+			expect.truthy(closed, `the valley's {side} side has a wall along it`)
+		end
+		-- The mountains: solid ones round the valley, always streamed in.
+		local mountains = model:FindFirstChild("Mountains", true)
+		expect.truthy(mountains, "mountains")
+		expect.equal(mountains.ModelStreamingMode, roblox.Enum.ModelStreamingMode.Persistent, "mountains stream")
+		local solid = 0
+		for _, part in mountains:GetDescendants() do
+			if part:IsA("BasePart") and part.CanCollide then
+				solid += 1
+			end
+		end
+		expect.truthy(solid >= 40, `{solid} solid mountain parts`)
+		-- Every spot is inside the walls (the spacing checks above cover the rest).
+		for _, tag in { "SpawnPoint", "PropSpot", "ExplosiveSpot", "StructureSpot" } do
+			for _, marker in tagged(model, tag) do
+				local p = marker.CFrame.Position
+				expect.truthy(math.abs(p.X) < halfX - 10 and math.abs(p.Z) < halfZ - 10, `{marker.Name} inside`)
+			end
+		end
+	end,
+	["floating arenas: one explosive spot per side and low platform"] = function()
+		eachFloating(function(layout)
 			for _, platform in layout.Platforms do
 				local contents = layout.Contents[platform.Id]
 				local hasExplosive = contents ~= nil and contents.Explosive ~= nil
@@ -349,6 +407,9 @@ return {
 				end
 				if contents.Explosive then
 					add(contents.Explosive, 1.5, "explosive")
+				end
+				for index, spot in contents.Explosives or {} do
+					add(spot, 1.5, `explosive {index}`)
 				end
 				for index, structure in contents.Structures or {} do
 					add(structure.At, 4, `structure {index}`)

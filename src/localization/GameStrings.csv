@@ -57,7 +57,7 @@ Map.SmallCity.Sign.Gas,GAS,Price sign at the gas station in the Small City arena
 Map.SmallCity.Sign.Mart,MINI MART,Shop sign over the gas station store in the Small City arena,
 Map.SmallCity.Sign.Parking,PARKING,Sign at the parking lot in the Small City arena,
 Map.SmallCity.Sign.Bus,BUS STOP,Sign at a bus stop in the Small City arena,
-Map.SmallCity.Sign.Billboard,WELCOME TO SMALL CITY,Billboard on a rooftop in the Small City arena,
+Map.SmallCity.Sign.Diner,DINER,Sign on the diner in the Small City arena,
 Controls.Attack,Punch,"Mobile button and key hint for the Attack action (tap to punch, hold to charge a power punch; throws when holding a prop)",
 Controls.Ability,Ability,Key hint for the Ability action (the fighting style's special move),
 Controls.Parry,Parry,"Mobile Ability button and the key panel's Ability slot for styles whose ability is a parry (Wrecker)",

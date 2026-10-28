@@ -130,8 +130,9 @@ Not used. No pets, eggs, or paid random items.
 
 - One Lobby hub + one arena in the vote: Small City (owner, 2026-10-28: "only one arena instead of the 3 old arenas,
   just store them somewhere, don't delete them"). Broken Highway, Junkyard Isles and Neon Motel stay built in
-  ServerStorage, switched off in `Config.Maps.List` (`Enabled = true` brings one back into the vote). Each arena:
-  floating platforms over a void (KillY) with a dark abyss, toxic sludge or (Small City) a bright sky haze far below.
+  ServerStorage, switched off in `Config.Maps.List` (`Enabled = true` brings one back into the vote). The old three
+  are floating platforms over a void (KillY) with a dark abyss or toxic sludge far below; Small City is a ground arena,
+  one valley walled in by mountains (owner, 2026-10-28: "no floating island").
 - Lobby → (vote) → arena via server-side teleport of characters within the same place. After the round, everyone
   returns to the Lobby. Arenas live in ServerStorage; only the active one is in Workspace.
 - All maps free. Players enter the arena only when the server starts a round, and only if they stand on the lobby's
@@ -144,7 +145,7 @@ Not used. No pets, eggs, or paid random items.
 | Map 1 — Broken Highway | Shattered overpass chunks, abandoned cars, road signs |
 | Map 2 — Junkyard Isles | Stacked car and container islands over toxic sludge |
 | Map 3 — Neon Motel | Sinking motel rooftops, flickering retro neon, pool on one roof |
-| Map 4 — Small City (the only arena in the vote) | Daytime town blocks floating in the sky: downtown streets around a park, gas station, houses, parking lot, basketball court, rooftops |
+| Map 4 — Small City (the only arena in the vote) | A daytime town on the ground in a valley ringed by mountains: a street grid, four office towers, gas station, houses, park, parking lot, basketball court, construction site, bus depot |
 
 Maps 1–3 are switched off (kept built) since 2026-10-28.
 
@@ -255,7 +256,7 @@ the pool roof. Gangways: short from the centre to West and South, East to its lo
 antenna roof; longer from West to the NW roof and South to the SE roof; the rest are jumps. Ice machines and lawn
 chair stacks are detailed models.
 
-**Every arena** follows the same rules as Broken Highway: four layers — 2 low platforms (4–9 below the centre), the
+**Every floating arena** (all but Small City) follows the same rules as Broken Highway: four layers — 2 low platforms (4–9 below the centre), the
 base level (one centre platform that never falls, with a raised deck ≤ 6 high and ramps, and 4 side platforms within
 3 studs of it), 4 corner ledges (4–6 above) and 2 peaks (10–12 above) — every outer platform 8–14 studs from its
 nearest neighbour, every platform reachable from the centre with climbs of at most 6 studs, 16 spawn points, 24 loose
@@ -277,27 +278,31 @@ surrounded by dark towers with neon signs. Neon flickers now and then. Structure
 machine (HP 80) ×3, lawn chair stack (HP 60) ×3.
 
 **Small City arena** (day; owner, 2026-10-28: "just like the default small city in Roblox but still have throwable
-objects"): a small daytime town torn into blocks floating in a bright, hazy sky (the `Day` preset: a blue sky with white
-clouds). The platforms sit where Neon Motel's do (the same gaps, climbs and bridges).
-- *Centre (224×144):* downtown — two streets each way with dashed centre lines, crosswalks, kerbs and traffic lights,
-  around a park with trees and benches; in the park a raised fountain plaza (+6, ramps east and west) with trees in
-  planters. On the pavements a bus stop, a red phone booth, a hot dog cart, street lamps, hydrants and trash cans,
-  with parked cars and a taxi along the kerbs.
-- *East:* a gas station — a canopy over two pump islands, a MINI MART, a GAS price sign.
-- *West:* two suburban houses with pitched roofs, picket fences, mailboxes, a car in a driveway and a doghouse.
-- *North:* a parking lot with parked cars, a ticket booth and a PARKING sign.
-- *South:* a basketball court with two hoops.
-- *Rooftops:* the ledges are office rooftops (stair huts you can climb by a crate, AC units, a water tank on stilts,
-  a WELCOME TO SMALL CITY billboard); the peaks are tower roofs (a helipad, a radio mast). The towers reach down into
-  the haze.
-- *Low lots:* a construction site (steel beams, a portable toilet, cones, barriers) and a bus depot with a city bus
-  you can climb onto.
-- *Bridges:* road bridges from the centre to West and South, steel gangways for the rest.
-- *Below and around:* each street block hangs over the earth and rock it was torn out with; clouds drift under the
-  blocks and far-off office towers rise out of the haze.
+objects", then "no floating island, just roblox default city with mountain around"): a ground arena, unlike the
+others — one flat green valley (400×336, it never falls) with a small town on it, ringed by mountains (grass slopes,
+grey rock, snowy tops; a bigger, hazier ring behind them), like Roblox's old City and Suburban templates and the hills
+round its starting places. The `Day` preset: a blue sky with white clouds.
+- *Edges:* invisible walls along the valley's edge keep everyone in; the mountains rise behind them.
+- *Knockouts:* nobody falls, so a Classic life ends when its HP runs out. KillY under the ground only catches someone
+  who slips through.
+- *Streets:* the town (320×256) is a street grid — a main avenue that runs into a tunnel in the mountains at both
+  ends, two more streets alongside it and two across — with lane lines, crosswalks, kerbs, traffic lights, street
+  lamps, hydrants, trash cans, parked cars and a taxi.
+- *The twelve blocks:*
+  - Middle row: a gas station (canopy over two pump islands, a MINI MART, a GAS sign), office towers A (96 high)
+    and B (120) either side of the avenue, a parking lot (parked cars, a ticket booth, a PARKING sign).
+  - North row: two houses with pitched roofs, picket fences and mailboxes; the park (a fountain, benches, trees, a
+    playground tower with a slide); office tower C (80); two more houses.
+  - South row: a construction site with a two-storey steel frame (decks at +6 and +12, stairs); office tower D (70)
+    and a DINER with a fire escape to its roof; a basketball court with bleachers; the bus depot (a bus you can
+    climb onto, a shelter).
+- *The towers:* these are the old City template's four urban buildings: glass bands, a lobby and canopy, a crown and a
+  mast.
+- *Higher places:* the diner's roof, the steel frame, the playground tower, the bus, the bleachers, cars.
 
-Props are the usual loose ones (chairs, crates, tyres, buckets, TVs, barrels). Structures: wrecked car (HP 100) ×2,
-vending machine (HP 80) ×2, road barrier stack (HP 60) ×2, ice machine (HP 80), lawn chair stack (HP 60).
+Props are the usual loose ones (chairs, crates, tyres, buckets, TVs, barrels): 24 spots across the blocks. Structures:
+wrecked car (HP 100) ×2, vending machine (HP 80) ×2, road barrier stack (HP 60) ×2, ice machine (HP 80), lawn chair
+stack (HP 60). 16 spawns in the streets, 6 explosive barrels.
 
 **Art & performance:**
 

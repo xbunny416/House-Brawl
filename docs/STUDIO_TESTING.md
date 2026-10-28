@@ -143,15 +143,20 @@ Settings → Promo code, styles come from the style roll).
     restart).
   - *Starting a round:* stand on the join pad. The vote shows one map, Small City, and the round loads it on a sunny
     day (blue sky, white clouds).
-  - *Fighting:* check you spawn on the blocks, props respawn on their spots and you can throw them, and breakables
-    (wrecked cars, vending machines, barrier stacks, the ice machine, the lawn chairs) break and drop props. Falling
-    off any block takes a life.
-  - *Moving around:* walk up the park plaza's ramps. Jump and dash across the gaps. Cross the road bridges (centre to
-    West / South) and the steel gangways. Climb the stair huts on the rooftops by their crate, and the bus at the bus
-    depot.
-  - *Look:* the streets' lines, crosswalks and traffic lights, the gas station canopy, the houses' roofs (pitched, not
-    upside down), the hoops, the helipad. The earth and rock hang under the blocks, the towers under the rooftops,
-    clouds below and far-off towers around.
+  - *A town on the ground since the same day (no floating blocks):* you spawn in the streets of a town in a green
+    valley with mountains all round.
+  - *Fighting:* props respawn on their spots and you can throw them, and breakables (wrecked cars, vending machines,
+    barrier stacks, the ice machine, the lawn chairs) break and drop props. Nobody falls here, so a life ends at 0 HP.
+    Check that rounds still end: the last one standing, or most KOs at time-out.
+  - *The edges:* run and dash into the mountains: an invisible wall at the foot of the slopes stops you everywhere,
+    the tunnel mouths at both ends of the avenue too. Get knocked hard into the wall with high Percent and check you
+    don't fly over it.
+  - *Moving around:* climb the diner's fire escape to its roof (south row, by the avenue), the construction site's
+    steel frame (stairs to +6 and +12), the playground tower in the park, the bus at the depot and the bleachers.
+  - *Look:* the streets' lines, crosswalks and traffic lights, the four office towers, the gas station canopy, the
+    houses' roofs (pitched, not upside down), the hoops. On the mountains: grass slopes with grey rock and snow on the
+    tall ones, and a farther ring behind them. If the mountains look too blocky, say so: they are wedges (part-built,
+    no terrain).
   - *Old arenas:* Broken Highway, Junkyard Isles and Neon Motel are still in `ServerStorage.Arenas` but never voted
     for. To play one again, set its `Enabled = true` in `src/shared/Config/Maps.luau`. The developer panel's map list
     shows only enabled maps.
