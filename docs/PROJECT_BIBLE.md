@@ -383,6 +383,12 @@ road"). The `Day` preset: a blue sky with white clouds.
     - a sacred rope at the temple; a basketball hoop in the jail yard;
     - a safety net, warning signs, rebar and a floodlight at the building site.
   - *Fewer, longer road dashes* paid for part of it.
+  - *Then* ("more detail"):
+    - *Buildings:* vertical fins up the towers', hotel's, department store's and karaoke tower's faces; planters on
+      the balconies; flower boxes under the yokocho's windows; vents and posters on the walls facing the drop.
+    - *Streets:* strings of festival lanterns across the main street; four more parked cars; wires from the poles to
+      the buildings; goods racks outside the shops.
+    - *Plaza:* hedges along the plaza and more fountain jets.
 
 Props: 72 spots (owner, 2026-10-28: "add more throwable item also match that found area too"). 9 loose ones (a random
 junk prop: the tower roofs, the skybridge, the cafe's, the department store's and the hotel's roofs, a few lots) and 63

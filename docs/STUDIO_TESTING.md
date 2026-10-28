@@ -244,3 +244,8 @@ Settings → Promo code, styles come from the style roll).
   - *Check:*
     - The road dashes don't cross a crosswalk.
     - The vans and vending machines don't block a doorway or a pavement you run along.
+- **Shinjuku: more detail (2026-10-28):**
+  - *Look at:* the fins up the towers and the hotel, the lantern strings over the main street, the planters on the
+    balconies, the goods racks outside the shops, the hedges and jets in the plaza.
+  - *Check:* ride a tower lift and make sure no fin passes through it. Watch the frame rate, now close to 9,000
+    instances.
