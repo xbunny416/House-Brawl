@@ -368,7 +368,21 @@ road"). The `Day` preset: a blue sky with white clouds.
   crossings, round road signs, manholes, yellow
   fire hydrants, red post boxes, bollards round the plaza, nobori banners outside the bars, a phone booth by the
   police box, a yellow line along the district's edge. The plaza's fountain has a jet and four flower beds; the
-  graveyard has wooden stakes behind its stones.
+  graveyard has wooden stakes behind its stones. Then (owner, 2026-10-28: "more arena detail"):
+  - *On the roads:* stop lines at the crossings, drain grates, two parked delivery vans.
+  - *On the pavements:* scooters, a row of bicycles by the plaza, eight more street trees, benches and vending
+    machines.
+  - *On the buildings:*
+    - a drainpipe down every building;
+    - projecting neon signs over the yokocho's bars and on the shops;
+    - murals and posters on the blank walls;
+    - billboards on the shop row's, the mart's and the arcade's roofs;
+    - curtains half across the hotel's and the flats' windows.
+  - *Corners:*
+    - a clock on a pole and a sculpture in the plaza; umbrellas and tables on the flats' lane deck;
+    - a sacred rope at the temple; a basketball hoop in the jail yard;
+    - a safety net, warning signs, rebar and a floodlight at the building site.
+  - *Fewer, longer road dashes* paid for part of it.
 
 Props: 72 spots (owner, 2026-10-28: "add more throwable item also match that found area too"). 9 loose ones (a random
 junk prop: the tower roofs, the skybridge, the cafe's, the department store's and the hotel's roofs, a few lots) and 63

@@ -1199,3 +1199,21 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     doors, stairs and prop spots (checked).
   - *Streets:* paler paved pavements along every street.
   - *Size:* 8,467 instances (7,586 before).
+- **More arena detail (owner, 2026-10-28: "more arena detail"):** three passes in the layout: `streetLife`,
+  `facades` and `corners`, plus a drainpipe in the `building` wrapper.
+  - *Streets:*
+    - stop lines at the six crossings, drain grates along the kerbs;
+    - two delivery vans, four scooters, six bicycles by the plaza;
+    - eight more street trees, four benches, six vending machines.
+  - *Facades:*
+    - a drainpipe on every building bigger than a hut (not between the joined shops);
+    - projecting neon signs on the yokocho's bars and the shops;
+    - murals on the bowling alley's street wall and posters on other blank walls;
+    - billboards on three roofs;
+    - curtains drawn half across the hotel's and the flats' windows.
+  - *Corners:*
+    - the plaza's clock and sculpture; umbrellas on the lane deck;
+    - the temple's sacred rope; a hoop in the jail yard;
+    - a net, signs, rebar and a floodlight at the site.
+  - *Budget:* the road centre lines are longer dashes (6.5 every 13 instead of 4 every 8), kept clear of the
+    crosswalks. That saved about 95 parts; the total is 8,731 instances (8,467 before).

@@ -883,6 +883,20 @@ local function building(spec: Rooms.Spec): any
 			}))
 		end
 	end
+	-- A drainpipe down the +X face by its −Z corner (not on the tiny huts, nor between the joined shops).
+	local joined = string.sub(spec.Name, 1, 4) == "Shop" and spec.Name ~= "Shop5"
+	if sx * sz >= 200 and not joined then
+		keep(B.part({
+			Name = "Drainpipe",
+			Size = { top, 0.5, 0.5 },
+			Position = { cx + sx / 2 + 0.35, top / 2, cz - sz / 2 + 2.2 },
+			Rotation = { 0, 0, 90 },
+			Shape = "Cylinder",
+			Color = "MetalDark",
+			Material = "Metal",
+			CanCollide = false,
+		}))
+	end
 	local function ring(name: string, y: number, height: number, out: number)
 		for _, side in
 			{
@@ -1109,23 +1123,23 @@ local function streets()
 	-- Dashed white centre lines, stopping short of the crossings.
 	local function nearCrossing(value: number, lines: { number }): boolean
 		for _, line in lines do
-			if math.abs(value - line) < ROAD / 2 + 4 then
+			if math.abs(value - line) < ROAD / 2 + 8 then -- clear of the crosswalks
 				return true
 			end
 		end
 		return false
 	end
 	for _, z in STREETS_Z do
-		for x = -halfX + 4, halfX - 4, 8 do
+		for x = -halfX + 6, halfX - 6, 13 do
 			if not nearCrossing(x, STREETS_X) then
-				paint("CentreLine", { x, z }, { 4, 0.35 }, "LaneWhite", nil, 0.12)
+				paint("CentreLine", { x, z }, { 6.5, 0.35 }, "LaneWhite", nil, 0.12)
 			end
 		end
 	end
 	for _, x in STREETS_X do
 		for _, gap in GAPS_Z do
-			for z = gap[1] + 4, gap[2] - 4, 8 do
-				paint("CentreLine", { x, z }, { 0.35, 4 }, "LaneWhite", nil, 0.12)
+			for z = gap[1] + 9, gap[2] - 9, 13 do
+				paint("CentreLine", { x, z }, { 0.35, 6.5 }, "LaneWhite", nil, 0.12)
 			end
 		end
 	end
@@ -3895,6 +3909,347 @@ local function roofDetail()
 		false
 end
 
+-- A parked delivery van (solid) its length along Z turned `yaw`: a tall box body, a windscreen, wheels, lights.
+local function van(name: string, at: { number }, yaw: number, color: string)
+	local place = placer(at, yaw)
+	local turn = { 0, yaw, 0 }
+	B.model(name, function()
+		B.part({ Name = "Body", Size = { 6, 5.2, 12.4 }, Position = place(0, 3.6, 0), Rotation = turn, Color = color })
+		B.part({
+			Name = "Windscreen",
+			Size = { 5.4, 1.8, 0.1 },
+			Position = place(0, 4.6, 6.22),
+			Rotation = turn,
+			Color = "Black",
+			Material = "Glass",
+			Transparency = 0.25,
+			CanCollide = false,
+		})
+		for _, lx in { -2.9, 2.9 } do
+			for _, lz in { -4, 4 } do
+				B.part({
+					Name = "Wheel",
+					Size = { 0.8, 2, 2 },
+					Position = place(lx, 1, lz),
+					Rotation = turn,
+					Shape = "Cylinder",
+					Color = "Black",
+					CanCollide = false,
+				})
+			end
+		end
+		B.part({
+			Name = "Headlights",
+			Size = { 4.6, 0.5, 0.1 },
+			Position = place(0, 2, 6.22),
+			Rotation = turn,
+			Color = "WarmLight",
+			Material = "Neon",
+			CanCollide = false,
+		})
+	end)
+end
+
+-- A parked scooter (walk-through decor) its length along Z turned `yaw`.
+local function scooter(at: { number }, yaw: number, color: string)
+	local place = placer(at, yaw)
+	local turn = { 0, yaw, 0 }
+	B.model("Scooter", function()
+		B.part({ Name = "Body", Size = { 0.9, 1.2, 2.8 }, Position = place(0, 1.1, 0), Rotation = turn, Color = color })
+		B.part({
+			Name = "Seat",
+			Size = { 0.8, 0.3, 1.3 },
+			Position = place(0, 1.85, -0.5),
+			Rotation = turn,
+			Color = "Black",
+			CanCollide = false,
+		})
+		for _, lz in { -1.2, 1.2 } do
+			B.part({
+				Name = "Wheel",
+				Size = { 0.4, 1.3, 1.3 },
+				Position = place(0, 0.65, lz),
+				Rotation = turn,
+				Shape = "Cylinder",
+				Color = "Black",
+				CanCollide = false,
+			})
+		end
+		B.part({
+			Name = "Handlebar",
+			Size = { 1.4, 0.15, 0.15 },
+			Position = place(0, 2.6, 1.2),
+			Rotation = turn,
+			Color = "Metal",
+			Material = "Metal",
+			CanCollide = false,
+		})
+	end)
+end
+
+--[[
+	Life on the streets (owner, 2026-10-28: "more arena detail"): stop lines at the crossings, drain grates along the
+	kerbs, two delivery vans, scooters, a row of bicycles by the plaza, more street trees, benches and vending
+	machines along the pavements.
+]]
+local function streetLife()
+	for _, cx in STREETS_X do
+		for _, cz in STREETS_Z do
+			local inward = if cz > 0 then -1 else 1
+			paint("StopLine", { cx - ROAD / 2 - 2, cz + ROAD / 4 }, { 0.8, ROAD / 2 }, "LaneWhite", nil, 0.12)
+			paint("StopLine", { cx + ROAD / 2 + 7, cz - ROAD / 4 }, { 0.8, ROAD / 2 }, "LaneWhite", nil, 0.12)
+			paint(
+				"StopLine",
+				{ cx + ROAD / 4, cz + inward * (ROAD / 2 + 7) },
+				{ ROAD / 2, 0.8 },
+				"LaneWhite",
+				nil,
+				0.12
+			)
+		end
+	end
+	for _, at in
+		{
+			{ -230, 80.6 },
+			{ -30, 80.6 },
+			{ 150, 80.6 },
+			{ -200, -99.4 },
+			{ 60, -99.4 },
+			{ 220, -99.4 },
+			{ -9.4, -160 },
+			{ 9.4, 40 },
+			{ -165.6, -60 },
+			{ 165.6, 60 },
+		}
+	do
+		paint("Drain", at, { 1.6, 1.6 }, "MetalDark", "DiamondPlate", 0.13)
+	end
+	van("DeliveryVan", { -179, 62 }, 0, "OffWhite")
+	van("DeliveryVan", { 179, -30 }, 180, "CityBlue")
+	for index, spot in { { 152, 48 }, { 152, 51.5 }, { -45, -101.5 }, { -41.5, -101.5 } } do
+		scooter(spot, if spot[2] > 0 then 90 else 0, if index % 2 == 0 then "Red" else "OffWhite")
+	end
+	for index = 0, 5 do
+		bike({ -150 + index * 2.4, -75 }, 0, if index % 2 == 0 then "LaneYellow" else "CityBlue")
+	end
+	for _, at in
+		{ { -240, 75 }, { 240, 75 }, { -163, 0 }, { 163, 30 }, { -187, 10 }, { 187, 15 }, { -100, 106 }, { 100, 106 } }
+	do
+		streetTree(at)
+	end
+	for _, spot in { { -30, 106 }, { 30, 106 }, { -200, 106 }, { 200, 106 } } do
+		bench(spot, 180)
+	end
+	for _, spot in
+		{
+			{ -163, 38, -90, "Red" },
+			{ -163, 41.2, -90, "OffWhite" },
+			{ 160.5, 32, 90, "CityBlue" },
+			{ 160.5, 35.2, 90, "Bottle" },
+			{ -14, 58.4, 90, "Red" },
+			{ -14, 61.6, 90, "CityBlue" },
+		}
+	do
+		vending({ spot[1] :: number, spot[2] :: number }, spot[3] :: number, spot[4] :: string)
+	end
+end
+
+--[[
+	The buildings' faces: a drainpipe down every building; projecting neon signs over the yokocho's bars and on the
+	shops; posters and murals on the blank walls; billboards on the shop row's, the mart's and the arcade's roofs;
+	curtains drawn half across the hotel's and the flats' windows.
+]]
+local function facades()
+	local signColors = { "NeonPink", "NeonTeal", "LaneYellow", "Red", "NeonOrange", "WarmLight" }
+	for _, side in { 1, -1 } do
+		local face = YOKOCHO.LaneZ + side * YOKOCHO.Lane / 2
+		for index, bay in { -23.5, -10.5, 2.5, 15.5, 28.5, 41.5 } do
+			B.part({
+				Name = "ProjectingSign",
+				Size = { 0.3, 2.4, 1.8 },
+				Position = { YOKOCHO.X + bay + 2.8, 12, face - side * 1 },
+				Color = signColors[(index + (if side > 0 then 0 else 3)) % #signColors + 1],
+				Material = "Neon",
+				CanCollide = false,
+			})
+		end
+	end
+	for index, x in { -147, -117, -87, -57, -27 } do
+		B.part({
+			Name = "ProjectingSign",
+			Size = { 0.4, 6, 1.8 },
+			Position = { x - 13.5, 18, SHOP_Z + 13 + 1 },
+			Color = signColors[index],
+			Material = "Neon",
+			CanCollide = false,
+		})
+	end
+	-- Posters and murals on the blank walls: the bowling alley's street side, the yokocho's back onto the plaza, the
+	-- jail's yard side, the shops' backs.
+	local posterColors = { "ShopPink", "ShopTeal", "ShopYellow", "CityBlue", "ShopOrange", "Purple" }
+	for index, x in { -258, -232, -206 } do
+		wallPanel("Mural", { x, 5.5, -76.1 }, { 14, 7, 0.1 }, posterColors[index])
+	end
+	for index, x in { -150, -126, -98, -74 } do
+		wallPanel("Poster", { x, 4.5, 5.9 }, { 3, 4, 0.1 }, posterColors[index + 1])
+	end
+	for index, x in { -255, -220 } do
+		wallPanel("Poster", { x, 5, -163.1 }, { 5, 6, 0.1 }, posterColors[index + 3])
+	end
+	for index, x in { -147, -117, -87, -57, -27 } do
+		wallPanel("Poster", { x + 4, 4.5, SHOP_Z - 13.1 }, { 3, 4, 0.1 }, posterColors[index])
+	end
+	-- Billboards on frames on three roofs.
+	local function billboard(at: { number }, y: number, facing: string, key: string, color: string)
+		local alongX = facing == "North" or facing == "South"
+		for _, d in { -8, 8 } do
+			upright(
+				"BillboardLeg",
+				if alongX then { at[1] + d, at[2] } else { at[1], at[2] + d },
+				y,
+				5,
+				0.6,
+				"MetalDark",
+				"Metal"
+			)
+		end
+		B.sign({
+			Name = "RoofBillboard",
+			Size = { 20, 7, 0.5 },
+			Position = { at[1], y + 8.5, at[2] },
+			Rotation = B.yaw(facing),
+			Color = color,
+			Material = "SmoothPlastic",
+			Key = key,
+			TextColor = "OffWhite",
+			CanCollide = false,
+		})
+	end
+	billboard({ -117, -122 }, 3 * STOREY + 0.6, "North", "Map.Shinjuku.Sign.AdCola", "Red")
+	billboard({ 125, 62 }, 12.6, "South", "Map.Shinjuku.Sign.AdNight", "CityBlue")
+	billboard({ 110, -60 }, 2 * STOREY + 0.6, "South", "Map.Shinjuku.Sign.AdCola", "Red")
+	-- Curtains half across the hotel's and the flats' windows (just inside the glass).
+	local curtainColors = { "Cream", "ShopPink", "CityBlue", "OffWhite", "ShopYellow" }
+	for floor = 2, HOTEL.Floors do
+		local y = (floor - 1) * STOREY + 4.5
+		for index, dx in { -12, 0, 12 } do
+			local x = HOTEL.At[1] + dx - 2
+			wallPanel(
+				"Curtain",
+				{ x, y, HOTEL.At[2] + HOTEL.Size[2] / 2 - 0.95 },
+				{ 3.6, 4, 0.1 },
+				curtainColors[(floor + index) % 5 + 1],
+				"Fabric"
+			)
+			wallPanel(
+				"Curtain",
+				{ x, y, HOTEL.At[2] - HOTEL.Size[2] / 2 + 0.95 },
+				{ 3.6, 4, 0.1 },
+				curtainColors[(floor + index + 2) % 5 + 1],
+				"Fabric"
+			)
+		end
+	end
+	for _, block in { { 45, 4 }, { -45, 5 } } do
+		for floor = 1, block[2] do
+			for index, dz in { -13.5, -4.5, 4.5, 13.5 } do
+				if floor > 1 or math.abs(dz) > 5 then
+					wallPanel(
+						"Curtain",
+						{ 192.95, (floor - 1) * STOREY + 4.5, block[1] + dz - 1.5 },
+						{ 0.1, 4, 3 },
+						curtainColors[(floor + index) % 5 + 1],
+						"Fabric"
+					)
+				end
+			end
+		end
+	end
+end
+
+--[[
+	Small corners: a clock on a pole and a sculpture in the plaza, umbrellas and tables on the flats' lane deck, a
+	sacred rope across the temple's front, a basketball hoop in the jail's yard, and at the building site a safety
+	net on the scaffolding, warning signs on the fence, a pile of rebar and a floodlight tower.
+]]
+local function corners()
+	upright("ClockPole", { -130, -20 }, 0, 12, 0.4, "MetalDark", "Metal")
+	Pieces.block("ClockBox", { -130, -20 }, { 1.6, 1.6, 1.6 }, "MetalDark", "Metal", 12).CanCollide = false
+	for _, side in { -1, 1 } do
+		B.part({
+			Name = "ClockFace",
+			Size = { 0.1, 1.3, 1.3 },
+			Position = { -130 + side * 0.82, 12.8, -20 },
+			Shape = "Cylinder",
+			Color = "OffWhite",
+			CanCollide = false,
+		})
+	end
+	Pieces.block("SculpturePlinth", { -135, -30 }, { 3, 2, 3 }, "ConcreteDark", "Concrete")
+	for index, cube in { { 0, 2.2, 0, 15 }, { 0.3, 4, -0.2, 40 }, { -0.2, 5.6, 0.2, 65 } } do
+		Pieces.block(
+			`Sculpture{index}`,
+			{ -135 + cube[1], -30 + cube[3] },
+			{ 1.8, 1.8, 1.8 },
+			"OldBrass",
+			"Metal",
+			cube[2],
+			cube[4]
+		).CanCollide =
+			false
+	end
+	for _, z in { -8, 8 } do
+		upright("UmbrellaPole", { 230, z }, STOREY, 6, 0.2, "Metal", "Metal", false)
+		upright("Umbrella", { 230, z }, STOREY + 6, 0.3, 7, if z > 0 then "ShopRed" else "ShopTeal", "Fabric", false)
+		upright("CafeTable", { 230, z }, STOREY, 2.6, 2.8, "OffWhite", "SmoothPlastic")
+	end
+	B.part({
+		Name = "SacredRope",
+		Size = { 14, 0.6, 0.6 },
+		Position = { 55, 9.6, -56.6 },
+		Shape = "Cylinder",
+		Color = "Cream",
+		Material = "Fabric",
+		CanCollide = false,
+	})
+	for _, dx in { -4, 0, 4 } do
+		wallPanel("PaperStreamer", { 55 + dx, 8.6, -56.6 }, { 0.5, 1.6, 0.05 }, "OffWhite", "Fabric")
+	end
+	-- The jail yard's hoop and court lines.
+	upright("HoopPole", { -210, -173.5 }, 0, 10, 0.5, "MetalDark", "Metal")
+	wallPanel("Backboard", { -211, 9.4, -173.5 }, { 0.2, 3.6, 6 }, "OffWhite")
+	upright("Rim", { -212.6, -173.5 }, 8, 0.12, 1.8, "NeonOrange", "Metal", false)
+	paint("CourtLine", { -224, -173.5 }, { 28, 0.4 }, "OffWhite", nil, 0.12)
+	paint("CourtLine", { -214, -173.5 }, { 0.4, 12 }, "OffWhite", nil, 0.12)
+	-- The building site's net, warning signs, rebar, floodlight.
+	local net = B.part({
+		Name = "SafetyNet",
+		Size = { SITE.Size[1], 3 * SITE.Deck - 2, 0.1 },
+		Position = { SITE.At[1], (3 * SITE.Deck - 2) / 2 + 1, SITE.At[2] + SITE.Size[2] / 2 + 5.8 },
+		Color = "Lawn",
+		Material = "Fabric",
+		Transparency = 0.55,
+		CanCollide = false,
+	})
+	net.CastShadow = false
+	for _, x in { 196, 252, 268 } do
+		wallPanel("WarningSign", { x, 3.5, -106.75 }, { 2.4, 2.4, 0.1 }, "LaneYellow")
+	end
+	for index = 0, 4 do
+		B.part({
+			Name = "Rebar",
+			Size = { 0.25, 0.25, 12 },
+			Position = { 254 + index * 0.4, 0.15 + (index % 2) * 0.25, -198 },
+			Color = "RustDark",
+			Material = "Metal",
+			CanCollide = false,
+		})
+	end
+	upright("FloodlightPole", { 195, -150 }, 0, 16, 0.5, "MetalDark", "Metal")
+	Pieces.block("FloodlightHead", { 195, -150 }, { 3, 1.4, 1 }, "MetalDark", "Metal", 16).CanCollide = false
+	wallPanel("FloodlightGlow", { 195, 16.7, -150.55 }, { 2.6, 1, 0.1 }, "WarmLight", "Neon")
+end
+
 local function district()
 	streets()
 	streetDetail()
@@ -3930,6 +4285,9 @@ local function district()
 	buildingDetail()
 	interiorDetail()
 	roofDetail()
+	streetLife()
+	facades()
+	corners()
 end
 
 -- The pieces are written from the arena origin; the platform's own frame is at its centre (z CENTER_Z).
