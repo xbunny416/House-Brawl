@@ -300,10 +300,24 @@ road"). The `Day` preset: a blue sky with white clouds.
 - *Buildings you walk into* (`maps/lib/Rooms`): hollow storeys, a floor on every storey, switchback ramps up a stair
   well, a roof (most with a hatch to it). Every one is furnished inside, upstairs too (desks, beds, sofas, counters,
   shelves, racks, booths, cells; inside walls are partitions that break).
-- *Finish* (owner, 2026-10-28: "add more overall entire detail then polish"): every building has a ledge round it at
-  each floor line and a cornice at the roof (walk-through), and lights glowing under every ceiling. The walls carry
-  outdoor air-conditioner units (the flats, the hotel, the shops, the karaoke tower, the department store) and tall
-  neon signs; the roofs carry antennas and satellite dishes.
+- *Finish* (owner, 2026-10-28: "add more overall entire detail then polish", then "add more detail inside buildings
+  too, more polish, still look less detail and blocky"):
+  - *Every building:*
+    - a sill under every window and a column standing out at each corner;
+    - a ledge at each floor line and a cornice at the roof (all walk-through);
+    - lights glowing under every ceiling, and shinier glass.
+  - *Materials:* plaster walls on the flats, the hotel, the mansion, the cafe, the koban and the karaoke tower; brick
+    on the fire station, limestone on the department store; tiled floors in the mart and the kiosk.
+  - *Roofs and eaves:* tiled eaves along the yokocho and over the ramen shop; pitched tile roofs on the mansion, the
+    garage and the koban; a pediment over the court's portico; canopies over the comedy club's, the mall's and the
+    department store's doors.
+  - *Walls and roofs:* outdoor air-conditioner units on the flats, the hotel, the shops, the karaoke tower and the
+    department store; tall neon signs; antennas and satellite dishes on the roofs.
+  - *Inside:* see the buildings below; in short, every building has its own details:
+    - offices with filing cabinets, whiteboards and clocks; nightstands and carpet runners in the hotel;
+    - kitchens, fridges, rugs and TVs in the flats and the shops' upstairs rooms;
+    - screens and tables in the karaoke booths; goods on the mart's shelves; bottle shelves in the bars;
+    - stage lights, flags, helmet shelves and tills; candles in the temple.
 - *Breakable walls:* their walls and windows break (see §3.3), as do the partitions, the block walls, the graveyard's
   wall and stones, the hedges and the building site's fence.
 - *Things that move* (`Arena.mover`): glass lifts up the twin towers' north faces (street to roof), the building site's
@@ -350,7 +364,8 @@ road"). The `Day` preset: a blue sky with white clouds.
   partition, balconies, stairs to the roof), a deck over the lane between them at their 2nd floors (a ramp up the
   lane) and a footbridge between their 3rd floors.
 - *Streets:* Japanese style — utility poles with power lines, crosswalks, kerbs, street trees, bicycles, vending
-  machines, street lamps along every street, traffic signals at the six crossings, round road signs, manholes, yellow
+  machines, paved pavements along every street, street lamps along every street, traffic signals at the six
+  crossings, round road signs, manholes, yellow
   fire hydrants, red post boxes, bollards round the plaza, nobori banners outside the bars, a phone booth by the
   police box, a yellow line along the district's edge. The plaza's fountain has a jet and four flower beds; the
   graveyard has wooden stakes behind its stones.

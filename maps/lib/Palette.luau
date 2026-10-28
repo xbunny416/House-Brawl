@@ -73,5 +73,6 @@ return {
 	GraveGrass = "#5B6B45",
 	Stone = "#8E8C86", -- gravestones, the graveyard wall
 	Bedrock = "#4B4640", -- the cliff under the district's open edges
-	TempleRed = "#B23A2E", -- the graveyard's pagoda
+	TempleRed = "#B23A2E", -- the graveyard's pagoda, the mansion's tiles
+	Cardboard = "#B08A5A", -- stock boxes
 }

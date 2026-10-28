@@ -225,3 +225,11 @@ Settings → Promo code, styles come from the style roll).
     - Nothing new blocks a doorway or a pavement you run along.
     - Ledges and cornices don't cross a window or a door.
     - The frame rate holds, especially on a phone: about 7,600 instances, up from 6,600.
+- **Shinjuku less blocky, more inside (2026-10-28):**
+  - *Outside:* look at the window sills, the corner columns, the plaster and brick walls, the tiled eaves along the
+    yokocho, the red tile roof on the mansion, the court's pediment and the paler pavements. Break a wall under a
+    window: its sill goes with it.
+  - *Inside:* walk through every building. Look for the office cabinets and whiteboards, the hotel's nightstands, the
+    flats' kitchens and TVs, the karaoke screens, the goods on the mart's shelves, the bars' bottle shelves, the stage
+    lights and the temple's candles.
+  - *Check:* the frame rate on a phone (about 8,500 instances now).

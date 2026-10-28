@@ -833,19 +833,55 @@ local TRIM: { [string]: string } = {
 	Temple = "WoodDark",
 }
 
+-- Wall and floor materials other than plain concrete (owner, 2026-10-28: "still look less detail and blocky").
+local FINISH: { [string]: { Wall: string?, Floor: string? } } = {
+	ApartmentsNorth = { Wall = "Plaster" },
+	ApartmentsSouth = { Wall = "Plaster" },
+	Hotel = { Wall = "Plaster" },
+	Mansion = { Wall = "Plaster" },
+	Cafe = { Wall = "Plaster" },
+	Koban = { Wall = "Plaster" },
+	Karaoke = { Wall = "Plaster" },
+	Mart = { Floor = "CeramicTiles" },
+	GasKiosk = { Floor = "CeramicTiles" },
+	FireStation = { Wall = "Brick" },
+	DeptStore = { Wall = "Limestone" },
+	Arcade = { Floor = "Carpet" },
+}
+
 --[[
-	A Rooms building with the finish every building here gets: a ledge round it at every floor line and a cornice at
-	the roof line (walk-through, so they never snag anyone), and a light under every ceiling, clear of the stair well.
-	The open car park keeps its bare decks. Its parts go into the building's model.
+	A Rooms building with the finish every building here gets: a sill under every window, a column standing out at
+	each corner, a ledge round it at every floor line and a cornice at the roof line (all walk-through, so they never
+	snag anyone), a light under every ceiling clear of the stair well, and its wall and floor materials (FINISH). The
+	open car park keeps its bare decks. Its parts go into the building's model.
 ]]
 local function building(spec: Rooms.Spec): any
+	local trim = TRIM[spec.Name] or "ConcreteDark"
+	local finish = FINISH[spec.Name]
+	if finish then
+		spec.Material = spec.Material or finish.Wall
+		spec.FloorMaterial = finish.Floor or spec.FloorMaterial
+	end
+	spec.Sill = spec.Sill or (if trim == "ConcreteDark" then "ConcreteLight" else trim)
 	local model = Rooms.building(spec)
 	local sx, sz = spec.Size[1], spec.Size[2]
 	local cx, cz = spec.At[1], spec.At[2]
 	local h = spec.Storey
-	local trim = TRIM[spec.Name] or "ConcreteDark"
 	local function keep(part: any)
 		part.Parent = model
+	end
+	local top = spec.Floors * h + (if spec.Roof then 0.6 else 0)
+	for _, sxSign in { -1, 1 } do
+		for _, szSign in { -1, 1 } do
+			keep(B.part({
+				Name = "CornerColumn",
+				Size = { 1.2, top, 1.2 },
+				Position = { cx + sxSign * (sx / 2 - 0.3), top / 2, cz + szSign * (sz / 2 - 0.3) },
+				Color = trim,
+				Material = if string.sub(trim, 1, 4) == "Neon" then "Neon" else "Concrete",
+				CanCollide = false,
+			}))
+		end
 	end
 	local function ring(name: string, y: number, height: number, out: number)
 		for _, side in
@@ -1481,7 +1517,7 @@ local function yokocho()
 			B.part({
 				Name = "Lantern",
 				Size = { 1.2, 1.6, 1.2 },
-				Position = { YOKOCHO.X + bay, DOOR + 1, YOKOCHO.LaneZ + side * (YOKOCHO.Lane / 2 - 0.5) },
+				Position = { YOKOCHO.X + bay, DOOR - 0.4, YOKOCHO.LaneZ + side * (YOKOCHO.Lane / 2 - 2) },
 				Shape = "Ball",
 				Color = "Red",
 				Material = "Neon",
@@ -2620,7 +2656,7 @@ local function courtAndMansion()
 		Openings = { { Face = "+Z", At = 0, Width = 5, Height = DOOR } },
 		Windows = { Faces = { "+X", "-X", "+Z", "-Z" }, Width = 3, Height = 4, Sill = 2.5, Spacing = 6 },
 		Stair = { At = { -10, -5 }, Along = "X", Width = 3.5 },
-		Roof = { Color = "AsphaltDark", Material = "Slate", Parapet = true },
+		Roof = { Color = "AsphaltDark", Material = "Slate" }, -- under its pitched tile roof (roofDetail)
 	})
 	building({
 		Name = "Garage",
@@ -2865,7 +2901,7 @@ local function deptStore()
 		sofa({ x, south }, 2 * STOREY, 0, "WoodMid")
 		Pieces.block("Display", { x, north }, { 6, 2.4, 3 }, "WoodDark", "Wood", 2 * STOREY)
 	end
-	faceSign(at, size, "+Z", 0, 9.4, 28, 1.6, "Map.Shinjuku.Sign.DeptStore", "OffWhite", "Black")
+	faceSign(at, size, "+Z", 0, 11.5, 28, 1.6, "Map.Shinjuku.Sign.DeptStore", "OffWhite", "Black")
 	-- The roof: the Ferris wheel's A-frame legs and axle, a ticket booth, AC units.
 	local hub = { -80, DEPT_ROOF + 15.4, at[2] }
 	for _, dz in { -3.2, 3.2 } do
@@ -3410,6 +3446,27 @@ local function streetDetail()
 		Pieces.block("BoothRoof", { 13, -3 }, { 3, 0.4, 3 }, "Lawn", "SmoothPlastic", 6.5)
 		Pieces.block("Phone", { 13.8, -3 }, { 0.6, 1, 0.6 }, "Lawn", "SmoothPlastic", 3.6).CanCollide = false
 	end)
+	-- Paved pavements along both sides of every street (paler than the bare ground, under the buildings' floors).
+	local pave = ROAD / 2 + 3.5
+	for _, z in STREETS_Z do
+		for _, side in { -1, 1 } do
+			paint("Pavement", { 0, z + side * pave }, { DISTRICT[1], 7 }, "ConcreteLight", "Pavement", 0.03)
+		end
+	end
+	for _, x in STREETS_X do
+		for _, gap in GAPS_Z do
+			for _, side in { -1, 1 } do
+				paint(
+					"Pavement",
+					{ x + side * pave, (gap[1] + gap[2]) / 2 },
+					{ 7, gap[2] - gap[1] },
+					"ConcreteLight",
+					"Pavement",
+					0.03
+				)
+			end
+		end
+	end
 	-- A yellow line along the district's edge, so the drop is easy to see.
 	for _, line in
 		{
@@ -3530,6 +3587,314 @@ local function buildingDetail()
 	end
 end
 
+-- A flat panel on a wall (a whiteboard, a painting, a menu, a screen): `size` (X, Y, Z) at `at` (x, y, z).
+local function wallPanel(name: string, at: { number }, size: { number }, color: string, material: string?)
+	B.part({
+		Name = name,
+		Size = size,
+		Position = at,
+		Color = color,
+		Material = material or "SmoothPlastic",
+		CanCollide = false,
+	})
+end
+
+-- A small glowing ball (a hanging lamp, a lantern, a bulb).
+local function glow(name: string, at: { number }, size: number, color: string)
+	B.part({
+		Name = name,
+		Size = { size, size, size },
+		Position = at,
+		Shape = "Ball",
+		Color = color,
+		Material = "Neon",
+		CanCollide = false,
+	})
+end
+
+--[[
+	More inside every building (owner, 2026-10-28: "add more detail inside buildings too, more polish"): filing
+	cabinets, whiteboards and clocks in the offices, lift doors and a rug in the towers' lobbies; nightstands and
+	carpet runners in the hotel; kitchens, fridges, rugs and wall TVs in the flats; tables and screens in the karaoke
+	booths; goods on the mart's shelves, a freezer, a magazine rack and a cash machine; menu boards, hanging lamps and
+	lanterns in the ramen shop, the bars' bottle shelves; the pachinko parlor's prize shelf and lamps; the cafe's
+	stools, cake case, menu and rug; the arcade's neon floor stripe and air-hockey table; the mall's kiosks and plants;
+	the bowling alley's snack counter and ball rack; the shops' goods, stock boxes, rugs and TVs; the department
+	store's tills and floor signs; toilets in the cells; stage lights in the comedy club; flags and a clock in the
+	court; a hose reel and a helmet shelf in the fire station; rugs, paintings and a chandelier in the mansion; altar
+	candles and a lantern in the temple; the car park's pay machine and barriers; a map board in the police box; a
+	shelf in the kiosk; a workbench in the garage.
+]]
+local function interiorDetail()
+	-- The towers.
+	for _, side in { -1, 1 } do
+		local x0, z0 = side * TOWER.X, TOWER.Z
+		for floor = 2, TOWER.Floors do
+			local y = (floor - 1) * TOWER.Storey
+			Pieces.block("FilingCabinet", { x0 + side * 18.3, z0 - 6 }, { 1.6, 4, 3 }, "CityGrey", "Metal", y)
+			wallPanel("Whiteboard", { x0 - side * 4, y + 5, z0 - 19.1 }, { 6, 3, 0.1 }, "OffWhite")
+			B.part({
+				Name = "WallClock",
+				Size = { 0.1, 1.4, 1.4 },
+				Position = { x0, y + 7.5, z0 + 19.1 },
+				Rotation = { 0, 90, 0 },
+				Shape = "Cylinder",
+				Color = "OffWhite",
+				CanCollide = false,
+			})
+		end
+		for _, dz in { 10, 15 } do
+			wallPanel("LiftDoor", { x0 - side * 19.15, 4, z0 + dz }, { 0.1, 8, 4 }, "Metal", "Metal")
+		end
+		paint("LobbyRug", { x0, z0 - 6 }, { 14, 10 }, "Red", "Carpet", 0.14)
+	end
+	-- The hotel: a nightstand by every bed, a carpet runner down every corridor.
+	local hotelX0 = HOTEL.At[1] - 16
+	for floor = 2, HOTEL.Floors do
+		local y = (floor - 1) * STOREY
+		for _, roomX in { hotelX0 + 5, hotelX0 + 15, hotelX0 + 25, hotelX0 + 35 } do
+			Pieces.block("Nightstand", { roomX + 3.2, HOTEL.At[2] - 15 }, { 1.4, 2, 1.4 }, "WoodDark", "Wood", y)
+			Pieces.block("Nightstand", { roomX + 3.2, HOTEL.At[2] + 15 }, { 1.4, 2, 1.4 }, "WoodDark", "Wood", y)
+		end
+		paint("Runner", { hotelX0 + 20, HOTEL.At[2] }, { 38, 3 }, "Red", "Carpet", y + 0.06)
+	end
+	-- The flats: a kitchen and a fridge along the lane wall, a rug, a TV on the partition.
+	for _, block in { { 45, 4, 1 }, { -45, 5, -1 } } do
+		local z, away = block[1], block[3]
+		for floor = 1, block[2] do
+			local y = (floor - 1) * STOREY
+			Pieces.block("Kitchen", { 201.5, z - away * 19.8 }, { 6, 3.4, 2 }, "OffWhite", "Marble", y)
+			Pieces.block("Fridge", { 196.5, z - away * 19.6 }, { 2.6, 5.4, 2.6 }, "OffWhite", "SmoothPlastic", y)
+			paint(
+				"Rug",
+				{ 218, z + away * 12 },
+				{ 8, 6 },
+				if floor % 2 == 0 then "ShopTeal" else "ShopOrange",
+				"Carpet",
+				y + 0.08
+			)
+			wallPanel("WallTV", { 231.7, y + 4.5, z + away * 9 }, { 0.1, 2.4, 4 }, "Black")
+		end
+	end
+	-- The karaoke booths: a low table and a glowing screen in each.
+	local boothX0 = KARAOKE.At[1] - 8
+	local booth = (KARAOKE.At[1] + KARAOKE.Size[1] / 2 - 0.8 - boothX0) / 3
+	for floor = 2, KARAOKE.Floors do
+		local y = (floor - 1) * STOREY
+		for index = 0, 2 do
+			local x = boothX0 + booth * (index + 0.5)
+			Pieces.block("BoothTable", { x, KARAOKE.At[2] - 10 }, { 3, 1.6, 2 }, "Black", "SmoothPlastic", y)
+			Pieces.block("BoothTable", { x, KARAOKE.At[2] + 10 }, { 3, 1.6, 2 }, "Black", "SmoothPlastic", y)
+			-- The screen on each booth's east wall (the end booth's: the tower's own wall).
+			local wallX = boothX0 + booth * (index + 1) - (if index == 2 then 0.05 else 0.25)
+			wallPanel("KaraokeScreen", { wallX, y + 5, KARAOKE.At[2] - 9.5 }, { 0.1, 2.8, 4 }, "NeonTeal", "Neon")
+			wallPanel("KaraokeScreen", { wallX, y + 5, KARAOKE.At[2] + 9.5 }, { 0.1, 2.8, 4 }, "NeonPink", "Neon")
+		end
+	end
+	-- The mart: rows of goods on both faces of every shelf, a freezer, a magazine rack, a cash machine.
+	local goods = { "ShopRed", "ShopYellow", "ShopTeal", "ShopOrange", "ShopPink", "CityBlue" }
+	for index, dz in { -4, 2, 8 } do
+		for side, offset in { -0.9, 0.9 } do
+			wallPanel("Goods", { 127, 2.3, 55 + dz + offset }, { 19.6, 3.6, 0.2 }, goods[(index + side) % #goods + 1])
+		end
+	end
+	Pieces.block("Freezer", { 108, 63 }, { 8, 3, 3 }, "OffWhite", "SmoothPlastic")
+	Pieces.block("MagazineRack", { 140, 41.6 }, { 10, 4, 1 }, "WoodMid", "Wood")
+	Pieces.block("CashMachine", { 145, 68.2 }, { 2, 5, 1.6 }, "CityBlue", "Metal")
+	-- The ramen shop: a menu over the kitchen, lamps over the counter, lanterns upstairs; the bars' bottle shelves.
+	wallPanel("Menu", { -122, 6.5, 40.9 }, { 10, 2.5, 0.1 }, "Cream", "Wood")
+	for _, x in { -130, -122, -114 } do
+		glow("CounterLamp", { x, 8.4, 49 }, 1, "WarmLight")
+	end
+	for _, x in { -124, -110 } do
+		glow("PaperLantern", { x, STOREY + 8.2, 56 }, 1.4, "Red")
+	end
+	for _, side in { 1, -1 } do
+		local back = YOKOCHO.LaneZ + side * (YOKOCHO.Lane / 2 + YOKOCHO.Depth - 0.9)
+		for _, bay in { -23.5, -10.5, 2.5, 15.5, 28.5, 41.5 } do
+			Pieces.block("BottleShelf", { YOKOCHO.X + bay, back }, { 6, 2.2, 0.5 }, "Bottle", "Glass", 5).CanCollide =
+				false
+		end
+	end
+	-- The pachinko parlor's prize shelf and jackpot lamps.
+	Pieces.block("PrizeShelf", { -92.5, 70.4 }, { 8, 6, 1.2 }, "ShopYellow", "SmoothPlastic")
+	for _, z in { 49, 55, 61 } do
+		upright("JackpotLamp", { -94.5, z }, 4.6, 0.8, 0.7, "NeonPink", "Neon", false)
+	end
+	-- The cafe: counter stools, a cake case, a menu, a rug upstairs.
+	for _, x in { -44, -40 } do
+		upright("Stool", { x, -61.8 }, 0, 2.2, 1.2, "WoodDark", "Wood")
+	end
+	local case = Pieces.block("CakeCase", { -40, -65 }, { 4, 1.6, 1.6 }, "Glass", "Glass", 3)
+	case.Transparency = 0.4
+	case.CanCollide = false
+	wallPanel("Menu", { -36, 6.5, -67.15 }, { 8, 2, 0.1 }, "WoodDark", "Wood")
+	paint("Rug", { -40, -58 }, { 10, 8 }, "ShopOrange", "Carpet", STOREY + 0.08)
+	-- The arcade's neon floor stripe and an air-hockey table upstairs.
+	paint("NeonStripe", { 117, -50 }, { 50, 0.4 }, "NeonPink", "Neon", 0.13)
+	Pieces.block("AirHockey", { 100, -44 }, { 4, 2.6, 7 }, "CityBlue", "SmoothPlastic", STOREY)
+	-- The mall's kiosks and plants.
+	for floor = 1, 2 do
+		Pieces.block("Kiosk", { -215, 25 }, { 6, 3.4, 3 }, "ShopTeal", "SmoothPlastic", (floor - 1) * 11)
+	end
+	pottedPlant({ -245, 70 }, 0)
+	pottedPlant({ -245, -20 }, 0)
+	-- The bowling alley's snack counter and ball rack.
+	Pieces.block("SnackCounter", { -197, -36 }, { 2, 3.4, 10 }, "ShopRed", "SmoothPlastic")
+	Pieces.block("BallRack", { -211, -72 }, { 2, 2, 6 }, "MetalDark", "Metal")
+	-- The shops: goods on the shelf, stock boxes upstairs, a rug and a TV on the top floor.
+	for index, x in { -147, -117, -87, -57, -27 } do
+		wallPanel("Goods", { x + 11.35, 2.3, SHOP_Z + 3 }, { 0.1, 3.2, 7.4 }, goods[index])
+		Pieces.block("StockBox", { x + 10, SHOP_Z - 8 }, { 2.4, 2.4, 2.4 }, "Cardboard", "Cardboard", STOREY)
+		Pieces.block("StockBox", { x + 11, SHOP_Z - 4.5 }, { 2, 2, 2 }, "Cardboard", "Cardboard", STOREY)
+		paint("Rug", { x + 4, SHOP_Z + 4 }, { 8, 6 }, goods[(index + 2) % #goods + 1], "Carpet", 2 * STOREY + 0.08)
+		wallPanel("WallTV", { x + 14.1, 2 * STOREY + 4.5, SHOP_Z + 6 }, { 0.1, 2.4, 4 }, "Black")
+	end
+	-- The department store's tills and a sign hanging over every floor.
+	for _, x in { -120, -96 } do
+		Pieces.block("Till", { x, DEPT.At[2] - 16 }, { 6, 3.4, 2 }, "WoodDark", "Wood")
+	end
+	for floor = 1, DEPT.Floors do
+		wallPanel(
+			"FloorSign",
+			{ -108, floor * STOREY - 1.6, DEPT.At[2] },
+			{ 10, 1.6, 0.2 },
+			goods[floor],
+			"SmoothPlastic"
+		)
+	end
+	-- Toilets in the cells; stage lights in the comedy club; flags and a clock in the court.
+	for _, x in { -250, -244 } do
+		Pieces.block("Toilet", { x, -160 }, { 1.4, 1.6, 1.6 }, "OffWhite", "SmoothPlastic")
+	end
+	Pieces.block("LightRig", { -235, -209 }, { 40, 0.4, 0.4 }, "MetalDark", "Metal", 11.5).CanCollide = false
+	for _, x in { -250, -240, -230, -220 } do
+		Pieces.block("StageLight", { x, -209 }, { 1, 1.2, 1 }, "WarmLight", "Neon", 10.3).CanCollide = false
+	end
+	for index, x in { 51, 69 } do
+		upright("FlagPole", { x, -164 }, 0, 9, 0.2, "OldBrass", "Metal", false)
+		B.part({
+			Name = "Flag",
+			Size = { 3, 2, 0.05 },
+			Position = { x + 1.6, 7.8, -164 },
+			Color = if index == 1 then "OffWhite" else "CityBlue",
+			Material = "Fabric",
+			CanCollide = false,
+		})
+	end
+	B.part({
+		Name = "WallClock",
+		Size = { 0.1, 1.6, 1.6 },
+		Position = { 60, 12, -166.1 },
+		Rotation = { 0, 90, 0 },
+		Shape = "Cylinder",
+		Color = "OffWhite",
+		CanCollide = false,
+	})
+	-- The fire station's hose reel and helmet shelf.
+	B.part({
+		Name = "HoseReel",
+		Size = { 0.6, 2.4, 2.4 },
+		Position = { 80.7, 4, -204 },
+		Shape = "Cylinder",
+		Color = "Red",
+		Material = "Metal",
+		CanCollide = false,
+	})
+	wallPanel("HelmetShelf", { 40, 5, -221.05 }, { 8, 0.3, 1 }, "WoodDark", "Wood")
+	for _, x in { 37.5, 40, 42.5 } do
+		glow("Helmet", { x, 5.6, -221 }, 0.9, "LaneYellow")
+	end
+	-- The mansion: rugs, a chandelier.
+	paint("Rug", { 142, -184 }, { 8, 6 }, "Red", "Carpet", 0.14)
+	paint("Rug", { 143, -197 }, { 10, 6 }, "CityBlue", "Carpet", STOREY + 0.08)
+	glow("Chandelier", { 142, 8.6, -184 }, 1.4, "WarmLight")
+	-- The temple's candles and lantern.
+	for _, dx in { -3, 3 } do
+		upright("Candle", { 55 + dx, -66.5 }, 3.4, 0.8, 0.3, "WarmLight", "Neon", false)
+	end
+	glow("TempleLantern", { 55, 9.5, -60 }, 1.6, "Red")
+	-- The car park's pay machine and the barriers at its car entrances.
+	Pieces.block("PayMachine", { 154, -12 }, { 1.6, 5, 1.2 }, "CityBlue", "Metal")
+	for _, z in { -3, 9 } do
+		Pieces.block("Barrier", { 156.4, z }, { 0.3, 0.3, 8 }, "Red", "SmoothPlastic", 3).CanCollide = false
+	end
+	-- The police box's map board, the kiosk's shelf, the garage's workbench.
+	wallPanel("MapBoard", { 27.15, 5, 6 }, { 0.1, 3, 5 }, "CityBlue", "SmoothPlastic")
+	Pieces.block("Shelf", { 24, -18.6 }, { 5, 4, 1.2 }, "WoodMid", "Wood")
+	Pieces.block("Workbench", { 106.6, -196 }, { 2.4, 3, 6 }, "WoodDark", "Wood")
+end
+
+--[[
+	Roofs and eaves so the low buildings aren't flat boxes: tiled eaves along both rows of the yokocho and over the
+	ramen shop's front, pitched tile roofs on the mansion, the garage and the police box, a pediment over the court's
+	portico, canopies over the comedy club's, the mall's and the department store's doors.
+]]
+local function roofDetail()
+	for _, side in { 1, -1 } do
+		local face = YOKOCHO.LaneZ + side * YOKOCHO.Lane / 2
+		B.part({
+			Name = "Eave",
+			Size = { YOKOCHO.Length, 0.4, 3 },
+			Position = { YOKOCHO.X, 9.2, face - side * 1.3 },
+			Rotation = { -side * 18, 0, 0 }, -- higher at the wall, lower over the lane
+			Color = "AsphaltDark",
+			Material = "ClayRoofTiles",
+			CanCollide = false,
+		})
+	end
+	B.part({
+		Name = "Eave",
+		Size = { 46, 0.4, 3 },
+		Position = { -125, 10.9, 71.3 },
+		Rotation = { 18, 0, 0 },
+		Color = "AsphaltDark",
+		Material = "ClayRoofTiles",
+		CanCollide = false,
+	})
+	local function gable(name: string, at: { number }, size: { number }, y: number, color: string)
+		for _, side in { -1, 1 } do
+			B.part({
+				Name = name,
+				Size = { size[1], size[2], size[3] / 2 },
+				Position = { at[1], y + size[2] / 2, at[2] + side * size[3] / 4 },
+				Rotation = { 0, if side < 0 then 0 else 180, 0 }, -- each wedge's tall end toward the ridge
+				Shape = "Wedge",
+				Color = color,
+				Material = "ClayRoofTiles",
+			})
+		end
+	end
+	gable("PitchedRoof", { 135, -190 }, { 44, 6, 32 }, 2 * STOREY + 0.6, "TempleRed")
+	gable("PitchedRoof", { 100, -192 }, { 20, 3, 22 }, 9.6, "AsphaltDark")
+	gable("PitchedRoof", { 22, 6 }, { 14, 2.4, 12 }, STOREY + 0.6, "AsphaltDark")
+	-- The court's pediment: two wedges meeting over the middle of the portico.
+	local front = -150 + 17
+	for _, side in { -1, 1 } do
+		B.part({
+			Name = "Pediment",
+			Size = { 1, 4, 26 },
+			Position = { 60 + side * 13, 18, front + 2.5 },
+			Rotation = { 0, -side * 90, 0 },
+			Shape = "Wedge",
+			Color = "OffWhite",
+			Material = "Marble",
+			CanCollide = false,
+		})
+	end
+	Pieces.block("Canopy", { -235, -184 + 2 }, { 18, 0.4, 4 }, "Black", "Metal", 8.1).CanCollide = false
+	Pieces.block("Canopy", { -192 + 3, 25 }, { 6, 0.3, 18 }, "CityBlue", "Metal", 9).CanCollide = false
+	Pieces.block(
+		"Canopy",
+		{ DEPT.At[1], DEPT.At[2] + DEPT.Size[2] / 2 + 2.5 },
+		{ 16, 0.4, 5 },
+		"MetalDark",
+		"Metal",
+		9.1
+	).CanCollide =
+		false
+end
+
 local function district()
 	streets()
 	streetDetail()
@@ -3563,6 +3928,8 @@ local function district()
 	hotel()
 	buildingSite()
 	buildingDetail()
+	interiorDetail()
+	roofDetail()
 end
 
 -- The pieces are written from the arena origin; the platform's own frame is at its centre (z CENTER_Z).
