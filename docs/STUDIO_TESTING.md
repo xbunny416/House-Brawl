@@ -137,26 +137,27 @@ Settings → Promo code, styles come from the style roll).
   - *Gloomier (same day):* the room should feel dim, with warm pools of light under the lamps and the neon standing
     out. If it is too dark to see players or the floor, raise `Ambient` in the `Dusk` preset (`Config.Lighting`) a
     little first; if only one area is too dark, raise its lamps instead.
-- **Small City, the only arena (2026-10-28):**
-  - *If no round starts* and Output says `[Maps] SmallCity is enabled but ServerStorage.Arenas has no SmallCity model`:
-    stop `rojo serve` (Ctrl+C), start it again and click Connect in the Rojo plugin (a new map file only syncs after a
-    restart).
-  - *Starting a round:* stand on the join pad. The vote shows one map, Small City, and the round loads it on a sunny
-    day (blue sky, white clouds).
-  - *A town on the ground since the same day (no floating blocks):* you spawn in the streets of a town in a green
-    valley with mountains all round.
-  - *Fighting:* props respawn on their spots and you can throw them, and breakables (wrecked cars, vending machines,
-    barrier stacks, the ice machine, the lawn chairs) break and drop props. Nobody falls here, so a life ends at 0 HP.
-    Check that rounds still end: the last one standing, or most KOs at time-out.
-  - *The edges:* run and dash into the mountains: an invisible wall at the foot of the slopes stops you everywhere,
-    the tunnel mouths at both ends of the avenue too. Get knocked hard into the wall with high Percent and check you
-    don't fly over it.
-  - *Moving around:* climb the diner's fire escape to its roof (south row, by the avenue), the construction site's
-    steel frame (stairs to +6 and +12), the playground tower in the park, the bus at the depot and the bleachers.
-  - *Look:* the streets' lines, crosswalks and traffic lights, the four office towers, the gas station canopy, the
-    houses' roofs (pitched, not upside down), the hoops. On the mountains: grass slopes with grey rock and snow on the
-    tall ones, and a farther ring behind them. If the mountains look too blocky, say so: they are wedges (part-built,
-    no terrain).
+- **Shinjuku, the only arena (2026-10-28; Small City until the owner asked for the Jujutsu Shenanigans look):**
+  - *If no round starts* and Output says `[Maps] Shinjuku is enabled but ServerStorage.Arenas has no Shinjuku model`:
+    stop `rojo serve` (Ctrl+C), start it again and click Connect in the Rojo plugin (the map's file is new: SmallCity
+    became Shinjuku). `ServerStorage.Arenas` should hold Shinjuku plus the three old arenas.
+  - *Starting a round:* stand on the join pad. The vote shows one map, Shinjuku, and the round loads it on a sunny day.
+  - *Where you are:* a Tokyo street block. The station is along one edge with its plaza in front; across the main
+    street stand the twin towers either side of the avenue, the skybridge between them.
+  - *Fighting:* props respawn on their spots (some on the roofs, the skybridge and the station platforms) and you can
+    throw them, and breakables (vending machines, wrecked cars, the ice machine by the mart, a barrier stack) break
+    and drop props. Nobody falls here, so a life ends at 0 HP. Check that rounds still end: the last one standing, or
+    most KOs at time-out.
+  - *Climbing (ladders are Roblox trusses: walk into one to climb):*
+    - The towers: the ladder on each one's outer side goes up to its terrace (+40); from there cross the skybridge, or
+      climb the short ladder to the roof (+48.4).
+    - Also: the station roof (ladders at its front corners), the train (a ladder at its east end), the mall roof, and
+      the cafe's outside stair to its deck.
+  - *The edges:* run and dash at the city blocks round the edge: an invisible wall stops you everywhere. Get knocked
+    hard into it with high Percent and check you don't fly over.
+  - *Look:* the station sign and train, the towers' billboards (CURSED COLA, TOKYO NIGHTS), the utility poles and
+    wires, crosswalks, the shop row's signs, the graveyard, the purple jail with its barred cell, the courthouse
+    columns, the cherry trees, the skyline all round.
   - *Old arenas:* Broken Highway, Junkyard Isles and Neon Motel are still in `ServerStorage.Arenas` but never voted
     for. To play one again, set its `Enabled = true` in `src/shared/Config/Maps.luau`. The developer panel's map list
     shows only enabled maps.

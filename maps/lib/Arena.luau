@@ -36,7 +36,7 @@ export type Platform = {
 	Deck: Deck?,
 }
 
-export type Spot = { number } -- X, Z relative to the platform's top centre
+export type Spot = { number } -- X, Z relative to the platform's top centre (and, for some, the height above it)
 
 export type Contents = {
 	Spawns: { Spot }?,
@@ -269,23 +269,24 @@ local function buildPlatform(platform: Platform, contents: Contents, decorate: (
 			end
 			decorate(platform)
 
+			-- A spot's optional third number is its height above the platform's top (on a roof, a deck).
 			for index, spot in contents.Spawns or {} do
 				B.marker(
 					"SpawnPoint",
 					`Spawn{index}`,
-					{ spot[1], 0, spot[2] },
+					{ spot[1], spot[3] or 0, spot[2] },
 					nil,
 					facingCenter(centerX + spot[1], centerZ + spot[2])
 				)
 			end
 			for index, spot in contents.Props or {} do
-				B.marker("PropSpot", `PropSpot{index}`, { spot[1], 0, spot[2] })
+				B.marker("PropSpot", `PropSpot{index}`, { spot[1], spot[3] or 0, spot[2] })
 			end
 			if contents.Explosive then
 				B.marker("ExplosiveSpot", "ExplosiveSpot", { contents.Explosive[1], 0, contents.Explosive[2] })
 			end
 			for index, spot in contents.Explosives or {} do
-				B.marker("ExplosiveSpot", `ExplosiveSpot{index}`, { spot[1], 0, spot[2] })
+				B.marker("ExplosiveSpot", `ExplosiveSpot{index}`, { spot[1], spot[3] or 0, spot[2] })
 			end
 			for index, structure in contents.Structures or {} do
 				B.marker(

@@ -182,6 +182,14 @@ function Builder.seat(spec: PartSpec): any
 	return seat
 end
 
+-- A climbable truss (a TrussPart: walk into it and you climb it like a ladder) built like a part. Roblox snaps its size
+-- to 2-stud steps, so give it { 2, height, 2 } with an even height.
+function Builder.truss(spec: PartSpec): any
+	local truss = Instance.new("TrussPart")
+	applyCommon(truss, spec)
+	return truss
+end
+
 -- A SpawnLocation (neutral, no spawn forcefield) built like a part.
 function Builder.spawnLocation(spec: PartSpec): any
 	local spawn = Instance.new("SpawnLocation")

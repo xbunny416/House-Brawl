@@ -27,8 +27,8 @@
 				"NeonMotel": {
 					"$path": "maps/generated/NeonMotel.rbxmx"
 				},
-				"SmallCity": {
-					"$path": "maps/generated/SmallCity.rbxmx"
+				"Shinjuku": {
+					"$path": "maps/generated/Shinjuku.rbxmx"
 				}
 			}
 		},

@@ -1026,3 +1026,32 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
       Persistent mountains and every spot inside the walls.
     - Everything else (spot counts and spacing, nothing solid on a spot, structure types, KillY) runs on every arena.
   - *Also:* the "WELCOME TO SMALL CITY" billboard string went with the rooftops; a DINER sign came in.
+- **The arena looks like Jujutsu Shenanigans' Shinjuku (owner, 2026-10-28: "want arena to look like jjk sheningan, not
+  like this"):** "jjk sheningan" was read as Jujutsu Shenanigans, the Roblox battleground game whose main map is a
+  Shinjuku-themed city.
+  - *What the references say:* only search results and map guides could be read, no screenshots. They describe:
+    - Shinjuku Station at one end, with rails inside and a train;
+    - twin 11-floor towers joined by a bridge at the 9th floor, with ladders up the corners and billboards;
+    - a cafe at the map's centre by a plaza, with tables and chairs;
+    - a mall at the station's side with a bowling alley;
+    - a graveyard with bare trees and gravestones by the arcade;
+    - a light-purple jail house with a barred cell, a purple comedy club, a small white courthouse, a mansion with a
+      garage;
+    - small shops: a bookstore, an appliance store, a sandwich shop, a candy store, karaoke, a convenience store, a
+      restaurant full of chairs;
+    - vending machines, trash cans and fire extinguishers.
+  - *Our own version:* a Shinjuku-style district with those kinds of places and generic names (CAFE, RAMEN, 24H MART,
+    BOOKS …, made-up billboard ads), nothing copied from the game. JJS's destructible buildings are not copied; our
+    breakables stay the structures (four vending machines among them).
+  - *Edges:* what lies past JJS's edge couldn't be found. The owner had already said "no floating island", so the
+    district stays a walled-in ground arena: the mountains became tall city blocks behind the walls, so the city seems
+    to go on.
+  - *Renamed:* Small City → Shinjuku (the map id, the files, the strings `Map.Shinjuku.*`, the config and the music
+    slot). The Shinjuku model was generated before the project file pointed at it, so a running `rojo serve` should
+    sync it. If not, the `[Maps]` warning says to restart it.
+  - *Climbing:* ladders are Roblox TrussParts (`Builder.truss`): up the towers (to the +40 terrace and the +48.4 roof),
+    to the station roof, onto the train and onto the mall.
+  - *Spots with a height:* a spot's optional third number is its height (`Arena.Contents`), so props also spawn on the
+    tower roofs and terrace, the skybridge, the station roof and platforms, and the cafe's deck.
+  - *Same counts:* 16 spawns (JJS spawns players by the station, so seven are in the station plaza), 24 props, 8
+    breakables, 6 barrels. KOs by HP.

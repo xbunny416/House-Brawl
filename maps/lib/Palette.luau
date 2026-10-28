@@ -56,13 +56,20 @@ return {
 	DuskGlow = "#B97A55",
 	ConcreteLight = "#A59F94",
 	BrickRed = "#8A4634",
-	-- Small City (owner, 2026-10-28: "like the default small city in Roblox"): clean daytime town colours.
+	-- The Shinjuku arena (owner, 2026-10-28: "look like jjk shenanigans"): a bright Tokyo street block.
 	Lawn = "#5E9C48",
-	CourtGreen = "#3E7C5C",
 	CityTan = "#C9B595",
 	CityBlue = "#7D94AB",
 	CityGrey = "#A3A6AB",
-	MountainGreen = "#4F7F3B", -- the grass slopes of the mountains round the valley
-	MountainRock = "#7E776C", -- their rock
-	Snow = "#F2F4F7", -- their snowy tops
+	ShopRed = "#C2453A",
+	ShopYellow = "#E2B33C",
+	ShopTeal = "#3C9A92",
+	ShopPink = "#D7739A",
+	ShopOrange = "#E0803A",
+	LightPurple = "#B79AD6", -- the jail
+	Purple = "#7E5AA8", -- the comedy club
+	ArcadeBlue = "#2B2F5A",
+	SakuraPink = "#F2B8C6", -- cherry trees
+	GraveGrass = "#5B6B45",
+	Stone = "#8E8C86", -- gravestones, the graveyard wall
 }
