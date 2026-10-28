@@ -27,7 +27,7 @@ local Audio: AudioConfig = {
 		Lobby = { Id = 0, Volume = 0.5 }, -- retro synthwave
 		-- One gritty chiptune-rock track per arena (map id → track).
 		Arenas = {
-			SmallCity = { Id = 0, Volume = 0.5 },
+			Shinjuku = { Id = 0, Volume = 0.5 },
 			BrokenHighway = { Id = 0, Volume = 0.5 },
 			JunkyardIsles = { Id = 0, Volume = 0.5 },
 			NeonMotel = { Id = 0, Volume = 0.5 },

@@ -9,7 +9,7 @@ local BrokenHighway = require("../../maps/layouts/BrokenHighway")
 local Hideout = require("../../maps/layouts/Hideout")
 local JunkyardIsles = require("../../maps/layouts/JunkyardIsles")
 local NeonMotel = require("../../maps/layouts/NeonMotel")
-local SmallCity = require("../../maps/layouts/SmallCity")
+local Shinjuku = require("../../maps/layouts/Shinjuku")
 local Arena = require("../../maps/lib/Arena")
 
 local Config = Roblox.require(Roblox.game.ReplicatedStorage.Shared.Config)
@@ -39,7 +39,7 @@ local arenas = {
 	{ Layout = BrokenHighway, Model = BrokenHighway.build(ORIGIN) },
 	{ Layout = JunkyardIsles, Model = JunkyardIsles.build(ORIGIN) },
 	{ Layout = NeonMotel, Model = NeonMotel.build(ORIGIN) },
-	{ Layout = SmallCity, Model = SmallCity.build(ORIGIN) },
+	{ Layout = Shinjuku, Model = Shinjuku.build(ORIGIN) },
 }
 local lobby = Hideout.build(Config.Maps.LobbyOrigin)
 
@@ -157,7 +157,7 @@ return {
 			expect.equal(fs.readFile(path) == roblox.serializeModel({ model }, true), true, path)
 		end
 	end,
-	["Small City is the only arena in the vote; the old three stay built and in the place, switched off"] = function()
+	["Shinjuku is the only arena in the vote; the old three stay built and in the place, switched off"] = function()
 		-- The owner, 2026-10-28: "only one arena instead of the 3 old arenas, just store them somewhere, don't delete it".
 		local enabled = {}
 		for _, mapId in Config.Maps.Rotation do
@@ -166,7 +166,7 @@ return {
 			end
 		end
 		expect.equal(#enabled, 1, "enabled arenas")
-		expect.equal(enabled[1], "SmallCity")
+		expect.equal(enabled[1], "Shinjuku")
 		local project = fs.readFile("default.project.json")
 		for _, mapId in { "BrokenHighway", "JunkyardIsles", "NeonMotel" } do
 			expect.truthy(table.find(Config.Maps.Rotation, mapId), `{mapId} stays in the rotation list`)
@@ -314,14 +314,14 @@ return {
 			expect.equal(#tagged(model, "Platform"), if layout.Ground then 1 else 13, `{layout.Id} platforms`)
 		end)
 	end,
-	["Small City: one walled-in valley on the ground (owner: no floating islands), with mountains all round"] = function()
-		-- The owner, 2026-10-28: "no floating island, just roblox default city with mountain around".
-		expect.equal(SmallCity.Ground, true, "a ground arena")
-		expect.equal(#SmallCity.Platforms, 1, "one platform")
-		local valley = SmallCity.Platforms[1]
-		expect.equal(valley.Kind, "Center", "the valley never falls")
-		local model = SmallCity.build(ORIGIN)
-		-- Invisible, solid walls on all four sides of the valley, tall enough that knockback doesn't carry anyone over.
+	["Shinjuku: one walled-in district on the ground (owner: no floating islands), city blocks all round"] = function()
+		-- The owner, 2026-10-28: "no floating island", then "want arena to look like jjk shenanigans".
+		expect.equal(Shinjuku.Ground, true, "a ground arena")
+		expect.equal(#Shinjuku.Platforms, 1, "one platform")
+		local valley = Shinjuku.Platforms[1]
+		expect.equal(valley.Kind, "Center", "the district never falls")
+		local model = Shinjuku.build(ORIGIN)
+		-- Invisible, solid walls on all four sides, tall enough that knockback doesn't carry anyone over.
 		local halfX, halfZ = valley.Size[1] / 2, valley.Size[2] / 2
 		local sides = { px = false, nx = false, pz = false, nz = false }
 		for _, wall in model:GetDescendants() do
@@ -344,17 +344,38 @@ return {
 		for side, closed in sides do
 			expect.truthy(closed, `the valley's {side} side has a wall along it`)
 		end
-		-- The mountains: solid ones round the valley, always streamed in.
-		local mountains = model:FindFirstChild("Mountains", true)
-		expect.truthy(mountains, "mountains")
-		expect.equal(mountains.ModelStreamingMode, roblox.Enum.ModelStreamingMode.Persistent, "mountains stream")
-		local solid = 0
-		for _, part in mountains:GetDescendants() do
-			if part:IsA("BasePart") and part.CanCollide then
-				solid += 1
+		-- The city blocks behind the walls, always streamed in, on every side.
+		local skyline = model:FindFirstChild("Skyline", true)
+		expect.truthy(skyline, "skyline")
+		expect.equal(skyline.ModelStreamingMode, roblox.Enum.ModelStreamingMode.Persistent, "skyline streams")
+		local around = { px = false, nx = false, pz = false, nz = false }
+		for _, part in skyline:GetDescendants() do
+			if part:IsA("BasePart") and part.Name == "Building" then
+				local p = part.CFrame.Position
+				around.px = around.px or p.X > halfX
+				around.nx = around.nx or p.X < -halfX
+				around.pz = around.pz or p.Z > halfZ
+				around.nz = around.nz or p.Z < -halfZ
 			end
 		end
-		expect.truthy(solid >= 40, `{solid} solid mountain parts`)
+		for side, built in around do
+			expect.truthy(built, `buildings behind the {side} wall`)
+		end
+		-- The owner's reference (Jujutsu Shenanigans' Shinjuku): the twin towers with their skybridge, ladders up them.
+		expect.truthy(
+			model:FindFirstChild("TowerWest", true) and model:FindFirstChild("TowerEast", true),
+			"twin towers"
+		)
+		expect.truthy(model:FindFirstChild("Skybridge", true), "skybridge")
+		local ladders = 0
+		for _, part in model:GetDescendants() do
+			if part:IsA("TrussPart") then
+				ladders += 1
+				expect.equal(part.Size.X, 2, "a truss is 2 wide")
+				expect.equal(part.Size.Y % 2, 0, "a truss's height is even")
+			end
+		end
+		expect.truthy(ladders >= 4, `{ladders} ladders`)
 		-- Every spot is inside the walls (the spacing checks above cover the rest).
 		for _, tag in { "SpawnPoint", "PropSpot", "ExplosiveSpot", "StructureSpot" } do
 			for _, marker in tagged(model, tag) do

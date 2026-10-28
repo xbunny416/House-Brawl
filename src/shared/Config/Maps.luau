@@ -19,7 +19,7 @@ local Maps: MapsConfig = {
 	-- streaming only sends what is near the player (arena platforms stay Persistent).
 	LobbyOrigin = { 0, 100, 0 },
 	ArenaOrigin = { 0, 100, -800 },
-	Rotation = { "SmallCity", "BrokenHighway", "JunkyardIsles", "NeonMotel" },
+	Rotation = { "Shinjuku", "BrokenHighway", "JunkyardIsles", "NeonMotel" },
 	VoteChoices = 3, -- maps offered per vote (only Enabled maps are offered)
 	KillYBelowLowestPlatform = 60,
 	-- The arenas' moving parts (Shared/MoverRules; their paths and timing are map data on each mover). A swinging hazard
@@ -27,11 +27,11 @@ local Maps: MapsConfig = {
 	-- studs/s, tipped HazardUp up, for HazardHitstun seconds; no damage, no Percent. The same fighter can be knocked
 	-- again after HazardCooldown seconds.
 	Movers = { HazardSpeed = 75, HazardUp = 0.45, HazardHitstun = 0.6, HazardCooldown = 1, HazardReach = 1 },
-	-- Small City is the only arena since 2026-10-28 (owner: "only one arena instead of the 3 old arenas, just store them
+	-- Shinjuku is the only arena since 2026-10-28 (owner: "only one arena instead of the 3 old arenas, just store them
 	-- somewhere, don't delete them"): the old three stay built and in ServerStorage.Arenas, switched off here — set
 	-- Enabled = true to bring one back into the vote.
 	List = {
-		SmallCity = { Enabled = true, Lighting = "Day" },
+		Shinjuku = { Enabled = true, Lighting = "Day" },
 		BrokenHighway = { Enabled = false, Lighting = "Smog" },
 		JunkyardIsles = { Enabled = false, Lighting = "Rust" },
 		NeonMotel = { Enabled = false, Lighting = "Night" },

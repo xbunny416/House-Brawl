@@ -128,11 +128,11 @@ Not used. No pets, eggs, or paid random items.
 
 ### 3.1 Streaming & zones
 
-- One Lobby hub + one arena in the vote: Small City (owner, 2026-10-28: "only one arena instead of the 3 old arenas,
+- One Lobby hub + one arena in the vote: Shinjuku (owner, 2026-10-28: "only one arena instead of the 3 old arenas,
   just store them somewhere, don't delete them"). Broken Highway, Junkyard Isles and Neon Motel stay built in
   ServerStorage, switched off in `Config.Maps.List` (`Enabled = true` brings one back into the vote). The old three
-  are floating platforms over a void (KillY) with a dark abyss or toxic sludge far below; Small City is a ground arena,
-  one valley walled in by mountains (owner, 2026-10-28: "no floating island").
+  are floating platforms over a void (KillY) with a dark abyss or toxic sludge far below; Shinjuku is a ground arena,
+  one walled-in city district (owner, 2026-10-28: "no floating island", then "look like jjk shenanigans").
 - Lobby → (vote) → arena via server-side teleport of characters within the same place. After the round, everyone
   returns to the Lobby. Arenas live in ServerStorage; only the active one is in Workspace.
 - All maps free. Players enter the arena only when the server starts a round, and only if they stand on the lobby's
@@ -145,7 +145,7 @@ Not used. No pets, eggs, or paid random items.
 | Map 1 — Broken Highway | Shattered overpass chunks, abandoned cars, road signs |
 | Map 2 — Junkyard Isles | Stacked car and container islands over toxic sludge |
 | Map 3 — Neon Motel | Sinking motel rooftops, flickering retro neon, pool on one roof |
-| Map 4 — Small City (the only arena in the vote) | A daytime town on the ground in a valley ringed by mountains: a street grid, four office towers, gas station, houses, park, parking lot, basketball court, construction site, bus depot |
+| Map 4 — Shinjuku (the only arena in the vote) | A Tokyo street block on the ground, walled in by city blocks: the station, twin towers with a skybridge, a cafe and plaza, shops, a graveyard, a jail, a mall with a bowling alley (in the spirit of Jujutsu Shenanigans' Shinjuku) |
 
 Maps 1–3 are switched off (kept built) since 2026-10-28.
 
@@ -256,7 +256,7 @@ the pool roof. Gangways: short from the centre to West and South, East to its lo
 antenna roof; longer from West to the NW roof and South to the SE roof; the rest are jumps. Ice machines and lawn
 chair stacks are detailed models.
 
-**Every floating arena** (all but Small City) follows the same rules as Broken Highway: four layers — 2 low platforms (4–9 below the centre), the
+**Every floating arena** (all but Shinjuku) follows the same rules as Broken Highway: four layers — 2 low platforms (4–9 below the centre), the
 base level (one centre platform that never falls, with a raised deck ≤ 6 high and ramps, and 4 side platforms within
 3 studs of it), 4 corner ledges (4–6 above) and 2 peaks (10–12 above) — every outer platform 8–14 studs from its
 nearest neighbour, every platform reachable from the centre with climbs of at most 6 studs, 16 spawn points, 24 loose
@@ -277,32 +277,37 @@ two 18×18 antenna roofs (+12) and two 28×28 low roofs. Motel buildings sink in
 surrounded by dark towers with neon signs. Neon flickers now and then. Structures: vending machine (HP 80) ×2, ice
 machine (HP 80) ×3, lawn chair stack (HP 60) ×3.
 
-**Small City arena** (day; owner, 2026-10-28: "just like the default small city in Roblox but still have throwable
-objects", then "no floating island, just roblox default city with mountain around"): a ground arena, unlike the
-others — one flat green valley (400×336, it never falls) with a small town on it, ringed by mountains (grass slopes,
-grey rock, snowy tops; a bigger, hazier ring behind them), like Roblox's old City and Suburban templates and the hills
-round its starting places. The `Day` preset: a blue sky with white clouds.
-- *Edges:* invisible walls along the valley's edge keep everyone in; the mountains rise behind them.
-- *Knockouts:* nobody falls, so a Classic life ends when its HP runs out. KillY under the ground only catches someone
-  who slips through.
-- *Streets:* the town (320×256) is a street grid — a main avenue that runs into a tunnel in the mountains at both
-  ends, two more streets alongside it and two across — with lane lines, crosswalks, kerbs, traffic lights, street
-  lamps, hydrants, trash cans, parked cars and a taxi.
-- *The twelve blocks:*
-  - Middle row: a gas station (canopy over two pump islands, a MINI MART, a GAS sign), office towers A (96 high)
-    and B (120) either side of the avenue, a parking lot (parked cars, a ticket booth, a PARKING sign).
-  - North row: two houses with pitched roofs, picket fences and mailboxes; the park (a fountain, benches, trees, a
-    playground tower with a slide); office tower C (80); two more houses.
-  - South row: a construction site with a two-storey steel frame (decks at +6 and +12, stairs); office tower D (70)
-    and a DINER with a fire escape to its roof; a basketball court with bleachers; the bus depot (a bus you can
-    climb onto, a shelter).
-- *The towers:* these are the old City template's four urban buildings: glass bands, a lobby and canopy, a crown and a
-  mast.
-- *Higher places:* the diner's roof, the steel frame, the playground tower, the bus, the bleachers, cars.
+**Shinjuku arena** (day; owner, 2026-10-28: "make another only one arena …", "no floating island", then "want arena
+to look like jjk shenanigans" — the Shinjuku battleground of the Roblox game Jujutsu Shenanigans; this is our own
+Shinjuku-style district in that spirit, with generic shop names): a ground arena, one flat Tokyo street block
+(400×336, it never falls). The `Day` preset: a blue sky with white clouds.
+- *Edges:* invisible walls along the district's edge keep everyone in. Tall city blocks rise right behind them on every
+  side (glass bands, roof units, a few vertical neon signs), so the city seems to go on.
+- *Knockouts:* nobody falls, so a Classic life ends when its HP runs out.
+- *North:* the station along the edge — a long roof on columns you can climb onto by ladders at its corners, ticket
+  gates, two platforms either side of two tracks, a parked three-car train (a ladder onto its roof), a SHINJUKU STATION
+  sign. In front of it, the station plaza with vending machines, planters, benches and a clock.
+- *The main street:* runs across the district, with taxis at the station.
+- *The middle, either side of the avenue:*
+  - The twin towers: 11 floors; the 9th floor's roof is a terrace round each top, joined over the avenue by a glass
+    skybridge; ladders up the outside to the terrace and on to the roof; CURSED COLA and TOKYO NIGHTS billboards.
+  - West: the RAMEN shop (open front, a counter with stools, lanterns), and the plaza with the two-storey CAFE in its
+    corner (open downstairs, a deck up an outside stair, a red roof).
+  - East: the 24H MART (glass front, shelves, a drinks cooler, vending machines), the graveyard (a low stone wall,
+    gravestones, bare trees) and the ARCADE (neon trim).
+- *The second street:* across the district.
+- *The south:* a row of small shops (BOOKS, ELECTRONICS, KARAOKE, SUBS, SWEETS: shopfronts, awnings, vertical signs),
+  dumpsters behind; the purple JAIL with a barred cell and the COMEDY CLUB; the white COURT with a portico; a mansion
+  with a garage and hedge; a pocket park with cherry trees.
+- *The north-west:* the MALL (graffiti, a ladder to its roof) and the BOWLING alley (a giant pin on its roof).
+- *The east:* two apartment blocks with balconies.
+- *Streets:* Japanese style — utility poles with power lines, crosswalks, kerbs, vending machines.
+- *Higher places:* the tower terraces, skybridge and roofs (+40, +48.4), the station roof (+15.5) and train, the cafe's
+  deck (+7), the mall's roof (+16).
 
-Props are the usual loose ones (chairs, crates, tyres, buckets, TVs, barrels): 24 spots across the blocks. Structures:
-wrecked car (HP 100) ×2, vending machine (HP 80) ×2, road barrier stack (HP 60) ×2, ice machine (HP 80), lawn chair
-stack (HP 60). 16 spawns in the streets, 6 explosive barrels.
+Props are the usual loose ones (chairs, crates, tyres, buckets, TVs, barrels): 24 spots, some up on the roofs, the
+skybridge and the station's platforms. Structures: vending machine (HP 80) ×4, wrecked car (HP 100) ×2, ice machine
+(HP 80), road barrier stack (HP 60). 16 spawns (the station plaza and the streets), 6 explosive barrels.
 
 **Art & performance:**
 

@@ -14,8 +14,8 @@ notes).
   the walk-up spin wheel, the store art (`docs/store`), a less luxurious lobby finish (iron and wood, not gold and
   marble), a new, 15% smaller lobby layout with a style-roll coach NPC, and a more detailed lobby (a raised bar
   platform, ceiling lamps and slowly turning fans over the concrete, boarded windows, an air duct, arcade cabinets).
-  Small City (a daytime town on the ground in a valley ringed by mountains) is now the only arena; the old three are
-  kept, switched off.
+  Shinjuku (a Tokyo street block on the ground in the style of Jujutsu Shenanigans' map) is now the only arena; the
+  old three are kept, switched off.
 - **Playtested:** Phase 1 ("all clear" 2026-10-16), the animations, 3.1 (from Studio logs). Everything else is built
   but not playtested yet; 3.11 (low-end mobile) not tried on a phone.
 - **Owner-side** ([docs/LAUNCH.md](docs/LAUNCH.md), `lune run tools/launch-check`): create the VIP pass and the
@@ -31,7 +31,7 @@ Easy to break by accident; the reasons and dates are in DECISIONS.md.
 
 - **Classic is the only mode** (`Config.Modes.Order`); Casual stays defined but out of the rotation, so the vote is
   map-only.
-- **Small City is the only arena:** Broken Highway, Junkyard Isles and Neon Motel stay built (layouts, generated
+- **Shinjuku is the only arena:** Broken Highway, Junkyard Isles and Neon Motel stay built (layouts, generated
   models, specs, `ServerStorage.Arenas`) but `Enabled = false` in `Config.Maps.List`. Don't delete them or switch them
   back on unasked.
 - **The lobby is run-only:** punch, charge, ability, dash and grab work only while `RoundStatus` is `Playing`.
