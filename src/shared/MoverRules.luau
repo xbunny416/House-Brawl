@@ -7,6 +7,8 @@
 	  * Kind "Lift" / "Slide": travels by Offset (a Vector3 from where it rests) and back: waits Pause seconds at each
 	    end, eases between them, Period seconds for the whole round trip.
 	  * Kind "Swing": swings ±Angle degrees about its Pivot's X or Z axis (Axis), Period seconds per back-and-forth.
+	  * Kind "Spin": turns round and round about its Pivot's up axis, Period seconds a turn (the lobby's ceiling fans,
+	    owner 2026-10-28: "more dynamic").
 	  * Phase: seconds added to the clock, so movers of one kind don't all move together.
 ]]
 export type Params = {
@@ -21,7 +23,7 @@ export type Params = {
 
 local MoverRules = {}
 
-MoverRules.Kinds = { "Lift", "Slide", "Swing" }
+MoverRules.Kinds = { "Lift", "Slide", "Swing", "Spin" }
 
 -- Smooth start and stop between 0 and 1.
 local function ease(alpha: number): number
@@ -48,10 +50,17 @@ function MoverRules.swing(angle: number, period: number, t: number): number
 	return angle * math.sin(2 * math.pi * t / period)
 end
 
+-- A Spin's angle (degrees, 0 up to 360) at time `t`.
+function MoverRules.spin(period: number, t: number): number
+	return (t % period) / period * 360
+end
+
 -- Where a mover's pivot is at time `t`, given where it rests.
 function MoverRules.pivotAt(params: Params, rest: CFrame, t: number): CFrame
 	local time = t + params.Phase
-	if params.Kind == "Swing" then
+	if params.Kind == "Spin" then
+		return rest * CFrame.Angles(0, math.rad(MoverRules.spin(params.Period, time)), 0)
+	elseif params.Kind == "Swing" then
 		local angle = math.rad(MoverRules.swing(params.Angle, params.Period, time))
 		return rest * (if params.Axis == "X" then CFrame.Angles(angle, 0, 0) else CFrame.Angles(0, 0, angle))
 	end

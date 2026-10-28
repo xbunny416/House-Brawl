@@ -528,15 +528,15 @@ return {
 			end
 		end
 	end,
-	["lobby: the bartender's spot stands on the floor behind the counter, facing the room"] = function()
+	["lobby: the bartender's spot stands on the bar's raised floor behind the counter, facing the room"] = function()
 		local npc = tagged(lobby, "ShopNPC")[1]
 		local counter = tagged(lobby, "ShopCounter")[1]
 		local spot = npc:FindFirstChild("Spot")
 		expect.truthy(spot and spot:IsA("BasePart"), "Spot")
 		expect.truthy(npc:FindFirstChild("Torso"), "Torso (the Shop prompt's part)")
 		expect.truthy(
-			math.abs(spot.CFrame.Position.Y - spot.Size.Y / 2 - Config.Maps.LobbyOrigin[2]) < 0.01,
-			"on the floor"
+			math.abs(spot.CFrame.Position.Y - spot.Size.Y / 2 - Config.Maps.LobbyOrigin[2] - Hideout.BarRise) < 0.01,
+			"on the bar's floor"
 		)
 		expect.truthy(spot.CFrame.LookVector.Z < -0.99, "faces the room (south)")
 		local back = counter.CFrame.Position.Z + counter.Size.Z / 2
@@ -686,6 +686,58 @@ return {
 		expect.truthy(seats[1].CFrame.Position.X < board.CFrame.Position.X, "White sits west")
 		expect.truthy(seats[1].CFrame.LookVector.X > 0.99, "White faces the board")
 		expect.truthy(seats[2].CFrame.LookVector.X < -0.99, "Black faces the board")
+	end,
+	["lobby: the bar end is a raised platform with easy steps up from the concrete"] = function()
+		-- The owner, 2026-10-28: "more dimension".
+		local origin = Config.Maps.LobbyOrigin
+		local platform = lobby:FindFirstChild("BarPlatform")
+		expect.truthy(platform and platform.CanCollide, "a solid platform")
+		local top = platform.CFrame.Position.Y + platform.Size.Y / 2 - origin[2]
+		expect.near(top, Hideout.BarRise, 0.001, "its top")
+		expect.near(platform.CFrame.Position.Z - platform.Size.Z / 2 - origin[3], Hideout.BarEdge, 0.001, "its front")
+		local heights = { 0 }
+		for _, step in lobby:GetChildren() do
+			if step.Name == "BarStep" then
+				expect.truthy(step.CanCollide, "a solid step")
+				table.insert(heights, step.CFrame.Position.Y + step.Size.Y / 2 - origin[2])
+			end
+		end
+		table.insert(heights, top)
+		table.sort(heights)
+		expect.truthy(#heights >= 3, "steps up")
+		for index = 2, #heights do
+			expect.truthy(heights[index] - heights[index - 1] <= 0.6, `a step of {heights[index] - heights[index - 1]}`)
+		end
+	end,
+	["lobby: green ceiling lamps over the concrete; ceiling fans that spin and touch nothing"] = function()
+		local origin = Config.Maps.LobbyOrigin
+		local overConcrete = 0
+		for _, lamp in lobby:GetChildren() do
+			if lamp.Name == "CeilingLamp" then
+				local bulb = lamp:FindFirstChild("Bulb")
+				local light = bulb and bulb:FindFirstChildOfClass("PointLight")
+				expect.truthy(light, "a lit bulb")
+				if bulb.CFrame.Position.Z - origin[3] < Hideout.BarEdge then
+					overConcrete += 1
+				end
+			end
+		end
+		expect.truthy(overConcrete >= 4, `{overConcrete} ceiling lamps over the concrete`)
+		local fans = 0
+		for _, mover in tagged(lobby, "Mover") do
+			fans += 1
+			expect.equal(mover:GetAttribute("Kind"), "Spin", `{mover.Name} kind`)
+			expect.truthy((mover:GetAttribute("Period") or 0) > 0, `{mover.Name} period`)
+			expect.truthy(mover.PrimaryPart and mover.PrimaryPart.Name == "Pivot", `{mover.Name} pivot`)
+			for _, part in mover:GetDescendants() do
+				if part:IsA("BasePart") then
+					expect.equal(part.CanCollide, false, `{mover.Name} {part.Name} collides`)
+					-- High enough that nobody's head reaches it.
+					expect.truthy(part.CFrame.Position.Y - origin[2] > 15, `{mover.Name} {part.Name} hangs low`)
+				end
+			end
+		end
+		expect.truthy(fans >= 1, "ceiling fans")
 	end,
 	["lobby: a few main lamps cast shadows (Future lighting), all tagged for Low Graphics"] = function()
 		local shadows = 0

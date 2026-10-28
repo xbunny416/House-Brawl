@@ -306,9 +306,10 @@ end
 --[[
 	A moving part (Shared/MoverRules; owner, 2026-10-20: "moving parts"): a Mover-tagged model, always streamed in, with
 	an invisible "Pivot" part at `pivot` (from the arena origin; a Swing turns about it) and the rest built by `fill`
-	(positions from the arena origin). `attributes`: Kind ("Lift" / "Slide" / "Swing"), Period, Pause, Offset (Vector3),
-	Angle, Axis, Phase. Hazard-tagged parts knock fighters they touch (MoverService). Movers sit in the arena's Movers
-	folder, not on a platform, so they never crumble.
+	(positions from the arena origin). `attributes`: Kind ("Lift" / "Slide" / "Swing" / "Spin"), Period, Pause, Offset
+	(Vector3), Angle, Axis, Phase. Hazard-tagged parts knock fighters they touch (MoverService). Movers sit in the arena's
+	Movers folder, not on a platform, so they never crumble. (The lobby's ceiling fans are Spin movers too, from
+	Furniture.ceilingFan.)
 ]]
 function Arena.mover(name: string, pivot: { number }, attributes: { [string]: any }, fill: () -> ()): any
 	local model = B.model(name, function()

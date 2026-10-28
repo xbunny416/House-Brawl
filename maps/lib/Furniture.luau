@@ -11,6 +11,7 @@
 	Inside, positions are local: lx to the piece's right, y up from the floor, lz forward (toward its front); sizes are
 	in the part's own axes (X width, Y height, Z depth). Seats are Builder.seat (LobbySeat, CanTouch off), upright.
 ]]
+local Arena = require("./Arena")
 local B = require("./Builder")
 
 local Furniture = {}
@@ -502,7 +503,16 @@ function Furniture.floorLamp(x: number, z: number)
 end
 
 -- A pendant lamp hanging from the ceiling at `ceiling`: canopy, chain, a stepped iron dome (a workshop lamp), a bulb.
-function Furniture.pendant(x: number, y: number, z: number, ceiling: number, range: number)
+-- `brightness` (1.3 by default); `shadows` (on by default: only the main lamps, the maps spec counts them).
+function Furniture.pendant(
+	x: number,
+	y: number,
+	z: number,
+	ceiling: number,
+	range: number,
+	brightness: number?,
+	shadows: boolean?
+)
 	local put = frame(x, z, "South")
 	B.model("Lamp", function()
 		upright(put, "Canopy", { 0, ceiling - 0.15, 0 }, 0.3, 1.2, "Iron", "Metal")
@@ -519,7 +529,90 @@ function Furniture.pendant(x: number, y: number, z: number, ceiling: number, ran
 			Material = "Neon",
 			CanCollide = false,
 		})
-		B.light(bulb, "WarmLight", range, 1.3, true) -- the main lamps cast soft shadows (Future lighting)
+		-- The main lamps cast soft shadows (Future lighting).
+		B.light(bulb, "WarmLight", range, brightness or 1.3, shadows ~= false)
+	end)
+end
+
+--[[
+	A warehouse lamp hung close under the ceiling on a short iron rod (owner, 2026-10-28: "add some ceiling lamps above
+	the concrete area"): a canopy, a green enamel shade stepped out to a wide rim, white inside, a bulb under it in a
+	wire guard. `drop`: from the ceiling down to the shade's rim. Its light casts soft shadows.
+]]
+function Furniture.ceilingLamp(x: number, z: number, ceiling: number, drop: number, range: number, brightness: number)
+	local put = frame(x, z, "South")
+	local rim = ceiling - drop
+	B.model("CeilingLamp", function()
+		upright(put, "Canopy", { 0, ceiling - 0.15, 0 }, 0.3, 1.4, "Iron", "Metal")
+		local rodTop, rodBottom = ceiling - 0.3, rim + 1.25
+		upright(put, "Rod", { 0, (rodTop + rodBottom) / 2, 0 }, rodTop - rodBottom, 0.22, "Iron", "Metal")
+		upright(put, "ShadeTop", { 0, rim + 1.05, 0 }, 0.4, 1.2, "SignGreen", "SmoothPlastic")
+		upright(put, "ShadeMid", { 0, rim + 0.65, 0 }, 0.45, 2.4, "SignGreen", "SmoothPlastic")
+		upright(put, "ShadeRim", { 0, rim + 0.2, 0 }, 0.45, 3.8, "SignGreen", "SmoothPlastic")
+		upright(put, "Enamel", { 0, rim - 0.04, 0 }, 0.06, 3.5, "Shade", "SmoothPlastic") -- the white inside
+		local bulb = put({
+			Name = "Bulb",
+			Size = { 0.9, 0.9, 0.9 },
+			Position = { 0, rim - 0.4, 0 },
+			Shape = "Ball",
+			Color = "WarmLight",
+			Material = "Neon",
+			CanCollide = false,
+		})
+		upright(put, "Guard", { 0, rim - 0.75, 0 }, 0.08, 1.4, "Iron", "Metal")
+		for _, yaw in { 45, -45 } do
+			put({
+				Name = "GuardWire",
+				Size = { 1.4, 0.08, 0.08 },
+				Position = { 0, rim - 0.8, 0 },
+				Rotation = { 0, yaw, 0 },
+				Color = "Iron",
+				Material = "Metal",
+				CanCollide = false,
+			})
+		end
+		B.light(bulb, "WarmLight", range, brightness, true)
+	end)
+end
+
+--[[
+	A ceiling fan (owner, 2026-10-28: "more dynamic"): an Arena.mover of Kind "Spin", so every client turns it slowly
+	(Shared/MoverRules, nothing is sent). A canopy, a downrod, an iron motor with an old brass band and a cap, four wood
+	blades on iron blade arms. `mount`: the underside it hangs from (a beam's); `period`: seconds a turn. Nothing on it
+	collides.
+]]
+function Furniture.ceilingFan(name: string, x: number, z: number, mount: number, period: number, phase: number): any
+	local hub = mount - 2.2
+	local put = frame(x, z, "South")
+	return Arena.mover(name, { x, hub, z }, { Kind = "Spin", Period = period, Phase = phase }, function()
+		upright(put, "Canopy", { 0, mount - 0.2, 0 }, 0.4, 1.2, "Iron", "Metal")
+		upright(put, "Downrod", { 0, (mount + hub) / 2, 0 }, mount - hub - 0.6, 0.25, "Iron", "Metal")
+		upright(put, "Motor", { 0, hub, 0 }, 0.8, 1.8, "Iron", "Metal")
+		upright(put, "MotorBand", { 0, hub + 0.1, 0 }, 0.15, 1.95, "OldBrass", "Metal")
+		upright(put, "Cap", { 0, hub - 0.55, 0 }, 0.3, 1, "Iron", "Metal")
+		for index = 1, 4 do
+			-- Blade `index` points along (cos, −sin) on the floor; the "South" frame's lz runs toward −Z.
+			local angle = index * 90 + 45
+			local cos, sin = math.cos(math.rad(angle)), math.sin(math.rad(angle))
+			put({
+				Name = "BladeArm",
+				Size = { 1.5, 0.12, 0.4 },
+				Position = { 1.45 * cos, hub - 0.1, 1.45 * sin },
+				Rotation = { 0, angle, 0 },
+				Color = "Iron",
+				Material = "Metal",
+				CanCollide = false,
+			})
+			put({
+				Name = "Blade",
+				Size = { 4.2, 0.12, 1.2 },
+				Position = { 3.9 * cos, hub - 0.16, 3.9 * sin },
+				Rotation = { 0, angle, 0 },
+				Color = "WoodMid",
+				Material = "Wood",
+				CanCollide = false,
+			})
+		end
 	end)
 end
 
@@ -709,6 +802,220 @@ function Furniture.wainscot(x: number, z: number, facing: string, length: number
 					CastShadow = false,
 				})
 			end
+		end
+	end)
+end
+
+--[[
+	A boarded-up window high on a wall, (x, z) on the wall's inner face, facing into the room (owner, 2026-10-28: "more
+	dimension"): the dusk outside glowing through frosted glass, an iron cross bar, a dark wood frame and sill, and
+	planks nailed across. No light of its own.
+]]
+function Furniture.boardedWindow(x: number, z: number, facing: string, width: number, height: number, bottom: number)
+	local put = frame(x, z, facing)
+	local middle = bottom + height / 2
+	B.model("BoardedWindow", function()
+		put({
+			Name = "Glow",
+			Size = { width, height, 0.1 },
+			Position = { 0, middle, 0.05 },
+			Color = "DuskGlow",
+			Material = "Neon",
+			Transparency = 0.25,
+			CanCollide = false,
+			CastShadow = false,
+		})
+		for _, bar in { { width, 0.25 }, { 0.25, height } } do
+			put({
+				Name = "Mullion",
+				Size = { bar[1], bar[2], 0.2 },
+				Position = { 0, middle, 0.2 },
+				Color = "Iron",
+				Material = "Metal",
+				CanCollide = false,
+			})
+		end
+		for _, edge in
+			{
+				{ size = { width + 1.2, 0.6, 0.5 }, at = { 0, bottom + height + 0.3 } },
+				{ size = { 0.6, height, 0.5 }, at = { -width / 2 - 0.3, middle } },
+				{ size = { 0.6, height, 0.5 }, at = { width / 2 + 0.3, middle } },
+			}
+		do
+			put({
+				Name = "Frame",
+				Size = edge.size,
+				Position = { edge.at[1], edge.at[2], 0.25 },
+				Color = "WoodDark",
+				Material = "Wood",
+			})
+		end
+		put({
+			Name = "Sill",
+			Size = { width + 1.6, 0.4, 1 },
+			Position = { 0, bottom - 0.2, 0.5 },
+			Color = "WoodDark",
+			Material = "Wood",
+		})
+		for index, plank in { { -0.2, 12 }, { 0.15, -9 }, { -0.3, 4 } } do
+			put({
+				Name = "Plank",
+				Size = { width + 0.8, 0.9, 0.2 },
+				Position = { 0, middle + (index - 2) * height * 0.28 + plank[1], 0.55 },
+				Rotation = { 0, 0, plank[2] },
+				Color = if index == 2 then "WoodMid" else "Wood",
+				Material = "WoodPlanks",
+				CanCollide = false,
+			})
+		end
+	end)
+end
+
+--[[
+	An old fight poster on a wall, (x, z) on the wall's inner face, its middle `y` up, facing into the room: paper in
+	`colors[1]` with a darker band, a big disc in `colors[2]`, a localized title (`key`), lines of small print and
+	tape at the corners.
+]]
+function Furniture.poster(x: number, y: number, z: number, facing: string, key: string, colors: { string })
+	local put = frame(x, z, facing)
+	local width, height = 3.6, 5
+	B.model("Poster", function()
+		put({
+			Name = "Paper",
+			Size = { width, height, 0.05 },
+			Position = { 0, y, 0.03 },
+			Color = colors[1],
+			Material = "Fabric",
+			CanCollide = false,
+		})
+		put({
+			Name = "Disc",
+			Size = { 0.04, 2.4, 2.4 },
+			Position = { 0, y + 0.3, 0.07 },
+			Rotation = { 0, 90, 0 },
+			Shape = "Cylinder",
+			Color = colors[2],
+			Material = "SmoothPlastic",
+			CanCollide = false,
+		})
+		B.sign(Furniture.at(x, z, facing)({
+			Name = "Title",
+			Size = { width - 0.4, 1, 0.04 },
+			Position = { 0, y + height / 2 - 0.8, 0.08 },
+			Color = "Black",
+			Material = "SmoothPlastic",
+			Key = key,
+			TextColor = colors[1],
+			CanCollide = false,
+		}))
+		for line = 1, 3 do
+			put({
+				Name = "Print",
+				Size = { width * (0.75 - line * 0.1), 0.18, 0.02 },
+				Position = { 0, y - height / 2 + 0.4 + line * 0.35, 0.07 },
+				Color = "Black",
+				Material = "SmoothPlastic",
+				CanCollide = false,
+			})
+		end
+		for _, corner in { { -1, 1 }, { 1, 1 } } do
+			put({
+				Name = "Tape",
+				Size = { 0.8, 0.3, 0.03 },
+				Position = { corner[1] * (width / 2 - 0.2), y + corner[2] * (height / 2 - 0.1), 0.08 },
+				Rotation = { 0, 0, corner[1] * 30 },
+				Color = "Cream",
+				Material = "SmoothPlastic",
+				Transparency = 0.2,
+				CanCollide = false,
+			})
+		end
+	end)
+end
+
+--[[
+	An old arcade cabinet against a wall (decor): a black body with coloured side stripes, a slanted control panel with a
+	joystick and buttons, a glowing screen and marquee, a coin door. `facing`: where its screen looks.
+]]
+function Furniture.arcade(x: number, z: number, facing: string, trim: string)
+	local put = frame(x, z, facing)
+	B.model("Arcade", function()
+		put({ Name = "Body", Size = { 2.8, 3.4, 2.4 }, Position = { 0, 1.7, 0 }, Color = "Black", Material = "Wood" })
+		put({
+			Name = "Upper",
+			Size = { 2.8, 3.6, 1.8 },
+			Position = { 0, 5.2, -0.3 },
+			Color = "Black",
+			Material = "Wood",
+		})
+		put({
+			Name = "Panel",
+			Size = { 2.8, 0.35, 1.2 },
+			Position = { 0, 3.55, 1.05 },
+			Rotation = { -12, 0, 0 },
+			Color = trim,
+			Material = "SmoothPlastic",
+		})
+		upright(put, "Stick", { -0.6, 3.9, 1.1 }, 0.5, 0.12, "Iron", "Metal")
+		put({
+			Name = "StickBall",
+			Size = { 0.35, 0.35, 0.35 },
+			Position = { -0.6, 4.2, 1.1 },
+			Shape = "Ball",
+			Color = "Red",
+			Material = "SmoothPlastic",
+			CanCollide = false,
+		})
+		for index, button in { { 0.3, "LaneYellow" }, { 0.75, "NeonTeal" }, { 1.2, "NeonPink" } } do
+			upright(put, `Button{index}`, { button[1] - 0.2, 3.75, 1.1 }, 0.1, 0.3, button[2], "SmoothPlastic")
+		end
+		put({
+			Name = "Screen",
+			Size = { 2.2, 1.8, 0.1 },
+			Position = { 0, 5.1, 0.62 },
+			Rotation = { -8, 0, 0 },
+			Color = "CrtGlow",
+			Material = "Neon",
+			Transparency = 0.15,
+			CanCollide = false,
+		})
+		put({
+			Name = "Marquee",
+			Size = { 2.6, 0.8, 0.1 },
+			Position = { 0, 6.55, 0.62 },
+			Color = trim,
+			Material = "Neon",
+			Transparency = 0.2,
+			CanCollide = false,
+		})
+		for _, side in { -1, 1 } do
+			put({
+				Name = "SideStripe",
+				Size = { 0.05, 5.6, 0.4 },
+				Position = { side * 1.42, 3.6, 0 },
+				Rotation = { 22, 0, 0 },
+				Color = trim,
+				Material = "SmoothPlastic",
+				CanCollide = false,
+			})
+		end
+		put({
+			Name = "CoinDoor",
+			Size = { 0.9, 1.1, 0.08 },
+			Position = { 0, 1.8, 1.22 },
+			Color = "Iron",
+			Material = "Metal",
+			CanCollide = false,
+		})
+		for _, lx in { -0.2, 0.2 } do
+			put({
+				Name = "CoinSlot",
+				Size = { 0.1, 0.35, 0.06 },
+				Position = { lx, 2, 1.28 },
+				Color = "OldBrass",
+				Material = "Metal",
+				CanCollide = false,
+			})
 		end
 	end)
 end

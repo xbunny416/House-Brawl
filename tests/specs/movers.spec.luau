@@ -69,6 +69,21 @@ return {
 		expect.near(aroundX.X, 5, 0.001)
 		expect.near(math.abs(aroundX.Z - 5), 10, 0.001)
 	end,
+	["a spin turns round its up axis, a full turn every period, and stays level"] = function()
+		expect.near(MoverRules.spin(4, 0), 0)
+		expect.near(MoverRules.spin(4, 1), 90)
+		expect.near(MoverRules.spin(4, 3), 270)
+		expect.near(MoverRules.spin(4, 4), 0) -- the next turn
+		expect.near(MoverRules.spin(4, 1e9 + 2), 180, 0.01) -- late in the server clock too
+		local rest = roblox.CFrame.new(5, 20, 5)
+		local fan = params({ Kind = "Spin", Period = 4 })
+		local quarter = MoverRules.pivotAt(fan, rest, 1)
+		expect.near((quarter.Position - rest.Position).Magnitude, 0, 0.001)
+		expect.near(quarter.UpVector.Y, 1, 0.001)
+		local tip = quarter * roblox.Vector3.new(4, 0, 0)
+		expect.near(tip.Y, 20, 0.001)
+		expect.near(math.abs(tip.Z - 5), 4, 0.001)
+	end,
 	["settings read off a model, with safe defaults"] = function()
 		local model = roblox.Instance.new("Model")
 		local read = MoverRules.read(model)
@@ -84,7 +99,7 @@ return {
 		expect.equal(read.Period, 0.5) -- never zero
 		expect.equal(read.Axis, "X")
 		expect.equal(read.Offset, roblox.Vector3.new(1, 2, 3))
-		for _, kind in { "Lift", "Slide", "Swing" } do
+		for _, kind in { "Lift", "Slide", "Swing", "Spin" } do
 			expect.truthy(table.find(MoverRules.Kinds, kind), kind)
 		end
 	end,
