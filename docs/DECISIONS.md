@@ -1132,3 +1132,28 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     - `Arena.mover` gained a `tilt` so a Spin can turn about a horizontal axis (the Ferris wheel). The wheel and the
       sign are walk-through decor; the carousel's floor, the lifts and the crane jib are solid and can be ridden.
   - *Size:* about 6,600 instances (3,400 before). Everything is anchored, but check the frame rate on a phone.
+- **Sized to the avatar; more throwables that fit where they lie (owner, 2026-10-28: "about structure and building
+  want to match avatar size cus some still small. add more throwable item also match that found area too"):**
+  - *The avatar:* players keep their own Roblox avatars, about 5.3 studs tall (more with a tall body type).
+    Shinjuku's doors were 5.2 high and its storeys 7, so ceilings and doorways were head height.
+  - *Bigger:*
+    - Storeys are now 10 (`STOREY`), so the towers' roofs are at +110.6.
+    - Doors are 8 high (`DOOR`) and at least 5 wide; inside doorways are 4 wide.
+    - Stair lanes are 3.5 to 4 wide (the ramps are longer at the same slope).
+    - The car park's decks are 9 apart. The yokocho's bars are deeper (12), with a wider lane, so the plaza's paving
+      ends 6 further south.
+    - The tiny buildings grew: the koban, the gas kiosk and the garage.
+    - Cars are life-size: 1.42× the old model, about 12 long and 5 high. The wrecked-car structure grew to match
+      (`Config.Structures`, its detail scaled 1.35×), so it is bigger in the old arenas too.
+    - Trees are about 18 tall, utility poles 20; canopies, signs, the crane (80), the water tower, the watchtower and
+      the containers moved up with them.
+    - Furniture already matched the avatar (desks 2.6, counters 3.4, beds a little longer now), so it kept its size.
+  - *Throwables:*
+    - 72 prop spots instead of 38. 63 always get a prop that belongs where it stands, from 16 new types (bar stools,
+      paper lanterns, potted plants, office chairs, screens, shopping baskets, bowling balls and pins,
+      extinguishers, books, toolboxes, speakers, suitcases, cinderblocks, gas cans, mannequins) and the old ones
+      (trash cans, chairs, tyres, cones, crates, TVs).
+    - 9 loose spots stay on roofs and lots.
+    - `Props.MaxActive` 40 → 80 (per arena), so every spot can fill.
+  - *Checks:* a spec now checks that every building's ground storey has 8.5+ studs of headroom and that every stair
+    lane is at least 3.5 wide.

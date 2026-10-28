@@ -176,7 +176,7 @@ Settings → Promo code, styles come from the style roll).
   Where things are, with north (+Z) as the main street:
   - *Moving parts (watch them turn, and ride them):*
     - *Glass lifts:* on the towers' north faces (by the doors onto the main street). Stand on one and it takes you to
-      the roof in about 8 s, waits, then comes back down. You step off over the low roof wall.
+      the roof in about 11 s, waits, then comes back down. You step off over the low roof wall.
     - *Building site (south-east corner):* the hoist on the steel frame's east side goes up to the 24 deck. The crane
       jib turns once a minute; climb the yellow mast (a truss) and jump onto the jib.
     - *Department store roof (south-west, behind the shops):* the Ferris wheel turns (walk-through decor). The carousel
@@ -197,3 +197,18 @@ Settings → Promo code, styles come from the style roll).
     - Props land on the car park's 2nd deck, the department store's 2nd floor and roof, the hotel roof and the site's
       first deck.
     - Frame rate, especially on a phone: about 6,600 instances, up from 3,400.
+- **Shinjuku sized to the avatar, more throwables (2026-10-28):**
+  - *Size:* walk through doors and up stairs with your own avatar, and a tall body type if you have one.
+    - Doors are 8 high, ceilings 9.5 and stairs 3.5–4 wide, so your head never touches a doorframe.
+    - Cars, trees and poles look life-size next to you, and the wrecked car you can break is as big as the parked ones.
+  - *Throwables:* 72 spots now (about 60 more props in a round). Each place has its own:
+    - Stools and lanterns in the ramen shop and the yokocho.
+    - Speakers in the karaoke booths.
+    - Bowling balls and a pin in the bowling alley.
+    - Baskets in the mart and the shops, mannequins in the mall and the department store.
+    - Suitcases in the hotel, gas cans at the pumps.
+    - Office chairs and plants in the towers.
+    - Cinderblocks and cones at the building site.
+    Grab and throw a few: each has its own look (no grey boxes).
+  - *Check:* every spot fills at round start (up to `Config.Props.MaxActive` = 80). Also check that the frame rate
+    holds with that many props.

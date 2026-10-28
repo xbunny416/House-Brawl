@@ -19,7 +19,7 @@ local Structures: StructuresConfig = {
 			MinDrops = 2,
 			MaxDrops = 4,
 			DropTable = { "CarDoor", "Tire", "Barrel" },
-			Size = { X = 4.6, Y = 3.6, Z = 9 },
+			Size = { X = 6.2, Y = 4.9, Z = 12.2 }, -- life-size beside an avatar (owner, 2026-10-28; was 4.6 × 3.6 × 9)
 			Material = "Metal",
 			Color = "#8C4A3A",
 		},

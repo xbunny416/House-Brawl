@@ -13,7 +13,8 @@
 	A ground arena (Layout.Ground): one district (the Center platform, 560 × 340, never falls) with open edges: no
 	walls, nothing round it, and the ground ends in a cliff over a dark abyss. Falling off is a KO (below KillY, as on
 	the floating arenas), and so is 0 HP in Classic. Day light. Its buildings are ones you can walk into
-	(maps/lib/Rooms: hollow storeys 7 high, floors, switchback ramps, roofs), furnished inside (desks, beds, booths,
+	(maps/lib/Rooms: hollow storeys 10 high to fit an avatar, doors 8 high, floors, switchback ramps, roofs), furnished
+	inside (desks, beds, booths,
 	shelves, racks, partitions that break), and their walls and windows break (BreakableWall pieces,
 	Services/WallService), as do the block walls, the graveyard's stones, the hedges and the site's fence. Only the
 	streets and the fountain plaza are open ground; every block is built up, at many heights, joined by bridges, ladders
@@ -53,24 +54,28 @@ local DISTRICT = { 560, 340 } -- X, Z: the playable ground, from z −230 (the s
 local CENTER_Z = -60 -- the district's centre from the arena origin
 local ROAD = 20
 local BREAKABLE = { "BreakableWall" }
--- The twin towers (x ±38): 40 wide, 11 storeys of 7, the skybridge on the 9th.
-local TOWER = { X = 38, Z = 35, Size = 40, Floors = 11, Storey = 7, BridgeFloor = 9 }
+-- Sized to the avatar (owner, 2026-10-28: "structure and building want to match avatar size cus some still small"): a
+-- Roblox avatar stands about 5.3 studs (more with a tall body), so a storey is 10 (9.5 of headroom), a door 8 high
+-- and at least 5 wide, a stair lane at least 4 wide; cars, trees and poles are life-size beside it.
+local STOREY = 10
+local DOOR = 8 -- a doorway's height
+-- The twin towers (x ±38): 40 wide, 11 storeys, the skybridge on the 9th.
+local TOWER = { X = 38, Z = 35, Size = 40, Floors = 11, Storey = STOREY, BridgeFloor = 9 }
 local TOWER_ROOF = TOWER.Floors * TOWER.Storey + 0.6
 local BRIDGE_Y = (TOWER.BridgeFloor - 1) * TOWER.Storey
-local STOREY = 7 -- every other building's storey (6.5 of headroom)
 local CAFE = { At = { -40, -52 }, Size = { 42, 32 } }
 local PACHINKO = { At = { -80, 58 }, Size = { 36, 28 } }
 local KARAOKE = { At = { 81, 57 }, Size = { 36, 30 }, Floors = 4 }
--- The multi-storey car park: four open decks 6.5 apart (6 of headroom) and a roof deck.
-local CARPARK = { At = { 111, 3 }, Size = { 94, 50 }, Floors = 4, Storey = 6.5 }
+-- The multi-storey car park: four open decks 9 apart (8.5 of headroom over the cars) and a roof deck.
+local CARPARK = { At = { 111, 3 }, Size = { 94, 50 }, Floors = 4, Storey = 9 }
 local CARPARK_ROOF = CARPARK.Floors * CARPARK.Storey + 0.6
 local DEPT = { At = { -108, -187 }, Size = { 104, 70 }, Floors = 4 }
 local DEPT_ROOF = DEPT.Floors * STOREY + 0.6
 local HOTEL = { At = { 127, -136 }, Size = { 50, 34 }, Floors = 6 }
 local HOTEL_ROOF = HOTEL.Floors * STOREY + 0.6
--- The building site's steel frame (decks at 8, 16 and 24, bare beams at 32) and its tower crane.
-local SITE = { At = { 238, -165 }, Size = { 60, 48 }, Deck = 8 }
-local CRANE = { At = { 204, -205 }, Height = 60, Jib = 50 }
+-- The building site's steel frame (decks at 10, 20 and 30, bare beams at 40) and its tower crane.
+local SITE = { At = { 238, -165 }, Size = { 60, 48 }, Deck = 10 }
+local CRANE = { At = { 204, -205 }, Height = 80, Jib = 50 }
 
 Layout.Platforms = {
 	{
@@ -135,50 +140,95 @@ Layout.Contents = {
 			{ -175, 0 }, -- the streets along the strips
 			{ 175, 0 },
 		},
+		-- Loose spots (a random prop from Config.Props.LooseSpotTypes): roofs, the skybridge, a few lots.
 		Props = {
 			{ -TOWER.X, TOWER.Z, TOWER_ROOF }, -- the tower roofs
 			{ TOWER.X, TOWER.Z, TOWER_ROOF },
 			{ 0, TOWER.Z, BRIDGE_Y }, -- the skybridge
-			{ -40, 25, BRIDGE_Y }, -- the west tower's 9th floor
-			{ 40, 25, 4 * TOWER.Storey }, -- the east tower's 5th floor
-			{ -28, -45, STOREY }, -- the cafe upstairs and on its roof
-			{ -30, -62, 2 * STOREY + 0.6 },
-			{ 120, 46 }, -- the mart
-			{ 59, -50 }, -- the graveyard, by the temple path
-			{ 130, -50 }, -- the arcade
-			{ -80, -55 }, -- the plaza
-			{ -245, 20 }, -- the mall
-			{ -205, -40, 1 }, -- the bowling alley's seating
-			{ -90, -190, STOREY }, -- the department store's 2nd floor and roof
-			{ -108, -210, DEPT_ROOF },
+			{ -30, -62, 2 * STOREY + 0.6 }, -- the cafe's roof
+			{ -108, -210, DEPT_ROOF }, -- the department store's roof
+			{ 142, -128, HOTEL_ROOF }, -- the hotel's roof
 			{ 90, -120 }, -- by the courthouse
-			{ 130, -215 }, -- behind the mansion
 			{ 230, -160, SITE.Deck }, -- the building site's first deck
 			{ -232, -110 }, -- by the jail
-			{ 95, 10, CARPARK.Storey }, -- the car park's 2nd deck and roof
-			{ 125, -10, CARPARK_ROOF },
-			{ 142, -128, HOTEL_ROOF }, -- the hotel's roof
 		},
+		-- Spots that always get the prop that belongs there (owner, 2026-10-28: "add more throwable item also match
+		-- that found area").
 		TypedProps = {
-			-- Trash cans where a street has them: the main street, the yokocho's lane, the mart, the shops, the site's
-			-- fence, the hotel's forecourt.
+			-- Trash cans along the streets: the main street, the plaza, the shops, the site's fence, the hotel.
 			{ At = { -30, 70 }, Type = "TrashCan" },
 			{ At = { 30, 70 }, Type = "TrashCan" },
-			{ At = { -100, 25 }, Type = "TrashCan" },
-			{ At = { -140, 25 }, Type = "TrashCan" },
-			{ At = { 110, 35 }, Type = "TrashCan" },
-			{ At = { 140, 35 }, Type = "TrashCan" },
+			{ At = { -125, -70 }, Type = "TrashCan" },
 			{ At = { -132, -102 }, Type = "TrashCan" },
 			{ At = { 206, -103 }, Type = "TrashCan" },
 			{ At = { 120, -110 }, Type = "TrashCan" },
-			-- Chairs where people sit: the ramen shop, the cafe, the comedy club, the court.
-			{ At = { -136, 63 }, Type = "Chair" },
-			{ At = { -112, 63 }, Type = "Chair" },
+			-- The towers: plants in the lobbies, office chairs upstairs.
+			{ At = { -38, 28 }, Type = "PottedPlant" },
+			{ At = { 38, 28 }, Type = "PottedPlant" },
+			{ At = { -34, 30, 2 * STOREY }, Type = "OfficeChair" },
+			{ At = { 34, 30, 3 * STOREY }, Type = "OfficeChair" },
+			-- The ramen shop and the yokocho: stools, paper lanterns, trash cans in the lane.
+			{ At = { -136, 63 }, Type = "Stool" },
+			{ At = { -112, 63 }, Type = "Stool" },
+			{ At = { -121, 56, STOREY }, Type = "PaperLantern" },
+			{ At = { -100, 22 }, Type = "TrashCan" },
+			{ At = { -140, 22 }, Type = "TrashCan" },
+			{ At = { -120, 22 }, Type = "PaperLantern" },
+			{ At = { -96.5, 30 }, Type = "Stool" },
+			-- The pachinko parlor's stools, the cafe's chairs and plant.
+			{ At = { -86, 65 }, Type = "Stool" },
+			{ At = { -76, 65 }, Type = "Stool" },
 			{ At = { -33, -60 }, Type = "Chair" },
 			{ At = { -35, -60, STOREY }, Type = "Chair" },
+			{ At = { -28, -45, STOREY }, Type = "PottedPlant" },
+			-- The karaoke booths' speakers; the mart's basket and trash cans.
+			{ At = { 85.6, 50, STOREY }, Type = "Speaker" },
+			{ At = { 77.2, 64, 2 * STOREY }, Type = "Speaker" },
+			{ At = { 120, 46 }, Type = "ShoppingBasket" },
+			{ At = { 110, 35 }, Type = "TrashCan" },
+			{ At = { 140, 35 }, Type = "TrashCan" },
+			-- The car park: tyres and cones; the gas station's cans; the temple's lantern; the arcade's stools.
+			{ At = { 95, 10, CARPARK.Storey }, Type = "Tire" },
+			{ At = { 130, -2, 2 * CARPARK.Storey }, Type = "Tire" },
+			{ At = { 90, -2 }, Type = "TrafficCone" },
+			{ At = { 125, -10, CARPARK_ROOF }, Type = "TrafficCone" },
+			{ At = { 36, -6 }, Type = "GasCan" },
+			{ At = { 52, -6 }, Type = "GasCan" },
+			{ At = { 48, -62 }, Type = "PaperLantern" },
+			{ At = { 100, -50 }, Type = "Stool" },
+			{ At = { 115, -50 }, Type = "Stool" },
+			-- The mall's mannequin and basket; the bowling alley's balls and a pin.
+			{ At = { -250, 0, 11 }, Type = "Mannequin" },
+			{ At = { -245, 45 }, Type = "ShoppingBasket" },
+			{ At = { -213, -48 }, Type = "BowlingBall" },
+			{ At = { -208, -60, 1 }, Type = "BowlingBall" },
+			{ At = { -256, -48 }, Type = "BowlingPin" },
+			-- The apartments' TV; the shops' books, screen and basket; the department store.
+			{ At = { 226, 50, STOREY }, Type = "TV" },
+			{ At = { -150, -110 }, Type = "BookStack" },
+			{ At = { -117, -110 }, Type = "Monitor" },
+			{ At = { -87, -110 }, Type = "ShoppingBasket" },
+			{ At = { -105, -175, STOREY }, Type = "Mannequin" },
+			{ At = { -100, -195 }, Type = "ShoppingBasket" },
+			-- Crates in the back lot; chairs in the jail's office, the comedy club and the court; the club's speaker.
+			{ At = { -58, -136 }, Type = "Crate" },
+			{ At = { -126, -137 }, Type = "Crate" },
+			{ At = { -232, -140, STOREY }, Type = "Chair" },
 			{ At = { -245, -204 }, Type = "Chair" },
 			{ At = { -225, -204 }, Type = "Chair" },
+			{ At = { -250, -211, 1.5 }, Type = "Speaker" },
 			{ At = { 45, -152 }, Type = "Chair" },
+			-- The fire station's extinguisher and toolbox; the hotel's suitcases; the mansion's TV.
+			{ At = { 60, -201 }, Type = "FireExtinguisher" },
+			{ At = { 70, -212 }, Type = "Toolbox" },
+			{ At = { 120, -128 }, Type = "Suitcase" },
+			{ At = { 114, -141.2, 2 * STOREY }, Type = "Suitcase" },
+			{ At = { 130, -184 }, Type = "TV" },
+			-- The building site: cinderblocks and cones.
+			{ At = { 236, -128 }, Type = "Cinderblock" },
+			{ At = { 232, -198 }, Type = "Cinderblock" },
+			{ At = { 220, -113 }, Type = "TrafficCone" },
+			{ At = { 250, -113 }, Type = "TrafficCone" },
 		},
 		Explosives = {
 			{ 44, -20 }, -- by the gas station's pumps
@@ -350,15 +400,29 @@ local function blockWall(a: { number }, b: { number })
 	end
 end
 
--- A parked car (solid: you can be knocked into it or stand on it), its length along Z turned `yaw`, on `y`.
+-- A parked car (solid: you can be knocked into it or stand on it), its length along Z turned `yaw`, on `y`; life-size
+-- beside an avatar (12 long, 6 wide, 5 high).
+local CAR = 1.42 -- the car's scale from its 8.4-long base model
 local function car(name: string, at: { number }, yaw: number, color: string, y: number?)
-	local place = placer(at, yaw, y)
+	local base = placer(at, yaw, y)
+	local function place(lx: number, ly: number, lz: number): { number }
+		return base(lx * CAR, ly * CAR, lz * CAR)
+	end
+	local function size(x: number, yy: number, z: number): { number }
+		return { x * CAR, yy * CAR, z * CAR }
+	end
 	local turn = { 0, yaw, 0 }
 	B.model(name, function()
-		B.part({ Name = "Body", Size = { 4.4, 1.5, 8.4 }, Position = place(0, 1.25, 0), Rotation = turn, Color = color })
+		B.part({
+			Name = "Body",
+			Size = size(4.4, 1.5, 8.4),
+			Position = place(0, 1.25, 0),
+			Rotation = turn,
+			Color = color,
+		})
 		B.part({
 			Name = "Cabin",
-			Size = { 4, 1.5, 4.6 },
+			Size = size(4, 1.5, 4.6),
 			Position = place(0, 2.75, -0.3),
 			Rotation = turn,
 			Color = "Black",
@@ -367,7 +431,7 @@ local function car(name: string, at: { number }, yaw: number, color: string, y: 
 		})
 		B.part({
 			Name = "Roof",
-			Size = { 4, 0.2, 4 },
+			Size = size(4, 0.2, 4),
 			Position = place(0, 3.6, -0.3),
 			Rotation = turn,
 			Color = color,
@@ -377,7 +441,7 @@ local function car(name: string, at: { number }, yaw: number, color: string, y: 
 			for _, lz in { -2.8, 2.8 } do
 				B.part({
 					Name = "Wheel",
-					Size = { 0.8, 1.6, 1.6 },
+					Size = size(0.8, 1.6, 1.6),
 					Position = place(lx, 0.8, lz),
 					Rotation = turn,
 					Shape = "Cylinder",
@@ -390,7 +454,7 @@ local function car(name: string, at: { number }, yaw: number, color: string, y: 
 			for _, lx in { -1.5, 1.5 } do
 				B.part({
 					Name = if lz > 0 then "Headlight" else "TailLight",
-					Size = { 0.9, 0.4, 0.1 },
+					Size = size(0.9, 0.4, 0.1),
 					Position = place(lx, 1.6, lz),
 					Rotation = turn,
 					Color = if lz > 0 then "WarmLight" else "Red",
@@ -447,15 +511,15 @@ local function bike(at: { number }, yaw: number, color: string)
 	end)
 end
 
--- A tree on `y`: a trunk (solid) and two balls of leaves (`leaf`: green, or pink for a cherry tree).
+-- A tree on `y`, about 18 tall: a trunk (solid) and two balls of leaves (`leaf`: green, or pink for a cherry tree).
 local function tree(name: string, at: { number }, leaf: string, y: number?)
 	local base = y or 0
 	B.model(name, function()
-		upright("Trunk", at, base, 5, 0.9, "WoodDark", "Wood")
+		upright("Trunk", at, base, 8.5, 1.4, "WoodDark", "Wood")
 		B.part({
 			Name = "Leaves",
-			Size = { 6.5, 5.5, 6.5 },
-			Position = { at[1], base + 6.5, at[2] },
+			Size = { 11, 9.4, 11 },
+			Position = { at[1], base + 11, at[2] },
 			Shape = "Ball",
 			Color = leaf,
 			Material = "LeafyGrass",
@@ -463,8 +527,8 @@ local function tree(name: string, at: { number }, leaf: string, y: number?)
 		})
 		B.part({
 			Name = "LeavesTop",
-			Size = { 4.4, 4, 4.4 },
-			Position = { at[1] + 0.6, base + 8.6, at[2] - 0.4 },
+			Size = { 7.5, 6.8, 7.5 },
+			Position = { at[1] + 1, base + 14.6, at[2] - 0.7 },
 			Shape = "Ball",
 			Color = leaf,
 			Material = "LeafyGrass",
@@ -482,13 +546,13 @@ end
 -- A bare, dead tree (the graveyard): a dark trunk and three crooked branches.
 local function deadTree(at: { number })
 	B.model("DeadTree", function()
-		upright("Trunk", at, 0, 7, 0.8, "WoodDark", "Wood")
-		for index, branch in { { 35, 0, 5.5 }, { -40, 120, 6.2 }, { 30, 240, 4.8 } } do
+		upright("Trunk", at, 0, 11, 1.1, "WoodDark", "Wood")
+		for index, branch in { { 35, 0, 8.5 }, { -40, 120, 9.6 }, { 30, 240, 7.4 } } do
 			local c, s = math.cos(math.rad(branch[2])), math.sin(math.rad(branch[2]))
 			B.part({
 				Name = `Branch{index}`,
-				Size = { 0.3, 3.2, 0.3 },
-				Position = { at[1] + c * 1.1, branch[3] + 1.2, at[2] + s * 1.1 },
+				Size = { 0.45, 5, 0.45 },
+				Position = { at[1] + c * 1.7, branch[3] + 1.8, at[2] + s * 1.7 },
 				Rotation = { branch[1] * s, 0, -branch[1] * c },
 				Color = "WoodDark",
 				Material = "Wood",
@@ -578,7 +642,7 @@ end
 
 -- A concrete planter (1.4 high) with a tree in it.
 local function planterTree(at: { number })
-	Pieces.block("Planter", at, { 5, 1.4, 5 }, "ConcreteDark", "Concrete")
+	Pieces.block("Planter", at, { 7, 1.4, 7 }, "ConcreteDark", "Concrete")
 	tree("PlanterTree", at, "Leaf", 1.4)
 end
 
@@ -601,20 +665,20 @@ local function waterTank(at: { number }, y: number)
 	end)
 end
 
--- A concrete utility pole (solid) with a crossbar and, when `transformer`, a grey transformer can.
+-- A concrete utility pole (solid, 20 tall) with a crossbar and, when `transformer`, a grey transformer can.
 local function utilityPole(at: { number }, transformer: boolean)
 	B.model("UtilityPole", function()
-		upright("Pole", at, 0, 12, 0.8, "ConcreteLight", "Concrete")
+		upright("Pole", at, 0, 20, 1.1, "ConcreteLight", "Concrete")
 		B.part({
 			Name = "Crossbar",
-			Size = { 0.25, 0.25, 3.6 },
-			Position = { at[1], 11.4, at[2] },
+			Size = { 0.3, 0.3, 4.4 },
+			Position = { at[1], 19.3, at[2] },
 			Color = "MetalDark",
 			Material = "Metal",
 			CanCollide = false,
 		})
 		if transformer then
-			upright("Transformer", { at[1] + 0.9, at[2] }, 8, 1.8, 1.2, "Metal", "Metal", false)
+			upright("Transformer", { at[1] + 1.3, at[2] }, 14, 2.6, 1.6, "Metal", "Metal", false)
 		end
 	end)
 end
@@ -623,7 +687,7 @@ end
 local function wires(a: { number }, b: { number })
 	local dx, dz = b[1] - a[1], b[2] - a[2]
 	local length = math.sqrt(dx * dx + dz * dz)
-	for _, wire in { { 11.55, 1.4 }, { 11.55, -1.4 }, { 10.6, 0 } } do
+	for _, wire in { { 19.5, 1.8 }, { 19.5, -1.8 }, { 18.2, 0 } } do
 		local ox, oz = -dz / length * wire[2], dx / length * wire[2]
 		B.part({
 			Name = "Wire",
@@ -652,7 +716,7 @@ end
 -- Inside (owner, 2026-10-28: "literally include inside structure too")
 ---------------------------------------------------------------------------------------------------------------------
 
--- An inside wall (it breaks) from `a` to `b` (x, z; along X or Z) standing on `y`, `height` tall, with a doorway 3 wide
+-- An inside wall (it breaks) from `a` to `b` (x, z; along X or Z) standing on `y`, `height` tall, with a doorway 4 wide
 -- at each distance in `doors` (from `a`); pieces at most 16 wide (Config.Structures.Walls.MaxPiece).
 local function partition(
 	a: { number },
@@ -690,8 +754,8 @@ local function partition(
 		end
 	end
 	for _, door in cuts do
-		run(door - 1.5)
-		from = door + 1.5
+		run(door - 2)
+		from = door + 2
 	end
 	run(length)
 end
@@ -711,8 +775,8 @@ end
 
 -- A bed (a frame you can stand on, a blanket over it) on `y`, its length along Z (yaw 0) or X (yaw 90).
 local function bed(at: { number }, y: number, yaw: number, blanket: string)
-	Pieces.block("Bed", at, { 4, 1.4, 6.5 }, "OffWhite", "Fabric", y, yaw)
-	Pieces.block("Blanket", at, { 4.1, 0.2, 4.4 }, blanket, "Fabric", y + 1.4, yaw).CanCollide = false
+	Pieces.block("Bed", at, { 4.4, 1.6, 7 }, "OffWhite", "Fabric", y, yaw)
+	Pieces.block("Blanket", at, { 4.5, 0.2, 4.8 }, blanket, "Fabric", y + 1.6, yaw).CanCollide = false
 end
 
 -- A sofa (a seat and a back, both solid) on `y`, turned `yaw` (unturned, you sit facing +Z).
@@ -853,7 +917,7 @@ local function streets()
 	end
 	-- Taxis on the main street, parked cars, bicycles.
 	car("Taxi", { -45, 85 }, 90, "LaneYellow")
-	car("Taxi", { -56, 85 }, 90, "LaneYellow")
+	car("Taxi", { -60, 85 }, 90, "LaneYellow")
 	car("ParkedCar", { 45, 95 }, -90, "OffWhite")
 	car("ParkedCar", { 200, -86 }, -90, "CityBlue")
 	car("ParkedCar", { -179, -170 }, 0, "Red")
@@ -887,17 +951,17 @@ local function twinTowers()
 			Color = if side < 0 then "CityGrey" else "CityBlue",
 			FloorColor = "ConcreteLight",
 			Openings = {
-				{ Face = "-Z", At = 0, Width = 10, Height = 5.5 },
-				{ Face = "-Z", At = -13, Width = 14, Height = 5, Bottom = 0.4, Glass = true },
-				{ Face = "-Z", At = 13, Width = 14, Height = 5, Bottom = 0.4, Glass = true },
-				{ Face = "+Z", At = 0, Width = 10, Height = 5.5 },
-				{ Face = inner, At = 0, Width = 8, Height = 5, Floor = TOWER.BridgeFloor },
+				{ Face = "-Z", At = 0, Width = 10, Height = DOOR },
+				{ Face = "-Z", At = -13, Width = 14, Height = 7.5, Bottom = 0.4, Glass = true },
+				{ Face = "-Z", At = 13, Width = 14, Height = 7.5, Bottom = 0.4, Glass = true },
+				{ Face = "+Z", At = 0, Width = 10, Height = DOOR },
+				{ Face = inner, At = 0, Width = 8, Height = DOOR, Floor = TOWER.BridgeFloor },
 			},
 			Windows = {
 				Faces = { "+X", "-X", "+Z", "-Z" },
 				Width = 30,
-				Height = 4.2,
-				Sill = 0.8,
+				Height = 6,
+				Sill = 1.5,
 				Spacing = 34,
 				From = 2,
 			},
@@ -906,17 +970,17 @@ local function twinTowers()
 		})
 		B.part({
 			Name = "EntranceCanopy",
-			Size = { 14, 0.4, 4 },
-			Position = { x, 6, z - half - 2 },
+			Size = { 16, 0.4, 5 },
+			Position = { x, DOOR + 1, z - half - 2.5 },
 			Color = "MetalDark",
 			Material = "Metal",
 			CanCollide = false,
 		})
-		ladder({ x + side * (half + 1), z + half - 3 }, 0, 80) -- past the roof's parapet (+78.8)
+		ladder({ x + side * (half + 1), z + half - 3 }, 0, 112) -- past the roof's parapet (+111.8)
 		B.sign({
 			Name = "Billboard",
-			Size = { 28, 10, 0.5 },
-			Position = { x, 66, z - half - 0.5 },
+			Size = { 32, 14, 0.5 },
+			Position = { x, 92, z - half - 0.5 },
 			Color = if index == 1 then "Red" else "CityBlue",
 			Material = "SmoothPlastic",
 			Key = if index == 1 then "Map.Shinjuku.Sign.AdCola" else "Map.Shinjuku.Sign.AdNight",
@@ -951,8 +1015,8 @@ local function twinTowers()
 			for _, dx in { -gap / 4, gap / 4 } do
 				B.part({
 					Name = "Glass",
-					Size = { gap / 2, 6.2, 0.3 },
-					Position = { dx, BRIDGE_Y + 3.1, TOWER.Z + dz },
+					Size = { gap / 2, 9, 0.3 },
+					Position = { dx, BRIDGE_Y + 4.5, TOWER.Z + dz },
 					Color = "Glass",
 					Material = "Glass",
 					Transparency = 0.45,
@@ -960,7 +1024,7 @@ local function twinTowers()
 				})
 			end
 		end
-		Pieces.block("Roof", { 0, TOWER.Z }, { gap, 0.4, 10.4 }, "MetalDark", "Metal", BRIDGE_Y + 6.2)
+		Pieces.block("Roof", { 0, TOWER.Z }, { gap, 0.4, 10.4 }, "MetalDark", "Metal", BRIDGE_Y + 9)
 	end)
 end
 
@@ -978,13 +1042,13 @@ local function cafe()
 		FloorColor = "Wood",
 		FloorMaterial = "WoodPlanks",
 		Openings = {
-			{ Face = "+Z", At = 0, Width = 10, Height = 5 },
-			{ Face = "+Z", At = -14, Width = 10, Height = 4, Bottom = 1, Glass = true },
-			{ Face = "+Z", At = 14, Width = 10, Height = 4, Bottom = 1, Glass = true },
-			{ Face = "+X", At = 0, Width = 6, Height = 5 },
+			{ Face = "+Z", At = 0, Width = 8, Height = DOOR },
+			{ Face = "+Z", At = -14, Width = 10, Height = 5.5, Bottom = 1, Glass = true },
+			{ Face = "+Z", At = 14, Width = 10, Height = 5.5, Bottom = 1, Glass = true },
+			{ Face = "+X", At = 0, Width = 5, Height = DOOR },
 		},
-		Windows = { Faces = { "-X", "-Z", "+Z", "+X" }, Width = 6, Height = 3, Sill = 1.5, Spacing = 9, From = 2 },
-		Stair = { At = { -13, 7 }, Along = "X", Width = 3.5 },
+		Windows = { Faces = { "-X", "-Z", "+Z", "+X" }, Width = 6, Height = 4, Sill = 2.5, Spacing = 9, From = 2 },
+		Stair = { At = { -9, 7 }, Along = "X", Width = 4 },
 		Roof = { Color = "Red", Hatch = true, Parapet = true },
 	})
 	Pieces.block("Counter", { at[1] + 4, at[2] - 13 }, { 18, 3, 2 }, "WoodDark", "Wood")
@@ -997,11 +1061,11 @@ local function cafe()
 	sofa({ -40, -65.4 }, STOREY, 0, "WoodMid")
 	Pieces.block("Bookshelf", { -20.6, -52 }, { 1.2, 5, 8 }, "WoodDark", "Wood", STOREY)
 	smallTable({ -40, -60 }, STOREY)
-	faceSign(at, size, "+Z", 0, 6, 12, 1.4, "Map.Shinjuku.Sign.Cafe", "WoodDark", "Cream")
+	faceSign(at, size, "+Z", 0, DOOR + 1, 12, 1.4, "Map.Shinjuku.Sign.Cafe", "WoodDark", "Cream")
 	B.part({
 		Name = "Awning",
 		Size = { 16, 0.3, 3 },
-		Position = { at[1], 5.4, at[2] + size[2] / 2 + 1.5 },
+		Position = { at[1], DOOR + 0.4, at[2] + size[2] / 2 + 1.5 },
 		Rotation = { 12, 0, 0 },
 		Color = "Red",
 		Material = "Fabric",
@@ -1014,15 +1078,15 @@ end
 
 -- The plaza west of the avenue: pavers, a fountain, planters, benches.
 local function plaza()
-	paint("PlazaPavers", { -87.5, -35 }, { 155, 90 }, "ConcreteLight", "Pavement")
+	paint("PlazaPavers", { -87.5, -38 }, { 155, 84 }, "ConcreteLight", "Pavement")
 	for x = -160, -14, 12 do
-		paint("PaverStripe", { x, -35 }, { 0.6, 90 }, "ConcreteDark", "Pavement", 0.12)
+		paint("PaverStripe", { x, -38 }, { 0.6, 84 }, "ConcreteDark", "Pavement", 0.12)
 	end
-	upright("FountainBasin", { -100, -35 }, 0, 1.2, 12, "Concrete", "Concrete")
-	upright("FountainWater", { -100, -35 }, 1.05, 0.1, 10.6, "Glass", "Glass", false)
-	upright("FountainColumn", { -100, -35 }, 1.2, 2.6, 1.4, "Concrete", "Concrete")
-	upright("FountainBowl", { -100, -35 }, 3.8, 0.5, 4.4, "Concrete", "Concrete")
-	for _, at in { { -150, -70 }, { -150, 0 }, { -80, 0 } } do
+	upright("FountainBasin", { -100, -35 }, 0, 1.6, 16, "Concrete", "Concrete")
+	upright("FountainWater", { -100, -35 }, 1.45, 0.1, 14.6, "Glass", "Glass", false)
+	upright("FountainColumn", { -100, -35 }, 1.6, 3.6, 2, "Concrete", "Concrete")
+	upright("FountainBowl", { -100, -35 }, 5.2, 0.6, 6, "Concrete", "Concrete")
+	for _, at in { { -150, -70 }, { -150, -6 }, { -80, -6 } } do
 		planterTree(at)
 	end
 	bench({ -105, -72 }, 0)
@@ -1030,8 +1094,8 @@ local function plaza()
 end
 
 -- The ramen shop on the main street: two storeys, the front (curtains over the door, red lanterns, a RAMEN sign and a
--- rooftop sign) onto the street; downstairs a counter with stools and tables, a stair up to an izakaya (low tables, a
--- paper screen that breaks).
+-- rooftop sign) onto the street; downstairs a counter with stools, a kitchen and tables, a stair up to an izakaya (low
+-- tables on mats, a paper screen that breaks) and on to the roof.
 local function ramen()
 	local at, size = { -125, 55 }, { 46, 30 }
 	local front = at[2] + size[2] / 2
@@ -1046,19 +1110,19 @@ local function ramen()
 		FloorColor = "WoodMid",
 		FloorMaterial = "WoodPlanks",
 		Openings = {
-			{ Face = "+Z", At = 0, Width = 8, Height = 5.2 },
-			{ Face = "+Z", At = -14, Width = 10, Height = 3.6, Bottom = 1.2, Glass = true },
-			{ Face = "+Z", At = 14, Width = 10, Height = 3.6, Bottom = 1.2, Glass = true },
-			{ Face = "-Z", At = 19, Width = 3, Height = 5.2 },
+			{ Face = "+Z", At = 0, Width = 8, Height = DOOR },
+			{ Face = "+Z", At = -14, Width = 10, Height = 5, Bottom = 1.2, Glass = true },
+			{ Face = "+Z", At = 14, Width = 10, Height = 5, Bottom = 1.2, Glass = true },
+			{ Face = "-Z", At = 19, Width = 5, Height = DOOR },
 		},
-		Windows = { Faces = { "+Z", "+X", "-X" }, Width = 5, Height = 2.6, Sill = 1.8, Spacing = 8, From = 2 },
-		Stair = { At = { -18, 0 }, Along = "Z", Width = 3 },
+		Windows = { Faces = { "+Z", "+X", "-X" }, Width = 5, Height = 4, Sill = 2.5, Spacing = 8, From = 2 },
+		Stair = { At = { -18, 0 }, Along = "Z", Width = 4 },
 		Roof = { Color = "AsphaltDark", Material = "Slate", Hatch = true, Parapet = true },
 	})
 	Pieces.block("Counter", { at[1] + 3, at[2] - 6 }, { 24, 3.4, 2 }, "Wood", "Wood")
 	Pieces.block("Kitchen", { at[1] + 3, at[2] - 12.6 }, { 24, 3.6, 2.4 }, "MetalDark", "Metal")
 	for sx = -6, 14, 5 do
-		upright("Stool", { at[1] + sx, at[2] - 3.5 }, 0, 2, 1.1, "Red", "SmoothPlastic")
+		upright("Stool", { at[1] + sx, at[2] - 3.5 }, 0, 2.2, 1.2, "Red", "SmoothPlastic")
 	end
 	for _, dx in { -6, 18 } do
 		smallTable({ at[1] + dx, 63 })
@@ -1077,12 +1141,12 @@ local function ramen()
 		"OffWhite",
 		"Fabric"
 	)
-	faceSign(at, size, "+Z", 0, 6.2, 14, 1.4, "Map.Shinjuku.Sign.Ramen", "Black", "Cream")
+	faceSign(at, size, "+Z", 0, DOOR + 1, 14, 1.4, "Map.Shinjuku.Sign.Ramen", "Black", "Cream")
 	for index = 0, 3 do
 		B.part({
 			Name = "Curtain",
-			Size = { 1.9, 1.8, 0.1 },
-			Position = { at[1] - 2.85 + index * 1.9, 4.3, front + 0.2 },
+			Size = { 1.9, 2.2, 0.1 },
+			Position = { at[1] - 2.85 + index * 1.9, DOOR - 1.1, front + 0.2 },
 			Color = "TealDark",
 			Material = "Fabric",
 			CanCollide = false,
@@ -1091,8 +1155,8 @@ local function ramen()
 	for _, dx in { -21, 21 } do
 		B.part({
 			Name = "Lantern",
-			Size = { 1.4, 1.8, 1.4 },
-			Position = { at[1] + dx, 5.6, front + 1 },
+			Size = { 1.6, 2.2, 1.6 },
+			Position = { at[1] + dx, DOOR, front + 1 },
 			Shape = "Ball",
 			Color = "Red",
 			Material = "Neon",
@@ -1127,26 +1191,26 @@ end
 
 --[[
 	The yokocho between the ramen shop and the plaza (after Shinjuku's lantern-lit alleys of tiny bars): two
-	two-storey rows facing a narrow lane, each split into eight little bars (a door, a counter, stools, a red lantern;
-	the wooden partitions break). The first bay of each row holds a stair up to the rooms above, joined by doorways;
+	two-storey rows facing a lane, each split into six little bars (a door, a counter, stools, a red lantern; the
+	wooden partitions break) and, at the west end, a bay with the stair up to the rooms above, which doorways join;
 	lanterns hang across the lane, an arch with the YOKOCHO sign at its west end, a ladder onto the north row's roof.
 ]]
-local YOKOCHO = { X = -112, Length = 96, Depth = 9, LaneZ = 25.25, Lane = 6.5 }
+local YOKOCHO = { X = -112, Length = 96, Depth = 12, LaneZ = 22, Lane = 8 }
 
 local function yokocho()
-	local bays = { -41, -28, -16, -4, 8, 20, 32, 43 } -- the bars' centres along the row (the first holds the stair)
-	local walls = { -34, -22, -10, 2, 14, 26, 38 }
+	local bays = { -39, -23.5, -10.5, 2.5, 15.5, 28.5, 41.5 } -- the bays' centres along the row (the first: the stair)
+	local walls = { -30, -17, -4, 9, 22, 35 }
 	for _, side in { 1, -1 } do -- the north row (its doors face −Z), then the south row
 		local z = YOKOCHO.LaneZ + side * (YOKOCHO.Lane / 2 + YOKOCHO.Depth / 2)
 		local laneFace = if side > 0 then "-Z" else "+Z"
 		local back = z + side * (YOKOCHO.Depth / 2 - 1.6) -- along the back wall, inside
 		-- A door into each bar off the lane; the stair's bay opens at the row's west end, onto the foot of the ramp.
-		local openings = { { Face = "-X", At = -1.25, Width = 2.5, Height = 5 } }
+		local openings: { Rooms.Opening } = { { Face = "-X", At = -2, Width = 4, Height = DOOR } }
 		for index, bay in bays do
 			if index > 1 then
-				table.insert(openings, { Face = laneFace, At = bay, Width = 3.5, Height = 5 })
+				table.insert(openings, { Face = laneFace, At = bay, Width = 5, Height = DOOR })
 			end
-			table.insert(openings, { Face = laneFace, At = bay, Width = 4, Height = 2.4, Bottom = 1.6, Floor = 2 })
+			table.insert(openings, { Face = laneFace, At = bay, Width = 5, Height = 3, Bottom = 3, Floor = 2 })
 		end
 		Rooms.building({
 			Name = if side > 0 then "YokochoNorth" else "YokochoSouth",
@@ -1159,7 +1223,7 @@ local function yokocho()
 			FloorColor = "WoodMid",
 			FloorMaterial = "WoodPlanks",
 			Openings = openings,
-			Stair = { At = { bays[1], 0 }, Along = "X", Width = 2.5 },
+			Stair = { At = { bays[1], 0 }, Along = "X", Width = 4 },
 			Roof = { Color = "AsphaltDark", Material = "Slate", Parapet = true },
 		})
 		for index, wallX in walls do
@@ -1169,17 +1233,17 @@ local function yokocho()
 			partition({ x, z - inner }, { x, z + inner }, 0, STOREY - 0.5, nil, "WoodMid", "Wood")
 			partition({ x, z - inner }, { x, z + inner }, STOREY, STOREY - 0.5, { inner }, "WoodMid", "Wood")
 			local bay = YOKOCHO.X + bays[index + 1]
-			Pieces.block("BarCounter", { bay, back }, { 7, 3.2, 1.2 }, "WoodDark", "Wood")
-			for _, dx in { -1.8, 1.8 } do
-				upright("Stool", { bay + dx, back - side * 1.8 }, 0, 2, 1, "Red", "SmoothPlastic")
+			Pieces.block("BarCounter", { bay, back }, { 8, 3.4, 1.2 }, "WoodDark", "Wood")
+			for _, dx in { -2, 2 } do
+				upright("Stool", { bay + dx, back - side * 2 }, 0, 2.2, 1.2, "Red", "SmoothPlastic")
 			end
-			Pieces.block("LowTable", { bay, z }, { 3, 1, 2 }, "WoodDark", "Wood", STOREY)
+			Pieces.block("LowTable", { bay, z }, { 4, 1, 2.6 }, "WoodDark", "Wood", STOREY)
 		end
 		for _, bay in bays do
 			B.part({
 				Name = "Lantern",
-				Size = { 1, 1.4, 1 },
-				Position = { YOKOCHO.X + bay, 5.7, YOKOCHO.LaneZ + side * (YOKOCHO.Lane / 2 - 0.4) },
+				Size = { 1.2, 1.6, 1.2 },
+				Position = { YOKOCHO.X + bay, DOOR + 1, YOKOCHO.LaneZ + side * (YOKOCHO.Lane / 2 - 0.5) },
 				Shape = "Ball",
 				Color = "Red",
 				Material = "Neon",
@@ -1193,16 +1257,16 @@ local function yokocho()
 		B.part({
 			Name = "LanternWire",
 			Size = { 0.08, 0.08, length },
-			Position = { x, 9, YOKOCHO.LaneZ },
+			Position = { x, 13, YOKOCHO.LaneZ },
 			Color = "Black",
 			CanCollide = false,
 			CastShadow = false,
 		})
-		for _, dz in { -2, 0, 2 } do
+		for _, dz in { -2.5, 0, 2.5 } do
 			B.part({
 				Name = "Lantern",
-				Size = { 0.9, 1.2, 0.9 },
-				Position = { x, 8.2, YOKOCHO.LaneZ + dz },
+				Size = { 1, 1.3, 1 },
+				Position = { x, 12.1, YOKOCHO.LaneZ + dz },
 				Shape = "Ball",
 				Color = if dz == 0 then "WarmLight" else "Red",
 				Material = "Neon",
@@ -1212,12 +1276,12 @@ local function yokocho()
 	end
 	local west = YOKOCHO.X - YOKOCHO.Length / 2
 	for _, dz in { -YOKOCHO.Lane / 2 - 0.5, YOKOCHO.Lane / 2 + 0.5 } do
-		upright("ArchPost", { west - 2, YOKOCHO.LaneZ + dz }, 0, 8, 0.6, "MetalDark", "Metal")
+		upright("ArchPost", { west - 2, YOKOCHO.LaneZ + dz }, 0, 12, 0.6, "MetalDark", "Metal")
 	end
 	B.sign({
 		Name = "ArchSign",
-		Size = { 0.3, 1.6, YOKOCHO.Lane + 2 },
-		Position = { west - 2, 8.6, YOKOCHO.LaneZ },
+		Size = { 0.3, 2, YOKOCHO.Lane + 2 },
+		Position = { west - 2, 12.6, YOKOCHO.LaneZ },
 		Rotation = B.yaw("East"),
 		Color = "Red",
 		Material = "SmoothPlastic",
@@ -1226,9 +1290,9 @@ local function yokocho()
 		Glow = true,
 		CanCollide = false,
 	})
-	ladder({ YOKOCHO.X + YOKOCHO.Length / 2 + 1, YOKOCHO.LaneZ + YOKOCHO.Lane / 2 + YOKOCHO.Depth / 2 }, 0, 16)
+	ladder({ YOKOCHO.X + YOKOCHO.Length / 2 + 1, YOKOCHO.LaneZ + YOKOCHO.Lane / 2 + YOKOCHO.Depth / 2 }, 0, 22)
 	-- A plank from the north row's roof to the pachinko parlor's.
-	Pieces.block("RoofPlank", { -88, 40.75 }, { 2.4, 0.3, 9.5 }, "Wood", "WoodPlanks", 2 * STOREY + 1.8)
+	Pieces.block("RoofPlank", { -88, 41 }, { 3, 0.3, 9.5 }, "Wood", "WoodPlanks", 2 * STOREY + 1.8)
 end
 
 -- The pachinko parlor between the ramen shop and the west tower: rows of pinball machines on both floors (screens on
@@ -1247,13 +1311,13 @@ local function pachinko()
 		FloorColor = "Red",
 		FloorMaterial = "Carpet",
 		Openings = {
-			{ Face = "+Z", At = 0, Width = 8, Height = 5.2 },
-			{ Face = "+Z", At = -11, Width = 8, Height = 4.4, Bottom = 0.6, Glass = true },
-			{ Face = "+Z", At = 11, Width = 8, Height = 4.4, Bottom = 0.6, Glass = true },
-			{ Face = "-Z", At = -10, Width = 3, Height = 5.2 },
+			{ Face = "+Z", At = 0, Width = 8, Height = DOOR },
+			{ Face = "+Z", At = -11, Width = 8, Height = 6.5, Bottom = 0.6, Glass = true },
+			{ Face = "+Z", At = 11, Width = 8, Height = 6.5, Bottom = 0.6, Glass = true },
+			{ Face = "-Z", At = -10, Width = 5, Height = DOOR },
 		},
-		Windows = { Faces = { "+Z" }, Width = 6, Height = 2.6, Sill = 1.6, Spacing = 9, From = 2 },
-		Stair = { At = { 13, 0 }, Along = "Z", Width = 2.5 },
+		Windows = { Faces = { "+Z" }, Width = 6, Height = 4, Sill = 2.5, Spacing = 9, From = 2 },
+		Stair = { At = { 13, 0 }, Along = "Z", Width = 4 },
 		Roof = { Color = "Black", Hatch = true, Parapet = true },
 	})
 	for _, row in { { 0, 49 }, { 0, 55 }, { 0, 61 }, { STOREY, 51 }, { STOREY, 59 } } do
@@ -1272,12 +1336,12 @@ local function pachinko()
 		end
 	end
 	Pieces.block("PrizeCounter", { at[1] - 14, front - 4 }, { 6, 3.4, 2 }, "WoodDark", "Wood")
-	panel("NeonBand", at, size, "+Z", 0, 6, size[1], 0.5, "NeonPink", "Neon")
-	faceSign(at, size, "+Z", 0, 12.6, 18, 2, "Map.Shinjuku.Sign.Pachinko", "Black", "NeonPink", true)
+	panel("NeonBand", at, size, "+Z", 0, DOOR + 1, size[1], 0.5, "NeonPink", "Neon")
+	faceSign(at, size, "+Z", 0, 18.4, 18, 2.2, "Map.Shinjuku.Sign.Pachinko", "Black", "NeonPink", true)
 	B.part({
 		Name = "VerticalSign",
-		Size = { 1.6, 12, 0.4 },
-		Position = { at[1] - 16.5, 9, front + 0.5 },
+		Size = { 1.6, 14, 0.4 },
+		Position = { at[1] - 16.5, 10, front + 0.5 },
 		Color = "LaneYellow",
 		Material = "Neon",
 		CanCollide = false,
@@ -1300,17 +1364,18 @@ local function karaoke()
 		FloorColor = "Black",
 		FloorMaterial = "Carpet",
 		Openings = {
-			{ Face = "+Z", At = 0, Width = 6, Height = 5.2 },
-			{ Face = "+Z", At = -10, Width = 8, Height = 4.4, Bottom = 0.6, Glass = true },
-			{ Face = "+Z", At = 10, Width = 8, Height = 4.4, Bottom = 0.6, Glass = true },
-			{ Face = "-Z", At = -4, Width = 3, Height = 5.2 },
+			{ Face = "+Z", At = 0, Width = 6, Height = DOOR },
+			{ Face = "+Z", At = -10, Width = 8, Height = 6.5, Bottom = 0.6, Glass = true },
+			{ Face = "+Z", At = 10, Width = 8, Height = 6.5, Bottom = 0.6, Glass = true },
+			{ Face = "-Z", At = -4, Width = 5, Height = DOOR },
 		},
-		Windows = { Faces = { "+Z", "-Z" }, Width = 5, Height = 2.6, Sill = 1.8, Spacing = 8, From = 2 },
-		Stair = { At = { -13, 0 }, Along = "Z", Width = 2.5 },
+		Windows = { Faces = { "+Z", "-Z" }, Width = 5, Height = 4, Sill = 2.5, Spacing = 8, From = 2 },
+		Stair = { At = { -13, 0 }, Along = "Z", Width = 4 },
 		Roof = { Color = "ConcreteDark", Hatch = true, Parapet = true },
 	})
-	local x0, x1 = at[1] - 9, at[1] + size[1] / 2 - 0.8 -- the booths: east of the stair
-	local zSouth, zNorth = at[2] - 2.5, at[2] + 2.5 -- the corridor's walls
+	local x0, x1 = at[1] - 8, at[1] + size[1] / 2 - 0.8 -- the booths: east of the stair
+	local booth = (x1 - x0) / 3
+	local zSouth, zNorth = at[2] - 3, at[2] + 3 -- the corridor's walls
 	local inner = size[2] / 2 - 0.8
 	Pieces.block("Counter", { at[1] + 6, at[2] + 4 }, { 10, 3.4, 2 }, "WoodDark", "Wood")
 	sofa({ at[1] + 12, at[2] - 10 }, 0, 0, "Purple")
@@ -1318,14 +1383,14 @@ local function karaoke()
 	for floor = 2, KARAOKE.Floors do
 		local y = (floor - 1) * STOREY
 		local height = STOREY - 0.5
-		local doors = { 4.5, 13.5, 22.5 }
+		local doors = { booth / 2, booth * 1.5, booth * 2.5 }
 		partition({ x0, zSouth }, { x1, zSouth }, y, height, doors, "OffWhite")
 		partition({ x0, zNorth }, { x1, zNorth }, y, height, doors, "OffWhite")
-		for _, wallX in { x0 + 9, x0 + 18 } do
+		for _, wallX in { x0 + booth, x0 + 2 * booth } do
 			partition({ wallX, at[2] - inner }, { wallX, zSouth }, y, height, nil, "Purple")
 			partition({ wallX, zNorth }, { wallX, at[2] + inner }, y, height, nil, "Purple")
 		end
-		for _, boothX in { x0 + 4.5, x0 + 13.5, x0 + 22.5 } do
+		for _, boothX in { x0 + booth / 2, x0 + booth * 1.5, x0 + booth * 2.5 } do
 			sofa({ boothX, at[2] - inner + 1.4 }, y, 0, "Purple")
 			sofa({ boothX, at[2] + inner - 1.4 }, y, 180, "Purple")
 		end
@@ -1352,7 +1417,7 @@ local function karaoke()
 end
 
 --[[
-	The multi-storey car park between the karaoke tower, the mart and the arcade: four decks 6.5 apart behind low walls
+	The multi-storey car park between the karaoke tower, the mart and the arcade: four decks 9 apart behind low walls
 	(open between the piers, so you can jump out or in), a roof deck with lamp posts, columns, parked cars, a stair up
 	the east end to the roof, car entrances off the side street, a PARKING sign; a steel gangway climbs from its roof
 	to the karaoke tower's.
@@ -1376,8 +1441,8 @@ local function carPark()
 					Face = faceName,
 					At = spot,
 					Width = 9.5,
-					Height = if entry then 5 else CARPARK.Storey,
-					Bottom = if entry then nil else 1.1,
+					Height = if entry then 7.5 else CARPARK.Storey,
+					Bottom = if entry then nil else 1.2,
 					Floor = floor,
 				})
 			end
@@ -1392,7 +1457,7 @@ local function carPark()
 		Color = "ConcreteLight",
 		FloorColor = "Concrete",
 		Openings = openings,
-		Stair = { At = { 38, 12 }, Along = "Z", Width = 3 },
+		Stair = { At = { 38, 12 }, Along = "Z", Width = 4 },
 		Roof = { Color = "Concrete", Hatch = true, Parapet = true },
 	})
 	for floor = 1, CARPARK.Floors do
@@ -1427,9 +1492,9 @@ local function carPark()
 		car(`ParkedCar{index}`, { at[1] + parked.At[1], at[2] + parked.At[2] }, 0, parked.Color, parked.Y)
 	end
 	for _, dx in { -40, 22 } do
-		Pieces.lamp("RoofLamp", { at[1] + dx, at[2] }, 7, 90, CARPARK_ROOF)
+		Pieces.lamp("RoofLamp", { at[1] + dx, at[2] }, 12, 90, CARPARK_ROOF)
 	end
-	faceSign(at, size, "+X", 0, 15, 16, 3, "Map.Shinjuku.Sign.Parking", "CityBlue", "OffWhite")
+	faceSign(at, size, "+X", 0, 22, 16, 3, "Map.Shinjuku.Sign.Parking", "CityBlue", "OffWhite")
 	-- The gangway up to the karaoke tower's roof (over both parapets).
 	local karaokeRoof = KARAOKE.Floors * STOREY + 0.6
 	Pieces.span(
@@ -1447,41 +1512,41 @@ end
 -- up onto it), a kiosk with a counter, a price pylon with the GAS sign.
 local function gasStation()
 	local canopy = { 44, -6 }
-	Pieces.block("Canopy", canopy, { 26, 0.8, 18 }, "OffWhite", "Metal", 6.2)
-	panel("CanopyStripe", canopy, { 26, 18 }, "-X", 0, 6.6, 18, 0.5, "Red")
-	panel("CanopyStripe", canopy, { 26, 18 }, "+Z", 0, 6.6, 26, 0.5, "Red")
+	Pieces.block("Canopy", canopy, { 26, 0.8, 18 }, "OffWhite", "Metal", 10)
+	panel("CanopyStripe", canopy, { 26, 18 }, "-X", 0, 10.4, 18, 0.5, "Red")
+	panel("CanopyStripe", canopy, { 26, 18 }, "+Z", 0, 10.4, 26, 0.5, "Red")
 	for _, dx in { -10, 10 } do
 		for _, dz in { -7, 7 } do
-			Pieces.column("CanopyColumn", { canopy[1] + dx, canopy[2] + dz }, 0, 6.2, 0.8, "OffWhite", "Metal", true)
+			Pieces.column("CanopyColumn", { canopy[1] + dx, canopy[2] + dz }, 0, 10, 0.9, "OffWhite", "Metal", true)
 		end
 	end
 	for _, dz in { -3.5, 3.5 } do
-		Pieces.block("PumpIsland", { canopy[1], canopy[2] + dz }, { 12, 0.4, 2 }, "ConcreteLight", "Concrete")
+		Pieces.block("PumpIsland", { canopy[1], canopy[2] + dz }, { 12, 0.4, 2.2 }, "ConcreteLight", "Concrete")
 		for _, dx in { -3, 3 } do
-			Pieces.block("Pump", { canopy[1] + dx, canopy[2] + dz }, { 1.4, 3.2, 1.2 }, "Red", "SmoothPlastic", 0.4)
+			Pieces.block("Pump", { canopy[1] + dx, canopy[2] + dz }, { 1.6, 4.4, 1.4 }, "Red", "SmoothPlastic", 0.4)
 		end
 	end
-	ladder({ canopy[1] + 14, canopy[2] }, 0, 8)
-	local kiosk, kioskSize = { 21, -15 }, { 10, 8 }
+	ladder({ canopy[1] + 14, canopy[2] }, 0, 12)
+	local kiosk, kioskSize = { 22, -15 }, { 14, 10 }
 	Rooms.building({
 		Name = "GasKiosk",
 		At = kiosk,
 		Size = kioskSize,
 		Floors = 1,
-		Storey = 4.6,
+		Storey = 9,
 		Color = "OffWhite",
 		Openings = {
-			{ Face = "+X", At = 0, Width = 3, Height = 4 },
-			{ Face = "-X", At = 0, Width = 6, Height = 2.4, Bottom = 1.2, Glass = true },
+			{ Face = "+X", At = 0, Width = 5, Height = DOOR },
+			{ Face = "-X", At = 0, Width = 8, Height = 3.5, Bottom = 2.5, Glass = true },
 		},
 		Roof = { Color = "Red" },
 	})
-	Pieces.block("Counter", { kiosk[1] - 2, kiosk[2] }, { 1.6, 3, 5 }, "WoodDark", "Wood")
-	upright("PylonPost", { 32, -24 }, 0, 10, 0.6, "MetalDark", "Metal")
+	Pieces.block("Counter", { kiosk[1] - 3, kiosk[2] }, { 1.6, 3.4, 6 }, "WoodDark", "Wood")
+	upright("PylonPost", { 32, -24 }, 0, 14, 0.7, "MetalDark", "Metal")
 	B.sign({
 		Name = "Pylon",
-		Size = { 5, 3, 0.4 },
-		Position = { 32, 11, -24 },
+		Size = { 6, 3.4, 0.4 },
+		Position = { 32, 15.5, -24 },
 		Rotation = B.yaw("West"),
 		Color = "Red",
 		Material = "SmoothPlastic",
@@ -1493,23 +1558,23 @@ end
 
 -- The police box (koban) on the avenue under the east tower: a white hut with a red lamp, a desk inside, a bicycle.
 local function koban()
-	local at, size = { 21, 6 }, { 10, 8 }
+	local at, size = { 22, 6 }, { 12, 10 }
 	Rooms.building({
 		Name = "Koban",
 		At = at,
 		Size = size,
 		Floors = 1,
-		Storey = 6,
+		Storey = STOREY,
 		Color = "OffWhite",
-		Openings = { { Face = "-X", At = 0, Width = 3, Height = 4.4 } },
-		Windows = { Faces = { "+Z", "-Z" }, Width = 3, Height = 2, Sill = 1.8, Spacing = 4 },
+		Openings = { { Face = "-X", At = 0, Width = 5, Height = DOOR } },
+		Windows = { Faces = { "+Z", "-Z" }, Width = 3, Height = 3, Sill = 3, Spacing = 5 },
 		Roof = { Color = "AsphaltDark" },
 	})
-	faceSign(at, size, "-X", 0, 5.1, 5, 0.9, "Map.Shinjuku.Sign.Koban", "OffWhite", "Black")
+	faceSign(at, size, "-X", 0, 9, 6, 1, "Map.Shinjuku.Sign.Koban", "OffWhite", "Black")
 	B.part({
 		Name = "RedLamp",
-		Size = { 0.9, 0.9, 0.9 },
-		Position = { at[1] - size[1] / 2 - 0.4, 5.6, at[2] + 2.6 },
+		Size = { 1.1, 1.1, 1.1 },
+		Position = { at[1] - size[1] / 2 - 0.5, 9, at[2] + 3.6 },
 		Shape = "Ball",
 		Color = "Red",
 		Material = "Neon",
@@ -1522,14 +1587,14 @@ end
 -- A bus shelter on the avenue's pavement: a roof on two posts, a glass back, a bench.
 local function busStop(at: { number })
 	B.model("BusStop", function()
-		Pieces.block("ShelterRoof", at, { 3, 0.3, 10 }, "MetalDark", "Metal", 4.6)
-		for _, dz in { -4.6, 4.6 } do
-			upright("ShelterPost", { at[1] + 1.2, at[2] + dz }, 0, 4.6, 0.3, "MetalDark", "Metal")
+		Pieces.block("ShelterRoof", at, { 3.6, 0.3, 11 }, "MetalDark", "Metal", 8)
+		for _, dz in { -5.1, 5.1 } do
+			upright("ShelterPost", { at[1] + 1.4, at[2] + dz }, 0, 8, 0.35, "MetalDark", "Metal")
 		end
 		B.part({
 			Name = "ShelterGlass",
-			Size = { 0.2, 3.2, 9.6 },
-			Position = { at[1] + 1.3, 2.4, at[2] },
+			Size = { 0.2, 5, 10 },
+			Position = { at[1] + 1.5, 3.6, at[2] },
 			Color = "Glass",
 			Material = "Glass",
 			Transparency = 0.5,
@@ -1548,28 +1613,28 @@ local function mart()
 		At = at,
 		Size = size,
 		Floors = 1,
-		Storey = 9,
+		Storey = 12,
 		Color = "OffWhite",
 		FloorColor = "OffWhite",
 		FloorMaterial = "SmoothPlastic",
 		Openings = {
-			{ Face = "-Z", At = 0, Width = 10, Height = 6 },
-			{ Face = "-Z", At = -14, Width = 14, Height = 5.6, Bottom = 0.4, Glass = true },
-			{ Face = "-Z", At = 14, Width = 14, Height = 5.6, Bottom = 0.4, Glass = true },
+			{ Face = "-Z", At = 0, Width = 10, Height = DOOR },
+			{ Face = "-Z", At = -14, Width = 14, Height = 7.6, Bottom = 0.4, Glass = true },
+			{ Face = "-Z", At = 14, Width = 14, Height = 7.6, Bottom = 0.4, Glass = true },
 		},
 		Roof = { Color = "OffWhite", Parapet = true },
 	})
-	for _, dz in { -2, 3, 8 } do
-		Pieces.block("Shelf", { at[1] + 2, at[2] + dz }, { 20, 4, 1.6 }, "OffWhite", "Metal")
+	for _, dz in { -4, 2, 8 } do
+		Pieces.block("Shelf", { at[1] + 2, at[2] + dz }, { 20, 4.6, 1.6 }, "OffWhite", "Metal")
 	end
-	Pieces.block("Cooler", { at[1] + 21.4, at[2] + 2 }, { 1.6, 6, 18 }, "Glass", "Glass")
+	Pieces.block("Cooler", { at[1] + 21.4, at[2] + 2 }, { 1.6, 7, 18 }, "Glass", "Glass")
 	Pieces.block("Counter", { at[1] - 17, at[2] - 7 }, { 2, 3.4, 6 }, "WoodDark", "Wood")
-	panel("SignBand", at, size, "-Z", 0, 7.7, size[1], 2.2, "OffWhite")
-	panel("Stripe", at, size, "-Z", 0, 6.3, size[1], 0.6, "Teal")
-	faceSign(at, size, "-Z", 0, 7.7, 16, 1.6, "Map.Shinjuku.Sign.Mart", "OffWhite", "TealDark")
+	panel("SignBand", at, size, "-Z", 0, 10.4, size[1], 2.6, "OffWhite")
+	panel("Stripe", at, size, "-Z", 0, 8.7, size[1], 0.6, "Teal")
+	faceSign(at, size, "-Z", 0, 10.4, 16, 1.8, "Map.Shinjuku.Sign.Mart", "OffWhite", "TealDark")
 	vending({ at[1] + size[1] / 2 + 1.3, at[2] - 2 }, 90, "Red")
 	vending({ at[1] + size[1] / 2 + 1.3, at[2] + 1.4 }, 90, "CityBlue")
-	roofKit(at, size, 9.6, true)
+	roofKit(at, size, 12.6, true)
 end
 
 -- The graveyard: a low stone wall with a gap on the north, a path to a small temple at the back (a gabled roof, an
@@ -1626,31 +1691,31 @@ local function graveyard()
 		At = hall,
 		Size = hallSize,
 		Floors = 1,
-		Storey = 8,
+		Storey = 12,
 		Color = "Wood",
 		Material = "WoodPlanks",
 		FloorColor = "WoodMid",
 		FloorMaterial = "WoodPlanks",
-		Openings = { { Face = "+Z", At = 0, Width = 12, Height = 6.5 } },
+		Openings = { { Face = "+Z", At = 0, Width = 12, Height = 9.5 } },
 		Roof = { Color = "WoodDark", Material = "Wood" },
 	})
 	for _, side in { -1, 1 } do
 		B.part({
 			Name = "Gable",
-			Size = { hallSize[1] + 4, 4, hallSize[2] / 2 + 2 },
-			Position = { hall[1], 8.6 + 2, hall[2] + side * (hallSize[2] / 4 + 1) },
+			Size = { hallSize[1] + 4, 5, hallSize[2] / 2 + 2 },
+			Position = { hall[1], 12.6 + 2.5, hall[2] + side * (hallSize[2] / 4 + 1) },
 			Rotation = { 0, if side < 0 then 0 else 180, 0 }, -- each wedge's tall end toward the ridge
 			Shape = "Wedge",
 			Color = "AsphaltDark",
 			Material = "Slate",
 		})
 	end
-	Pieces.block("Altar", { hall[1], hall[2] - 3.5 }, { 8, 3, 2.4 }, "WoodDark", "Wood")
-	Pieces.block("OfferingBox", { hall[1], hall[2] + 2.5 }, { 4, 2, 2 }, "WoodDark", "Wood")
+	Pieces.block("Altar", { hall[1], hall[2] - 3.5 }, { 10, 3.4, 2.6 }, "WoodDark", "Wood")
+	Pieces.block("OfferingBox", { hall[1], hall[2] + 2.5 }, { 4, 2.4, 2 }, "WoodDark", "Wood")
 	B.part({
 		Name = "BellRope",
-		Size = { 0.3, 5, 0.3 },
-		Position = { hall[1], 5, hall[2] + 4.5 },
+		Size = { 0.3, 7, 0.3 },
+		Position = { hall[1], 8, hall[2] + 4.5 },
 		Color = "Red",
 		Material = "Fabric",
 		CanCollide = false,
@@ -1660,26 +1725,26 @@ local function graveyard()
 	for _, dx in { -9, 9 } do
 		B.model("StoneLantern", function()
 			local spot = { hall[1] + dx, -54 }
-			Pieces.block("Base", spot, { 1.6, 0.6, 1.6 }, "Stone", "Slate")
-			Pieces.block("Pillar", spot, { 0.7, 2.4, 0.7 }, "Stone", "Slate", 0.6)
-			Pieces.block("Light", spot, { 1.4, 1.2, 1.4 }, "WarmLight", "Neon", 3)
-			Pieces.block("Cap", spot, { 2, 0.5, 2 }, "Stone", "Slate", 4.2)
+			Pieces.block("Base", spot, { 2.2, 0.8, 2.2 }, "Stone", "Slate")
+			Pieces.block("Pillar", spot, { 1, 3.4, 1 }, "Stone", "Slate", 0.8)
+			Pieces.block("Light", spot, { 2, 1.8, 2 }, "WarmLight", "Neon", 4.2)
+			Pieces.block("Cap", spot, { 2.8, 0.7, 2.8 }, "Stone", "Slate", 6)
 		end)
 	end
 	-- The pagoda in the east corner: four shrinking tiers under wide eaves, a spire on top.
 	local pagoda = { 74, -40 }
 	B.model("Pagoda", function()
 		for tier = 0, 3 do
-			local base = tier * 3.6
-			local width = 6 - tier
-			Pieces.block("Tier", pagoda, { width, 3.2, width }, "TempleRed", "SmoothPlastic", base)
-			Pieces.block("Eave", pagoda, { width + 3, 0.5, width + 3 }, "AsphaltDark", "Slate", base + 3.2)
+			local base = tier * 5.4
+			local width = 8 - tier * 1.5
+			Pieces.block("Tier", pagoda, { width, 4.8, width }, "TempleRed", "SmoothPlastic", base)
+			Pieces.block("Eave", pagoda, { width + 4, 0.6, width + 4 }, "AsphaltDark", "Slate", base + 4.8)
 		end
-		upright("Spire", pagoda, 14.4, 4, 0.4, "OldBrass", "Metal", false)
+		upright("Spire", pagoda, 21.6, 5.4, 0.5, "OldBrass", "Metal", false)
 		B.part({
 			Name = "Finial",
-			Size = { 0.9, 0.9, 0.9 },
-			Position = { pagoda[1], 18.8, pagoda[2] },
+			Size = { 1.2, 1.2, 1.2 },
+			Position = { pagoda[1], 27.4, pagoda[2] },
 			Shape = "Ball",
 			Color = "OldBrass",
 			Material = "Metal",
@@ -1702,17 +1767,17 @@ local function arcade()
 		Color = "ArcadeBlue",
 		FloorColor = "Black",
 		Openings = {
-			{ Face = "-Z", At = 0, Width = 8, Height = 5.4 },
-			{ Face = "-Z", At = -15, Width = 12, Height = 4.8, Bottom = 0.5, Glass = true },
-			{ Face = "-Z", At = 15, Width = 12, Height = 4.8, Bottom = 0.5, Glass = true },
-			{ Face = "+Z", At = 0, Width = 6, Height = 5.4 },
+			{ Face = "-Z", At = 0, Width = 8, Height = DOOR },
+			{ Face = "-Z", At = -15, Width = 12, Height = 7, Bottom = 0.5, Glass = true },
+			{ Face = "-Z", At = 15, Width = 12, Height = 7, Bottom = 0.5, Glass = true },
+			{ Face = "+Z", At = 0, Width = 6, Height = DOOR },
 		},
-		Windows = { Faces = { "+X", "-X", "+Z" }, Width = 5, Height = 2.4, Sill = 2, Spacing = 9, From = 2 },
-		Stair = { At = { 30, 0 }, Along = "Z", Width = 2.5 },
+		Windows = { Faces = { "+X", "-X", "+Z" }, Width = 5, Height = 4, Sill = 2.5, Spacing = 9, From = 2 },
+		Stair = { At = { 29, 0 }, Along = "Z", Width = 4 },
 		Roof = { Color = "ArcadeBlue", Hatch = true, Parapet = true },
 	})
 	for _, row in { { -58, 0 }, { -42, 180 } } do
-		for index = 0, 9 do
+		for index = 0, 8 do
 			local x = 93 + index * 5.6
 			local place = placer({ x, row[1] }, row[2])
 			B.model("Cabinet", function()
@@ -1761,9 +1826,9 @@ local function arcade()
 			CastShadow = false,
 		})
 	end
-	faceSign(at, size, "-Z", 0, 9.6, 20, 3, "Map.Shinjuku.Sign.Arcade", "Black", "NeonPink", true)
+	faceSign(at, size, "-Z", 0, 13, 20, 3, "Map.Shinjuku.Sign.Arcade", "Black", "NeonPink", true)
 	roofKit(at, size, roof, false)
-	ladder({ at[1] + size[1] / 2 + 1, at[2] + 15 }, 0, 16) -- onto the roof from the east side
+	ladder({ at[1] + size[1] / 2 + 1, at[2] + 15 }, 0, 22) -- onto the roof from the east side
 end
 
 ---------------------------------------------------------------------------------------------------------------------
@@ -1774,7 +1839,7 @@ end
 -- benches, a food court on the top floor, graffiti, a big sign on the roof and a ladder to it.
 local function mall()
 	local at, size = { -232, 25 }, { 80, 96 }
-	local storey = 8
+	local storey = 11
 	local roof = 3 * storey + 0.6
 	Rooms.building({
 		Name = "Mall",
@@ -1785,12 +1850,12 @@ local function mall()
 		Color = "CityTan",
 		FloorColor = "ConcreteLight",
 		Openings = {
-			{ Face = "+X", At = 0, Width = 14, Height = 6 },
-			{ Face = "+X", At = -24, Width = 18, Height = 5.5, Bottom = 0.5, Glass = true },
-			{ Face = "+X", At = 24, Width = 18, Height = 5.5, Bottom = 0.5, Glass = true },
-			{ Face = "+Z", At = 0, Width = 10, Height = 5 },
+			{ Face = "+X", At = 0, Width = 14, Height = 9 },
+			{ Face = "+X", At = -24, Width = 18, Height = 8, Bottom = 0.5, Glass = true },
+			{ Face = "+X", At = 24, Width = 18, Height = 8, Bottom = 0.5, Glass = true },
+			{ Face = "+Z", At = 0, Width = 10, Height = DOOR },
 		},
-		Windows = { Faces = { "+X", "+Z", "-Z" }, Width = 12, Height = 3, Sill = 2, Spacing = 16, From = 2 },
+		Windows = { Faces = { "+X", "+Z", "-Z" }, Width = 12, Height = 4.5, Sill = 3, Spacing = 16, From = 2 },
 		Stair = { At = { 0, 0 }, Along = "Z", Width = 6 },
 		Roof = { Color = "ConcreteDark", Hatch = true, Parapet = true },
 	})
@@ -1809,9 +1874,9 @@ local function mall()
 		smallTable(spot, 2 * storey)
 	end
 	for index, color in { "NeonPink", "ShopYellow", "NeonTeal", "ShopOrange" } do
-		panel(`Graffiti{index}`, at, size, "+Z", -27 + (index - 1) * 18, 4 + (index % 2), 11, 4.5, color)
+		panel(`Graffiti{index}`, at, size, "+Z", -27 + (index - 1) * 18, 5.5 + (index % 2), 11, 5, color)
 	end
-	faceSign(at, size, "+X", 0, 7, 18, 1.8, "Map.Shinjuku.Sign.Mall", "CityBlue", "OffWhite")
+	faceSign(at, size, "+X", 0, 10, 18, 1.8, "Map.Shinjuku.Sign.Mall", "CityBlue", "OffWhite")
 	-- A big sign on the roof facing the street.
 	for _, dz in { -10, 10 } do
 		Pieces.column("SignPost", { at[1] + 30, at[2] + dz }, roof, roof + 3.4, 0.5, "MetalDark", "Metal")
@@ -1827,7 +1892,7 @@ local function mall()
 		TextColor = "OffWhite",
 		CanCollide = false,
 	})
-	ladder({ at[1] + size[1] / 2 + 1, at[2] + 45 }, 0, 26)
+	ladder({ at[1] + size[1] / 2 + 1, at[2] + 45 }, 0, 36)
 	roofKit({ at[1] - 10, at[2] }, { 50, size[2] }, roof, true)
 end
 
@@ -1840,14 +1905,14 @@ local function bowling()
 		At = at,
 		Size = size,
 		Floors = 1,
-		Storey = 10,
+		Storey = 13,
 		Color = "ShopRed",
 		FloorColor = "WoodMid",
 		FloorMaterial = "WoodPlanks",
 		Openings = {
-			{ Face = "+X", At = 0, Width = 10, Height = 6 },
-			{ Face = "+X", At = -14, Width = 10, Height = 5, Bottom = 0.5, Glass = true },
-			{ Face = "+X", At = 14, Width = 10, Height = 5, Bottom = 0.5, Glass = true },
+			{ Face = "+X", At = 0, Width = 10, Height = 9 },
+			{ Face = "+X", At = -14, Width = 10, Height = 7, Bottom = 0.5, Glass = true },
+			{ Face = "+X", At = 14, Width = 10, Height = 7, Bottom = 0.5, Glass = true },
 		},
 		Roof = { Color = "ShopRed", Parapet = true },
 	})
@@ -1863,7 +1928,7 @@ local function bowling()
 		B.part({
 			Name = "ScoreScreen",
 			Size = { 0.3, 2.4, 6 },
-			Position = { -213, 8, z },
+			Position = { -213, 10.5, z },
 			Color = "NeonTeal",
 			Material = "Neon",
 			CanCollide = false,
@@ -1874,13 +1939,13 @@ local function bowling()
 	bench({ -205, -64 }, -90, 1)
 	bench({ -205, -56 }, -90, 1)
 	Pieces.block("ShoeCounter", { -197, -70 }, { 2, 3.4, 8 }, "WoodDark", "Wood")
-	faceSign(at, size, "+X", 0, 7.6, 16, 2.4, "Map.Shinjuku.Sign.Bowling", "OffWhite", "Red")
-	upright("GiantPin", { -205, -52 }, 10.6, 6, 2.6, "OffWhite", "SmoothPlastic", false) -- on the roof (+10.6)
-	upright("PinStripe", { -205, -52 }, 14.6, 0.6, 2.7, "Red", "SmoothPlastic", false)
+	faceSign(at, size, "+X", 0, 10.8, 16, 2.4, "Map.Shinjuku.Sign.Bowling", "OffWhite", "Red")
+	upright("GiantPin", { -205, -52 }, 13.6, 8, 3.4, "OffWhite", "SmoothPlastic", false) -- on the roof (+13.6)
+	upright("PinStripe", { -205, -52 }, 18.8, 0.8, 3.5, "Red", "SmoothPlastic", false)
 	B.part({
 		Name = "PinHead",
-		Size = { 2.2, 2.2, 2.2 },
-		Position = { -205, 17.4, -52 },
+		Size = { 3, 3, 3 },
+		Position = { -205, 23.4, -52 },
 		Shape = "Ball",
 		Color = "OffWhite",
 		Material = "SmoothPlastic",
@@ -1908,13 +1973,13 @@ local function apartments(name: string, at: { number }, floors: number, color: s
 		FloorColor = "WoodMid",
 		FloorMaterial = "WoodPlanks",
 		Openings = {
-			{ Face = "-X", At = 0, Width = 5, Height = 5.2 },
-			{ Face = laneFace, At = -20, Width = 4, Height = 5.2 },
-			{ Face = laneFace, At = 0, Width = 4, Height = 5.2, Floor = 2 }, -- onto the lane's deck
-			{ Face = laneFace, At = 210 - at[1], Width = 4, Height = 5.2, Floor = 3 },
+			{ Face = "-X", At = 0, Width = 5, Height = DOOR },
+			{ Face = laneFace, At = -20, Width = 5, Height = DOOR },
+			{ Face = laneFace, At = 0, Width = 5, Height = DOOR, Floor = 2 }, -- onto the lane's deck
+			{ Face = laneFace, At = 210 - at[1], Width = 5, Height = DOOR, Floor = 3 },
 		},
-		Windows = { Faces = { "-X" }, Width = 6, Height = 3, Sill = 1.5, Spacing = 9 },
-		Stair = { At = { 30, away * 12 }, Along = "Z", Width = 3 },
+		Windows = { Faces = { "-X" }, Width = 6, Height = 4, Sill = 2.5, Spacing = 9 },
+		Stair = { At = { 30, away * 12 }, Along = "Z", Width = 4 },
 		Roof = { Color = "ConcreteDark", Hatch = true, Parapet = true },
 	})
 	local inner = size[2] / 2 - 0.8
@@ -1949,13 +2014,13 @@ local function apartments(name: string, at: { number }, floors: number, color: s
 	waterTank({ at[1] - 15, at[2] - away * 10 }, roof)
 end
 
--- Between the apartment blocks: a deck over the lane at their 2nd floors (doorways onto it, a ramp up from the side
--- street, columns, planters and benches on it; bicycles and vending machines in the shade under it), and a footbridge
--- between their 3rd floors above that.
+-- Between the apartment blocks: a deck over the lane at their 2nd floors (doorways onto it, a ramp up the lane from
+-- the side street, columns, planters and benches on it; bicycles and vending machines in the shade under it), and a
+-- footbridge between their 3rd floors above that.
 local function apartmentLane()
 	local deck = STOREY
-	Pieces.block("LaneDeck", { 232, 0 }, { 72, 0.6, 47.2 }, "ConcreteLight", "Concrete", deck - 0.6)
-	for _, x in { 205, 232, 259 } do
+	Pieces.block("LaneDeck", { 240, 0 }, { 56, 0.6, 47.2 }, "ConcreteLight", "Concrete", deck - 0.6)
+	for _, x in { 220, 240, 260 } do
 		for _, z in { -12, 12 } do
 			B.part({
 				Name = "DeckColumn",
@@ -1966,12 +2031,12 @@ local function apartmentLane()
 			})
 		end
 	end
-	Pieces.ramp("DeckRamp", { 185.5, 0 }, { 196, 0 }, 4, deck, "ConcreteLight", "Concrete")
+	Pieces.ramp("DeckRamp", { 194, 0 }, { 212, 0 }, 4, deck, "ConcreteLight", "Concrete")
 	Pieces.block("DeckWall", { 267.8, 0 }, { 0.4, 1.1, 47.2 }, "ConcreteDark", "Concrete", deck)
 	for _, side in { -1, 1 } do
-		Pieces.block("DeckWall", { 196.2, side * 12.8 }, { 0.4, 1.1, 21.6 }, "ConcreteDark", "Concrete", deck)
-		pottedPlant({ 245, side * 16 }, deck)
-		bench({ 222, side * 18 }, if side > 0 then 180 else 0, deck)
+		Pieces.block("DeckWall", { 212.2, side * 12.8 }, { 0.4, 1.1, 21.6 }, "ConcreteDark", "Concrete", deck)
+		pottedPlant({ 252, side * 16 }, deck)
+		bench({ 232, side * 18 }, if side > 0 then 180 else 0, deck)
 	end
 	Pieces.span(
 		"Footbridge",
@@ -1992,14 +2057,14 @@ local function waterTower(at: { number })
 	B.model("WaterTower", function()
 		for _, dx in { -3, 3 } do
 			for _, dz in { -3, 3 } do
-				Pieces.column("Leg", { at[1] + dx, at[2] + dz }, 0, 24, 0.6, "MetalDark", "Metal")
+				Pieces.column("Leg", { at[1] + dx, at[2] + dz }, 0, 30, 0.7, "MetalDark", "Metal")
 			end
 		end
-		Pieces.block("Walkway", at, { 10, 0.5, 10 }, "MetalDark", "DiamondPlate", 24)
-		upright("Tank", at, 24.5, 8, 6.5, "CityBlue", "Metal")
-		upright("TankLid", at, 32.5, 0.6, 7, "MetalDark", "Metal")
+		Pieces.block("Walkway", at, { 12, 0.5, 12 }, "MetalDark", "DiamondPlate", 30)
+		upright("Tank", at, 30.5, 10, 8, "CityBlue", "Metal")
+		upright("TankLid", at, 40.5, 0.6, 8.6, "MetalDark", "Metal")
 	end)
-	ladder({ at[1] + 6, at[2] }, 0, 26)
+	ladder({ at[1] + 7, at[2] }, 0, 32)
 end
 
 ---------------------------------------------------------------------------------------------------------------------
@@ -2030,20 +2095,20 @@ local function shopRow()
 			Color = entry[2],
 			FloorColor = "ConcreteLight",
 			Openings = {
-				{ Face = "+Z", At = 0, Width = 5, Height = 5.2 },
-				{ Face = "+Z", At = -8.5, Width = 9, Height = 4.4, Bottom = 0.6, Glass = true },
-				{ Face = "+Z", At = 8.5, Width = 9, Height = 4.4, Bottom = 0.6, Glass = true },
-				{ Face = "-Z", At = 8, Width = 3, Height = 5.2 },
+				{ Face = "+Z", At = 0, Width = 5, Height = DOOR },
+				{ Face = "+Z", At = -8.5, Width = 8, Height = 6.5, Bottom = 0.6, Glass = true },
+				{ Face = "+Z", At = 8.5, Width = 8, Height = 6.5, Bottom = 0.6, Glass = true },
+				{ Face = "-Z", At = 8, Width = 5, Height = DOOR },
 			},
-			Windows = { Faces = { "+Z", "-Z" }, Width = 7, Height = 2.6, Sill = 1.4, Spacing = 9, From = 2 },
-			Stair = { At = { -6, -6 }, Along = "X", Width = 2.5 },
+			Windows = { Faces = { "+Z", "-Z" }, Width = 7, Height = 4, Sill = 2.5, Spacing = 9, From = 2 },
+			Stair = { At = { -4, -6 }, Along = "X", Width = 3.5 },
 			Roof = { Color = "ConcreteDark", Parapet = true },
 		})
-		faceSign(at, size, "+Z", 0, 6.3, 16, 1.2, entry[3], "OffWhite", "Black")
+		faceSign(at, size, "+Z", 0, DOOR + 1.2, 16, 1.2, entry[3], "OffWhite", "Black")
 		B.part({
 			Name = "Awning",
 			Size = { 26, 0.3, 2.4 },
-			Position = { at[1], 5.5, front + 1.2 },
+			Position = { at[1], DOOR + 0.4, front + 1.2 },
 			Rotation = { 12, 0, 0 },
 			Color = entry[2],
 			Material = "Fabric",
@@ -2051,8 +2116,8 @@ local function shopRow()
 		})
 		B.part({
 			Name = "VerticalSign",
-			Size = { 1.6, 12, 0.4 },
-			Position = { at[1] + 13.5, 13, front + 0.5 },
+			Size = { 1.6, 16, 0.4 },
+			Position = { at[1] + 13.5, 18, front + 0.5 },
 			Color = if entry[2] == "ShopYellow" then "Red" else "LaneYellow",
 			Material = "Neon",
 			CanCollide = false,
@@ -2077,7 +2142,7 @@ local function shopRow()
 				CanCollide = false,
 			})
 		end
-		Pieces.block("Counter", { at[1] + 7, at[2] - 8 }, { 7, 3, 1.6 }, "WoodDark", "Wood")
+		Pieces.block("Counter", { at[1] + 9, at[2] - 8 }, { 7, 3, 1.6 }, "WoodDark", "Wood")
 		Pieces.block("Shelf", { at[1] + 12, at[2] + 3 }, { 1.2, 4, 8 }, "WoodMid", "Wood")
 		-- Upstairs: a stockroom (a shelf, a table), then a flat (a bed, a sofa).
 		Pieces.block("Shelf", { at[1] - 12, at[2] + 7 }, { 1.2, 4, 8 }, "WoodMid", "Wood", STOREY)
@@ -2114,14 +2179,14 @@ local function jailAndClub()
 		Color = "LightPurple",
 		FloorColor = "ConcreteLight",
 		Openings = {
-			{ Face = "+Z", At = 0, Width = 6, Height = 5.2 },
-			{ Face = "+X", At = -3, Width = 4, Height = 5.2 }, -- into the cell
+			{ Face = "+Z", At = 0, Width = 6, Height = DOOR },
+			{ Face = "+X", At = -3, Width = 5, Height = DOOR }, -- into the cell
 		},
-		Windows = { Faces = { "+Z", "+X" }, Width = 3, Height = 2.4, Sill = 2.4, Spacing = 11 },
-		Stair = { At = { -28, 0 }, Along = "Z", Width = 3 },
+		Windows = { Faces = { "+Z", "+X" }, Width = 3, Height = 3, Sill = 3, Spacing = 11 },
+		Stair = { At = { -28, 0 }, Along = "Z", Width = 4 },
 		Roof = { Color = "Purple", Parapet = true },
 	})
-	faceSign(jail, jailSize, "+Z", 0, 20, 8, 1.2, "Map.Shinjuku.Sign.Jail", "OffWhite", "Black")
+	faceSign(jail, jailSize, "+Z", 0, 28, 8, 1.2, "Map.Shinjuku.Sign.Jail", "OffWhite", "Black")
 	-- Downstairs: two holding cells along the back wall (an open door in each), a bunk in each, the front desk.
 	local barsZ = jail[2] - 10
 	for x = jail[1] - 27, jail[1] + 3, 2 do
@@ -2172,13 +2237,13 @@ local function jailAndClub()
 	-- The barred cell on its east side (the bars don't break).
 	local cell = { jail[1] + jailSize[1] / 2 + 4, jail[2] - 3 }
 	B.model("Cell", function()
-		Pieces.block("CellRoof", cell, { 8, 0.4, 10 }, "MetalDark", "Metal", 6.6)
+		Pieces.block("CellRoof", cell, { 8, 0.4, 10 }, "MetalDark", "Metal", 9)
 		for z = cell[2] - 4.5, cell[2] + 4.5, 1 do
-			upright("Bar", { cell[1] + 3.9, z }, 0, 6.6, 0.2, "MetalDark", "Metal")
+			upright("Bar", { cell[1] + 3.9, z }, 0, 9, 0.2, "MetalDark", "Metal")
 		end
 		for x = cell[1] - 3.5, cell[1] + 3, 1 do
 			for _, z in { cell[2] - 4.9, cell[2] + 4.9 } do
-				upright("Bar", { x, z }, 0, 6.6, 0.2, "MetalDark", "Metal")
+				upright("Bar", { x, z }, 0, 9, 0.2, "MetalDark", "Metal")
 			end
 		end
 	end)
@@ -2188,25 +2253,25 @@ local function jailAndClub()
 	B.model("Watchtower", function()
 		for _, dx in { -3, 3 } do
 			for _, dz in { -3, 3 } do
-				Pieces.column("Leg", { tower[1] + dx, tower[2] + dz }, 0, 10, 0.6, "MetalDark", "Metal")
-				upright("RoofPost", { tower[1] + dx, tower[2] + dz }, 10.6, 3.4, 0.25, "MetalDark", "Metal", false)
+				Pieces.column("Leg", { tower[1] + dx, tower[2] + dz }, 0, 14, 0.6, "MetalDark", "Metal")
+				upright("RoofPost", { tower[1] + dx, tower[2] + dz }, 14.6, 5, 0.25, "MetalDark", "Metal", false)
 			end
 		end
-		Pieces.block("Deck", tower, { 7, 0.6, 7 }, "WoodDark", "WoodPlanks", 10)
+		Pieces.block("Deck", tower, { 7, 0.6, 7 }, "WoodDark", "WoodPlanks", 14)
 		for _, wall in { { { 0, -3.3 }, { 7, 0.3 } }, { { 0, 3.3 }, { 7, 0.3 } }, { { -3.3, 0 }, { 0.3, 6.4 } } } do
 			Pieces.block(
 				"DeckWall",
 				{ tower[1] + wall[1][1], tower[2] + wall[1][2] },
-				{ wall[2][1], 1.1, wall[2][2] },
+				{ wall[2][1], 1.2, wall[2][2] },
 				"WoodDark",
 				"Wood",
-				10.6
+				14.6
 			)
 		end
-		Pieces.block("WatchRoof", tower, { 8, 0.4, 8 }, "AsphaltDark", "Metal", 14)
-		upright("Searchlight", { tower[1] - 2.4, tower[2] }, 11.7, 0.9, 1.2, "WarmLight", "Neon", false)
+		Pieces.block("WatchRoof", tower, { 8, 0.4, 8 }, "AsphaltDark", "Metal", 19.6)
+		upright("Searchlight", { tower[1] - 2.4, tower[2] }, 15.8, 0.9, 1.2, "WarmLight", "Neon", false)
 	end)
-	ladder({ tower[1] + 4.5, tower[2] }, 0, 12)
+	ladder({ tower[1] + 4.5, tower[2] }, 0, 16)
 
 	local club, clubSize = { -235, -200 }, { 66, 32 }
 	Rooms.building({
@@ -2214,17 +2279,17 @@ local function jailAndClub()
 		At = club,
 		Size = clubSize,
 		Floors = 1,
-		Storey = 10,
+		Storey = 13,
 		Color = "Purple",
 		FloorColor = "Black",
 		FloorMaterial = "Carpet",
-		Openings = { { Face = "+Z", At = 0, Width = 6, Height = 5 } },
-		Windows = { Faces = { "+X", "-X" }, Width = 4, Height = 2.4, Sill = 3, Spacing = 8 },
+		Openings = { { Face = "+Z", At = 0, Width = 6, Height = DOOR } },
+		Windows = { Faces = { "+X", "-X" }, Width = 4, Height = 3, Sill = 4, Spacing = 8 },
 		Roof = { Color = "Black", Parapet = true },
 	})
 	Pieces.block("Stage", { club[1], club[2] - 11.5 }, { 40, 1.5, 7 }, "WoodDark", "WoodPlanks")
 	upright("MicStand", { club[1], club[2] - 11.5 }, 1.5, 4.4, 0.2, "MetalDark", "Metal", false)
-	panel("Curtain", club, { clubSize[1] - 1.8, clubSize[2] - 1.8 }, "-Z", 0, 5, 40, 8, "Red", "Fabric") -- the back wall
+	panel("Curtain", club, { clubSize[1] - 1.8, clubSize[2] - 1.8 }, "-Z", 0, 6.5, 40, 11, "Red", "Fabric") -- the back wall
 	-- Three tiers of seats rising toward the door, either side of the aisle.
 	for tier = 0, 2 do
 		for _, x in { club[1] - 15, club[1] + 15 } do
@@ -2232,12 +2297,12 @@ local function jailAndClub()
 		end
 	end
 	Pieces.block("Bar", { club[1] + 30.5, club[2] + 8 }, { 2, 3.4, 12 }, "WoodDark", "Wood")
-	faceSign(club, clubSize, "+Z", 0, 7, 16, 1.8, "Map.Shinjuku.Sign.Comedy", "Black", "LaneYellow", true)
+	faceSign(club, clubSize, "+Z", 0, DOOR + 1.6, 16, 1.8, "Map.Shinjuku.Sign.Comedy", "Black", "LaneYellow", true)
 	for index = 0, 8 do
 		B.part({
 			Name = "MarqueeLight",
 			Size = { 0.5, 0.5, 0.5 },
-			Position = { club[1] - 10 + index * 2.5, 8.4, club[2] + clubSize[2] / 2 + 0.4 },
+			Position = { club[1] - 10 + index * 2.5, DOOR + 3, club[2] + clubSize[2] / 2 + 0.4 },
 			Shape = "Ball",
 			Color = "WarmLight",
 			Material = "Neon",
@@ -2256,13 +2321,13 @@ local function courtAndMansion()
 		At = court,
 		Size = courtSize,
 		Floors = 1,
-		Storey = 11,
+		Storey = 15,
 		Color = "OffWhite",
 		Material = "Marble",
 		FloorColor = "WoodMid",
 		FloorMaterial = "WoodPlanks",
-		Openings = { { Face = "+Z", At = 0, Width = 8, Height = 7 } },
-		Windows = { Faces = { "+X", "-X", "+Z" }, Width = 3, Height = 6, Sill = 2.5, Spacing = 7 },
+		Openings = { { Face = "+Z", At = 0, Width = 8, Height = 10 } },
+		Windows = { Faces = { "+X", "-X", "+Z" }, Width = 3, Height = 8, Sill = 3, Spacing = 7 },
 		Roof = { Color = "OffWhite", Material = "Marble", Parapet = true },
 	})
 	Pieces.block("Dais", { court[1], court[2] - 10 }, { 22, 1, 6 }, "WoodDark", "Wood")
@@ -2278,13 +2343,13 @@ local function courtAndMansion()
 	end
 	B.model("Portico", function()
 		Pieces.block("Floor", { court[1], front + 2.5 }, { 52, 1.2, 5 }, "OffWhite", "Marble")
-		Pieces.block("Roof", { court[1], front + 2.5 }, { 52, 1, 5.4 }, "OffWhite", "Marble", 11)
+		Pieces.block("Roof", { court[1], front + 2.5 }, { 52, 1, 5.4 }, "OffWhite", "Marble", 15)
 		for index = 0, 5 do
 			Pieces.column(
 				"Column",
 				{ court[1] - 23 + index * 9.2, front + 3.5 },
 				1.2,
-				11,
+				15,
 				1.4,
 				"OffWhite",
 				"Marble",
@@ -2296,7 +2361,7 @@ local function courtAndMansion()
 	B.sign({
 		Name = "CourtSign",
 		Size = { 14, 1.4, 0.3 },
-		Position = { court[1], 12.7, front + 5.3 },
+		Position = { court[1], 16.7, front + 5.3 },
 		Rotation = B.yaw("North"),
 		Color = "OffWhite",
 		Material = "Marble",
@@ -2314,9 +2379,9 @@ local function courtAndMansion()
 		Color = "Cream",
 		FloorColor = "WoodMid",
 		FloorMaterial = "WoodPlanks",
-		Openings = { { Face = "+Z", At = 0, Width = 5, Height = 5.2 } },
-		Windows = { Faces = { "+X", "-X", "+Z", "-Z" }, Width = 3, Height = 3, Sill = 2, Spacing = 6 },
-		Stair = { At = { -12, -5 }, Along = "X", Width = 3 },
+		Openings = { { Face = "+Z", At = 0, Width = 5, Height = DOOR } },
+		Windows = { Faces = { "+X", "-X", "+Z", "-Z" }, Width = 3, Height = 4, Sill = 2.5, Spacing = 6 },
+		Stair = { At = { -10, -5 }, Along = "X", Width = 3.5 },
 		Roof = { Color = "AsphaltDark", Material = "Slate", Parapet = true },
 	})
 	Rooms.building({
@@ -2324,9 +2389,9 @@ local function courtAndMansion()
 		At = { 100, -192 },
 		Size = { 18, 20 },
 		Floors = 1,
-		Storey = 6,
+		Storey = 9,
 		Color = "Cream",
-		Openings = { { Face = "+Z", At = 0, Width = 12, Height = 5.2 } },
+		Openings = { { Face = "+Z", At = 0, Width = 12, Height = 7.5 } },
 		Roof = { Color = "AsphaltDark", Material = "Slate" },
 	})
 	car("GarageCar", { 100, -194 }, 0, "Black")
@@ -2360,7 +2425,7 @@ end
 -- from the street), the FIRE STATION sign.
 local function fireStation()
 	local at, size = { 52, -201 }, { 60, 42 }
-	local storey = 8
+	local storey = 12
 	local roof = 2 * storey + 0.6
 	Rooms.building({
 		Name = "FireStation",
@@ -2371,26 +2436,26 @@ local function fireStation()
 		Color = "OffWhite",
 		FloorColor = "ConcreteLight",
 		Openings = {
-			{ Face = "-X", At = -8, Width = 10, Height = 6.5 },
-			{ Face = "-X", At = 8, Width = 10, Height = 6.5 },
-			{ Face = "+Z", At = 20, Width = 3, Height = 5.2 },
+			{ Face = "-X", At = -8, Width = 10, Height = 10 },
+			{ Face = "-X", At = 8, Width = 10, Height = 10 },
+			{ Face = "+Z", At = 6, Width = 5, Height = DOOR },
 		},
-		Windows = { Faces = { "+Z", "-X", "-Z" }, Width = 4, Height = 2.6, Sill = 1.8, Spacing = 10, From = 2 },
-		Stair = { At = { 24, 10 }, Along = "Z", Width = 3 },
+		Windows = { Faces = { "+Z", "-X", "-Z" }, Width = 4, Height = 4, Sill = 2.5, Spacing = 10, From = 2 },
+		Stair = { At = { 24, 10 }, Along = "Z", Width = 4 },
 		Roof = { Color = "Red", Hatch = true, Parapet = true },
 	})
 	for _, dz in { -8, 8 } do
 		B.model("FireEngine", function()
 			local z = at[2] + dz
-			Pieces.block("Body", { 39, z }, { 10, 3.6, 4.6 }, "Red", "SmoothPlastic", 0.6)
-			Pieces.block("Cab", { 31.5, z }, { 3, 3, 4.6 }, "Red", "SmoothPlastic", 0.6)
-			Pieces.block("LadderRack", { 39, z }, { 9, 0.4, 1.2 }, "Metal", "Metal", 4.2)
-			Pieces.block("Bumper", { 29.8, z }, { 0.4, 0.6, 4.6 }, "Metal", "Metal", 0.6)
-			for _, x in { 33, 42 } do
+			Pieces.block("Body", { 41, z }, { 13, 4.8, 6 }, "Red", "SmoothPlastic", 0.9)
+			Pieces.block("Cab", { 32.5, z }, { 4, 4, 6 }, "Red", "SmoothPlastic", 0.9)
+			Pieces.block("LadderRack", { 41, z }, { 12, 0.5, 1.6 }, "Metal", "Metal", 5.7)
+			Pieces.block("Bumper", { 30.3, z }, { 0.4, 0.8, 6 }, "Metal", "Metal", 0.9)
+			for _, x in { 34, 45 } do
 				B.part({
 					Name = "Wheels",
-					Size = { 5, 1.4, 1.4 },
-					Position = { x, 0.7, z },
+					Size = { 6.4, 1.8, 1.8 },
+					Position = { x, 0.9, z },
 					Rotation = { 0, 90, 0 },
 					Shape = "Cylinder",
 					Color = "Black",
@@ -2399,8 +2464,8 @@ local function fireStation()
 			end
 		end)
 	end
-	panel("BayStripe", at, size, "-X", 0, 7.2, size[2] - 2, 0.8, "Red")
-	faceSign(at, size, "-X", 0, 14.6, 16, 1.6, "Map.Shinjuku.Sign.Fire", "Red", "OffWhite")
+	panel("BayStripe", at, size, "-X", 0, 11, size[2] - 2, 0.8, "Red")
+	faceSign(at, size, "-X", 0, 21, 16, 1.6, "Map.Shinjuku.Sign.Fire", "Red", "OffWhite")
 	Pieces.block("Lockers", { 80.4, at[2] - 11 }, { 1, 5, 10 }, "CityGrey", "Metal")
 	for _, x in { 40, 50, 60 } do
 		bed({ x, at[2] - 14 }, storey, 0, "Red")
@@ -2425,7 +2490,7 @@ local function fireStation()
 			roof + 16
 		)
 	end
-	ladder({ at[1] - size[1] / 2 - 1, tower[2] }, 0, 34)
+	ladder({ at[1] - size[1] / 2 - 1, tower[2] }, 0, 42)
 	acUnit({ at[1] + 10, at[2] - 12 }, roof)
 end
 
@@ -2445,12 +2510,12 @@ local function hotel()
 		FloorColor = "Red",
 		FloorMaterial = "Carpet",
 		Openings = {
-			{ Face = "+Z", At = 0, Width = 8, Height = 5.2 },
-			{ Face = "+Z", At = -12, Width = 10, Height = 4.4, Bottom = 0.6, Glass = true },
-			{ Face = "+Z", At = 12, Width = 10, Height = 4.4, Bottom = 0.6, Glass = true },
+			{ Face = "+Z", At = 0, Width = 8, Height = 9 },
+			{ Face = "+Z", At = -12, Width = 10, Height = 7, Bottom = 0.6, Glass = true },
+			{ Face = "+Z", At = 12, Width = 10, Height = 7, Bottom = 0.6, Glass = true },
 		},
-		Windows = { Faces = { "+Z", "-Z" }, Width = 8, Height = 3, Sill = 1.5, Spacing = 12, From = 2 },
-		Stair = { At = { -20, 0 }, Along = "Z", Width = 3 },
+		Windows = { Faces = { "+Z", "-Z" }, Width = 8, Height = 4, Sill = 2.5, Spacing = 12, From = 2 },
+		Stair = { At = { -20, 0 }, Along = "Z", Width = 4 },
 		Roof = { Color = "ConcreteDark", Hatch = true, Parapet = true },
 	})
 	Pieces.block("Reception", { at[1] + 10, at[2] + 6 }, { 8, 3.2, 2 }, "WoodDark", "Wood")
@@ -2459,7 +2524,7 @@ local function hotel()
 	pottedPlant({ at[1] - 22, front - 2.5 }, 0)
 	pottedPlant({ at[1] + 22, front - 2.5 }, 0)
 	local x0, x1 = at[1] - 16, at[1] + size[1] / 2 - 0.8 -- the rooms: east of the stair
-	local zSouth, zNorth = at[2] - 2.5, at[2] + 2.5
+	local zSouth, zNorth = at[2] - 3, at[2] + 3
 	local inner = size[2] / 2 - 0.8
 	for floor = 2, HOTEL.Floors do
 		local y = (floor - 1) * STOREY
@@ -2476,9 +2541,9 @@ local function hotel()
 		end
 	end
 	-- The entrance canopy on two posts.
-	Pieces.block("EntranceCanopy", { at[1], front + 3 }, { 16, 0.4, 6 }, "MetalDark", "Metal", 5.4)
+	Pieces.block("EntranceCanopy", { at[1], front + 3 }, { 16, 0.4, 6 }, "MetalDark", "Metal", 9.5)
 	for _, dx in { -7, 7 } do
-		upright("CanopyPost", { at[1] + dx, front + 5.5 }, 0, 5.4, 0.4, "MetalDark", "Metal")
+		upright("CanopyPost", { at[1] + dx, front + 5.5 }, 0, 9.5, 0.45, "MetalDark", "Metal")
 	end
 	-- The roof: a helipad (a disc and an H), the sign on two posts facing the street, a water tank.
 	local roof = HOTEL_ROOF
@@ -2513,11 +2578,11 @@ end
 local function deptStore()
 	local at, size = DEPT.At, DEPT.Size
 	local openings: { Rooms.Opening } = {
-		{ Face = "+Z", At = 0, Width = 8, Height = 5.2 },
-		{ Face = "+X", At = 0, Width = 6, Height = 5.2 },
+		{ Face = "+Z", At = 0, Width = 8, Height = 9 },
+		{ Face = "+X", At = 0, Width = 6, Height = DOOR },
 	}
 	for _, spot in { -44, -30, -14, 14, 30, 44 } do
-		table.insert(openings, { Face = "+Z", At = spot, Width = 12, Height = 4.4, Bottom = 0.6, Glass = true })
+		table.insert(openings, { Face = "+Z", At = spot, Width = 12, Height = 7, Bottom = 0.6, Glass = true })
 	end
 	Rooms.building({
 		Name = "DeptStore",
@@ -2529,8 +2594,8 @@ local function deptStore()
 		FloorColor = "ConcreteLight",
 		FloorMaterial = "Marble",
 		Openings = openings,
-		Windows = { Faces = { "+Z", "-Z" }, Width = 10, Height = 3.6, Sill = 1.4, Spacing = 16, From = 2 },
-		Stair = { At = { -44, 0 }, Along = "Z", Width = 3.5 },
+		Windows = { Faces = { "+Z", "-Z" }, Width = 10, Height = 4.5, Sill = 2.5, Spacing = 16, From = 2 },
+		Stair = { At = { -44, 0 }, Along = "Z", Width = 4 },
 		Roof = { Color = "ConcreteDark", Hatch = true, Parapet = true },
 	})
 	local north, south = at[2] + 16, at[2] - 16 -- two lines of displays on every floor
@@ -2540,7 +2605,7 @@ local function deptStore()
 		Pieces.block(
 			"Rack",
 			{ x - 5, south },
-			{ 8, 4, 0.6 },
+			{ 8, 4.5, 0.6 },
 			if x % 40 == 10 then "ShopPink" else "CityBlue",
 			"Fabric",
 			STOREY
@@ -2548,11 +2613,11 @@ local function deptStore()
 		smallTable({ x, north }, 3 * STOREY)
 	end
 	for _, x in { -125, -85 } do
-		upright("Mannequin", { x, north }, STOREY, 4.6, 1, "OffWhite", "SmoothPlastic")
+		upright("Mannequin", { x, north }, STOREY, 4.6, 1.2, "OffWhite", "SmoothPlastic")
 		B.part({
 			Name = "MannequinHead",
-			Size = { 1, 1, 1 },
-			Position = { x, STOREY + 5.1, north },
+			Size = { 1.1, 1.1, 1.1 },
+			Position = { x, STOREY + 5.2, north },
 			Shape = "Ball",
 			Color = "OffWhite",
 			CanCollide = false,
@@ -2562,7 +2627,7 @@ local function deptStore()
 		sofa({ x, south }, 2 * STOREY, 0, "WoodMid")
 		Pieces.block("Display", { x, north }, { 6, 2.4, 3 }, "WoodDark", "Wood", 2 * STOREY)
 	end
-	faceSign(at, size, "+Z", 0, 6.3, 28, 1.6, "Map.Shinjuku.Sign.DeptStore", "OffWhite", "Black")
+	faceSign(at, size, "+Z", 0, 9.4, 28, 1.6, "Map.Shinjuku.Sign.DeptStore", "OffWhite", "Black")
 	-- The roof: the Ferris wheel's A-frame legs and axle, a ticket booth, AC units.
 	local hub = { -80, DEPT_ROOF + 15.4, at[2] }
 	for _, dz in { -3.2, 3.2 } do
@@ -2588,7 +2653,7 @@ local function deptStore()
 		Material = "Metal",
 		CanCollide = false,
 	})
-	Pieces.block("TicketBooth", { -108, at[2] + 18 }, { 4, 3.4, 3 }, "ShopYellow", "SmoothPlastic", DEPT_ROOF)
+	Pieces.block("TicketBooth", { -108, at[2] + 18 }, { 5, 6, 4 }, "ShopYellow", "SmoothPlastic", DEPT_ROOF)
 	acUnit({ -64, at[2] - 18 }, DEPT_ROOF)
 	acUnit({ -64, at[2] + 18 }, DEPT_ROOF)
 end
@@ -2598,17 +2663,17 @@ end
 local function parkingRack()
 	local at = { -34, -196 }
 	B.model("ParkingRack", function()
-		for _, dx in { -7, 0, 7 } do
-			for _, dz in { -5.5, 5.5 } do
-				Pieces.column("RackPost", { at[1] + dx, at[2] + dz }, 0, 15.5, 0.6, "LaneYellow", "Metal")
+		for _, dx in { -8, 0, 8 } do
+			for _, dz in { -6.5, 6.5 } do
+				Pieces.column("RackPost", { at[1] + dx, at[2] + dz }, 0, 22, 0.6, "LaneYellow", "Metal")
 			end
 		end
-		for _, level in { 5, 10, 15 } do
-			for _, dx in { -3.5, 3.5 } do
+		for _, level in { 7, 14, 21 } do
+			for _, dx in { -4, 4 } do
 				Pieces.block(
 					"RackDeck",
 					{ at[1] + dx, at[2] },
-					{ 6.4, 0.4, 11 },
+					{ 7.4, 0.4, 13 },
 					"MetalDark",
 					"DiamondPlate",
 					level - 0.4
@@ -2616,18 +2681,19 @@ local function parkingRack()
 			end
 		end
 	end)
-	car("RackCar1", { at[1] - 3.5, at[2] }, 0, "Red")
-	car("RackCar2", { at[1] + 3.5, at[2] }, 0, "OffWhite", 5)
-	car("RackCar3", { at[1] - 3.5, at[2] }, 0, "CityBlue", 10)
-	ladder({ at[1] - 9, at[2] }, 0, 16)
+	car("RackCar1", { at[1] - 4, at[2] }, 0, "Red")
+	car("RackCar2", { at[1] + 4, at[2] }, 0, "OffWhite", 7)
+	car("RackCar3", { at[1] - 4, at[2] }, 0, "CityBlue", 14)
+	ladder({ at[1] - 10, at[2] }, 0, 24)
 end
 
 --[[
 	The building site in the south-east corner (a flat pocket park until 2026-10-28): a hoarding fence along the
 	streets (its panels break) with a gate and the UNDER CONSTRUCTION board; a steel frame going up (columns, beams on
-	every level; a full concrete deck at 8, two halves with a gap at 16, the east half at 24, bare beams at 32), ladders
-	between the levels, scaffolding planks along its north face; the hoist up its east side and the tower crane turning
-	over it (movers()); a two-storey site office, pipes, a sand pile, a cement mixer, portable toilets, cones.
+	every level; a full concrete deck at 10, two halves with a gap at 20, the east half at 30, bare beams at 40),
+	ladders between the levels, scaffolding planks along its north face; the hoist up its east side and the tower crane
+	turning over it (movers()); a two-storey site office, a stack of containers, a dirt mound with an excavator, pipes,
+	a sand pile, a cement mixer, portable toilets, cones.
 ]]
 local function buildingSite()
 	local function fence(a: { number }, b: { number })
@@ -2638,8 +2704,8 @@ local function buildingSite()
 			local t = (index - 0.5) / count
 			B.part({
 				Name = "Hoarding",
-				Size = if alongX then { length / count, 3.6, 0.3 } else { 0.3, 3.6, length / count },
-				Position = { a[1] + (b[1] - a[1]) * t, 1.8, a[2] + (b[2] - a[2]) * t },
+				Size = if alongX then { length / count, 6, 0.3 } else { 0.3, 6, length / count },
+				Position = { a[1] + (b[1] - a[1]) * t, 3, a[2] + (b[2] - a[2]) * t },
 				Color = "OffWhite",
 				Material = "Metal",
 				Tags = BREAKABLE,
@@ -2650,12 +2716,12 @@ local function buildingSite()
 	fence({ 238, -107 }, { 276, -107 })
 	fence({ 188, -107.3 }, { 188, -226 })
 	for _, x in { 226, 238 } do
-		upright("GatePost", { x, -107 }, 0, 4.4, 0.5, "LaneYellow", "Metal")
+		upright("GatePost", { x, -107 }, 0, 7, 0.5, "LaneYellow", "Metal")
 	end
 	B.sign({
 		Name = "SiteBoard",
-		Size = { 16, 2.4, 0.2 },
-		Position = { 207, 2.2, -106.75 },
+		Size = { 18, 3, 0.2 },
+		Position = { 207, 3.6, -106.75 },
 		Rotation = B.yaw("North"),
 		Color = "CityBlue",
 		Material = "SmoothPlastic",
@@ -2671,7 +2737,7 @@ local function buildingSite()
 			for _, z in { z0, at[2], z1 } do
 				B.part({
 					Name = "Column",
-					Size = { 0.8, 4 * deck + 2, 0.8 },
+					Size = { 0.9, 4 * deck + 2, 0.9 },
 					Position = { x, (4 * deck + 2) / 2, z },
 					Color = "RustOrange",
 					Material = "Metal",
@@ -2712,21 +2778,22 @@ local function buildingSite()
 		Pieces.block("Deck", { x0 + 14, at[2] }, { 28, 0.6, size[2] }, "Concrete", "Concrete", 2 * deck - 0.6)
 		Pieces.block("Deck", { x1 - 14, at[2] }, { 28, 0.6, size[2] }, "Concrete", "Concrete", 2 * deck - 0.6)
 		Pieces.block("Deck", { x1 - 15, at[2] }, { 30, 0.6, size[2] }, "Concrete", "Concrete", 3 * deck - 0.6)
-		-- Scaffolding along the north face: three plank walks on poles.
-		for _, y in { 4, 12, 20 } do
-			Pieces.block("ScaffoldPlank", { at[1], z1 + 2.5 }, { size[1], 0.3, 2.6 }, "Wood", "WoodPlanks", y - 0.3)
+		-- Scaffolding along the north face: three plank walks on poles, halfway between the decks.
+		for level = 0, 2 do
+			local y = (level + 0.5) * deck
+			Pieces.block("ScaffoldPlank", { at[1], z1 + 2.5 }, { size[1], 0.3, 3 }, "Wood", "WoodPlanks", y - 0.3)
 		end
 		for _, x in { x0, at[1], x1 } do
-			upright("ScaffoldPole", { x, z1 + 3.9 }, 0, 22, 0.25, "Metal", "Metal", false)
+			upright("ScaffoldPole", { x, z1 + 4.2 }, 0, 3 * deck, 0.25, "Metal", "Metal", false)
 		end
 	end)
-	ladder({ x0 - 1.5, at[2] - 10 }, 0, 10)
-	ladder({ x0 - 1.5, at[2] + 10 }, deck, 10)
-	ladder({ x1 - 31, z0 + 3 }, 2 * deck, 10) -- from the west half's deck up beside the east half's
-	ladder({ x1 + 1, z1 - 5 }, 3 * deck, 10)
+	ladder({ x0 - 1.5, at[2] - 10 }, 0, 12)
+	ladder({ x0 - 1.5, at[2] + 10 }, deck, 12)
+	ladder({ x1 - 31, z0 + 3 }, 2 * deck, 12) -- from the west half's deck up beside the east half's
+	ladder({ x1 + 1, z1 - 5 }, 3 * deck, 12)
 	-- The hoist's guide posts (the cage is a mover) and the crane's footing and mast (its top turns: movers()).
 	for _, dz in { -3.2, 3.2 } do
-		upright("HoistGuide", { x1 + 8.4, at[2] + dz }, 0, 3 * deck + 3, 0.3, "LaneYellow", "Metal", false)
+		upright("HoistGuide", { x1 + 8.4, at[2] + dz }, 0, 3 * deck + 4, 0.3, "LaneYellow", "Metal", false)
 	end
 	local crane = CRANE.At
 	Pieces.block("CraneFooting", crane, { 6, 2, 6 }, "Concrete", "Concrete")
@@ -2744,10 +2811,10 @@ local function buildingSite()
 	end
 	Pieces.block("MastTop", crane, { 4, 0.6, 4 }, "LaneYellow", "Metal", 2 + CRANE.Height)
 	-- The site office (a container with a cabin on top and a ladder up), materials.
-	Pieces.container("SiteOffice", { 204, -124 }, { 12, 5.2, 5 }, 0, "OffWhite")
-	Pieces.block("SiteOfficeTop", { 204, -124 }, { 12, 4.4, 5 }, "CityBlue", "Metal", 5.2)
-	panel("OfficeWindow", { 204, -124 }, { 12, 5 }, "-Z", 0, 7.6, 6, 1.6, "Glass", "Glass")
-	ladder({ 211, -122 }, 0, 10)
+	Pieces.container("SiteOffice", { 204, -124 }, { 14, 7, 6 }, 0, "OffWhite")
+	Pieces.block("SiteOfficeTop", { 204, -124 }, { 14, 6, 6 }, "CityBlue", "Metal", 7)
+	panel("OfficeWindow", { 204, -124 }, { 14, 6 }, "-Z", 0, 10, 7, 2.4, "Glass", "Glass")
+	ladder({ 212, -122 }, 0, 14)
 	for index, pipe in { { -121.6, 0.6 }, { -122.8, 0.6 }, { -122.2, 1.6 } } do
 		B.part({
 			Name = `Pipe{index}`,
@@ -2761,8 +2828,8 @@ local function buildingSite()
 	for _, side in { -1, 1 } do
 		B.part({
 			Name = "SandPile",
-			Size = { 8, 2.4, 3 },
-			Position = { 252, 1.2, -122 + side * 1.5 },
+			Size = { 10, 3.4, 4 },
+			Position = { 252, 1.7, -122 + side * 2 },
 			Rotation = { 0, if side < 0 then 0 else 180, 0 },
 			Shape = "Wedge",
 			Color = "CityTan",
@@ -2771,50 +2838,50 @@ local function buildingSite()
 	end
 	-- A stepped dirt mound and an excavator digging into it.
 	for tier, width in { 14, 10, 6 } do
-		Pieces.block("DirtMound", { 266, -214 }, { width, 2, width }, "Soil", "Ground", (tier - 1) * 2)
+		Pieces.block("DirtMound", { 266, -214 }, { width, 2.4, width }, "Soil", "Ground", (tier - 1) * 2.4)
 	end
 	B.model("Excavator", function()
-		for _, dx in { -2.5, 2.5 } do
-			Pieces.block("Track", { 224 + dx, -218 }, { 2, 1.4, 8 }, "Black", "Metal")
+		for _, dx in { -3.75, 3.75 } do
+			Pieces.block("Track", { 224 + dx, -218 }, { 3, 2, 12 }, "Black", "Metal")
 		end
-		Pieces.block("Body", { 224, -218.5 }, { 6, 3, 6 }, "LaneYellow", "Metal", 1.4)
-		Pieces.block("Cab", { 222, -220 }, { 2.6, 3, 2.6 }, "LaneYellow", "Glass", 4.4)
+		Pieces.block("Body", { 224, -218.75 }, { 9, 4.5, 9 }, "LaneYellow", "Metal", 2)
+		Pieces.block("Cab", { 221, -221 }, { 4, 4.5, 4 }, "LaneYellow", "Glass", 6.5)
 		B.part({
 			Name = "Boom",
-			Size = { 1, 1, 8.4 },
-			Position = { 224, 6.7, -211.5 },
+			Size = { 1.5, 1.5, 12.6 },
+			Position = { 224, 10, -208.25 },
 			Rotation = { -33.3, 0, 0 },
 			Color = "LaneYellow",
 			Material = "Metal",
 		})
 		B.part({
 			Name = "Arm",
-			Size = { 0.8, 6.7, 0.8 },
-			Position = { 224, 6, -206.5 },
+			Size = { 1.2, 10, 1.2 },
+			Position = { 224, 9, -200.75 },
 			Rotation = { -26.6, 0, 0 },
 			Color = "LaneYellow",
 			Material = "Metal",
 		})
-		Pieces.block("Bucket", { 224, -205 }, { 2.4, 1.4, 1.6 }, "MetalDark", "Metal", 1.7)
+		Pieces.block("Bucket", { 224, -198.5 }, { 3.6, 2.1, 2.4 }, "MetalDark", "Metal", 2.5)
 	end)
 	-- Two shipping containers stacked at the back of the site (a step up to the second one).
-	Pieces.container("SiteContainer", { 242, -212 }, { 12, 5.2, 5 }, 0, "CityBlue")
-	Pieces.container("SiteContainer", { 244, -212 }, { 12, 5.2, 5 }, 0, "RustOrange", 5.2)
-	Pieces.block("MixerBase", { 264, -124 }, { 3, 1.2, 4 }, "MetalDark", "Metal")
+	Pieces.container("SiteContainer", { 242, -212 }, { 18, 7.5, 7.5 }, 0, "CityBlue")
+	Pieces.container("SiteContainer", { 244, -212 }, { 18, 7.5, 7.5 }, 0, "RustOrange", 7.5)
+	Pieces.block("MixerBase", { 264, -124 }, { 4, 1.6, 5 }, "MetalDark", "Metal")
 	B.part({
 		Name = "MixerDrum",
-		Size = { 3.6, 2.6, 2.6 },
-		Position = { 264, 2.6, -124 },
+		Size = { 5, 3.6, 3.6 },
+		Position = { 264, 3.6, -124 },
 		Rotation = { 0, 90, 25 },
 		Shape = "Cylinder",
 		Color = "RustOrange",
 		Material = "Metal",
 	})
-	for _, z in { -114, -118 } do
-		Pieces.block("PortableToilet", { 272, z }, { 2.6, 5, 2.6 }, "CityBlue", "SmoothPlastic")
+	for _, z in { -113, -118 } do
+		Pieces.block("PortableToilet", { 272, z }, { 3.4, 7.5, 3.4 }, "CityBlue", "SmoothPlastic")
 	end
-	for _, spot in { { 232, -112 }, { 236, -114 }, { 216, -196 }, { 226, -200 } } do
-		upright("Cone", spot, 0, 1, 0.7, "RustOrange", "SmoothPlastic", false)
+	for _, spot in { { 232, -112 }, { 236, -114 }, { 216, -196 }, { 214, -201 } } do
+		upright("Cone", spot, 0, 2.2, 1, "RustOrange", "SmoothPlastic", false)
 	end
 end
 
@@ -2824,13 +2891,13 @@ end
 
 local function movers()
 	local vector = B.roblox.Vector3.new
-	-- The towers' glass lifts on their north faces, from the street up to the roof's parapet (+79.4).
+	-- The towers' glass lifts on their north faces, from the street up to the roof's parapet (+112.4).
 	for index, side in { -1, 1 } do
 		local x, z = side * (TOWER.X + 11), TOWER.Z + TOWER.Size / 2 + 3.6
 		Arena.mover(
 			`TowerLift{index}`,
 			{ x, 0.5, z },
-			{ Kind = "Lift", Period = 24, Pause = 4, Offset = vector(0, TOWER_ROOF + 0.8, 0), Phase = index * 6 },
+			{ Kind = "Lift", Period = 30, Pause = 4, Offset = vector(0, TOWER_ROOF + 0.8, 0), Phase = index * 7 },
 			function()
 				B.part({
 					Name = "LiftFloor",
@@ -2843,8 +2910,8 @@ local function movers()
 				for _, wall in { { { -2.9, 0 }, { 0.2, 6 } }, { { 2.9, 0 }, { 0.2, 6 } }, { { 0, 2.9 }, { 5.6, 0.2 } } } do
 					B.part({
 						Name = "LiftGlass",
-						Size = { wall[2][1], 3, wall[2][2] },
-						Position = { x + wall[1][1], 2.5, z + wall[1][2] },
+						Size = { wall[2][1], 4, wall[2][2] },
+						Position = { x + wall[1][1], 3, z + wall[1][2] },
 						Color = "Glass",
 						Material = "Glass",
 						Transparency = 0.5,
@@ -2997,16 +3064,16 @@ local function movers()
 	local ride = { -135, DEPT.At[2] }
 	Arena.mover("Carousel", { ride[1], DEPT_ROOF, ride[2] }, { Kind = "Spin", Period = 14 }, function()
 		upright("CarouselFloor", ride, DEPT_ROOF, 0.6, 14, "Cream", "WoodPlanks")
-		upright("CarouselPole", ride, DEPT_ROOF + 0.6, 6.4, 1, "OldBrass", "Metal")
-		upright("CarouselCanopy", ride, DEPT_ROOF + 7, 0.6, 15, "Red", "Fabric", false)
+		upright("CarouselPole", ride, DEPT_ROOF + 0.6, 8.4, 1, "OldBrass", "Metal")
+		upright("CarouselCanopy", ride, DEPT_ROOF + 9, 0.6, 15, "Red", "Fabric", false)
 		for horse = 0, 5 do
 			local angle = math.rad(horse * 60)
 			local spot = { ride[1] + 5 * math.cos(angle), ride[2] + 5 * math.sin(angle) }
-			upright("HorsePole", spot, DEPT_ROOF + 0.6, 6.4, 0.2, "OldBrass", "Metal", false)
+			upright("HorsePole", spot, DEPT_ROOF + 0.6, 8.4, 0.2, "OldBrass", "Metal", false)
 			B.part({
 				Name = "Horse",
-				Size = { 0.9, 1.4, 2.6 },
-				Position = { spot[1], DEPT_ROOF + 2.6, spot[2] },
+				Size = { 1.2, 2, 3.4 },
+				Position = { spot[1], DEPT_ROOF + 3.2, spot[2] },
 				Rotation = { 0, -horse * 60, 0 },
 				Color = if horse % 2 == 0 then "OffWhite" else "ShopYellow",
 				Material = "SmoothPlastic",

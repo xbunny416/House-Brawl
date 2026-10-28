@@ -35,7 +35,7 @@ local Props: PropsConfig = {
 	-- A throw bends toward a fighter within Angle degrees of the thrower's facing and Range studs (Angle 0 = off).
 	ThrowAimAssist = { Angle = 15, Range = 80 },
 	DespawnAfterLanding = 8,
-	MaxActive = 40, -- per arena
+	MaxActive = 80, -- per arena (Shinjuku has 72 spots: owner, 2026-10-28, "add more throwable item")
 	SpotRespawnTime = 20,
 	ExplosiveSpotRespawnTime = 30,
 
@@ -73,6 +73,74 @@ local Props: PropsConfig = {
 		Barrel = { Class = "Medium", Size = { X = 2.2, Y = 3, Z = 2.2 }, Material = "Metal", Color = "#3E6E8C" },
 		-- A street trash can (owner, 2026-10-28: "add trash can throwables").
 		TrashCan = { Class = "Medium", Size = { X = 2, Y = 2.8, Z = 2 }, Material = "Metal", Color = "#4E7A5A" },
+		-- Things that belong where they are found in Shinjuku (owner, 2026-10-28: "add more throwable item also match
+		-- that found area"): arena prop spots name them (PropType).
+		Stool = { Class = "Light", Size = { X = 1.4, Y = 2.2, Z = 1.4 }, Material = "SmoothPlastic", Color = "#C8463C" },
+		PaperLantern = { Class = "Light", Size = { X = 1.4, Y = 2, Z = 1.4 }, Material = "Fabric", Color = "#D93A2B" },
+		PottedPlant = { Class = "Light", Size = { X = 1.6, Y = 3, Z = 1.6 }, Material = "Concrete", Color = "#6E6A64" },
+		OfficeChair = { Class = "Light", Size = { X = 2, Y = 3.4, Z = 2 }, Material = "Fabric", Color = "#2E3440" },
+		Monitor = {
+			Class = "Light",
+			Size = { X = 2.2, Y = 1.8, Z = 0.8 },
+			Material = "SmoothPlastic",
+			Color = "#2B2B2B",
+		},
+		ShoppingBasket = {
+			Class = "Light",
+			Size = { X = 2, Y = 1.4, Z = 1.4 },
+			Material = "SmoothPlastic",
+			Color = "#C8463C",
+		},
+		BowlingPin = {
+			Class = "Light",
+			Size = { X = 0.8, Y = 2.4, Z = 0.8 },
+			Material = "SmoothPlastic",
+			Color = "#F2F2F2",
+		},
+		FireExtinguisher = {
+			Class = "Light",
+			Size = { X = 0.9, Y = 2.2, Z = 0.9 },
+			Material = "Metal",
+			Color = "#C9302C",
+		},
+		BookStack = {
+			Class = "Light",
+			Size = { X = 1.6, Y = 1.4, Z = 1.2 },
+			Material = "SmoothPlastic",
+			Color = "#8A4634",
+		},
+		Toolbox = { Class = "Light", Size = { X = 2, Y = 1.3, Z = 1 }, Material = "Metal", Color = "#C9302C" },
+		Speaker = {
+			Class = "Medium",
+			Size = { X = 2, Y = 3.2, Z = 1.8 },
+			Material = "SmoothPlastic",
+			Color = "#1C1C1F",
+		},
+		Suitcase = {
+			Class = "Medium",
+			Size = { X = 2.2, Y = 2.8, Z = 1 },
+			Material = "SmoothPlastic",
+			Color = "#3E6E8C",
+		},
+		BowlingBall = {
+			Class = "Medium",
+			Size = { X = 1.6, Y = 1.6, Z = 1.6 },
+			Material = "SmoothPlastic",
+			Color = "#3A4FB0",
+		},
+		Cinderblock = {
+			Class = "Medium",
+			Size = { X = 2.4, Y = 1.2, Z = 1.2 },
+			Material = "Concrete",
+			Color = "#9A968F",
+		},
+		GasCan = { Class = "Medium", Size = { X = 1.8, Y = 1.8, Z = 1 }, Material = "SmoothPlastic", Color = "#C9302C" },
+		Mannequin = {
+			Class = "Medium",
+			Size = { X = 1.6, Y = 5.4, Z = 1 },
+			Material = "SmoothPlastic",
+			Color = "#E8E2D6",
+		},
 		Fridge = { Class = "Heavy", Size = { X = 3, Y = 5.5, Z = 3 }, Material = "SmoothPlastic", Color = "#EDE6D6" },
 		CarDoor = { Class = "Heavy", Size = { X = 4.5, Y = 3, Z = 0.5 }, Material = "Metal", Color = "#D97A8A" },
 		VendingChunk = { Class = "Heavy", Size = { X = 3, Y = 3, Z = 2 }, Material = "Metal", Color = "#C8463C" },
