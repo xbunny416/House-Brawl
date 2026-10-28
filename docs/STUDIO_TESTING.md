@@ -233,3 +233,14 @@ Settings → Promo code, styles come from the style roll).
     flats' kitchens and TVs, the karaoke screens, the goods on the mart's shelves, the bars' bottle shelves, the stage
     lights and the temple's candles.
   - *Check:* the frame rate on a phone (about 8,500 instances now).
+- **Shinjuku: more arena detail (2026-10-28):**
+  - *Look at:*
+    - the stop lines and drains on the roads; the delivery vans on the side streets;
+    - the scooters by the mart and the shops, the bicycles by the plaza; the new trees, benches and vending machines;
+    - the drainpipes, the yokocho's projecting neon signs, the murals on the bowling alley;
+    - the billboards on the shop row, mart and arcade roofs; the curtains in the hotel's and flats' windows;
+    - the plaza's clock and sculpture, the umbrellas on the lane deck, the temple's rope, the jail yard's hoop, the
+      site's green net and floodlight.
+  - *Check:*
+    - The road dashes don't cross a crosswalk.
+    - The vans and vending machines don't block a doorway or a pavement you run along.
