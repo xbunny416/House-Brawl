@@ -19,20 +19,23 @@ export type Preset = {
 }
 
 local Lighting: { [string]: Preset } = {
-	-- Late-afternoon dusk: orange sky, dusty haze (density ~0.35).
+	-- Late-afternoon dusk: orange sky, dusty haze (density ~0.35). The lobby's (only it uses Dusk); a bit gloomier
+	-- since 2026-10-28 (owner: "want light a bit more gloomy, less bright"): a darker ambient (#5C4A48 before), less
+	-- sky light on the walls (diffuse 0.4, specular 0.25 before) and a darker, more contrasty grade (brightness 0.02,
+	-- contrast 0.08, saturation 0.05, tint #FFF1E0 before).
 	Dusk = {
 		ClockTime = 17.6,
 		GeographicLatitude = 30,
 		Brightness = 2.4,
-		Ambient = "#5C4A48",
+		Ambient = "#40363A",
 		OutdoorAmbient = "#A07E6A",
 		ColorShiftTop = "#FFB37A",
 		ColorShiftBottom = "#3A2A30",
-		EnvironmentDiffuseScale = 0.4,
-		EnvironmentSpecularScale = 0.25,
+		EnvironmentDiffuseScale = 0.25,
+		EnvironmentSpecularScale = 0.2,
 		Atmosphere = { Density = 0.35, Offset = 0.2, Color = "#E8A27A", Decay = "#8C5A4A", Glare = 0.4, Haze = 1.8 },
 		Bloom = { Intensity = 0.6, Size = 24, Threshold = 1.4 },
-		ColorCorrection = { Brightness = 0.02, Contrast = 0.08, Saturation = 0.05, TintColor = "#FFF1E0" },
+		ColorCorrection = { Brightness = -0.03, Contrast = 0.14, Saturation = -0.05, TintColor = "#FFE6CC" },
 	},
 	-- Broken Highway (owner, 2026-10-20: a sky that matches the arena, "not this clear"): a smoggy sunset — the sun low
 	-- behind a thick brown-orange haze, heavy rust-tinted clouds over most of the sky, slightly washed-out colour.

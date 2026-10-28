@@ -503,7 +503,8 @@ function Furniture.floorLamp(x: number, z: number)
 end
 
 -- A pendant lamp hanging from the ceiling at `ceiling`: canopy, chain, a stepped iron dome (a workshop lamp), a bulb.
--- `brightness` (1.3 by default); `shadows` (on by default: only the main lamps, the maps spec counts them).
+-- `brightness` (1.05 by default; 1.3 until 2026-10-28, owner: "more gloomy"); `shadows` (on by default: only the
+-- main lamps, the maps spec counts them).
 function Furniture.pendant(
 	x: number,
 	y: number,
@@ -530,7 +531,7 @@ function Furniture.pendant(
 			CanCollide = false,
 		})
 		-- The main lamps cast soft shadows (Future lighting).
-		B.light(bulb, "WarmLight", range, brightness or 1.3, shadows ~= false)
+		B.light(bulb, "WarmLight", range, brightness or 1.05, shadows ~= false)
 	end)
 end
 
@@ -648,7 +649,7 @@ function Furniture.sconce(x: number, y: number, z: number, facing: string, lit: 
 			CanCollide = false,
 		})
 		if lit then
-			B.light(bulb, "WarmLight", 14, 0.7)
+			B.light(bulb, "WarmLight", 14, 0.55) -- 0.7 until 2026-10-28 (owner: "more gloomy")
 		end
 	end)
 end

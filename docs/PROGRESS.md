@@ -95,6 +95,7 @@ One row per merged PR, newest last. Add a row with every PR (see [CLAUDE.md](../
 | 2026-10-27 | Lobby: the arm-wrestling table moves from the left wall to where the lines out from the quest board and the spin wheel's ARENA-side pillar meet (owner: "change wrestling to intercept in front of quest and left spin wheel pillar") | #92 |
 | 2026-10-27 | No rusty texture on Junkyard Isles (owner: "i really dont like that rusty texture"): CorrodedMetal → Metal in the same colours on the map, and on the containers, the wrecked car / crushed car stack / scrap pile structures, the barrel prop, the fridge patch and explosion debris (shared, so Broken Highway's containers change too) | #93 |
 | 2026-10-28 | Lobby: dimmer bar counter / back bar lighting; six green ceiling lamps over the concrete; more detail and dimension (owner: "more overall lobby detail cus rn this just plane square room"): the bar end is a raised wood platform with two steps and railings, slowly turning ceiling fans (new Spin mover), an air duct, pipes and joists, boarded windows glowing with dusk, bare brick, fight posters, a fuse box, two arcade cabinets, concrete slabs with joints, oil stains and a drain | #94 |
+| 2026-10-28 | Lobby a bit gloomier (owner: "want light a bit more gloomy less bright"): darker ambient and colour grade in the Dusk preset, every lamp about 20% dimmer (ceiling lamps 1.2 → 0.9, pendants 1.3 → 1.05, counter lamps 0.9 → 0.75, wall lamps 0.7 → 0.55) | #95 |
 
 ## Build order (approved 2026-10-15)
 

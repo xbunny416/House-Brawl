@@ -134,3 +134,6 @@ Settings → Promo code, styles come from the style roll).
     the fuse box by the street door, the arcade cabinets (left wall by the teal barrel, right wall next to the wheel),
     the air duct and pipes, and the floor slabs with stains and a drain.
   - *Low Graphics:* it turns the ceiling lamps' shadows off.
+  - *Gloomier (same day):* the room should feel dim, with warm pools of light under the lamps and the neon standing
+    out. If it is too dark to see players or the floor, raise `Ambient` in the `Dusk` preset (`Config.Lighting`) a
+    little first; if only one area is too dark, raise its lamps instead.

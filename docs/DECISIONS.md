@@ -955,3 +955,16 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     - Decor: two old arcade cabinets, one on each side wall.
     - Floor: the concrete is poured slabs 12 studs apart with thin joints (a few lighter), with oil stains and a
       drain.
+- **A gloomier lobby (owner, 2026-10-28: "still want light a bit more gloomy less bright", after the dimmer bar):**
+  - *The room's base light (the `Dusk` preset in `Config.Lighting`, used only by the lobby):*
+    - The ambient goes from #5C4A48 to #40363A.
+    - Environment diffuse goes from 0.4 to 0.25 and specular from 0.25 to 0.2.
+    - The colour grade: brightness from 0.02 to −0.03, contrast from 0.08 to 0.14, saturation from 0.05 to −0.05,
+      tint from #FFF1E0 to #FFE6CC.
+  - *Lamps, each about 20% dimmer:*
+    - The ceiling lamps over the concrete: 1.2 → 0.9, range 36 → 32.
+    - Pendants (booths, chess, high tables): 1.3 → 1.05.
+    - The counter lamps: 0.9 → 0.75.
+    - The wall lamps: 0.7 → 0.55.
+  - *Unchanged:* the neon glows (join pad, jukebox, signs, TVs, the windows' dusk), so they stand out more in the
+    darker room.

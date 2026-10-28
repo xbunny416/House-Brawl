@@ -11195,7 +11195,7 @@
         <Item class="PointLight" referent="361">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">0.7</float>
+            <float name="Brightness">0.55</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -11535,7 +11535,7 @@
         <Item class="PointLight" referent="374">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">0.7</float>
+            <float name="Brightness">0.55</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -11875,7 +11875,7 @@
         <Item class="PointLight" referent="387">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">0.7</float>
+            <float name="Brightness">0.55</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -12215,7 +12215,7 @@
         <Item class="PointLight" referent="400">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">0.7</float>
+            <float name="Brightness">0.55</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -12555,7 +12555,7 @@
         <Item class="PointLight" referent="413">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">0.7</float>
+            <float name="Brightness">0.55</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -12895,7 +12895,7 @@
         <Item class="PointLight" referent="426">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">0.7</float>
+            <float name="Brightness">0.55</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -13889,7 +13889,7 @@
         <Item class="PointLight" referent="463">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">0.7</float>
+            <float name="Brightness">0.55</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -14229,7 +14229,7 @@
         <Item class="PointLight" referent="476">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">0.7</float>
+            <float name="Brightness">0.55</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -25060,7 +25060,7 @@
         <Item class="PointLight" referent="832">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">0.9</float>
+            <float name="Brightness">0.75</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -25271,7 +25271,7 @@
         <Item class="PointLight" referent="840">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">0.9</float>
+            <float name="Brightness">0.75</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -30745,7 +30745,7 @@
         <Item class="PointLight" referent="1029">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">0.7</float>
+            <float name="Brightness">0.55</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -33819,7 +33819,7 @@
         <Item class="PointLight" referent="1135">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.3</float>
+            <float name="Brightness">1.05</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -36079,7 +36079,7 @@
         <Item class="PointLight" referent="1210">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.3</float>
+            <float name="Brightness">1.05</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -38338,7 +38338,7 @@
         <Item class="PointLight" referent="1285">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.3</float>
+            <float name="Brightness">1.05</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -40597,7 +40597,7 @@
         <Item class="PointLight" referent="1360">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.3</float>
+            <float name="Brightness">1.05</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -45497,7 +45497,7 @@
         <Item class="PointLight" referent="1521">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.3</float>
+            <float name="Brightness">1.05</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
@@ -45740,13 +45740,13 @@
         <Item class="PointLight" referent="1530">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.2</float>
+            <float name="Brightness">0.9</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
               <B>0.5411765</B>
             </Color3>
-            <float name="Range">36</float>
+            <float name="Range">32</float>
             <bool name="Shadows">true</bool>
             <BinaryString name="Tags">U2hhZG93TGlnaHQ=</BinaryString>
           </Properties>
@@ -46079,13 +46079,13 @@
         <Item class="PointLight" referent="1542">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.2</float>
+            <float name="Brightness">0.9</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
               <B>0.5411765</B>
             </Color3>
-            <float name="Range">36</float>
+            <float name="Range">32</float>
             <bool name="Shadows">true</bool>
             <BinaryString name="Tags">U2hhZG93TGlnaHQ=</BinaryString>
           </Properties>
@@ -46418,13 +46418,13 @@
         <Item class="PointLight" referent="1554">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.2</float>
+            <float name="Brightness">0.9</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
               <B>0.5411765</B>
             </Color3>
-            <float name="Range">36</float>
+            <float name="Range">32</float>
             <bool name="Shadows">true</bool>
             <BinaryString name="Tags">U2hhZG93TGlnaHQ=</BinaryString>
           </Properties>
@@ -46757,13 +46757,13 @@
         <Item class="PointLight" referent="1566">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.2</float>
+            <float name="Brightness">0.9</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
               <B>0.5411765</B>
             </Color3>
-            <float name="Range">36</float>
+            <float name="Range">32</float>
             <bool name="Shadows">true</bool>
             <BinaryString name="Tags">U2hhZG93TGlnaHQ=</BinaryString>
           </Properties>
@@ -47096,13 +47096,13 @@
         <Item class="PointLight" referent="1578">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.2</float>
+            <float name="Brightness">0.9</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
               <B>0.5411765</B>
             </Color3>
-            <float name="Range">36</float>
+            <float name="Range">32</float>
             <bool name="Shadows">true</bool>
             <BinaryString name="Tags">U2hhZG93TGlnaHQ=</BinaryString>
           </Properties>
@@ -47435,13 +47435,13 @@
         <Item class="PointLight" referent="1590">
           <Properties>
             <string name="Name">PointLight</string>
-            <float name="Brightness">1.2</float>
+            <float name="Brightness">0.9</float>
             <Color3 name="Color">
               <R>1</R>
               <G>0.7882353</G>
               <B>0.5411765</B>
             </Color3>
-            <float name="Range">36</float>
+            <float name="Range">32</float>
             <bool name="Shadows">true</bool>
             <BinaryString name="Tags">U2hhZG93TGlnaHQ=</BinaryString>
           </Properties>
