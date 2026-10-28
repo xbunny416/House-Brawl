@@ -51,6 +51,7 @@ export type Spec = {
 	Roof: { Color: string, Material: string?, Hatch: boolean?, Parapet: boolean? }?,
 	Breakable: boolean?, -- false: plain walls (true by default)
 	MaxPiece: number?, -- the widest wall piece (16, Config.Structures.Walls.MaxPiece)
+	Sill: string?, -- the colour of a sill under every window (nil: none); it goes when the wall under it breaks
 }
 
 -- The widest wall piece and glass pane (Config.Structures.Walls.MaxPiece / MaxGlass; the maps spec checks them).
@@ -146,17 +147,19 @@ local function face(spec: Spec, faceName: string, storey: number, maxPiece: numb
 	local material = spec.Material or "Concrete"
 	local openings = openingsOf(spec, faceName, storey, length)
 
-	local function piece(a: number, b: number, y0: number, y1: number, glass: boolean)
+	-- Builds the pieces from `a` to `b` along the face between heights `y0` and `y1`; returns the first one.
+	local function piece(a: number, b: number, y0: number, y1: number, glass: boolean): any
 		if b - a <= 0.01 or y1 - y0 <= 0.01 then
-			return
+			return nil
 		end
 		local count = math.ceil((b - a) / (if glass then MAX_GLASS else maxPiece) - 1e-6)
 		local step = (b - a) / count
+		local first = nil
 		for index = 1, count do
 			local p0 = a + (index - 1) * step
 			local middle = p0 + step / 2
 			local thickness = if glass then 0.3 else wall
-			B.part({
+			local part = B.part({
 				Name = if glass then "Glass" else "Wall",
 				Size = if alongX then { step, y1 - y0, thickness } else { thickness, y1 - y0, step },
 				Position = if alongX
@@ -168,7 +171,12 @@ local function face(spec: Spec, faceName: string, storey: number, maxPiece: numb
 				CastShadow = not glass,
 				Tags = if breakable then { "BreakableWall" } else nil,
 			})
+			if glass then
+				part.Reflectance = 0.15
+			end
+			first = first or part
 		end
+		return first
 	end
 
 	-- Breakpoints along the face, then each interval: solid, or round the opening that covers it.
@@ -200,10 +208,25 @@ local function face(spec: Spec, faceName: string, storey: number, maxPiece: numb
 				flush(a)
 				local bottom = cover.Bottom or 0
 				local top = math.min(bottom + cover.Height, height)
-				piece(a, b, 0, bottom, false)
+				local below = piece(a, b, 0, bottom, false)
 				piece(a, b, top, height, false)
 				if cover.Glass then
 					piece(a, b, bottom, top, true)
+					-- A sill standing out under the window (walk-through), carried by the wall below it.
+					local sillColor = spec.Sill
+					if sillColor and below then
+						local out = plane + sign * (wall / 2 + 0.1)
+						local y = floorY + bottom - 0.125
+						local sill = B.part({
+							Name = "Sill",
+							Size = if alongX then { b - a + 0.4, 0.25, 0.5 } else { 0.5, 0.25, b - a + 0.4 },
+							Position = if alongX then { (a + b) / 2, y, out } else { out, y, (a + b) / 2 },
+							Color = sillColor,
+							Material = "Concrete",
+							CanCollide = false,
+						})
+						sill.Parent = below
+					end
 				end
 			elseif solidFrom == nil then
 				solidFrom = a

@@ -1179,3 +1179,23 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     - New solid street furniture keeps off every spawn, prop and structure spot, and off the lifts' paths (the specs
       check).
   - *Size:* 7,586 instances (6,598 before). The new parts are mostly walk-through decor with shadows off.
+- **Less blocky, more inside (owner, 2026-10-28: "add more detail inside buildings too, more polish. still look less
+  detail from overall and blocky"):**
+  - *Why blocky:* a third of the arena's parts were flat wall pieces with the windows set flush in them. The new
+    finish breaks those surfaces up.
+  - *Every building (the `building` wrapper):*
+    - a sill under every window: `Rooms.Spec.Sill`, parented to the wall piece below, so it goes when that wall
+      breaks;
+    - a column standing out at each corner;
+    - wall and floor materials from a `FINISH` table (plaster, brick, limestone, ceramic tiles, carpet);
+    - glass is a little reflective.
+  - *Roofs:*
+    - Tiled eaves along the yokocho and over the ramen shop's front.
+    - Pitched tile roofs on the mansion (its parapet is gone under them), the garage and the koban.
+    - A pediment over the court; canopies over three entrances.
+  - *Inside:* `interiorDetail` adds about 300 parts: office cabinets, whiteboards, clocks, lift doors; hotel
+    nightstands and runners; flats' kitchens, fridges, rugs and TVs; karaoke tables and screens; goods on the mart's
+    shelves; bottle shelves in the bars; tills, stage lights, flags, toilets, candles and more. They all keep clear of
+    doors, stairs and prop spots (checked).
+  - *Streets:* paler paved pavements along every street.
+  - *Size:* 8,467 instances (7,586 before).
