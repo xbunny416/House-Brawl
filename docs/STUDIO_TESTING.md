@@ -137,3 +137,18 @@ Settings → Promo code, styles come from the style roll).
   - *Gloomier (same day):* the room should feel dim, with warm pools of light under the lamps and the neon standing
     out. If it is too dark to see players or the floor, raise `Ambient` in the `Dusk` preset (`Config.Lighting`) a
     little first; if only one area is too dark, raise its lamps instead.
+- **Small City, the only arena (2026-10-28):**
+  - *Starting a round:* stand on the join pad. The vote shows one map, Small City, and the round loads it on a sunny
+    day (blue sky, white clouds).
+  - *Fighting:* check you spawn on the blocks, props respawn on their spots and you can throw them, and breakables
+    (wrecked cars, vending machines, barrier stacks, the ice machine, the lawn chairs) break and drop props. Falling
+    off any block takes a life.
+  - *Moving around:* walk up the park plaza's ramps. Jump and dash across the gaps. Cross the road bridges (centre to
+    West / South) and the steel gangways. Climb the stair huts on the rooftops by their crate, and the bus at the bus
+    depot.
+  - *Look:* the streets' lines, crosswalks and traffic lights, the gas station canopy, the houses' roofs (pitched, not
+    upside down), the hoops, the helipad. The earth and rock hang under the blocks, the towers under the rooftops,
+    clouds below and far-off towers around.
+  - *Old arenas:* Broken Highway, Junkyard Isles and Neon Motel are still in `ServerStorage.Arenas` but never voted
+    for. To play one again, set its `Enabled = true` in `src/shared/Config/Maps.luau`. The developer panel's map list
+    shows only enabled maps.

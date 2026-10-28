@@ -56,4 +56,11 @@ return {
 	DuskGlow = "#B97A55",
 	ConcreteLight = "#A59F94",
 	BrickRed = "#8A4634",
+	-- Small City (owner, 2026-10-28: "like the default small city in Roblox"): clean daytime town colours.
+	Lawn = "#5E9C48",
+	CourtGreen = "#3E7C5C",
+	CityTan = "#C9B595",
+	CityBlue = "#7D94AB",
+	CityGrey = "#A3A6AB",
+	Slate = "#5C5650", -- the rock under the street blocks
 }

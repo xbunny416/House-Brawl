@@ -968,3 +968,33 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     - The wall lamps: 0.7 → 0.55.
   - *Unchanged:* the neon glows (join pad, jukebox, signs, TVs, the windows' dusk), so they stand out more in the
     darker room.
+- **Small City, the only arena (owner, 2026-10-28: "can you make another only one arena instead of 3 old arena just
+  store somewhere dont delete it, this one only arena idea is just like default small city in roblox but still have
+  throwable object in there"):**
+  - *The old arenas are stored, not deleted:* Broken Highway, Junkyard Isles and Neon Motel keep their layouts,
+    generated models, specs and places in `ServerStorage.Arenas`. They are switched off with `Enabled = false` in
+    `Config.Maps.List` and stay in `Config.Maps.Rotation`, so bringing one back is one word. The vote offers only
+    enabled maps, so it now has one choice: the vote screen shows Small City alone, and only the first map TV over the
+    bar shows it (the other two show the news). Private-server map locks and the developer panel list only Small City.
+  - *Still a falling arena:* "like the default small city" is read as the look. The game is still about knocking
+    people off, so the town is cut into blocks floating over a void, with KillY below as on every arena.
+  - *Same rules as every arena:* 13 platforms in four layers, 16 spawns, 24 loose prop spots, 8 breakables and 6
+    explosive barrels.
+  - *Platform plan:* the platforms sit exactly where Neon Motel's do (the same 8–14 stud gaps, climbs and six
+    bridges, already tested). Everything on them is new.
+  - *Daytime:* a new `Day` lighting preset (early afternoon, a blue sky with white clouds, a soft blue-white haze) like
+    a fresh Roblox place. Below is a bright sky haze instead of a dark abyss.
+  - *Throwable objects:* the usual loose props (chairs, crates, tyres, buckets, TVs, barrels) and breakables that drop
+    them. The breakables are two wrecked cars, two vending machines, two road barrier stacks, an ice machine at the
+    gas station and a lawn chair stack in a back yard. No new prop types: city ones (trash cans, traffic cones) can be
+    added later.
+  - *What is where:*
+    - Centre: downtown streets around a park with a fountain plaza on the raised deck.
+    - East: a gas station. West: two houses. North: a parking lot. South: a basketball court.
+    - Ledges: office rooftops. Peaks: tower roofs with a helipad and a radio mast.
+    - Low platforms: a construction site and a bus depot.
+    - Bridges: road bridges to the centre, steel gangways elsewhere.
+  - *Decor:* parked cars and street furniture are solid (you can hit them or stand on them). Paint, kerbs, cones and
+    the traffic lights' arms are walk-through. Edge decor stays low.
+  - *Signs:* five new GameStrings keys under `Map.SmallCity.Sign.*`, plus `Map.SmallCity.Name`.
+  - *Music:* `Config.Audio.Music.Arenas.SmallCity` (0 = silent until the owner picks a track).

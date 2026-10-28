@@ -128,8 +128,10 @@ Not used. No pets, eggs, or paid random items.
 
 ### 3.1 Streaming & zones
 
-- One Lobby hub + 3 rotating arenas at launch. Each arena: floating platforms over a void (KillY) with toxic sludge or
-  fog far below.
+- One Lobby hub + one arena in the vote: Small City (owner, 2026-10-28: "only one arena instead of the 3 old arenas,
+  just store them somewhere, don't delete them"). Broken Highway, Junkyard Isles and Neon Motel stay built in
+  ServerStorage, switched off in `Config.Maps.List` (`Enabled = true` brings one back into the vote). Each arena:
+  floating platforms over a void (KillY) with a dark abyss, toxic sludge or (Small City) a bright sky haze far below.
 - Lobby → (vote) → arena via server-side teleport of characters within the same place. After the round, everyone
   returns to the Lobby. Arenas live in ServerStorage; only the active one is in Workspace.
 - All maps free. Players enter the arena only when the server starts a round, and only if they stand on the lobby's
@@ -142,6 +144,9 @@ Not used. No pets, eggs, or paid random items.
 | Map 1 — Broken Highway | Shattered overpass chunks, abandoned cars, road signs |
 | Map 2 — Junkyard Isles | Stacked car and container islands over toxic sludge |
 | Map 3 — Neon Motel | Sinking motel rooftops, flickering retro neon, pool on one roof |
+| Map 4 — Small City (the only arena in the vote) | Daytime town blocks floating in the sky: downtown streets around a park, gas station, houses, parking lot, basketball court, rooftops |
+
+Maps 1–3 are switched off (kept built) since 2026-10-28.
 
 ### 3.2 Visual & spatial guidelines
 
@@ -270,6 +275,29 @@ roof-access deck; a 48×52 pool roof (east), a 44×44 roof under a giant flicker
 two 18×18 antenna roofs (+12) and two 28×28 low roofs. Motel buildings sink into a flooded street below,
 surrounded by dark towers with neon signs. Neon flickers now and then. Structures: vending machine (HP 80) ×2, ice
 machine (HP 80) ×3, lawn chair stack (HP 60) ×3.
+
+**Small City arena** (day; owner, 2026-10-28: "just like the default small city in Roblox but still have throwable
+objects"): a small daytime town torn into blocks floating in a bright, hazy sky (the `Day` preset: a blue sky with white
+clouds). The platforms sit where Neon Motel's do (the same gaps, climbs and bridges).
+- *Centre (224×144):* downtown — two streets each way with dashed centre lines, crosswalks, kerbs and traffic lights,
+  around a park with trees and benches; in the park a raised fountain plaza (+6, ramps east and west) with trees in
+  planters. On the pavements a bus stop, a red phone booth, a hot dog cart, street lamps, hydrants and trash cans,
+  with parked cars and a taxi along the kerbs.
+- *East:* a gas station — a canopy over two pump islands, a MINI MART, a GAS price sign.
+- *West:* two suburban houses with pitched roofs, picket fences, mailboxes, a car in a driveway and a doghouse.
+- *North:* a parking lot with parked cars, a ticket booth and a PARKING sign.
+- *South:* a basketball court with two hoops.
+- *Rooftops:* the ledges are office rooftops (stair huts you can climb by a crate, AC units, a water tank on stilts,
+  a WELCOME TO SMALL CITY billboard); the peaks are tower roofs (a helipad, a radio mast). The towers reach down into
+  the haze.
+- *Low lots:* a construction site (steel beams, a portable toilet, cones, barriers) and a bus depot with a city bus
+  you can climb onto.
+- *Bridges:* road bridges from the centre to West and South, steel gangways for the rest.
+- *Below and around:* each street block hangs over the earth and rock it was torn out with; clouds drift under the
+  blocks and far-off office towers rise out of the haze.
+
+Props are the usual loose ones (chairs, crates, tyres, buckets, TVs, barrels). Structures: wrecked car (HP 100) ×2,
+vending machine (HP 80) ×2, road barrier stack (HP 60) ×2, ice machine (HP 80), lawn chair stack (HP 60).
 
 **Art & performance:**
 

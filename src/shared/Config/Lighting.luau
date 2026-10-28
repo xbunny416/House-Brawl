@@ -89,6 +89,23 @@ local Lighting: { [string]: Preset } = {
 		-- Heavy night clouds over the motel (owner, 2026-10-20: a sky that matches the arena, not clear).
 		Clouds = { Cover = 0.8, Density = 0.7, Color = "#2E2648" },
 	},
+	-- Small City (owner, 2026-10-28: "just like the default small city in Roblox"): a clear early afternoon like a fresh
+	-- Roblox place — a blue sky with white clouds, a soft blue-white haze, neutral colours.
+	Day = {
+		ClockTime = 14.5,
+		GeographicLatitude = 30,
+		Brightness = 3,
+		Ambient = "#5E636B",
+		OutdoorAmbient = "#8C919A",
+		ColorShiftTop = "#FFF4E2",
+		ColorShiftBottom = "#7F90A8",
+		EnvironmentDiffuseScale = 0.8,
+		EnvironmentSpecularScale = 0.6,
+		Atmosphere = { Density = 0.28, Offset = 0.25, Color = "#C7D6E6", Decay = "#7A8CA6", Glare = 0.1, Haze = 0.6 },
+		Bloom = { Intensity = 0.4, Size = 24, Threshold = 2 },
+		ColorCorrection = { Brightness = 0, Contrast = 0.05, Saturation = 0.1, TintColor = "#FFFFFF" },
+		Clouds = { Cover = 0.5, Density = 0.45, Color = "#FFFFFF" },
+	},
 }
 
 return Lighting

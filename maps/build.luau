@@ -12,6 +12,7 @@ local Shim = require("../tests/roblox")
 local BrokenHighway = require("./layouts/BrokenHighway")
 local JunkyardIsles = require("./layouts/JunkyardIsles")
 local NeonMotel = require("./layouts/NeonMotel")
+local SmallCity = require("./layouts/SmallCity")
 local Hideout = require("./layouts/Hideout")
 
 local Config = Shim.require(Shim.game.ReplicatedStorage.Shared.Config)
@@ -24,6 +25,7 @@ local function outputs(): { { file: string, model: any } }
 		{ file = "BrokenHighway.rbxmx", model = BrokenHighway.build(Config.Maps.ArenaOrigin) },
 		{ file = "JunkyardIsles.rbxmx", model = JunkyardIsles.build(Config.Maps.ArenaOrigin) },
 		{ file = "NeonMotel.rbxmx", model = NeonMotel.build(Config.Maps.ArenaOrigin) },
+		{ file = "SmallCity.rbxmx", model = SmallCity.build(Config.Maps.ArenaOrigin) },
 	}
 end
 
