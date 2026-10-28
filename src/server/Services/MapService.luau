@@ -128,13 +128,26 @@ end
 -- Arenas
 ---------------------------------------------------------------------------------------------------------------------
 
--- Map ids that can be voted for (in rotation and enabled).
+-- Enabled maps whose model is missing (warned about once each).
+local warnedMissing: { [string]: boolean } = {}
+
+-- Map ids that can be voted for (in rotation and enabled, and their model is in ServerStorage.Arenas).
 function MapService.getEnabledMaps(): { string }
 	local maps = {}
 	for _, mapId in Config.Maps.Rotation do
 		local map = Config.Maps.List[mapId]
-		if map and map.Enabled and ServerStorage.Arenas:FindFirstChild(mapId) then
-			table.insert(maps, mapId)
+		if map and map.Enabled then
+			if ServerStorage.Arenas:FindFirstChild(mapId) then
+				table.insert(maps, mapId)
+			elseif not warnedMissing[mapId] then
+				-- Happened on 2026-10-28: a new arena's model file appeared after `rojo serve` had read the project, so
+				-- Rojo never synced it.
+				warnedMissing[mapId] = true
+				warn(
+					`[Maps] {mapId} is enabled but ServerStorage.Arenas has no {mapId} model, so it can't be played. `
+						.. "After adding a map, restart rojo serve and reconnect the Rojo plugin."
+				)
+			end
 		end
 	end
 	return maps

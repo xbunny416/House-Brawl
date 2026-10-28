@@ -52,7 +52,8 @@ Roblox Studio MCP server).
 
 **Local setup (owner):** install [Rokit](https://github.com/rojo-rbx/rokit) and run `rokit install` (Rojo, Selene,
 StyLua, Lune at the versions in `rokit.toml`); `rojo plugin install`; `rojo serve`, open a place in Studio, click
-**Connect** in the Rojo plugin. In game settings enable **Studio Access to API Services** (DataStores) and turn on
+**Connect** in the Rojo plugin (restart `rojo serve` after a new file is added to `default.project.json`: a new arena
+model otherwise never syncs). In game settings enable **Studio Access to API Services** (DataStores) and turn on
 automatic translation in the Creator Dashboard. Without Rojo: open the `.rbxlx` from the latest CI run's
 `JunkyardBrawl-place` artifact.
 

@@ -138,6 +138,9 @@ Settings → Promo code, styles come from the style roll).
     out. If it is too dark to see players or the floor, raise `Ambient` in the `Dusk` preset (`Config.Lighting`) a
     little first; if only one area is too dark, raise its lamps instead.
 - **Small City, the only arena (2026-10-28):**
+  - *If no round starts* and Output says `[Maps] SmallCity is enabled but ServerStorage.Arenas has no SmallCity model`:
+    stop `rojo serve` (Ctrl+C), start it again and click Connect in the Rojo plugin (a new map file only syncs after a
+    restart).
   - *Starting a round:* stand on the join pad. The vote shows one map, Small City, and the round loads it on a sunny
     day (blue sky, white clouds).
   - *Fighting:* check you spawn on the blocks, props respawn on their spots and you can throw them, and breakables
