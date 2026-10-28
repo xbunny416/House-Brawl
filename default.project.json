@@ -26,6 +26,9 @@
 				},
 				"NeonMotel": {
 					"$path": "maps/generated/NeonMotel.rbxmx"
+				},
+				"SmallCity": {
+					"$path": "maps/generated/SmallCity.rbxmx"
 				}
 			}
 		},

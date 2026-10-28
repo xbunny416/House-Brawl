@@ -55,6 +55,7 @@ return {
 				require("../../maps/layouts/BrokenHighway"),
 				require("../../maps/layouts/JunkyardIsles"),
 				require("../../maps/layouts/NeonMotel"),
+				require("../../maps/layouts/SmallCity"),
 			}
 		do
 			local count = 0

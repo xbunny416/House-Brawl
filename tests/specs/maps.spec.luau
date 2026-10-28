@@ -9,6 +9,7 @@ local BrokenHighway = require("../../maps/layouts/BrokenHighway")
 local Hideout = require("../../maps/layouts/Hideout")
 local JunkyardIsles = require("../../maps/layouts/JunkyardIsles")
 local NeonMotel = require("../../maps/layouts/NeonMotel")
+local SmallCity = require("../../maps/layouts/SmallCity")
 local Arena = require("../../maps/lib/Arena")
 
 local Config = Roblox.require(Roblox.game.ReplicatedStorage.Shared.Config)
@@ -33,11 +34,12 @@ local function gap(a: any, b: any): number
 	return math.sqrt(dx * dx + dz * dz)
 end
 
--- Every arena in the vote rotation, built at the origin.
+-- Every arena in the rotation (the vote offers only the enabled ones), built at the origin.
 local arenas = {
 	{ Layout = BrokenHighway, Model = BrokenHighway.build(ORIGIN) },
 	{ Layout = JunkyardIsles, Model = JunkyardIsles.build(ORIGIN) },
 	{ Layout = NeonMotel, Model = NeonMotel.build(ORIGIN) },
+	{ Layout = SmallCity, Model = SmallCity.build(ORIGIN) },
 }
 local lobby = Hideout.build(Config.Maps.LobbyOrigin)
 
@@ -144,6 +146,23 @@ return {
 		for path, model in expected do
 			expect.truthy(fs.isFile(path), `{path} exists`)
 			expect.equal(fs.readFile(path) == roblox.serializeModel({ model }, true), true, path)
+		end
+	end,
+	["Small City is the only arena in the vote; the old three stay built and in the place, switched off"] = function()
+		-- The owner, 2026-10-28: "only one arena instead of the 3 old arenas, just store them somewhere, don't delete it".
+		local enabled = {}
+		for _, mapId in Config.Maps.Rotation do
+			if Config.Maps.List[mapId].Enabled then
+				table.insert(enabled, mapId)
+			end
+		end
+		expect.equal(#enabled, 1, "enabled arenas")
+		expect.equal(enabled[1], "SmallCity")
+		local project = fs.readFile("default.project.json")
+		for _, mapId in { "BrokenHighway", "JunkyardIsles", "NeonMotel" } do
+			expect.truthy(table.find(Config.Maps.Rotation, mapId), `{mapId} stays in the rotation list`)
+			expect.truthy(fs.isFile(`maps/generated/{mapId}.rbxmx`), `{mapId} stays built`)
+			expect.truthy(string.find(project, `maps/generated/{mapId}.rbxmx`, 1, true), `{mapId} stays in the place`)
 		end
 	end,
 	["every map in the rotation has a layout and its configured lighting"] = function()
