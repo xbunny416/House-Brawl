@@ -40,7 +40,7 @@ local Props: PropsConfig = {
 	ExplosiveSpotRespawnTime = 30,
 
 	-- Prop types that loose prop spots pick from at random.
-	LooseSpotTypes = { "Chair", "Crate", "Tire", "Bucket", "TV", "Barrel" },
+	LooseSpotTypes = { "Chair", "Crate", "Tire", "Bucket", "TV", "Barrel", "TrashCan" },
 
 	Classes = {
 		Light = { Damage = 10, Percent = 8, KnockbackScale = 1, CarrySlow = 0 },
@@ -71,6 +71,8 @@ local Props: PropsConfig = {
 		Crate = { Class = "Medium", Size = { X = 3, Y = 3, Z = 3 }, Material = "WoodPlanks", Color = "#9C6B3E" },
 		TV = { Class = "Medium", Size = { X = 2.6, Y = 2.2, Z = 2.2 }, Material = "SmoothPlastic", Color = "#6E5A4A" },
 		Barrel = { Class = "Medium", Size = { X = 2.2, Y = 3, Z = 2.2 }, Material = "Metal", Color = "#3E6E8C" },
+		-- A street trash can (owner, 2026-10-28: "add trash can throwables").
+		TrashCan = { Class = "Medium", Size = { X = 2, Y = 2.8, Z = 2 }, Material = "Metal", Color = "#4E7A5A" },
 		Fridge = { Class = "Heavy", Size = { X = 3, Y = 5.5, Z = 3 }, Material = "SmoothPlastic", Color = "#EDE6D6" },
 		CarDoor = { Class = "Heavy", Size = { X = 4.5, Y = 3, Z = 0.5 }, Material = "Metal", Color = "#D97A8A" },
 		VendingChunk = { Class = "Heavy", Size = { X = 3, Y = 3, Z = 2 }, Material = "Metal", Color = "#C8463C" },

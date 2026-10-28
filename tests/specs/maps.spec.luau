@@ -308,7 +308,13 @@ return {
 		eachArena(function(layout, model)
 			expect.equal(#tagged(model, "SpawnPoint"), 16, `{layout.Id} spawn points`)
 			expect.truthy(#tagged(model, "SpawnPoint") >= Config.World.MaxPlayers, `{layout.Id} a spawn per player`)
-			expect.equal(#tagged(model, "PropSpot"), 24, `{layout.Id} loose prop spots`)
+			-- A ground arena also has spots for the props that belong somewhere (trash cans, chairs: TypedProps).
+			local props = #tagged(model, "PropSpot")
+			if layout.Ground then
+				expect.truthy(props >= 24 and props <= Config.Props.MaxActive, `{layout.Id}: {props} prop spots`)
+			else
+				expect.equal(props, 24, `{layout.Id} loose prop spots`)
+			end
 			expect.equal(#tagged(model, "StructureSpot"), 8, `{layout.Id} breakable structures`)
 			expect.equal(#tagged(model, "ExplosiveSpot"), 6, `{layout.Id} explosive barrel spots`)
 			expect.equal(#tagged(model, "Platform"), if layout.Ground then 1 else 13, `{layout.Id} platforms`)
@@ -376,6 +382,46 @@ return {
 			end
 		end
 		expect.truthy(ladders >= 4, `{ladders} ladders`)
+		-- The owner, 2026-10-28: "add breakable walls … town structures bigger and can enter". Walls and windows are
+		-- BreakableWall pieces: solid, anchored, no wider than Config's limits; buildings you can walk into have
+		-- doorways, upper floors and stairs.
+		local walls = Config.Structures.Walls
+		local breakable = 0
+		for _, part in model:GetDescendants() do
+			if part:IsA("BasePart") and part:HasTag("BreakableWall") then
+				breakable += 1
+				expect.truthy(part.CanCollide and part.Anchored, `{part:GetFullName()} solid`)
+				local limit = if part.Material == roblox.Enum.Material.Glass then walls.MaxGlass else walls.MaxPiece
+				local wide = math.max(part.Size.X, part.Size.Z)
+				expect.truthy(wide <= limit + 0.01, `{part:GetFullName()} is {wide} wide (most {limit})`)
+			end
+		end
+		expect.truthy(breakable >= 300, `{breakable} breakable wall pieces`)
+		for _, name in
+			{
+				"TowerWest",
+				"TowerEast",
+				"Cafe",
+				"Ramen",
+				"Mart",
+				"Arcade",
+				"Mall",
+				"BowlingAlley",
+				"Jail",
+				"Courthouse",
+			}
+		do
+			local building = model:FindFirstChild(name, true)
+			expect.truthy(building, `{name} is built`)
+			expect.truthy(building:FindFirstChild("GroundFloor"), `{name} has a floor inside`)
+		end
+		for _, name in { "TowerWest", "TowerEast", "Cafe", "Mall", "Jail", "Shop1", "Mansion" } do
+			local building = model:FindFirstChild(name, true)
+			expect.truthy(
+				building and building:FindFirstChild("Stair") and building:FindFirstChild("Floor"),
+				`{name} has stairs`
+			)
+		end
 		-- Every spot is inside the walls (the spacing checks above cover the rest).
 		for _, tag in { "SpawnPoint", "PropSpot", "ExplosiveSpot", "StructureSpot" } do
 			for _, marker in tagged(model, tag) do
@@ -413,12 +459,12 @@ return {
 				end
 				expect.truthy(platform, `{layout.Id} platform {platformId}`)
 				local where = `{layout.Id} {platformId}`
-				local spots: { { x: number, z: number, radius: number, name: string } } = {}
+				local spots: { { x: number, y: number, z: number, radius: number, name: string } } = {}
 				local function add(spot: { number }, radius: number, name: string)
 					local halfX, halfZ = platform.Size[1] / 2, platform.Size[2] / 2
 					expect.truthy(math.abs(spot[1]) <= halfX - 1.5, `{where} {name} X inside`)
 					expect.truthy(math.abs(spot[2]) <= halfZ - 1.5, `{where} {name} Z inside`)
-					table.insert(spots, { x = spot[1], z = spot[2], radius = radius, name = name })
+					table.insert(spots, { x = spot[1], y = spot[3] or 0, z = spot[2], radius = radius, name = name })
 				end
 				for index, spot in contents.Spawns or {} do
 					add(spot, 1.5, `spawn {index}`)
@@ -432,6 +478,10 @@ return {
 				for index, spot in contents.Explosives or {} do
 					add(spot, 1.5, `explosive {index}`)
 				end
+				for index, typed in contents.TypedProps or {} do
+					expect.truthy(Config.Props.Types[typed.Type], `{where} typed prop {index}: {typed.Type}`)
+					add(typed.At, 1.5, `{typed.Type} {index}`)
+				end
 				for index, structure in contents.Structures or {} do
 					add(structure.At, 4, `structure {index}`)
 				end
@@ -439,7 +489,9 @@ return {
 					for j = i + 1, #spots do
 						local a, b = spots[i], spots[j]
 						local distance = math.sqrt((a.x - b.x) ^ 2 + (a.z - b.z) ^ 2)
-						expect.truthy(distance >= a.radius + b.radius, `{where}: {a.name} too close to {b.name}`)
+						-- Spots on different floors (a roof over a street) don't crowd each other.
+						local clear = distance >= a.radius + b.radius or math.abs(a.y - b.y) > 4
+						expect.truthy(clear, `{where}: {a.name} too close to {b.name}`)
 					end
 				end
 			end

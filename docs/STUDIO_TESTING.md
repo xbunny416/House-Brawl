@@ -161,3 +161,11 @@ Settings → Promo code, styles come from the style roll).
   - *Old arenas:* Broken Highway, Junkyard Isles and Neon Motel are still in `ServerStorage.Arenas` but never voted
     for. To play one again, set its `Enabled = true` in `src/shared/Config/Maps.luau`. The developer panel's map list
     shows only enabled maps.
+- **Breakable walls and walk-in buildings (2026-10-28):**
+  - *Walls:* punch a building wall about four times and it breaks. Glass goes in one punch, and a thrown prop or a
+    barrel breaks walls too. The next round brings them all back.
+  - *Buildings:* walk into the towers (ramps up to the roof, the skybridge on the 9th floor), the cafe, ramen shop,
+    mart, arcade, mall, bowling alley, shops, jail, comedy club, court, mansion and the train.
+  - *Trash cans:* they stand by the station, mart and shops; grab one and throw it.
+  - *Check:* headroom inside (storeys are 7), frame rate on a phone (the arena is about 3,500 parts), Output
+    `[Walls] N breakable wall pieces` with `Config.Dev.LogCombat`.

@@ -203,7 +203,7 @@ they also open from the left-edge menu, like the Inventory and Settings (Promo c
   4 corner ledges 48×48 (+6); 2 peaks 40×40 (+12) beyond two ledges; 2 low slabs 56×56 (about 6 below a side). The
   other arenas grew the same way (every platform ×2, every gap kept). Gaps 8–14 studs (always crossable with jump + dash) and every climb
   at most 6 studs. KillY 60 studs below the lowest platform. 16 spawn points spread over the platforms.
-- 24 loose prop spots (chairs, crates, tires, buckets, TVs, barrels), respawn 20 s.
+- 24 loose prop spots (chairs, crates, tires, buckets, TVs, barrels, trash cans), respawn 20 s.
 - 8 breakable structures: wrecked car (HP 100), vending machine (HP 80), road barrier stack (HP 60) — each drops 2–4
   props, respawn 45 s.
 - 1 explosive barrel spot per side and low platform, respawn 30 s.
@@ -280,34 +280,46 @@ machine (HP 80) ×3, lawn chair stack (HP 60) ×3.
 **Shinjuku arena** (day; owner, 2026-10-28: "make another only one arena …", "no floating island", then "want arena
 to look like jjk shenanigans" — the Shinjuku battleground of the Roblox game Jujutsu Shenanigans; this is our own
 Shinjuku-style district in that spirit, with generic shop names): a ground arena, one flat Tokyo street block
-(400×336, it never falls). The `Day` preset: a blue sky with white clouds.
+(480×400, it never falls; bigger since the owner's "town structure more bigger and can enter"). The `Day` preset: a
+blue sky with white clouds.
 - *Edges:* invisible walls along the district's edge keep everyone in. Tall city blocks rise right behind them on every
   side (glass bands, roof units, a few vertical neon signs), so the city seems to go on.
 - *Knockouts:* nobody falls, so a Classic life ends when its HP runs out.
-- *North:* the station along the edge — a long roof on columns you can climb onto by ladders at its corners, ticket
-  gates, two platforms either side of two tracks, a parked three-car train (a ladder onto its roof), a SHINJUKU STATION
-  sign. In front of it, the station plaza with vending machines, planters, benches and a clock.
+- *Buildings you walk into* (`maps/lib/Rooms`): hollow storeys 7 high (6.5 of headroom), a floor on every storey,
+  switchback ramps up a stair well, a roof (some with a hatch to it).
+- *Breakable walls:* their walls and windows break (see §3.3), as do the block walls, the graveyard's wall and stones,
+  and the hedges.
+- *North:* the station along the edge.
+  - A long hall under a roof on columns, with ladders at its front corners onto the roof (+19.5) and ticket gates.
+  - Two platforms either side of two tracks, and a parked three-car train you can walk through (doors both sides,
+    seats, glass that breaks; a ladder onto its roof).
+  - A SHINJUKU STATION sign. Breakable side walls.
+  - In front of it, the station plaza with vending machines, trash cans, planters, benches and a clock.
 - *The main street:* runs across the district, with taxis at the station.
 - *The middle, either side of the avenue:*
-  - The twin towers: 11 floors; the 9th floor's roof is a terrace round each top, joined over the avenue by a glass
-    skybridge; ladders up the outside to the terrace and on to the roof; CURSED COLA and TOKYO NIGHTS billboards.
-  - West: the RAMEN shop (open front, a counter with stools, lanterns), and the plaza with the two-storey CAFE in its
-    corner (open downstairs, a deck up an outside stair, a red roof).
-  - East: the 24H MART (glass front, shelves, a drinks cooler, vending machines), the graveyard (a low stone wall,
-    gravestones, bare trees) and the ARCADE (neon trim).
+  - The twin towers: eleven storeys you can climb inside to the roof (+77.6), glass lobbies, a ribbon of glass on
+    every face of every upper storey, a glass skybridge between their 9th floors (+56), ladders up the outside to the
+    roofs, CURSED COLA and TOKYO NIGHTS billboards.
+  - West: the RAMEN shop (a counter with stools, tables and chairs, curtains, lanterns), and the plaza with the
+    two-storey CAFE in its corner (tables and chairs, a stair to the upstairs and a roof terrace).
+  - East: the 24H MART (a big glass front, shelves, a drinks cooler, a counter, vending machines and trash cans), the
+    graveyard (a breakable stone wall, gravestones, bare trees) and the ARCADE (rows of game cabinets, neon trim).
 - *The second street:* across the district.
-- *The south:* a row of small shops (BOOKS, ELECTRONICS, KARAOKE, SUBS, SWEETS: shopfronts, awnings, vertical signs),
-  dumpsters behind; the purple JAIL with a barred cell and the COMEDY CLUB; the white COURT with a portico; a mansion
-  with a garage and hedge; a pocket park with cherry trees.
-- *The north-west:* the MALL (graffiti, a ladder to its roof) and the BOWLING alley (a giant pin on its roof).
-- *The east:* two apartment blocks with balconies.
+- *The south:*
+  - A row of five two-storey shops (BOOKS, ELECTRONICS, KARAOKE, SUBS, SWEETS: shopfronts, awnings, vertical signs, a
+    stair to the upstairs, back doors), and a back lot behind them with dumpsters and block walls.
+  - The three-storey purple JAIL with a barred cell, and the COMEDY CLUB (a stage, chairs).
+  - The white COURT (a judge's bench, pews, a portico), and a two-storey mansion with a garage and a hedge.
+  - A pocket park with cherry trees.
+- *The west strip:* the MALL (two floors joined by a ramp, stalls on both, graffiti, a ladder to its roof) and the
+  BOWLING alley (four lanes with pins, a giant pin on its roof).
+- *The east:* two apartment blocks with balconies (solid).
 - *Streets:* Japanese style — utility poles with power lines, crosswalks, kerbs, vending machines.
-- *Higher places:* the tower terraces, skybridge and roofs (+40, +48.4), the station roof (+15.5) and train, the cafe's
-  deck (+7), the mall's roof (+16).
 
-Props are the usual loose ones (chairs, crates, tyres, buckets, TVs, barrels): 24 spots, some up on the roofs, the
-skybridge and the station's platforms. Structures: vending machine (HP 80) ×4, wrecked car (HP 100) ×2, ice machine
-(HP 80), road barrier stack (HP 60). 16 spawns (the station plaza and the streets), 6 explosive barrels.
+Props: 22 loose spots (some on the tower roofs and floors, the skybridge, the station, the cafe), plus 13 that always
+get their prop: trash cans by the station, the mart, the ramen shop and the shops, chairs in the cafe, the ramen shop,
+the comedy club and the court (`TypedProps`). Structures: vending machine (HP 80) ×4, wrecked car (HP 100) ×2, ice
+machine (HP 80), road barrier stack (HP 60). 16 spawns (the station plaza and the streets), 6 explosive barrels.
 
 **Art & performance:**
 
@@ -356,6 +368,15 @@ skybridge and the station's platforms. Structures: vending machine (HP 80) ×4, 
 - Getting hit while carrying drops the prop. A barrel's blast also hits its thrower, and lights other barrels in range.
 - Breakable structures take damage from any attack (its Classic damage), thrown prop or barrel blast and break into
   2–4 random props from their drop table; drops nobody picks up vanish after 30 s.
+- **Breakable walls** (owner, 2026-10-28: "add breakable walls"): arena parts tagged BreakableWall take the same
+  damage (Services/WallService).
+  - *What breaks:* building walls and windows, block walls, gravestones, hedges.
+  - *Health:* it depends on the material (`Config.Structures.Walls`): glass goes with one punch, wood takes three,
+    everything else four.
+  - *Breaking:* a wall darkens as it loses health. At 0 it shatters and is gone for the rest of the round (each round
+    loads a fresh arena).
+  - *Size:* a wall piece is at most 16 studs wide (a glass pane at most 26), so a break opens a hole, not a whole
+    side. Floors, stairs and roofs don't break.
 
 ## 4. Assets
 
@@ -365,7 +386,7 @@ skybridge and the station's platforms. Structures: vending machine (HP 80) ×4, 
   animations, sounds). Weapons are welded accessory models, not Tools (mobile buttons stay consistent).
 - Weapons: baseball bat, shovel, wrench, hubcap shield (each < 1,500 triangles).
 - Props: folding chair, wooden crate, tire, bucket, CRT TV, oil barrel, explosive barrel, fridge, car door, traffic
-  cone.
+  cone, trash can (a medium prop, also a loose-spot type; owner, 2026-10-28).
 - Structures: wrecked car, vending machine, road barrier stack, broken road signs, billboards.
 - Launch cosmetics: 6 skins, 6 hats, 4 dash trails, 4 KO effects.
 

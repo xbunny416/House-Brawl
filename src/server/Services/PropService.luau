@@ -3,7 +3,7 @@
 	PropService — loose props (bible §3.3 "Props"): spawn spots, grab / carry / drop / throw, thrown-prop hits,
 	explosive barrels, the per-zone prop cap and despawning.
 
-	  * Spots: arena PropSpot (a random Config.Props.LooseSpotTypes type), ExplosiveSpot (ExplosiveBarrel) and the
+	  * Spots: arena PropSpot (its PropType attribute, else a random Config.Props.LooseSpotTypes type), ExplosiveSpot (ExplosiveBarrel) and the
 	    lobby's LobbyPropSpot (its PropType attribute; none at the moment). A spot gets a prop when its map is in
 	    Workspace, and a new one SpotRespawnTime (ExplosiveSpotRespawnTime) after its prop was taken, while the zone
 	    has fewer than MaxActive props.
@@ -609,7 +609,9 @@ local function onArenaLoaded(_mapId: string, arena: Model)
 	folder.Parent = arena
 	arenaFolder = folder
 	for _, marker in MapService.getArenaMarkers("PropSpot") do
-		addSpot(marker, nil, "Arena")
+		-- A spot can name its prop (a trash can by a shop, a chair in the cafe); the rest pick one at random.
+		local typeId = marker:GetAttribute("PropType")
+		addSpot(marker, if type(typeId) == "string" then typeId else nil, "Arena")
 	end
 	for _, marker in MapService.getArenaMarkers("ExplosiveSpot") do
 		addSpot(marker, "ExplosiveBarrel", "Arena")
