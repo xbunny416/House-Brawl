@@ -280,7 +280,9 @@ machine (HP 80) ×3, lawn chair stack (HP 60) ×3.
   shapes.
 - Late-afternoon dusk, orange sky, dusty haze (Atmosphere density ~0.35), light fog, faint toxic-green glow from below.
   Neon Motel is night. Lighting: **LightingStyle Realistic** (Roblox's Future look; owner, 2026-10-19;
-  set in `default.project.json`): local lights light and shade properly; in the lobby the hanging and floor lamps cast soft shadows.
+  set in `default.project.json`): local lights light and shade properly; in the lobby the main hanging and ceiling lamps
+  cast soft shadows. The lobby is gloomy (owner, 2026-10-28: "more gloomy, less bright"): a dark ambient, dimmed lamps
+  and a darker, more contrasty colour grade (the `Dusk` preset), so the light falls in warm pools.
 - Low draw calls (reuse meshes, no high-tri unions, CastShadow off on small props), cap 40 active props per arena,
   "Low Graphics" setting disables particles, post-effects and shadows (the sun's and the lobby lamps'). StreamingEnabled ON (target 256, min 128). Arena
   platforms use ModelStreamingMode = Persistent.

@@ -647,9 +647,10 @@ local function barOnPlatform()
 	end, { Role = "Shop" }):AddTag("ShopNPC")
 
 	-- Between the TVs, not in front of them; dimmer and shorter-reaching since 2026-10-28 (owner: "make bar counter
-	-- and behind bartender light a bit less bright"; 1.3 bright reaching 26 studs, onto the back bar, before).
+	-- and behind bartender light a bit less bright", then "more gloomy"; 1.3 bright reaching 26 studs, onto the back
+	-- bar, before).
 	for _, x in { -7.5, 7.5 } do
-		F.pendant(x, 18.5, counterZ - 5, BAR_CEILING, 24, 0.9)
+		F.pendant(x, 18.5, counterZ - 5, BAR_CEILING, 24, 0.75)
 	end
 end
 
@@ -1340,7 +1341,7 @@ local function booth(name: string, x: number, z: number, seats: number?)
 		"South",
 		{ Seats = perBench, Color = "Sofa", Material = "Leather", TallBack = true }
 	)
-	F.pendant(x, 15, z, BAR_CEILING, 22, 1.3, false)
+	F.pendant(x, 15, z, BAR_CEILING, 22, nil, false)
 end
 
 local function lounge()
@@ -1426,7 +1427,7 @@ end
 local function ceiling()
 	for _, z in { -18, -6 } do
 		for _, x in { -30, 0, 30 } do
-			F.ceilingLamp(x, z, HEIGHT, 4.5, 36, 1.2)
+			F.ceilingLamp(x, z, HEIGHT, 4.5, 32, 0.9)
 		end
 	end
 	local beamBottom = HEIGHT - 1.6
