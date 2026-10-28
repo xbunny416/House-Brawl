@@ -142,22 +142,17 @@ Settings → Promo code, styles come from the style roll).
     stop `rojo serve` (Ctrl+C), start it again and click Connect in the Rojo plugin (the map's file is new: SmallCity
     became Shinjuku). `ServerStorage.Arenas` should hold Shinjuku plus the three old arenas.
   - *Starting a round:* stand on the join pad. The vote shows one map, Shinjuku, and the round loads it on a sunny day.
-  - *Where you are:* a Tokyo street block. The station is along one edge with its plaza in front; across the main
-    street stand the twin towers either side of the avenue, the skybridge between them.
-  - *Fighting:* props respawn on their spots (some on the roofs, the skybridge and the station platforms) and you can
-    throw them, and breakables (vending machines, wrecked cars, the ice machine by the mart, a barrier stack) break
-    and drop props. Nobody falls here, so a life ends at 0 HP. Check that rounds still end: the last one standing, or
+  - *Where you are:* a Tokyo street block. The main street runs along the north edge; south of it stand the twin
+    towers either side of the avenue, the skybridge between them.
+  - *Fighting:* props respawn on their spots (some on the roofs, the skybridge and the cafe) and you can throw them,
+    and breakables (vending machines, wrecked cars, the ice machine by the mart, a barrier stack) break and drop
+    props. A life ends at 0 HP or by falling off the edge. Check that rounds still end: the last one standing, or
     most KOs at time-out.
-  - *Climbing (ladders are Roblox trusses: walk into one to climb):*
-    - The towers: the ladder on each one's outer side goes up to its terrace (+40); from there cross the skybridge, or
-      climb the short ladder to the roof (+48.4).
-    - Also: the station roof (ladders at its front corners), the train (a ladder at its east end), the mall roof, and
-      the cafe's outside stair to its deck.
-  - *The edges:* run and dash at the city blocks round the edge: an invisible wall stops you everywhere. Get knocked
-    hard into it with high Percent and check you don't fly over.
-  - *Look:* the station sign and train, the towers' billboards (CURSED COLA, TOKYO NIGHTS), the utility poles and
-    wires, crosswalks, the shop row's signs, the graveyard, the purple jail with its barred cell, the courthouse
-    columns, the cherry trees, the skyline all round.
+  - *Climbing (ladders are Roblox trusses: walk into one to climb):* the towers' outside ladders go up to their roofs
+    (or walk up inside); also the arcade and mall roofs, and the cafe's stair to its roof.
+  - *The edges:* open, with no walls (see below).
+  - *Look:* the towers' billboards (CURSED COLA, TOKYO NIGHTS), the utility poles and wires, crosswalks, the shop
+    row's signs, the graveyard, the purple jail with its barred cell, the courthouse columns, the cherry trees.
   - *Old arenas:* Broken Highway, Junkyard Isles and Neon Motel are still in `ServerStorage.Arenas` but never voted
     for. To play one again, set its `Enabled = true` in `src/shared/Config/Maps.luau`. The developer panel's map list
     shows only enabled maps.
@@ -165,13 +160,15 @@ Settings → Promo code, styles come from the style roll).
   - *Walls:* punch a building wall about four times and it breaks. Glass goes in one punch, and a thrown prop or a
     barrel breaks walls too. The next round brings them all back.
   - *Buildings:* walk into the towers (ramps up to the roof, the skybridge on the 9th floor), the cafe, ramen shop,
-    mart, arcade, mall, bowling alley, shops, jail, comedy club, court, mansion and the train.
-  - *Trash cans:* they stand by the station, mart and shops; grab one and throw it.
+    mart, arcade, mall, bowling alley, shops, jail, comedy club, court and mansion.
+  - *Trash cans:* they stand on the main street and by the mart and shops; grab one and throw it.
   - *Check:* headroom inside (storeys are 7), frame rate on a phone (the arena is about 3,500 parts), Output
     `[Walls] N breakable wall pieces` with `Config.Dev.LogCombat`.
-- **The school instead of the station (2026-10-28):** in a round you spawn in the schoolyard (north) or the streets.
-  - *Climbing:* walk into the school and up its stair to the roof by the clock tower, and climb the ladders onto the
-    gym and the arcade.
-  - *Look:* the shrine's torii (red pillars, black top beam), its hall's gabled roof (not upside down), the bigger
-    towers, the three-storey shops with balconies.
-  - *Performance:* the arena is about 4,500 instances now, so watch the frame rate (and on a phone, when you can).
+- **Open edges, no school strip (2026-10-28):** the school, gym, schoolyard and shrine are gone; the district ends a
+  short pavement past the main street (north), and you spawn on the streets and in the plaza.
+  - *Falling:* walk or get knocked off any edge (also off a tower roof toward the edge): you fall past the cliff into
+    the dark mist and lose a life (the kill feed shows a fall, and the last attacker gets the KO).
+  - *Check:* no invisible wall anywhere along the edge; nothing to land on below; props thrown off the edge disappear
+    and respawn on their spots.
+  - *Look:* from the edge, the soil and rock face under the street going down into the mist (no gap between the
+    street slab and the rock). The arena is about 3,400 instances now.

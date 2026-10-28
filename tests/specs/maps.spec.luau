@@ -49,7 +49,7 @@ local function eachArena(check: (layout: any, model: any) -> ())
 	end
 end
 
--- Only the floating arenas (platforms over a void), not a ground arena like Small City (one walled-in valley).
+-- Only the floating arenas (platforms over a void), not a ground arena like Shinjuku (one district on the ground).
 local function eachFloating(check: (layout: any, model: any) -> ())
 	for _, arena in arenas do
 		if not arena.Layout.Ground then
@@ -320,53 +320,40 @@ return {
 			expect.equal(#tagged(model, "Platform"), if layout.Ground then 1 else 13, `{layout.Id} platforms`)
 		end)
 	end,
-	["Shinjuku: one walled-in district on the ground (owner: no floating islands), city blocks all round"] = function()
-		-- The owner, 2026-10-28: "no floating island", then "want arena to look like jjk shenanigans".
+	["Shinjuku: one district on the ground, open edges to fall off, no school strip"] = function()
+		-- The owner, 2026-10-28: "no floating island", then "want arena to look like jjk shenanigans", then "shrink the
+		-- arena by delete entire school area. remove tower boundary so player can fall dead".
 		expect.equal(Shinjuku.Ground, true, "a ground arena")
 		expect.equal(#Shinjuku.Platforms, 1, "one platform")
-		local valley = Shinjuku.Platforms[1]
-		expect.equal(valley.Kind, "Center", "the district never falls")
+		local district = Shinjuku.Platforms[1]
+		expect.equal(district.Kind, "Center", "the district never falls")
 		local model = Shinjuku.build(ORIGIN)
-		-- Invisible, solid walls on all four sides, tall enough that knockback doesn't carry anyone over.
-		local halfX, halfZ = valley.Size[1] / 2, valley.Size[2] / 2
-		local sides = { px = false, nx = false, pz = false, nz = false }
-		for _, wall in model:GetDescendants() do
-			if wall:IsA("BasePart") and wall.Name == "BoundaryWall" then
-				expect.equal(wall.Transparency, 1, "invisible")
-				expect.equal(wall.CanCollide, true, "solid")
-				expect.truthy(wall.Size.Y >= 200, "tall")
-				local p = wall.CFrame.Position
-				if p.X >= halfX then
-					sides.px = wall.Size.Z >= valley.Size[2]
-				elseif p.X <= -halfX then
-					sides.nx = wall.Size.Z >= valley.Size[2]
-				elseif p.Z >= halfZ then
-					sides.pz = wall.Size.X >= valley.Size[1]
-				elseif p.Z <= -halfZ then
-					sides.nz = wall.Size.X >= valley.Size[1]
-				end
+		local halfX, halfZ = district.Size[1] / 2, district.Size[2] / 2
+		local centerX, centerZ = district.Center[1], district.Center[2]
+		-- The district ends at the main street's far pavement: the school, its gym and yard and the shrine are gone.
+		expect.equal(centerZ + halfZ, 110, "the north edge (the main street at z 90)")
+		expect.equal(centerZ - halfZ, -230, "the south edge")
+		for _, name in { "School", "Gym", "Schoolyard", "ShrineHall", "Torii", "Station" } do
+			expect.equal(model:FindFirstChild(name, true), nil, `no {name}`)
+		end
+		-- Nothing closes the edges in (no walls, no city blocks round it) and nothing solid past them or under the
+		-- district to land on: knocked off an edge, a fighter falls past KillY (MapService: a KO in a round).
+		expect.equal(model:FindFirstChild("BoundaryWall", true), nil, "no boundary walls")
+		expect.equal(model:FindFirstChild("Skyline", true), nil, "no city blocks round it")
+		local underside = district.Top - district.Thickness
+		for _, part in model:GetDescendants() do
+			if part:IsA("BasePart") and part.CanCollide then
+				local box = boxOf(part)
+				local within = box.min[1] >= centerX - halfX - 0.5
+					and box.max[1] <= centerX + halfX + 0.5
+					and box.min[3] >= centerZ - halfZ - 0.5
+					and box.max[3] <= centerZ + halfZ + 0.5
+				expect.truthy(within, `{box.name} is solid past the district's edge`)
+				expect.truthy(box.min[2] >= underside - 0.01, `{box.name} is solid under the district`)
 			end
 		end
-		for side, closed in sides do
-			expect.truthy(closed, `the valley's {side} side has a wall along it`)
-		end
-		-- The city blocks behind the walls, always streamed in, on every side.
-		local skyline = model:FindFirstChild("Skyline", true)
-		expect.truthy(skyline, "skyline")
-		expect.equal(skyline.ModelStreamingMode, roblox.Enum.ModelStreamingMode.Persistent, "skyline streams")
-		local around = { px = false, nx = false, pz = false, nz = false }
-		for _, part in skyline:GetDescendants() do
-			if part:IsA("BasePart") and part.Name == "Building" then
-				local p = part.CFrame.Position
-				around.px = around.px or p.X > halfX
-				around.nx = around.nx or p.X < -halfX
-				around.pz = around.pz or p.Z > halfZ
-				around.nz = around.nz or p.Z < -halfZ
-			end
-		end
-		for side, built in around do
-			expect.truthy(built, `buildings behind the {side} wall`)
-		end
+		expect.truthy(model:GetAttribute("KillY") < underside, "KillY under the district")
+		expect.truthy(model:FindFirstChild("Bedrock", true) and model:FindFirstChild("AbyssMist1", true), "a cliff")
 		-- The owner's reference (Jujutsu Shenanigans' Shinjuku): the twin towers with their skybridge, ladders up them.
 		expect.truthy(
 			model:FindFirstChild("TowerWest", true) and model:FindFirstChild("TowerEast", true),
@@ -409,28 +396,25 @@ return {
 				"BowlingAlley",
 				"Jail",
 				"Courthouse",
-				"School", -- the school, its gym and the shrine took the station's place (owner, 2026-10-28)
-				"Gym",
-				"ShrineHall",
 			}
 		do
 			local building = model:FindFirstChild(name, true)
 			expect.truthy(building, `{name} is built`)
 			expect.truthy(building:FindFirstChild("GroundFloor"), `{name} has a floor inside`)
 		end
-		expect.equal(model:FindFirstChild("Station", true), nil, "no station (the owner: replace it)")
-		for _, name in { "TowerWest", "TowerEast", "School", "Cafe", "Mall", "Jail", "Shop1", "Mansion" } do
+		for _, name in { "TowerWest", "TowerEast", "Cafe", "Mall", "Jail", "Shop1", "Mansion" } do
 			local building = model:FindFirstChild(name, true)
 			expect.truthy(
 				building and building:FindFirstChild("Stair") and building:FindFirstChild("Floor"),
 				`{name} has stairs`
 			)
 		end
-		-- Every spot is inside the walls (the spacing checks above cover the rest).
+		-- Every spot is at least 10 in from the edge (the spacing checks above cover the rest).
 		for _, tag in { "SpawnPoint", "PropSpot", "ExplosiveSpot", "StructureSpot" } do
 			for _, marker in tagged(model, tag) do
 				local p = marker.CFrame.Position
-				expect.truthy(math.abs(p.X) < halfX - 10 and math.abs(p.Z) < halfZ - 10, `{marker.Name} inside`)
+				local inside = math.abs(p.X - centerX) < halfX - 10 and math.abs(p.Z - centerZ) < halfZ - 10
+				expect.truthy(inside, `{marker.Name} inside`)
 			end
 		end
 	end,
