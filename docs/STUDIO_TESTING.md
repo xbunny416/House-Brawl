@@ -117,6 +117,20 @@ Settings → Promo code, styles come from the style roll).
   jukebox in a red tracksuit (Output `[Npc] built the Coach`) and his prompt opens Styles; the spin wheel (right wall)
   spins and lands on the prize it says, with open floor in front of it; the
   chess table's armchairs (right side of the bar floor) seat both players and a game starts; all three booths
-  seat six and the high tables can be sat at; the concrete floor has no hanging lamps now, so check the middle of
-  the room isn't too dark (the pillars' wall lamps light it). The old locker booth and codes
+  seat six and the high tables can be sat at. The old locker booth and codes
   jukebox are gone (Inventory and Promo code from the menu); the jukebox is decor.
+- **Lobby lighting and detail (2026-10-28):**
+  - *The bar:* it should look a little dimmer at the counter and noticeably dimmer on the back bar behind the
+    bartender.
+  - *The concrete floor:* lit by six green ceiling lamps. If it is too dark or too bright, change the `F.ceilingLamp`
+    range / brightness in `ceiling()` in `maps/layouts/Hideout`. For the bar, change the counter lamps' `F.pendant`
+    values.
+  - *The platform:* the bar end is now a raised platform. Walk up the two steps in the middle and check you don't get
+    stuck on them. Check the railings either side block you, the bartender stands on the platform behind the counter
+    (his Shop prompt still shows), and the stools, booths, high tables and the chess armchairs all still seat you.
+  - *The fans:* the two fans over the concrete turn slowly (Output: `[Movers] CeilingFan1: Spin`), on a second client
+    too.
+  - *New decor:* the boarded windows glow with the dusk, plus the brick patches, the two posters (readable titles),
+    the fuse box by the street door, the arcade cabinets (left wall by the teal barrel, right wall next to the wheel),
+    the air duct and pipes, and the floor slabs with stains and a drain.
+  - *Low Graphics:* it turns the ceiling lamps' shadows off.

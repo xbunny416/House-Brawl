@@ -149,8 +149,16 @@ Not used. No pets, eggs, or paid random items.
 no Training Yard, 2026-10-16; 25% bigger in the style of the reference pictures with detailed furniture, 2026-10-19;
 a bit less luxury, 2026-10-27: worn iron, old brass and wood instead of gold and marble; the same day a new layout,
 15% smaller — 98 × 72 studs, 26 high). Grey-green plaster walls over dark wood wainscoting with a wood rail, dark wood
-pillars with iron bands and white wall lamps, wood beams, iron workshop pendant lamps, a concrete floor (wood planks
-under the bar). North (the bar's wood floor) — the wood-topped bar counter with the Shop NPC
+pillars with iron bands and white wall lamps, wood beams and joists, iron workshop pendant lamps over the bar floor,
+a concrete floor of poured slabs with joints, oil stains and a drain. The bar end is a wood platform 1.5 studs up,
+with two steps up in the middle and wood railings with iron balusters either side. More detail and some movement
+(owner, 2026-10-28: "more overall lobby detail … no dynamic or dimension"):
+- *Over the concrete:* six green warehouse ceiling lamps, two slowly turning ceiling fans, an air duct and pipes.
+- *On the walls:* boarded-up windows high on the side walls glowing with the dusk, patches of bare brick, two old
+  fight posters, a fuse box by the street door.
+- *Decor:* an old arcade cabinet on each side wall.
+
+North (the bar's wood floor) — the wood-topped bar counter with the Shop NPC
 (the bartender: a standing Roblox character in a white shirt, dark vest, apron, bow tie and bandana, who talks in a
 speech bubble: a greeting when you walk up, a line about your last round, tips and jokes while you hang around, and lines
 when you open the Shop or buy something), bar stools, a mirrored back bar with bottle shelves, three big CRT TVs over the bar (each shows one map of the ballot with its votes during the vote,
@@ -167,8 +175,8 @@ glowing join pad in front of it; left of it the
 style coach (a standing Roblox character in a red tracksuit with a headband and a whistle, under a STYLES sign: walk
 up for the Styles screen, the style roll) by a jukebox (decor) and the street door in the corner; right of it the
 cork quest board and crates in the corner. Middle — open floor from the ARENA door to the bar; players spawn in the
-centre of the room, facing the bar (no visible spawn pad); potted trees in black pots by the walls; the lamps hang over
-the bar's wood floor only. The arm-wrestling table stands in front of the quest board, level with the pillar on the
+centre of the room, facing the bar (no visible spawn pad); potted trees in black pots by the walls; the pendant lamps hang over
+the bar's wood floor, the concrete has the ceiling lamps. The arm-wrestling table stands in front of the quest board, level with the pillar on the
 ARENA side of the spin wheel; it has two stools facing each other: sit down opposite someone, wait out
 a 3-second countdown, then mash Attack — or tap PUSH on a phone — to push the clasped hands over to your side; a pin
 wins at once, otherwise whoever is ahead after 15 seconds; the wrestlers' panel shows the match and, between matches,

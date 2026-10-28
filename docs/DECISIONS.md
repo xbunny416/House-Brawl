@@ -929,3 +929,29 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   `ItemShapes`), the barrel and the fridge's rust patch (props), and the explosion debris chunks (VfxController).
   Left as they were: Broken Highway's rebar rods and the lobby's barrels and ARENA door (not asked). The smash sound
   for Metal is the same as for CorrodedMetal (`AudioRules`).
+- **Lobby lighting and detail (owner, 2026-10-28: "make bar counter and behind bartender light a bit less bright. add
+  some ceiling lamp above concrete area. more overall lobby detail cus rn this just plane square room with no dynamic
+  or dimension"):**
+  - *Less bright bar:* the two lamps over the counter went from brightness 1.3 / range 26 to 0.9 / 24, and the
+    high-table lamp's range from 26 to 22, so far less of their light reaches the back bar behind the bartender. The
+    TVs' glow went from 0.8 to 0.5. The signs are unchanged.
+  - *Ceiling lamps over the concrete:* six green enamel warehouse lamps in two rows of three (x −30 / 0 / 30, z −18 /
+    −6), hung close under the ceiling between the beams (4.5 studs down; the removed pendants hung 11 down), each
+    1.2 bright with a range of 36. They are the concrete's main light, so they cast the shadows. The booth lamps stopped
+    casting shadows to keep the count at 10 (the maps spec allows 12).
+  - *Dimension:* the bar's wood floor is now a real platform, 1.5 studs up, with two 0.5-stud steps up in the middle
+    (44 wide, as wide as the counter). Railings run from the steps to the walls on both sides, with a glass globe on
+    each newel post. Everything on the bar floor moved up with it, and the front booth on the left moved 1 stud back
+    to clear the railing.
+  - *Dynamic:* two ceiling fans under the middle beam turn slowly, one turn every 5 seconds. Every client turns them
+    (a new mover Kind, "Spin", in `Shared/MoverRules`), nothing is sent over the network, they collide with nothing
+    and they hang above 15 studs.
+  - *Detail:*
+    - Ceiling: two joists along the room, a galvanized air duct along the left side with vents, and two pipes
+      along the right side (teal and iron).
+    - Walls: boarded-up windows high on both side walls with the dusk glowing through (Neon, no light of their own),
+      three patches of bare brick and two old fight posters ("FIGHT NIGHT", "JUNKYARD CHAMP": new GameStrings keys).
+    - By the street door: a fuse box with its conduit.
+    - Decor: two old arcade cabinets, one on each side wall.
+    - Floor: the concrete is poured slabs 12 studs apart with thin joints (a few lighter), with oil stains and a
+      drain.

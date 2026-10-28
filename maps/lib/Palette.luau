@@ -52,4 +52,8 @@ return {
 	Soil = "#3B2A1E",
 	ChessLight = "#E8D3AE", -- the chess board's light squares
 	ChessDark = "#8E5A3A", -- and its dark squares
+	-- More detail (owner, 2026-10-28): dusk through the boarded windows, a lighter concrete slab, exposed brick.
+	DuskGlow = "#B97A55",
+	ConcreteLight = "#A59F94",
+	BrickRed = "#8A4634",
 }

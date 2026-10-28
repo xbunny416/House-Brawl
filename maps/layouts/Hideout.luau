@@ -12,7 +12,12 @@
 	"West" (−X) the right one; the wall parts are named LeftWall / RightWall, and comments here say left / right.
 
 	Walls: grey-green plaster over dark wood wainscoting (framed panels, a wood rail), dark wood pillars with iron bands
-	and wall lamps, wood beams under a dark ceiling. Floor: concrete, wood planks in the bar.
+	and wall lamps, wood beams and two joists under a dark ceiling. More detail since 2026-10-28 (owner: "more overall
+	lobby detail, right now it's just a plain square room with no dynamic or dimension"): boarded-up windows high on the
+	side walls glowing with the dusk, bare brick where the plaster has fallen off, old fight posters, a fuse box, an
+	old arcade cabinet on each side wall; over the concrete six green warehouse lamps, two slowly turning ceiling fans,
+	an air duct and pipes. Floor: concrete slabs with joints, oil stains and a drain; the bar end is a wood platform
+	BAR_RISE high with two steps up in the middle and railings either side.
 	North (the bar's wood floor): the wood-topped counter (Shop) with the bartender (Shop NPC), stools, a back bar with
 	a wood-framed mirror and shelves of bottles, map vote TVs hanging over the bar, news TVs on the counter ends, the
 	title sign; two long booths for six on the left side, another and the chess table on two armchairs in front of it
@@ -46,6 +51,13 @@ local WALL = 2
 local KILL_DEPTH = 40 -- falling this far below the floor returns you to a spawn
 local WAINSCOT = 6 -- height of the wood panelling
 local BAR_DEPTH = 27 -- the wood floor in front of the north wall
+local BAR_EDGE = HALF_Z - BAR_DEPTH -- where the concrete meets the bar's floor
+-- The bar's wood floor is a platform this high, two steps up from the concrete (owner, 2026-10-28: "more dimension";
+-- flush with the concrete before).
+local BAR_RISE = 1.5
+local BAR_CEILING = HEIGHT - BAR_RISE -- the ceiling, measured from the bar's floor
+local STEPS_WIDTH = 44 -- the steps up to it in the middle, railings either side
+local BEAMS = { -24, -12, 0, 12, 24 } -- Z of the ceiling beams
 -- Pillars along each wall (X on the bar / ARENA walls, Z on the side walls: East = the left wall (+X), West = the
 -- right wall (−X), the Builder's names), clear of what hangs there.
 local PILLARS = {
@@ -59,9 +71,183 @@ local PILLARS = {
 local PAD_SIZE = { 18, 14 } -- X, Z
 local PAD_Z = -HALF_Z + 2 + PAD_SIZE[2] / 2
 
+-- Runs `fill` on the bar's raised floor: heights from its top.
+local function onBar(fill: () -> ())
+	B.within({ 0, BAR_RISE, 0 }, fill)
+end
+
 ---------------------------------------------------------------------------------------------------------------------
 -- Room
 ---------------------------------------------------------------------------------------------------------------------
+
+-- The concrete floor as poured slabs, 12 studs apart (one sheet until 2026-10-28): thin joints show the darker floor
+-- under them, and a few slabs are a lighter grey.
+local SLAB_X = { -HALF_X, -36, -24, -12, 0, 12, 24, 36, HALF_X }
+local SLAB_Z = { -HALF_Z, -24, -12, 0, BAR_EDGE }
+local JOINT = 0.15
+
+local function concrete()
+	for ix = 1, #SLAB_X - 1 do
+		for iz = 1, #SLAB_Z - 1 do
+			local x0, x1, z0, z1 = SLAB_X[ix], SLAB_X[ix + 1], SLAB_Z[iz], SLAB_Z[iz + 1]
+			B.part({
+				Name = "ConcreteFloor", -- a light carpet until 2026-10-27 (owner: "a bit less luxury")
+				Size = { x1 - x0 - JOINT, 0.1, z1 - z0 - JOINT },
+				Position = { (x0 + x1) / 2, 0.05, (z0 + z1) / 2 },
+				Color = if (ix * 3 + iz * 5) % 4 == 0 then "ConcreteLight" else "Concrete",
+				Material = "Concrete",
+				CanCollide = false,
+				CastShadow = false,
+			})
+		end
+	end
+end
+
+--[[
+	The bar's raised floor (owner, 2026-10-28: "more dimension"): a wood platform BAR_RISE high over the whole bar end,
+	planks on top with an iron nosing, two wood steps up in the middle, and on both sides of them a railing to the
+	walls: wood posts, a wood handrail, iron balusters, a newel post with a glass globe at each end of the steps.
+]]
+local function barPlatform()
+	B.part({
+		Name = "BarPlatform",
+		Size = { INNER[1], BAR_RISE, BAR_DEPTH },
+		Position = { 0, BAR_RISE / 2, HALF_Z - BAR_DEPTH / 2 },
+		Color = "WoodDark",
+		Material = "Wood",
+	})
+	B.part({
+		Name = "BarFloor",
+		Size = { INNER[1], 0.1, BAR_DEPTH },
+		Position = { 0, BAR_RISE + 0.05, HALF_Z - BAR_DEPTH / 2 },
+		Color = "Wood",
+		Material = "WoodPlanks",
+		CanCollide = false,
+		CastShadow = false,
+	})
+	B.part({
+		Name = "FloorEdge",
+		Size = { INNER[1], 0.14, 0.5 },
+		Position = { 0, BAR_RISE + 0.07, BAR_EDGE + 0.25 },
+		Color = "Iron",
+		Material = "Metal",
+		CanCollide = false,
+		CastShadow = false,
+	})
+	-- Baseboards on the platform along the side walls (the wainscot's own sit under it).
+	for _, side in { -1, 1 } do
+		B.part({
+			Name = "Baseboard",
+			Size = { 0.8, 0.8, BAR_DEPTH },
+			Position = { side * (HALF_X - 0.4), BAR_RISE + 0.4, HALF_Z - BAR_DEPTH / 2 },
+			Color = "WoodDark",
+			Material = "Wood",
+			CastShadow = false,
+		})
+	end
+	-- Two steps, each a third of the rise, with an iron nosing.
+	local tread = 1.4
+	for step = 1, 2 do
+		local height = BAR_RISE * step / 3
+		local front = BAR_EDGE - tread * (3 - step)
+		B.part({
+			Name = "BarStep",
+			Size = { STEPS_WIDTH, height, tread },
+			Position = { 0, height / 2, front + tread / 2 },
+			Color = "WoodMid",
+			Material = "WoodPlanks",
+		})
+		B.part({
+			Name = "StepNosing",
+			Size = { STEPS_WIDTH, 0.12, 0.4 },
+			Position = { 0, height + 0.06, front + 0.2 },
+			Color = "Iron",
+			Material = "Metal",
+			CanCollide = false,
+			CastShadow = false,
+		})
+	end
+	-- The railings, and wood battens on the platform's face under them.
+	local railZ, railTop = BAR_EDGE + 0.35, BAR_RISE + 3.2
+	local from, to = STEPS_WIDTH / 2 + 0.6, HALF_X - 1.7 -- clear of the leaderboard on the left wall
+	local length = to - from
+	for _, side in { -1, 1 } do
+		local middle = side * (from + to) / 2
+		B.model("Railing", function()
+			B.part({
+				Name = "Handrail",
+				Size = { length, 0.35, 0.6 },
+				Position = { middle, railTop, railZ },
+				Color = "WoodMid",
+				Material = "Wood",
+			})
+			B.part({
+				Name = "BottomRail",
+				Size = { length, 0.3, 0.4 },
+				Position = { middle, BAR_RISE + 0.45, railZ },
+				Color = "WoodDark",
+				Material = "Wood",
+			})
+			local posts = 7
+			for index = 0, posts do
+				B.part({
+					Name = "Post",
+					Size = { 0.45, 3.2, 0.45 },
+					Position = { side * (from + index * length / posts), BAR_RISE + 1.6, railZ },
+					Color = "WoodDark",
+					Material = "Wood",
+				})
+			end
+			local balusters = 24
+			for index = 1, balusters - 1 do
+				B.part({
+					Name = "Baluster",
+					Size = { 2.5, 0.14, 0.14 },
+					Position = { side * (from + index * length / balusters), BAR_RISE + 1.95, railZ },
+					Rotation = { 0, 0, 90 },
+					Shape = "Cylinder",
+					Color = "Iron",
+					Material = "Metal",
+				})
+			end
+			B.part({
+				Name = "Newel",
+				Size = { 0.9, 3.9, 0.9 },
+				Position = { side * from, BAR_RISE + 1.95, railZ },
+				Color = "WoodDark",
+				Material = "Wood",
+			})
+			B.part({
+				Name = "NewelCap",
+				Size = { 1.2, 0.3, 1.2 },
+				Position = { side * from, BAR_RISE + 4.05, railZ },
+				Color = "WoodMid",
+				Material = "Wood",
+			})
+			B.part({
+				Name = "Globe",
+				Size = { 0.9, 0.9, 0.9 },
+				Position = { side * from, BAR_RISE + 4.65, railZ },
+				Shape = "Ball",
+				Color = "WarmLight",
+				Material = "Neon",
+				Transparency = 0.15,
+				CanCollide = false,
+			})
+			for index = 0, 9 do
+				B.part({
+					Name = "Batten",
+					Size = { 0.3, BAR_RISE - 0.2, 0.15 },
+					Position = { side * (from + 1.2 + index * (length - 2.4) / 9), BAR_RISE / 2, BAR_EDGE - 0.07 },
+					Color = "WoodMid",
+					Material = "Wood",
+					CanCollide = false,
+					CastShadow = false,
+				})
+			end
+		end)
+	end
+end
 
 local function shell()
 	B.slab({
@@ -71,33 +257,8 @@ local function shell()
 		Color = "ConcreteDark",
 		Material = "Concrete",
 	})
-	B.part({
-		Name = "ConcreteFloor", -- a light carpet until 2026-10-27 (owner: "a bit less luxury")
-		Size = { INNER[1], 0.1, INNER[2] - BAR_DEPTH },
-		Position = { 0, 0.05, -BAR_DEPTH / 2 },
-		Color = "Concrete",
-		Material = "Concrete",
-		CanCollide = false,
-		CastShadow = false,
-	})
-	B.part({
-		Name = "BarFloor",
-		Size = { INNER[1], 0.1, BAR_DEPTH },
-		Position = { 0, 0.05, HALF_Z - BAR_DEPTH / 2 },
-		Color = "Wood",
-		Material = "WoodPlanks",
-		CanCollide = false,
-		CastShadow = false,
-	})
-	B.part({
-		Name = "FloorEdge",
-		Size = { INNER[1], 0.12, 0.4 },
-		Position = { 0, 0.06, HALF_Z - BAR_DEPTH },
-		Color = "Iron",
-		Material = "Metal",
-		CanCollide = false,
-		CastShadow = false,
-	})
+	concrete()
+	barPlatform()
 	local wallY = (HEIGHT + 4) / 2 - 2 -- from below the floor slab up to the ceiling
 	for _, wall in
 		{
@@ -130,8 +291,8 @@ local function shell()
 		Material = "Plaster",
 		CastShadow = true,
 	})
-	-- Plain wood beams.
-	for _, z in { -24, -12, 0, 12, 24 } do
+	-- Plain wood beams across the room, and two lighter joists along it between them.
+	for _, z in BEAMS do
 		B.part({
 			Name = "Beam",
 			Size = { INNER[1], 1.6, 1.4 },
@@ -140,15 +301,34 @@ local function shell()
 			Material = "Wood",
 		})
 	end
-	-- Pillars along the walls; the side and ARENA-wall ones carry lit wall lamps (those light the spawns).
+	for _, x in { -24.5, 24.5 } do
+		B.part({
+			Name = "Joist",
+			Size = { 1, 1.1, INNER[2] },
+			Position = { x, HEIGHT - 0.55, 0 },
+			Color = "WoodMid",
+			Material = "Wood",
+		})
+	end
+	-- Pillars along the walls; the side and ARENA-wall ones carry lit wall lamps (those light the spawns). The ones at
+	-- the bar end stand on its platform.
+	local function pillar(x: number, z: number, facing: string, lit: boolean)
+		if z > BAR_EDGE then
+			onBar(function()
+				F.pillar(x, z, facing, BAR_CEILING, lit)
+			end)
+		else
+			F.pillar(x, z, facing, HEIGHT, lit)
+		end
+	end
 	for _, z in PILLARS.East do
-		F.pillar(HALF_X - 1.2, z, "West", HEIGHT, true)
+		pillar(HALF_X - 1.2, z, "West", true)
 	end
 	for _, z in PILLARS.West do
-		F.pillar(-HALF_X + 1.2, z, "East", HEIGHT, true)
+		pillar(-HALF_X + 1.2, z, "East", true)
 	end
 	for _, x in PILLARS.North do
-		F.pillar(x, HALF_Z - 1.2, "South", HEIGHT, false)
+		pillar(x, HALF_Z - 1.2, "South", false)
 	end
 	for _, x in PILLARS.South do
 		F.pillar(x, -HALF_Z + 1.2, "North", HEIGHT, true)
@@ -182,7 +362,7 @@ local function tv(name: string, at: { number }, size: { number }, voteKind: stri
 			Tags = { if voteKind == "News" then "NewsScreen" else "VoteScreen" },
 			Attributes = { VoteKind = voteKind, Index = index },
 		})
-		B.light(screen, "CrtGlow", 10, 0.8)
+		B.light(screen, "CrtGlow", 10, 0.5) -- 0.8 until 2026-10-28 (owner: the bar "a bit less bright")
 		B.part({
 			Name = "Bezel",
 			Size = { screenW + 0.5, screenH + 0.5, 0.1 },
@@ -236,7 +416,8 @@ local function tv(name: string, at: { number }, size: { number }, voteKind: stri
 	end)
 end
 
-local function bar()
+-- The bar on its raised floor (heights from the platform's top).
+local function barOnPlatform()
 	local wallZ = HALF_Z
 	local width = 44
 	B.sign({
@@ -429,8 +610,8 @@ local function bar()
 		tv(`MapTV{index}`, { x, 14, counterZ }, { 8, 6.5, 5 }, "Map", index)
 		B.part({
 			Name = "TVMount",
-			Size = { 0.4, HEIGHT - 17.25, 0.4 },
-			Position = { x, (HEIGHT + 17.25) / 2, counterZ },
+			Size = { 0.4, BAR_CEILING - 17.25, 0.4 },
+			Position = { x, (BAR_CEILING + 17.25) / 2, counterZ },
 			Color = "Iron",
 			Material = "Metal",
 			CanCollide = false,
@@ -465,10 +646,15 @@ local function bar()
 		})
 	end, { Role = "Shop" }):AddTag("ShopNPC")
 
-	-- Between the TVs, not in front of them.
+	-- Between the TVs, not in front of them; dimmer and shorter-reaching since 2026-10-28 (owner: "make bar counter
+	-- and behind bartender light a bit less bright"; 1.3 bright reaching 26 studs, onto the back bar, before).
 	for _, x in { -7.5, 7.5 } do
-		F.pendant(x, 18.5, counterZ - 5, HEIGHT, 26)
+		F.pendant(x, 18.5, counterZ - 5, BAR_CEILING, 24, 0.9)
 	end
+end
+
+local function bar()
+	onBar(barOnPlatform)
 end
 
 -- The steel ARENA door in the middle of the south wall, opposite the bar (the left wall until 2026-10-27; owner:
@@ -574,7 +760,7 @@ end
 -- The left wall's decor: a rust barrel with a dartboard over it at the bar end, the teal barrel in the corner by the
 -- street door.
 local function leftWall()
-	for index, z in { 30, -HALF_Z + 1.7 } do
+	local function barrel(index: number, z: number)
 		B.part({
 			Name = `Barrel{index}`,
 			Size = { 4, 2.6, 2.6 },
@@ -597,17 +783,21 @@ local function leftWall()
 			})
 		end
 	end
-	for index, ring in { { 2.6, "Black" }, { 2, "OffWhite" }, { 1.3, "Sofa" }, { 0.5, "Black" } } do
-		B.part({
-			Name = `Dartboard{index}`,
-			Size = { 0.1 + index * 0.05, ring[1], ring[1] },
-			Position = { HALF_X - 0.6, 9, 31 },
-			Shape = "Cylinder",
-			Color = ring[2],
-			Material = "SmoothPlastic",
-			CanCollide = false,
-		})
-	end
+	onBar(function()
+		barrel(1, 30)
+		for index, ring in { { 2.6, "Black" }, { 2, "OffWhite" }, { 1.3, "Sofa" }, { 0.5, "Black" } } do
+			B.part({
+				Name = `Dartboard{index}`,
+				Size = { 0.1 + index * 0.05, ring[1], ring[1] },
+				Position = { HALF_X - 0.6, 9, 31 },
+				Shape = "Cylinder",
+				Color = ring[2],
+				Material = "SmoothPlastic",
+				CanCollide = false,
+			})
+		end
+	end)
+	barrel(2, -HALF_Z + 1.7)
 end
 
 --[[
@@ -1130,8 +1320,9 @@ local function spawns()
 	F.plant(-14, -HALF_Z + 4) -- on the bar's wood floor until 2026-10-27 (owner: "move tree off bar platform")
 end
 
--- A booth: a wood table between two channel-stitched benches that face each other, under its own lamp. `seats` per
--- bench (2 by default; 3 seat six people).
+-- A booth on the bar's floor: a wood table between two channel-stitched benches that face each other, under its own
+-- lamp (no shadows since 2026-10-28: the concrete's ceiling lamps have them). `seats` per bench (2 by default; 3 seat
+-- six people).
 local function booth(name: string, x: number, z: number, seats: number?)
 	local perBench = seats or 2
 	F.boothTable(`{name}Table`, x, z, perBench * 3)
@@ -1149,7 +1340,7 @@ local function booth(name: string, x: number, z: number, seats: number?)
 		"South",
 		{ Seats = perBench, Color = "Sofa", Material = "Leather", TallBack = true }
 	)
-	F.pendant(x, 15, z, HEIGHT, 22)
+	F.pendant(x, 15, z, BAR_CEILING, 22, 1.3, false)
 end
 
 local function lounge()
@@ -1163,20 +1354,23 @@ local function lounge()
 	-- 2026-10-27: "arm wrestling and snooker move to side"; left of the middle before).
 	F.poolTable(37, -10, "East")
 
-	-- High tables with stools in front of the bar stools, under one lamp.
-	for index, x in { -10, 10 } do
-		F.roundTable(`HighTable{index}`, x, 13, 3.4, 3.9)
-		F.stool(`HighStool{index}West`, x - 2.9, 13, "East", 2.1, "Sofa")
-		F.stool(`HighStool{index}East`, x + 2.9, 13, "West", 2.1, "Sofa")
-	end
-	F.pendant(0, 18, 13, HEIGHT, 26)
+	onBar(function()
+		-- High tables with stools in front of the bar stools, under one lamp (reaching 22 studs since 2026-10-28, not
+		-- 26: it lit the back bar too).
+		for index, x in { -10, 10 } do
+			F.roundTable(`HighTable{index}`, x, 13, 3.4, 3.9)
+			F.stool(`HighStool{index}West`, x - 2.9, 13, "East", 2.1, "Sofa")
+			F.stool(`HighStool{index}East`, x + 2.9, 13, "West", 2.1, "Sofa")
+		end
+		F.pendant(0, 18, 13, BAR_CEILING, 22)
 
-	-- Three long booths for six on the bar's wood floor (owner, 2026-10-27: "add more tables with sofas", "longer red
-	-- booth for 6 people", then "make 3 red booth all 6 seat plus longer"): two on the left side, clear of the
-	-- leaderboards, and one in the right-hand corner behind the chess table.
-	booth("BoothLeftNorth", 33, HALF_Z - 8.5, 3)
-	booth("BoothLeft", 33, 15, 3)
-	booth("BoothRight", -35, HALF_Z - 8.5, 3)
+		-- Three long booths for six on the bar's wood floor (owner, 2026-10-27: "add more tables with sofas", "longer
+		-- red booth for 6 people", then "make 3 red booth all 6 seat plus longer"): two on the left side, clear of the
+		-- leaderboards (the front one clear of the railing), and one in the right-hand corner behind the chess table.
+		booth("BoothLeftNorth", 33, HALF_Z - 8.5, 3)
+		booth("BoothLeft", 33, 16, 3)
+		booth("BoothRight", -35, HALF_Z - 8.5, 3)
+	end)
 
 	-- Crates: the hideout's junk, in the right-hand corner by the ARENA wall (the left one is the jukebox's).
 	for index, crate in
@@ -1216,9 +1410,245 @@ end
 -- then in the right-hand corner), under its own lamp. White sits in the −X armchair (the one nearer the right wall).
 local CHESS = { -35, 15 }
 local function chess()
-	local x, z = CHESS[1], CHESS[2]
-	F.chessTable("ChessTable", x, z, 3)
-	F.pendant(x, 15, z, HEIGHT, 22)
+	onBar(function()
+		local x, z = CHESS[1], CHESS[2]
+		F.chessTable("ChessTable", x, z, 3)
+		F.pendant(x, 15, z, BAR_CEILING, 22)
+	end)
+end
+
+--[[
+	The ceiling over the concrete floor (owner, 2026-10-28: "add some ceiling lamps above the concrete area", "more
+	overall lobby detail … no dynamic or dimension"): six green warehouse lamps hung close under it between the beams
+	(the main light there; they cast the shadows), two ceiling fans under the middle beam that turn slowly (Spin
+	movers), a big air duct along the left side and two pipes along the right side, strapped to the beams.
+]]
+local function ceiling()
+	for _, z in { -18, -6 } do
+		for _, x in { -30, 0, 30 } do
+			F.ceilingLamp(x, z, HEIGHT, 4.5, 36, 1.2)
+		end
+	end
+	local beamBottom = HEIGHT - 1.6
+	for index, x in { -15, 15 } do
+		F.ceilingFan(`CeilingFan{index}`, x, -12, beamBottom, 5, index * 1.3)
+	end
+
+	-- The duct: galvanized, a joint ring every 6 studs, two straps up to each beam, vents under it.
+	local ductX, ductY, ductSize = 40, HEIGHT - 3.7, 2.6
+	B.model("AirDuct", function()
+		B.part({
+			Name = "Duct",
+			Size = { INNER[2], ductSize, ductSize },
+			Position = { ductX, ductY, 0 },
+			Rotation = { 0, 90, 0 },
+			Shape = "Cylinder",
+			Color = "Metal",
+			Material = "Metal",
+		})
+		for index = 1, INNER[2] / 6 - 1 do
+			B.part({
+				Name = "Joint",
+				Size = { 0.3, ductSize + 0.2, ductSize + 0.2 },
+				Position = { ductX, ductY, -HALF_Z + index * 6 },
+				Rotation = { 0, 90, 0 },
+				Shape = "Cylinder",
+				Color = "MetalDark",
+				Material = "Metal",
+				CanCollide = false,
+			})
+		end
+		for _, z in BEAMS do
+			for _, side in { -1, 1 } do
+				B.part({
+					Name = "Strap",
+					Size = { 0.15, beamBottom - ductY, 0.4 },
+					Position = { ductX + side * (ductSize / 2 + 0.08), (beamBottom + ductY) / 2, z },
+					Color = "Iron",
+					Material = "Metal",
+					CanCollide = false,
+				})
+			end
+		end
+		for _, z in { -27, -9, 18 } do
+			B.part({
+				Name = "Vent",
+				Size = { 1.6, 0.6, 3 },
+				Position = { ductX, ductY - ductSize / 2 - 0.1, z },
+				Color = "MetalDark",
+				Material = "Metal",
+				CanCollide = false,
+			})
+			for slat = -1, 1 do
+				B.part({
+					Name = "VentSlat",
+					Size = { 1.4, 0.08, 0.3 },
+					Position = { ductX, ductY - ductSize / 2 - 0.42, z + slat * 0.8 },
+					Color = "Black",
+					Material = "Metal",
+					CanCollide = false,
+				})
+			end
+		end
+	end)
+
+	-- The pipes: a teal water pipe and an iron one, wall to wall, each on a strap from every beam.
+	B.model("Pipes", function()
+		for _, pipe in { { -40, 0.7, "TealDark" }, { -41.4, 0.5, "Iron" } } do
+			local x, size = pipe[1], pipe[2]
+			local y = beamBottom - 0.5 - size / 2
+			B.part({
+				Name = "Pipe",
+				Size = { INNER[2], size, size },
+				Position = { x, y, 0 },
+				Rotation = { 0, 90, 0 },
+				Shape = "Cylinder",
+				Color = pipe[3],
+				Material = "Metal",
+				CanCollide = false,
+			})
+			for _, z in BEAMS do
+				B.part({
+					Name = "Strap",
+					Size = { 0.12, beamBottom - y, 0.3 },
+					Position = { x, (beamBottom + y) / 2, z + 1 },
+					Color = "Iron",
+					Material = "Metal",
+					CanCollide = false,
+				})
+			end
+		end
+	end)
+end
+
+--[[
+	Wall detail (owner, 2026-10-28: "more overall lobby detail … just a plain square room"): boarded-up windows high on
+	both side walls with the dusk glowing through, patches where the plaster has fallen off the brick, two old fight
+	posters, a fuse box with its conduit by the street door, and an old arcade cabinet on each side wall (decor).
+]]
+local function wallDetail()
+	-- Windows: two on each side wall, between the pillars.
+	for _, z in { -29.5, 29.5 } do
+		F.boardedWindow(HALF_X, z, "West", 7, 7.5, 13.5)
+	end
+	for _, z in { -21.5, 21.5 } do
+		F.boardedWindow(-HALF_X, z, "East", 7, 7.5, 13.5)
+	end
+
+	-- Bare brick: a ragged patch of three overlapping pieces, (x, z) on the wall's face, its middle `y` up.
+	local function brick(x: number, y: number, z: number, facing: string, width: number, height: number)
+		local at = F.at(x, z, facing)
+		B.model("BrickPatch", function()
+			for index, piece in { { 0, 0, 1, 1 }, { -0.3, 0.42, 0.55, 0.45 }, { 0.32, -0.4, 0.5, 0.4 } } do
+				B.part(at({
+					Name = "Brick",
+					Size = { width * piece[3], height * piece[4], 0.06 },
+					Position = { width * piece[1], y + height * piece[2], 0.01 + index * 0.02 },
+					Color = "BrickRed",
+					Material = "Brick",
+					CanCollide = false,
+					CastShadow = false,
+				}))
+			end
+		end)
+	end
+	brick(-16, 19.5, -HALF_Z, "North", 6, 3.5) -- the ARENA wall, over the quest board's side of the door
+	brick(HALF_X, 22, -7, "West", 5, 3) -- the left wall, over the leaderboards
+	brick(-HALF_X, 9, 10.5, "East", 4, 3) -- the right wall, by the wheel
+
+	F.poster(14.5, 10.5, -HALF_Z, "North", "Lobby.Poster.FightNight", { "DustyPink", "Teal" })
+	F.poster(-HALF_X, 9.5, 21.5, "East", "Lobby.Poster.Champ", { "LaneYellow", "Red" })
+
+	-- The fuse box on the ARENA wall between the street door and the left wall, its conduit up to the ceiling.
+	local at = F.at(46.8, -HALF_Z, "North")
+	B.model("FuseBox", function()
+		B.part(at({
+			Name = "Box",
+			Size = { 2.2, 3, 0.8 },
+			Position = { 0, 10.5, 0.4 },
+			Color = "MetalDark",
+			Material = "Metal",
+		}))
+		B.part(at({
+			Name = "Door",
+			Size = { 2, 2.8, 0.06 },
+			Position = { 0, 10.5, 0.83 },
+			Color = "Metal",
+			Material = "Metal",
+			CanCollide = false,
+		}))
+		B.part(at({
+			Name = "Warning",
+			Size = { 0.9, 0.7, 0.03 },
+			Position = { 0, 11.2, 0.87 },
+			Color = "LaneYellow",
+			Material = "SmoothPlastic",
+			CanCollide = false,
+		}))
+		B.part(at({
+			Name = "Handle",
+			Size = { 0.15, 0.6, 0.2 },
+			Position = { 0.75, 10.2, 0.92 },
+			Color = "Black",
+			Material = "Metal",
+			CanCollide = false,
+		}))
+		B.part(at({
+			Name = "Conduit",
+			Size = { HEIGHT - 12, 0.3, 0.3 },
+			Position = { 0, (HEIGHT + 12) / 2, 0.2 },
+			Rotation = { 0, 0, 90 },
+			Shape = "Cylinder",
+			Color = "Iron",
+			Material = "Metal",
+			CanCollide = false,
+		}))
+	end)
+
+	F.arcade(-HALF_X + 2.15, -10.5, "East", "NeonPink") -- right wall, between the pillar and the wheel
+	F.arcade(HALF_X - 2.15, -29.5, "West", "NeonTeal") -- left wall, under the window by the teal barrel
+end
+
+-- Floor detail: old oil stains on the concrete and a drain grate where four slabs meet.
+local function floorDetail()
+	for _, stain in { { 30, -2, 3 }, { -8, -16, 2.4 }, { -40, -24, 4 }, { 21, 4.5, 2 } } do
+		for index, blob in { { 0, 0, 1 }, { 0.45, 0.3, 0.55 } } do
+			local size = stain[3] * blob[3]
+			B.part({
+				Name = "OilStain",
+				Size = { 0.03, size, size },
+				Position = { stain[1] + stain[3] * blob[1], 0.1 + index * 0.012, stain[2] + stain[3] * blob[2] },
+				Rotation = { 0, 0, 90 },
+				Shape = "Cylinder",
+				Color = "Black",
+				Transparency = 0.65,
+				CanCollide = false,
+				CastShadow = false,
+			})
+		end
+	end
+	B.model("Drain", function()
+		B.part({
+			Name = "Grate",
+			Size = { 2.4, 0.06, 2.4 },
+			Position = { 12, 0.13, -12 },
+			Color = "Iron",
+			Material = "Metal",
+			CanCollide = false,
+			CastShadow = false,
+		})
+		for slot = -2, 2 do
+			B.part({
+				Name = "Slot",
+				Size = { 1.8, 0.04, 0.2 },
+				Position = { 12, 0.15, -12 + slot * 0.42 },
+				Color = "Black",
+				Material = "SmoothPlastic",
+				CanCollide = false,
+				CastShadow = false,
+			})
+		end
+	end)
 end
 
 -- Builds the lobby at `origin` (world position of the floor's top centre).
@@ -1238,6 +1668,9 @@ function Layout.build(origin: { number }): any
 			lounge()
 			armWrestle()
 			chess()
+			ceiling()
+			wallDetail()
+			floorDetail()
 		end)
 	end, {
 		MapId = Layout.Id,
@@ -1246,8 +1679,11 @@ function Layout.build(origin: { number }): any
 	})
 end
 
--- The room's inside floor size (X, Z) and the join pad's footprint (X, Z) and centre, for specs.
+-- The room's inside floor size (X, Z) and the join pad's footprint (X, Z) and centre, the bar platform's height and
+-- front edge (Z), for specs.
 Layout.Inner = INNER
+Layout.BarRise = BAR_RISE
+Layout.BarEdge = BAR_EDGE
 Layout.JoinPad = { Size = PAD_SIZE, Center = { 0, PAD_Z } }
 Layout.ArmWrestle = ARM_WRESTLE
 Layout.Chess = CHESS
