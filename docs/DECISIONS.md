@@ -1157,3 +1157,25 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     - `Props.MaxActive` 40 → 80 (per arena), so every spot can fill.
   - *Checks:* a spec now checks that every building's ground storey has 8.5+ studs of headroom and that every stair
     lane is at least 3.5 wide.
+- **More detail all over, then polish (owner, 2026-10-28: "add more overall entire detail then polish"):**
+  - *Buildings:* a layout wrapper `building` (round `Rooms.building`) gives every building the same finish:
+    - a ledge at every floor line and a cornice at the roof (walk-through, so they never snag anyone);
+    - lights under every ceiling, kept clear of the stair well.
+    The open car park keeps its bare decks. A `TRIM` table colours the ledges of buildings that shouldn't be dark
+    concrete.
+  - *Walls and roofs:*
+    - Outdoor AC units on the flats' balconies and on the plain side walls.
+    - Tall neon corner signs on the karaoke tower, the hotel, the ramen shop and the arcade; banners on the
+      department store.
+    - Antennas on the towers, the hotel and the flats; satellite dishes on the flats.
+  - *Streets:*
+    - 28 street lamps, and traffic signals on two corners of each crossing.
+    - Round road signs, manholes, hydrants, post boxes, bollards round the plaza, nobori banners outside the bars, a
+      phone booth.
+    - A yellow line along the district's edge, so the drop is easy to see.
+  - *Polish:*
+    - The fountain got a jet and water in its bowl, with four flower beds and two lamps round it.
+    - The graveyard got wooden stakes behind its stones.
+    - New solid street furniture keeps off every spawn, prop and structure spot, and off the lifts' paths (the specs
+      check).
+  - *Size:* 7,586 instances (6,598 before). The new parts are mostly walk-through decor with shadows off.

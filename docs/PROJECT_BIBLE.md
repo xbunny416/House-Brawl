@@ -300,6 +300,10 @@ road"). The `Day` preset: a blue sky with white clouds.
 - *Buildings you walk into* (`maps/lib/Rooms`): hollow storeys, a floor on every storey, switchback ramps up a stair
   well, a roof (most with a hatch to it). Every one is furnished inside, upstairs too (desks, beds, sofas, counters,
   shelves, racks, booths, cells; inside walls are partitions that break).
+- *Finish* (owner, 2026-10-28: "add more overall entire detail then polish"): every building has a ledge round it at
+  each floor line and a cornice at the roof (walk-through), and lights glowing under every ceiling. The walls carry
+  outdoor air-conditioner units (the flats, the hotel, the shops, the karaoke tower, the department store) and tall
+  neon signs; the roofs carry antennas and satellite dishes.
 - *Breakable walls:* their walls and windows break (see §3.3), as do the partitions, the block walls, the graveyard's
   wall and stones, the hedges and the building site's fence.
 - *Things that move* (`Arena.mover`): glass lifts up the twin towers' north faces (street to roof), the building site's
@@ -346,7 +350,10 @@ road"). The `Day` preset: a blue sky with white clouds.
   partition, balconies, stairs to the roof), a deck over the lane between them at their 2nd floors (a ramp up the
   lane) and a footbridge between their 3rd floors.
 - *Streets:* Japanese style — utility poles with power lines, crosswalks, kerbs, street trees, bicycles, vending
-  machines.
+  machines, street lamps along every street, traffic signals at the six crossings, round road signs, manholes, yellow
+  fire hydrants, red post boxes, bollards round the plaza, nobori banners outside the bars, a phone booth by the
+  police box, a yellow line along the district's edge. The plaza's fountain has a jet and four flower beds; the
+  graveyard has wooden stakes behind its stones.
 
 Props: 72 spots (owner, 2026-10-28: "add more throwable item also match that found area too"). 9 loose ones (a random
 junk prop: the tower roofs, the skybridge, the cafe's, the department store's and the hotel's roofs, a few lots) and 63

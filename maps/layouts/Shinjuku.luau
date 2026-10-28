@@ -814,6 +814,244 @@ local function pottedPlant(at: { number }, y: number)
 end
 
 ---------------------------------------------------------------------------------------------------------------------
+-- The finish (owner, 2026-10-28: "add more overall entire detail then polish")
+---------------------------------------------------------------------------------------------------------------------
+
+-- The ledge colour of the buildings that don't take the default dark concrete.
+local TRIM: { [string]: string } = {
+	TowerWest = "OffWhite",
+	TowerEast = "OffWhite",
+	Ramen = "Cream",
+	YokochoNorth = "WoodMid",
+	YokochoSouth = "WoodMid",
+	Jail = "Purple",
+	ComedyClub = "Black",
+	Courthouse = "Concrete",
+	Arcade = "NeonPink",
+	Pachinko = "NeonTeal",
+	Hotel = "WoodMid",
+	Temple = "WoodDark",
+}
+
+--[[
+	A Rooms building with the finish every building here gets: a ledge round it at every floor line and a cornice at
+	the roof line (walk-through, so they never snag anyone), and a light under every ceiling, clear of the stair well.
+	The open car park keeps its bare decks. Its parts go into the building's model.
+]]
+local function building(spec: Rooms.Spec): any
+	local model = Rooms.building(spec)
+	local sx, sz = spec.Size[1], spec.Size[2]
+	local cx, cz = spec.At[1], spec.At[2]
+	local h = spec.Storey
+	local trim = TRIM[spec.Name] or "ConcreteDark"
+	local function keep(part: any)
+		part.Parent = model
+	end
+	local function ring(name: string, y: number, height: number, out: number)
+		for _, side in
+			{
+				{ { 0, sz / 2 + out / 2 }, { sx + 2 * out, height, out } },
+				{ { 0, -sz / 2 - out / 2 }, { sx + 2 * out, height, out } },
+				{ { sx / 2 + out / 2, 0 }, { out, height, sz } },
+				{ { -sx / 2 - out / 2, 0 }, { out, height, sz } },
+			}
+		do
+			keep(B.part({
+				Name = name,
+				Size = side[2],
+				Position = { cx + side[1][1], y, cz + side[1][2] },
+				Color = trim,
+				Material = if string.sub(trim, 1, 4) == "Neon" then "Neon" else "Concrete",
+				CanCollide = false,
+			}))
+		end
+	end
+	if spec.Name ~= "CarPark" then
+		for floor = 1, spec.Floors - 1 do
+			ring("Ledge", floor * h - 0.15, 0.5, 0.3)
+		end
+		if spec.Roof then
+			ring("Cornice", spec.Floors * h + 0.3, 0.9, 0.45)
+		end
+	end
+	-- Ceiling lights: one strip in a small room, two in a big one, never over the stair well.
+	local well: { number }? = nil
+	local stair = spec.Stair
+	if stair then
+		local run = h * 1.6
+		well = if stair.Along == "X"
+			then { stair.At[1] - run / 2, stair.At[1] + run / 2, stair.At[2] - stair.Width, stair.At[2] + stair.Width }
+			else {
+				stair.At[1] - stair.Width,
+				stair.At[1] + stair.Width,
+				stair.At[2] - run / 2,
+				stair.At[2] + run / 2,
+			}
+	end
+	local big = sx * sz >= 900
+	local candidates = if big
+		then { { -sx / 4, 0 }, { sx / 4, 0 }, { 0, -sz / 4 }, { 0, sz / 4 }, { 0, 0 } }
+		else { { 0, 0 }, { -sx / 4, 0 }, { sx / 4, 0 }, { 0, -sz / 4 }, { 0, sz / 4 } }
+	local spots = {}
+	for _, spot in candidates do
+		local w = well
+		local inWell = w ~= nil
+			and spot[1] > w[1] - 3
+			and spot[1] < w[2] + 3
+			and spot[2] > w[3] - 3
+			and spot[2] < w[4] + 3
+		if #spots < (if big then 2 else 1) and not inWell then
+			table.insert(spots, spot)
+		end
+	end
+	local length = math.min(math.max(sx, sz) * 0.3, 14)
+	for floor = 1, spec.Floors do
+		local ceiling = floor * h - (if floor < spec.Floors then 0.5 else 0)
+		for _, spot in spots do
+			keep(B.part({
+				Name = "CeilingLight",
+				Size = if sx >= sz then { length, 0.12, 1.2 } else { 1.2, 0.12, length },
+				Position = { cx + spot[1], ceiling - 0.08, cz + spot[2] },
+				Color = "OffWhite",
+				Material = "Neon",
+				CanCollide = false,
+			}))
+		end
+	end
+	return model
+end
+
+-- An outdoor air-conditioner unit on a wall: a box standing out from the wall's face `face` ("+X" / "-X" / "+Z" /
+-- "-Z", the side it faces) at `at` (x, z on the wall's plane), `y` its middle, a fan grille on its front.
+local function wallAC(at: { number }, face: string, y: number)
+	local alongX = string.sub(face, 2) == "Z"
+	local sign = if string.sub(face, 1, 1) == "+" then 1 else -1
+	local out = sign * 0.6
+	local box = if alongX then { 2.6, 1.8, 1.2 } else { 1.2, 1.8, 2.6 }
+	local spot = if alongX then { at[1], y, at[2] + out } else { at[1] + out, y, at[2] }
+	B.part({ Name = "WallAC", Size = box, Position = spot, Color = "OffWhite", Material = "Metal" })
+	B.part({
+		Name = "WallACFan",
+		Size = { 0.1, 1.3, 1.3 },
+		Position = if alongX
+			then { spot[1] - 0.4, y, spot[3] + sign * 0.62 }
+			else { spot[1] + sign * 0.62, y, spot[3] - 0.4 },
+		Rotation = if alongX then { 0, 90, 0 } else nil,
+		Shape = "Cylinder",
+		Color = "MetalDark",
+		Material = "Metal",
+		CanCollide = false,
+	})
+end
+
+-- A roof antenna (a mast and two crossbars) standing on `y`.
+local function antenna(at: { number }, y: number)
+	upright("Antenna", at, y, 10, 0.3, "Metal", "Metal", false)
+	for index, bar in { { 7, 3 }, { 9, 2 } } do
+		B.part({
+			Name = `AntennaBar{index}`,
+			Size = { bar[2], 0.12, 0.12 },
+			Position = { at[1], y + bar[1], at[2] },
+			Color = "Metal",
+			Material = "Metal",
+			CanCollide = false,
+		})
+	end
+end
+
+-- A satellite dish on a short post on `y`, tilted up toward the south.
+local function dish(at: { number }, y: number)
+	upright("DishPost", at, y, 1.6, 0.25, "MetalDark", "Metal", false)
+	B.part({
+		Name = "Dish",
+		Size = { 0.2, 2.4, 2.4 },
+		Position = { at[1], y + 2, at[2] - 0.3 },
+		Rotation = { 0, 90, -35 },
+		Shape = "Cylinder",
+		Color = "OffWhite",
+		Material = "SmoothPlastic",
+		CanCollide = false,
+	})
+end
+
+-- A traffic signal on its pole at `at` (x, z): an arm out over the street along Z (`armDir` ±1), a horizontal box of
+-- three lights facing along X (`faceDir` ±1).
+local function trafficLight(at: { number }, armDir: number, faceDir: number)
+	B.model("TrafficLight", function()
+		upright("SignalPole", at, 0, 11, 0.45, "OffWhite", "Metal")
+		B.part({
+			Name = "SignalArm",
+			Size = { 0.3, 0.3, 5 },
+			Position = { at[1], 10.6, at[2] + armDir * 2.5 },
+			Color = "OffWhite",
+			Material = "Metal",
+			CanCollide = false,
+		})
+		B.part({
+			Name = "SignalBox",
+			Size = { 0.9, 1.1, 3.4 },
+			Position = { at[1], 10.6, at[2] + armDir * 4.2 },
+			Color = "MetalDark",
+			Material = "Metal",
+			CanCollide = false,
+		})
+		for index, color in { "Lawn", "LaneYellow", "Red" } do
+			B.part({
+				Name = "SignalLamp",
+				Size = { 0.1, 0.8, 0.8 },
+				Position = { at[1] + faceDir * 0.5, 10.6, at[2] + armDir * (4.2 + (index - 2) * 1.05) },
+				Shape = "Cylinder",
+				Color = color,
+				Material = "Neon",
+				CanCollide = false,
+			})
+		end
+	end)
+end
+
+-- A round road sign (a red ring round a blue disc) on a pole at `at`, facing along X, or along Z when `alongZ`.
+local function roadSign(at: { number }, alongZ: boolean)
+	upright("SignPole", at, 0, 8, 0.25, "Metal", "Metal")
+	for _, disc in { { 2.2, "Red", 0 }, { 1.8, "CityBlue", 0.06 } } do
+		B.part({
+			Name = "RoadSign",
+			Size = { 0.08, disc[1] :: number, disc[1] :: number },
+			Position = if alongZ
+				then { at[1], 7.4, at[2] + (disc[3] :: number) }
+				else { at[1] + (disc[3] :: number), 7.4, at[2] },
+			Rotation = if alongZ then { 0, 90, 0 } else nil,
+			Shape = "Cylinder",
+			Color = disc[2] :: string,
+			Material = "SmoothPlastic",
+			CanCollide = false,
+		})
+	end
+end
+
+-- A yellow fire hydrant standpipe, a red post box, a nobori banner on its pole.
+local function hydrant(at: { number })
+	upright("Hydrant", at, 0, 2.4, 0.8, "LaneYellow", "Metal")
+	upright("HydrantCap", at, 2.4, 0.3, 1, "Red", "Metal", false)
+end
+
+local function postBox(at: { number })
+	Pieces.block("PostBox", at, { 1.6, 3.6, 1.6 }, "Red", "Metal")
+	upright("PostBoxTop", at, 3.6, 0.5, 1.7, "Red", "Metal", false)
+end
+
+local function banner(at: { number }, color: string)
+	upright("BannerPole", at, 0, 9, 0.15, "Metal", "Metal", false)
+	B.part({
+		Name = "Banner",
+		Size = { 0.05, 6, 1.4 },
+		Position = { at[1] + 0.1, 5, at[2] + 0.8 },
+		Color = color,
+		Material = "Fabric",
+		CanCollide = false,
+	})
+end
+
+---------------------------------------------------------------------------------------------------------------------
 -- Streets
 ---------------------------------------------------------------------------------------------------------------------
 
@@ -942,7 +1180,7 @@ local function twinTowers()
 	for index, side in { -1, 1 } do
 		local x, z = side * TOWER.X, TOWER.Z
 		local inner = if side < 0 then "+X" else "-X" -- the side facing the avenue
-		Rooms.building({
+		building({
 			Name = if side < 0 then "TowerWest" else "TowerEast",
 			At = { x, z },
 			Size = { TOWER.Size, TOWER.Size },
@@ -1032,7 +1270,7 @@ end
 -- glass front onto the plaza, a CAFE sign and an awning.
 local function cafe()
 	local at, size = CAFE.At, CAFE.Size
-	Rooms.building({
+	building({
 		Name = "Cafe",
 		At = at,
 		Size = size,
@@ -1099,7 +1337,7 @@ end
 local function ramen()
 	local at, size = { -125, 55 }, { 46, 30 }
 	local front = at[2] + size[2] / 2
-	Rooms.building({
+	building({
 		Name = "Ramen",
 		At = at,
 		Size = size,
@@ -1212,7 +1450,7 @@ local function yokocho()
 			end
 			table.insert(openings, { Face = laneFace, At = bay, Width = 5, Height = 3, Bottom = 3, Floor = 2 })
 		end
-		Rooms.building({
+		building({
 			Name = if side > 0 then "YokochoNorth" else "YokochoSouth",
 			At = { YOKOCHO.X, z },
 			Size = { YOKOCHO.Length, YOKOCHO.Depth },
@@ -1301,7 +1539,7 @@ end
 local function pachinko()
 	local at, size = PACHINKO.At, PACHINKO.Size
 	local front = at[2] + size[2] / 2
-	Rooms.building({
+	building({
 		Name = "Pachinko",
 		At = at,
 		Size = size,
@@ -1354,7 +1592,7 @@ end
 -- floor above a corridor between six booths (a sofa in each; the walls break), a stair to the roof, a big sign.
 local function karaoke()
 	local at, size = KARAOKE.At, KARAOKE.Size
-	Rooms.building({
+	building({
 		Name = "Karaoke",
 		At = at,
 		Size = size,
@@ -1448,7 +1686,7 @@ local function carPark()
 			end
 		end
 	end
-	Rooms.building({
+	building({
 		Name = "CarPark",
 		At = at,
 		Size = size,
@@ -1528,7 +1766,7 @@ local function gasStation()
 	end
 	ladder({ canopy[1] + 14, canopy[2] }, 0, 12)
 	local kiosk, kioskSize = { 22, -15 }, { 14, 10 }
-	Rooms.building({
+	building({
 		Name = "GasKiosk",
 		At = kiosk,
 		Size = kioskSize,
@@ -1559,7 +1797,7 @@ end
 -- The police box (koban) on the avenue under the east tower: a white hut with a red lamp, a desk inside, a bicycle.
 local function koban()
 	local at, size = { 22, 6 }, { 12, 10 }
-	Rooms.building({
+	building({
 		Name = "Koban",
 		At = at,
 		Size = size,
@@ -1608,7 +1846,7 @@ end
 -- band; vending machines on its side.
 local function mart()
 	local at, size = { 125, 55 }, { 46, 30 }
-	Rooms.building({
+	building({
 		Name = "Mart",
 		At = at,
 		Size = size,
@@ -1686,7 +1924,7 @@ local function graveyard()
 	end)
 	-- The temple at the back, open to the path.
 	local hall, hallSize = { at[1], -63 }, { 26, 12 }
-	Rooms.building({
+	building({
 		Name = "Temple",
 		At = hall,
 		Size = hallSize,
@@ -1758,7 +1996,7 @@ end
 local function arcade()
 	local at, size = { 119, -50 }, { 68, 38 }
 	local roof = 2 * STOREY + 0.6
-	Rooms.building({
+	building({
 		Name = "Arcade",
 		At = at,
 		Size = size,
@@ -1841,7 +2079,7 @@ local function mall()
 	local at, size = { -232, 25 }, { 80, 96 }
 	local storey = 11
 	local roof = 3 * storey + 0.6
-	Rooms.building({
+	building({
 		Name = "Mall",
 		At = at,
 		Size = size,
@@ -1900,7 +2138,7 @@ end
 -- seating platform with benches behind the foul line, a shoe counter by the door.
 local function bowling()
 	local at, size = { -232, -52 }, { 80, 48 }
-	Rooms.building({
+	building({
 		Name = "BowlingAlley",
 		At = at,
 		Size = size,
@@ -1963,7 +2201,7 @@ local function apartments(name: string, at: { number }, floors: number, color: s
 	local size = { 80, 44 }
 	local away = if laneFace == "+Z" then -1 else 1 -- toward the side away from the lane
 	local roof = floors * STOREY + 0.6
-	Rooms.building({
+	building({
 		Name = name,
 		At = at,
 		Size = size,
@@ -2086,7 +2324,7 @@ local function shopRow()
 	do
 		local at, size = { entry[1], SHOP_Z }, { 30, 26 }
 		local front = at[2] + size[2] / 2
-		Rooms.building({
+		building({
 			Name = `Shop{index}`,
 			At = at,
 			Size = size,
@@ -2170,7 +2408,7 @@ end
 ]]
 local function jailAndClub()
 	local jail, jailSize = { -235, -143 }, { 66, 40 }
-	Rooms.building({
+	building({
 		Name = "Jail",
 		At = jail,
 		Size = jailSize,
@@ -2274,7 +2512,7 @@ local function jailAndClub()
 	ladder({ tower[1] + 4.5, tower[2] }, 0, 16)
 
 	local club, clubSize = { -235, -200 }, { 66, 32 }
-	Rooms.building({
+	building({
 		Name = "ComedyClub",
 		At = club,
 		Size = clubSize,
@@ -2316,7 +2554,7 @@ local function courtAndMansion()
 	-- steps, a COURT sign.
 	local court, courtSize = { 60, -150 }, { 50, 34 }
 	local front = court[2] + courtSize[2] / 2
-	Rooms.building({
+	building({
 		Name = "Courthouse",
 		At = court,
 		Size = courtSize,
@@ -2370,7 +2608,7 @@ local function courtAndMansion()
 		CanCollide = false,
 	})
 	-- The mansion: two storeys up a stair, a garage beside it, a hedge with a gap along the front.
-	Rooms.building({
+	building({
 		Name = "Mansion",
 		At = { 135, -190 },
 		Size = { 42, 30 },
@@ -2384,7 +2622,7 @@ local function courtAndMansion()
 		Stair = { At = { -10, -5 }, Along = "X", Width = 3.5 },
 		Roof = { Color = "AsphaltDark", Material = "Slate", Parapet = true },
 	})
-	Rooms.building({
+	building({
 		Name = "Garage",
 		At = { 100, -192 },
 		Size = { 18, 20 },
@@ -2427,7 +2665,7 @@ local function fireStation()
 	local at, size = { 52, -201 }, { 60, 42 }
 	local storey = 12
 	local roof = 2 * storey + 0.6
-	Rooms.building({
+	building({
 		Name = "FireStation",
 		At = at,
 		Size = size,
@@ -2500,7 +2738,7 @@ end
 local function hotel()
 	local at, size = HOTEL.At, HOTEL.Size
 	local front = at[2] + size[2] / 2
-	Rooms.building({
+	building({
 		Name = "Hotel",
 		At = at,
 		Size = size,
@@ -2584,7 +2822,7 @@ local function deptStore()
 	for _, spot in { -44, -30, -14, 14, 30, 44 } do
 		table.insert(openings, { Face = "+Z", At = spot, Width = 12, Height = 7, Bottom = 0.6, Glass = true })
 	end
-	Rooms.building({
+	building({
 		Name = "DeptStore",
 		At = at,
 		Size = size,
@@ -3086,8 +3324,215 @@ end
 -- The district
 ---------------------------------------------------------------------------------------------------------------------
 
+--[[
+	The streets' furniture (owner, 2026-10-28: "add more overall entire detail then polish"): street lamps along every
+	street, traffic signals at the crossings, road signs, manholes, fire hydrants, red post boxes, bollards along the
+	plaza, nobori banners outside the bars, a phone booth by the police box, a yellow line along the district's edge.
+]]
+local function streetDetail()
+	-- Lamps: the main street's north pavement, the second street's north kerb, both sides of the avenue, the strips.
+	for _, x in { -245, -185, -125, -65, -5, 55, 115, 175, 235 } do
+		Pieces.lamp("StreetLamp", { x, 104 }, 14, 0)
+	end
+	for _, x in { -240, -120, -40, 30, 120, 240 } do
+		Pieces.lamp("StreetLamp", { x, -79 }, 14, 0)
+	end
+	for _, z in { -200, -150, -40, 40 } do
+		Pieces.lamp("StreetLamp", { -12.5, z }, 14, -90)
+	end
+	for _, z in { -210, -165, -8 } do
+		Pieces.lamp("StreetLamp", { 12.5, z }, 14, 90)
+	end
+	for _, spot in
+		{ { 162.5, -45, -90 }, { 162.5, 60, -90 }, { 163, -150, -90 }, { -162.5, -40, 90 }, { -162.5, 60, 90 } }
+	do
+		Pieces.lamp("StreetLamp", { spot[1], spot[2] }, 14, spot[3])
+	end
+	Pieces.lamp("StreetLamp", { -187.5, -160 }, 14, -90)
+	-- Signals at the six crossings, on two opposite corners of each.
+	for _, cx in STREETS_X do
+		for _, cz in STREETS_Z do
+			trafficLight({ cx - 12, cz + 12 }, -1, -1)
+			trafficLight({ cx + 12, cz - 12 }, 1, 1)
+		end
+	end
+	for _, at in
+		{ { -210, 86 }, { -60, 94 }, { 70, 86 }, { 210, 94 }, { -100, -86 }, { 100, -94 }, { 0, -130 }, { 0, 25 } }
+	do
+		upright("Manhole", at, 0.1, 0.04, 2.6, "MetalDark", "DiamondPlate", false)
+	end
+	for _, at in { { -90, 104 }, { 90, 104 }, { -150, -79 }, { 80, -79 }, { -12.5, -135 }, { 12.5, -120 } } do
+		hydrant(at)
+	end
+	for _, at in { { -12.5, -10 }, { 20, 104 }, { 162.5, 20 } } do
+		postBox(at)
+	end
+	for _, sign in
+		{
+			{ -186.5, 70, true },
+			{ 186.5, 70, true },
+			{ -12.5, 70, true },
+			{ 12.5, 64, true },
+			{ -186.5, -110, true },
+			{ 186.5, -112, true },
+		}
+	do
+		roadSign({ sign[1] :: number, sign[2] :: number }, sign[3] :: boolean)
+	end
+	-- Bollards along the plaza's street edges.
+	for x = -155, -20, 15 do
+		if math.abs(x + 35) > 1 then
+			upright("Bollard", { x, -78.5 }, 0, 2.4, 0.6, "ConcreteDark", "Concrete")
+		end
+	end
+	for _, z in { -70, -56, -28, -14, 0 } do
+		upright("Bollard", { -11.5, z }, 0, 2.4, 0.6, "ConcreteDark", "Concrete")
+	end
+	-- Nobori banners outside the ramen shop, the pachinko parlor, the yokocho and the karaoke tower.
+	for index, spot in
+		{
+			{ -146, 73.5 },
+			{ -104, 73.5 },
+			{ -97, 75 },
+			{ -63, 75 },
+			{ -163, 13 },
+			{ -163, 31 },
+			{ 63.5, 75 },
+			{ 98.5, 75 },
+		}
+	do
+		banner(spot, ({ "Red", "OffWhite", "LaneYellow", "TealDark" })[index % 4 + 1])
+	end
+	-- A phone booth by the police box.
+	B.model("PhoneBooth", function()
+		local booth = Pieces.block("Booth", { 13, -3 }, { 2.6, 6.5, 2.6 }, "Glass", "Glass")
+		booth.Transparency = 0.5
+		Pieces.block("BoothRoof", { 13, -3 }, { 3, 0.4, 3 }, "Lawn", "SmoothPlastic", 6.5)
+		Pieces.block("Phone", { 13.8, -3 }, { 0.6, 1, 0.6 }, "Lawn", "SmoothPlastic", 3.6).CanCollide = false
+	end)
+	-- A yellow line along the district's edge, so the drop is easy to see.
+	for _, line in
+		{
+			{ { 0, 108.5 }, { DISTRICT[1] - 3, 0.6 } },
+			{ { 0, -228.5 }, { DISTRICT[1] - 3, 0.6 } },
+			{ { 278.5, CENTER_Z }, { 0.6, DISTRICT[2] - 3 } },
+			{ { -278.5, CENTER_Z }, { 0.6, DISTRICT[2] - 3 } },
+		}
+	do
+		paint("EdgeLine", line[1], line[2], "LaneYellow", nil, 0.12)
+	end
+end
+
+--[[
+	The buildings' extras: outdoor air-conditioner units on the walls of the flats, the hotel, the shops, the karaoke
+	tower and the department store; tall neon signs on the corners of the karaoke tower, the hotel, the ramen shop
+	and the arcade, banners on the department store; antennas and satellite dishes on the roofs; the fountain's jet and
+	flower beds round it; wooden grave stakes behind the gravestones.
+]]
+local function buildingDetail()
+	for _, block in { { 45, 4 }, { -45, 5 } } do
+		for floor = 2, block[2] do
+			for _, dz in { -18, 18 } do
+				wallAC({ 192, block[1] + dz }, "-X", (floor - 1) * STOREY + 1.05)
+			end
+		end
+	end
+	for floor = 2, HOTEL.Floors do
+		for _, z in { -128, -144 } do
+			wallAC({ HOTEL.At[1] + HOTEL.Size[1] / 2, z }, "+X", (floor - 1) * STOREY + 5)
+		end
+	end
+	for _, x in { -147, -117, -87, -57, -27 } do
+		for floor = 2, 3 do
+			wallAC({ x - 10, SHOP_Z - 13 }, "-Z", (floor - 1) * STOREY + 5)
+		end
+	end
+	for floor = 2, KARAOKE.Floors do
+		for _, dx in { -16.5, 16.5 } do
+			wallAC({ KARAOKE.At[1] + dx, KARAOKE.At[2] - KARAOKE.Size[2] / 2 }, "-Z", (floor - 1) * STOREY + 5)
+		end
+	end
+	for floor = 2, DEPT.Floors do
+		for _, z in { -175, -199 } do
+			wallAC({ DEPT.At[1] + DEPT.Size[1] / 2, z }, "+X", (floor - 1) * STOREY + 5)
+		end
+	end
+	for _, sign in
+		{
+			{ { 97.5, 72.5 }, { 1.6, 20, 0.4 }, 22, "NeonTeal" },
+			{ { 150, -118.5 }, { 1.6, 26, 0.4 }, 32, "Red" },
+			{ { -103.5, 70.5 }, { 1.4, 9, 0.3 }, 14, "Red" },
+			{ { 86.5, -69.5 }, { 1.6, 14, 0.4 }, 12, "NeonPink" },
+		}
+	do
+		B.part({
+			Name = "VerticalSign",
+			Size = sign[2],
+			Position = { sign[1][1], sign[3], sign[1][2] },
+			Color = sign[4],
+			Material = "Neon",
+			CanCollide = false,
+		})
+	end
+	for index, x in { DEPT.At[1] - 48, DEPT.At[1] + 48 } do
+		B.part({
+			Name = "Banner",
+			Size = { 3, 22, 0.3 },
+			Position = { x, 22, DEPT.At[2] + DEPT.Size[2] / 2 + 0.4 },
+			Color = if index == 1 then "ShopRed" else "CityBlue",
+			Material = "Fabric",
+			CanCollide = false,
+		})
+	end
+	-- Antennas and dishes on the roofs.
+	for _, side in { -1, 1 } do
+		antenna({ side * TOWER.X + side * 3, TOWER.Z + 16 }, TOWER_ROOF)
+	end
+	antenna({ 148, -147 }, HOTEL_ROOF)
+	for _, block in { { 62, 4 }, { -62, 5 } } do
+		local roof = block[2] * STOREY + 0.6
+		antenna({ 200, block[1] }, roof)
+		dish({ 206, block[1] }, roof)
+		dish({ 226, block[1] }, roof)
+	end
+	-- The fountain's jet and the water in its bowl, four flower beds round it.
+	upright("FountainJet", { -100, -35 }, 5.8, 3.2, 0.5, "Glass", "Glass", false).Transparency = 0.35
+	upright("BowlWater", { -100, -35 }, 5.75, 0.06, 5.4, "Glass", "Glass", false).Transparency = 0.3
+	for _, bed in { { -86, -35, true }, { -114, -35, true }, { -100, -21, false }, { -100, -49, false } } do
+		local alongZ = bed[3] :: boolean
+		local spot = { bed[1] :: number, bed[2] :: number }
+		Pieces.block("FlowerBed", spot, if alongZ then { 2.5, 1, 6 } else { 6, 1, 2.5 }, "ConcreteDark", "Concrete")
+		B.part({
+			Name = "Flowers",
+			Size = if alongZ then { 2, 0.8, 5.4 } else { 5.4, 0.8, 2 },
+			Position = { spot[1], 1.3, spot[2] },
+			Color = "SakuraPink",
+			Material = "LeafyGrass",
+			CanCollide = false,
+		})
+	end
+	for _, spot in { { -128, -45, 90 }, { -72, -25, -90 } } do
+		Pieces.lamp("PlazaLamp", { spot[1], spot[2] }, 12, spot[3])
+	end
+	-- Wooden grave stakes (sotoba) behind the gravestones.
+	for _, z in { -46, -37 } do
+		for _, x in { 35, 39, 43, 47, 63, 67 } do
+			B.part({
+				Name = "GraveStake",
+				Size = { 0.5, 3.6, 0.15 },
+				Position = { x + 0.7, 1.8, z - 0.9 },
+				Rotation = { 0, 0, 4 },
+				Color = "Wood",
+				Material = "WoodPlanks",
+				CanCollide = false,
+			})
+		end
+	end
+end
+
 local function district()
 	streets()
+	streetDetail()
 	twinTowers()
 	plaza()
 	cafe()
@@ -3117,6 +3562,7 @@ local function district()
 	fireStation()
 	hotel()
 	buildingSite()
+	buildingDetail()
 end
 
 -- The pieces are written from the arena origin; the platform's own frame is at its centre (z CENTER_Z).

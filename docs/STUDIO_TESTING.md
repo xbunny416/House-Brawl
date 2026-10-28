@@ -212,3 +212,16 @@ Settings → Promo code, styles come from the style roll).
     Grab and throw a few: each has its own look (no grey boxes).
   - *Check:* every spot fills at round start (up to `Config.Props.MaxActive` = 80). Also check that the frame rate
     holds with that many props.
+- **Shinjuku detail and polish (2026-10-28):**
+  - *Look at:*
+    - the buildings' ledges at each floor and the cornices at the roofs; the lights glowing under every ceiling
+      inside;
+    - the AC units on the flats' balconies and the hotel's side wall; the neon corner signs; antennas and dishes on
+      the roofs;
+    - the street lamps, the traffic signals over the crossings, road signs, hydrants, post boxes, the plaza's
+      bollards, the banners outside the ramen shop and the yokocho, the phone booth by the police box;
+    - the yellow line along the map's edge.
+  - *Check:*
+    - Nothing new blocks a doorway or a pavement you run along.
+    - Ledges and cornices don't cross a window or a door.
+    - The frame rate holds, especially on a phone: about 7,600 instances, up from 6,600.
