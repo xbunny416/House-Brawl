@@ -71,5 +71,8 @@ return {
 	ArcadeBlue = "#2B2F5A",
 	SakuraPink = "#F2B8C6", -- cherry trees
 	GraveGrass = "#5B6B45",
-	Stone = "#8E8C86", -- gravestones, the graveyard wall
+	Stone = "#8E8C86", -- gravestones, the graveyard wall, the shrine's lanterns
+	SchoolYard = "#B89B72", -- the schoolyard's dirt
+	TrackRed = "#B65A44", -- its running track
+	ToriiRed = "#C8372D", -- the shrine's torii gates
 }

@@ -280,8 +280,8 @@ machine (HP 80) ×3, lawn chair stack (HP 60) ×3.
 **Shinjuku arena** (day; owner, 2026-10-28: "make another only one arena …", "no floating island", then "want arena
 to look like jjk shenanigans" — the Shinjuku battleground of the Roblox game Jujutsu Shenanigans; this is our own
 Shinjuku-style district in that spirit, with generic shop names): a ground arena, one flat Tokyo street block
-(480×400, it never falls; bigger since the owner's "town structure more bigger and can enter"). The `Day` preset: a
-blue sky with white clouds.
+(560×460, it never falls; grown twice: "town structure more bigger and can enter", then "bit bigger structures like
+shop, tower"). The `Day` preset: a blue sky with white clouds.
 - *Edges:* invisible walls along the district's edge keep everyone in. Tall city blocks rise right behind them on every
   side (glass bands, roof units, a few vertical neon signs), so the city seems to go on.
 - *Knockouts:* nobody falls, so a Classic life ends when its HP runs out.
@@ -289,37 +289,45 @@ blue sky with white clouds.
   switchback ramps up a stair well, a roof (some with a hatch to it).
 - *Breakable walls:* their walls and windows break (see §3.3), as do the block walls, the graveyard's wall and stones,
   and the hedges.
-- *North:* the station along the edge.
-  - A long hall under a roof on columns, with ladders at its front corners onto the roof (+19.5) and ticket gates.
-  - Two platforms either side of two tracks, and a parked three-car train you can walk through (doors both sides,
-    seats, glass that breaks; a ladder onto its roof).
-  - A SHINJUKU STATION sign. Breakable side walls.
-  - In front of it, the station plaza with vending machines, trash cans, planters, benches and a clock.
-- *The main street:* runs across the district, with taxis at the station.
+- *North* (a train station until 2026-10-28: the owner, "replace train station with other thing"):
+  - SHINJUKU HIGH: three storeys of classrooms (rows of windows front and back, bands between the floors), a main
+    door under a canopy and two side doors onto the yard, a stair up to the roof, a clock tower on the roof.
+  - Its gym: a tall hall with a wooden court and two hoops, high windows, a ladder onto its roof.
+  - The schoolyard: a red running track round a football pitch with two goals, a flagpole, a bike shed with bicycles,
+    benches, cherry trees, vending machines and trash cans by the school's door, a white guardrail along the main
+    street with the school gate in it.
+  - A shrine in the corner: two red torii over a stone path, stone lanterns, a shrine hall open at the front (an
+    offering box, a bell rope) under a gabled roof, cherry trees.
+- *The main street:* runs across the district, with taxis at the school gate.
 - *The middle, either side of the avenue:*
-  - The twin towers: eleven storeys you can climb inside to the roof (+77.6), glass lobbies, a ribbon of glass on
-    every face of every upper storey, a glass skybridge between their 9th floors (+56), ladders up the outside to the
-    roofs, CURSED COLA and TOKYO NIGHTS billboards.
-  - West: the RAMEN shop (a counter with stools, tables and chairs, curtains, lanterns), and the plaza with the
-    two-storey CAFE in its corner (tables and chairs, a stair to the upstairs and a roof terrace).
-  - East: the 24H MART (a big glass front, shelves, a drinks cooler, a counter, vending machines and trash cans), the
-    graveyard (a breakable stone wall, gravestones, bare trees) and the ARCADE (rows of game cabinets, neon trim).
+  - The twin towers, 40 wide: eleven storeys you can climb inside to the roof (+77.6), glass lobbies, a ribbon of
+    glass on every face of every upper storey, a glass skybridge between their 9th floors (+56), ladders up the
+    outside to the roofs, CURSED COLA and TOKYO NIGHTS billboards, AC units and a water tank on each roof.
+  - West: the RAMEN shop (a counter with stools, tables and chairs, curtains, lanterns, a rooftop sign), and the
+    plaza (a fountain) with the two-storey CAFE in its corner (tables and chairs, a stair to the upstairs and a roof
+    terrace).
+  - East: the 24H MART (a big glass front, three rows of shelves, a drinks cooler, a counter, vending machines and
+    trash cans), the graveyard (a breakable stone wall, gravestones, bare trees) and the ARCADE (two rows of game
+    cabinets, neon trim, a ladder onto its roof).
 - *The second street:* across the district.
 - *The south:*
-  - A row of five two-storey shops (BOOKS, ELECTRONICS, KARAOKE, SUBS, SWEETS: shopfronts, awnings, vertical signs, a
-    stair to the upstairs, back doors), and a back lot behind them with dumpsters and block walls.
+  - A row of five three-storey shops (BOOKS, ELECTRONICS, KARAOKE, SUBS, SWEETS: shopfronts, awnings, vertical signs,
+    balconies, a stair to the top floor, back doors, AC units and water tanks on the roofs), bicycles out front, and a
+    back lot behind them with dumpsters and block walls.
   - The three-storey purple JAIL with a barred cell, and the COMEDY CLUB (a stage, chairs).
   - The white COURT (a judge's bench, pews, a portico), and a two-storey mansion with a garage and a hedge.
-  - A pocket park with cherry trees.
-- *The west strip:* the MALL (two floors joined by a ramp, stalls on both, graffiti, a ladder to its roof) and the
-  BOWLING alley (four lanes with pins, a giant pin on its roof).
-- *The east:* two apartment blocks with balconies (solid).
-- *Streets:* Japanese style — utility poles with power lines, crosswalks, kerbs, vending machines.
+  - A pocket park with cherry trees and a swing set.
+- *The west strip:* the MALL (two floors joined by a ramp, stalls on both, graffiti, a big sign on its roof, a ladder
+  to it) and the BOWLING alley (five lanes with pins, a giant pin on its roof).
+- *The east:* two apartment blocks with balconies and water tanks (solid).
+- *Streets:* Japanese style — utility poles with power lines, crosswalks, kerbs, guardrails, street trees, bicycles,
+  vending machines.
 
-Props: 22 loose spots (some on the tower roofs and floors, the skybridge, the station, the cafe), plus 13 that always
-get their prop: trash cans by the station, the mart, the ramen shop and the shops, chairs in the cafe, the ramen shop,
-the comedy club and the court (`TypedProps`). Structures: vending machine (HP 80) ×4, wrecked car (HP 100) ×2, ice
-machine (HP 80), road barrier stack (HP 60). 16 spawns (the station plaza and the streets), 6 explosive barrels.
+Props: 22 loose spots (some on the tower roofs and floors, the skybridge, the school, the cafe), plus 14 that always
+get their prop: trash cans by the school, the ramen shop, the mart, the shops and the park, and chairs in the ramen
+shop, the cafe, the comedy club and the court (`TypedProps`). Structures: vending machine (HP 80) ×4, wrecked car
+(HP 100) ×2, ice machine (HP 80), road barrier stack (HP 60). 16 spawns (the schoolyard and the streets), 6 explosive
+barrels.
 
 **Art & performance:**
 

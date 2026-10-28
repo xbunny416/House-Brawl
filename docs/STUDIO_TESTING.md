@@ -169,3 +169,9 @@ Settings → Promo code, styles come from the style roll).
   - *Trash cans:* they stand by the station, mart and shops; grab one and throw it.
   - *Check:* headroom inside (storeys are 7), frame rate on a phone (the arena is about 3,500 parts), Output
     `[Walls] N breakable wall pieces` with `Config.Dev.LogCombat`.
+- **The school instead of the station (2026-10-28):** in a round you spawn in the schoolyard (north) or the streets.
+  - *Climbing:* walk into the school and up its stair to the roof by the clock tower, and climb the ladders onto the
+    gym and the arcade.
+  - *Look:* the shrine's torii (red pillars, black top beam), its hall's gabled roof (not upside down), the bigger
+    towers, the three-storey shops with balconies.
+  - *Performance:* the arena is about 4,500 instances now, so watch the frame rate (and on a phone, when you can).

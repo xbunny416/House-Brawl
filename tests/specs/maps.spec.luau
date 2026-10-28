@@ -409,13 +409,17 @@ return {
 				"BowlingAlley",
 				"Jail",
 				"Courthouse",
+				"School", -- the school, its gym and the shrine took the station's place (owner, 2026-10-28)
+				"Gym",
+				"ShrineHall",
 			}
 		do
 			local building = model:FindFirstChild(name, true)
 			expect.truthy(building, `{name} is built`)
 			expect.truthy(building:FindFirstChild("GroundFloor"), `{name} has a floor inside`)
 		end
-		for _, name in { "TowerWest", "TowerEast", "Cafe", "Mall", "Jail", "Shop1", "Mansion" } do
+		expect.equal(model:FindFirstChild("Station", true), nil, "no station (the owner: replace it)")
+		for _, name in { "TowerWest", "TowerEast", "School", "Cafe", "Mall", "Jail", "Shop1", "Mansion" } do
 			local building = model:FindFirstChild(name, true)
 			expect.truthy(
 				building and building:FindFirstChild("Stair") and building:FindFirstChild("Floor"),

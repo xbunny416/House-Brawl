@@ -1068,3 +1068,26 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     roofs. Its wall pieces and windows break.
   - *Shinjuku:* rebuilt at 480 × 400 with walk-in towers (11 storeys), station and train, shops and the rest. Ground
     arenas may have more than 24 prop spots (at most `Props.MaxActive`).
+- **No station; bigger buildings; more detail (owner, 2026-10-28: "want bit bigger structure like shop, tower etc,
+  also more polish and detail. replace train station with other thing instead"):**
+  - *What replaces the station:* the owner didn't say, so the north edge is now a high school (Jujutsu Kaisen's heroes
+    are students) with its gym and schoolyard, plus a small shrine in the corner for the Japanese street feel:
+    - SHINJUKU HIGH: three storeys, a stair to the roof, a clock tower.
+    - The gym: a court and two hoops, a ladder onto its roof.
+    - The schoolyard: a track round a football pitch with goals, a flagpole, a bike shed, a gate in a guardrail.
+    - The shrine: torii, stone lanterns, a hall under a gabled roof.
+    The yard took the station plaza's spawns. The station strings went; `Map.Shinjuku.Sign.School` and `.Gym` came.
+  - *Bigger:*
+    - Towers 34 → 40 wide.
+    - Shops two → three storeys, 24 × 20 → 30 × 26.
+    - About 15% more for the cafe, ramen shop, mart, arcade, mall, bowling alley (now five lanes), jail, comedy club,
+      court and mansion.
+    - The district 480 × 400 → 560 × 460 to fit them, with the streets 20 wide.
+  - *Detail:*
+    - On the roofs: AC units and water tanks on most buildings, big rooftop signs on the ramen shop and the mall, a
+      clock tower on the school.
+    - On the buildings: balconies on the shops.
+    - Outside: a fountain in the plaza, a swing set in the park, street trees along the avenue, bicycles, the school's
+      guardrail.
+    - Extra ladders onto the gym and the arcade roofs.
+  - *Size:* the arena is about 4,500 instances (3,500 before), so check the frame rate on a phone.
