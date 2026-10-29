@@ -1226,3 +1226,26 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     plaza hedges (they break), four leaning fountain jets.
   - *Size:* 8,943 instances (8,731 before). The arena is near 9,000, so the next passes should swap rather than add,
     unless a phone test shows room.
+- **Ten times the detail, streamed (owner, 2026-10-29: "do you remember my ref, even table have more detail than this.
+  fountain look blocky even table, tv many thing not even detail. make structure 10 times more detail"):**
+  - *Reading:* the reference is the lobby's furniture (`docs/reference/lobby-lounge.jpg`, `lobby-bunk-corner.jpg`):
+    sofas with cushions and rolled arms, a table on a pedestal, a vending machine with shelves. So the change is per
+    object: each table, sofa, bed, desk, TV, shelf, counter and the fountain is built from 5–15 parts (the fountain
+    about 85) instead of one to four blocks. A literal ten times the arena's parts (about 90,000) would not run on a
+    phone, so the count went from 8,943 to 13,928.
+  - *Where:* `maps/lib/Decor` holds the builders (the layout's `tree`, `bench`, `smallTable`, `vending`, `desk`,
+    `bed`, `sofa` and `pottedPlant` call them) and `Decor.dressAll`, a pass after the build that rebuilds the plain
+    blocks by name in their own box. A block's front faces the middle of the building it stands in (its GroundFloor);
+    a name it doesn't know stays as built. Names that stay as built after dressing (lockers, wardrobes, boards,
+    posters, the piano) keep their block and get handles, frames, writing or keys added.
+  - *Collision:* what you would bump into stays solid (tops, bodies, seats, mattresses, the fountain's rim and
+    tiers); trims, legs, goods, screens and water are walk-through. The basin's water is knee-deep: you can wade in
+    and fight in it.
+  - *Streaming:* the Center platform is Persistent (every client gets all of it at once), so the buildings and the
+    dressing moved to a `District` folder at the arena's root; clients stream it in by distance (Workspace
+    StreamingMinRadius 128, TargetRadius 256). The slab and the gameplay markers stay on the platform, where
+    RoundService and MapService look for them; MapService already streams the area round a spawn before moving a
+    player there. Each building is Atomic (it streams in whole, no half-built houses) with
+    `LevelOfDetail = StreamingMesh` (a low-detail stand-in when it is out of range). Movers stay Persistent.
+  - *Beds:* now that a bed has a headboard, the flats' and the hotel's north-side beds turn their heads to the outer
+    wall.

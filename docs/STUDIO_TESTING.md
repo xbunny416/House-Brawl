@@ -249,3 +249,11 @@ Settings → Promo code, styles come from the style roll).
     balconies, the goods racks outside the shops, the hedges and jets in the plaza.
   - *Check:* ride a tower lift and make sure no fin passes through it. Watch the frame rate, now close to 9,000
     instances.
+- **Shinjuku: ten times the detail, streamed (2026-10-29):**
+  - *Look at:* the fountain in the plaza (three tiers, water curtains, four spouts; wade into the basin), the café
+    tables, sofas, beds, desks and vending machines, and the counters, kitchens, shelves, TVs and toilets inside the
+    buildings. Compare them with the lobby's furniture.
+  - *Streaming:* in a round, look across the district: far buildings may show as simple stand-ins and fill in as you
+    get closer. Nothing should be missing near you, and spawning on a roof should never drop you through it.
+  - *Phones:* play a round on a phone (or Studio's device emulator with Low graphics) and watch the frame rate; the
+    arena is now about 13,900 parts. If it stutters, tell Claude which place: the dress pass can skip upstairs rooms.

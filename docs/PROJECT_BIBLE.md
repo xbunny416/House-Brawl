@@ -318,6 +318,23 @@ road"). The `Day` preset: a blue sky with white clouds.
     - kitchens, fridges, rugs and TVs in the flats and the shops' upstairs rooms;
     - screens and tables in the karaoke booths; goods on the mart's shelves; bottle shelves in the bars;
     - stage lights, flags, helmet shelves and tills; candles in the temple.
+- *Furniture in detail* (owner, 2026-10-29: "do you remember my ref, even table have more detail than this. fountain
+  look blocky even table, tv many thing not even detail. make structure 10 times more detail"; the reference is the
+  lobby's furniture in `docs/reference`): every piece is built from many parts (`maps/lib/Decor`).
+  - *Furniture:* round café tables on a pedestal with a marble top and a vase; sofas with seat and back cushions and
+    rolled arms; beds with a headboard, pillows, a blanket and a turned-down sheet; desks with drawers, a monitor, a
+    keyboard and a mug; vending machines with rows of lit drinks behind glass; park benches of slats on iron frames;
+    trees with branches and five clusters of leaves; cars and vans with bumpers, plates, hubcaps, grilles and mirrors.
+  - *Plain blocks rebuilt:* the layout still places counters, kitchens, shelves, cabinets, tables, benches, TVs,
+    boards, posters, toilets, bunks, stools and clocks as boxes; `Decor.dressAll` rebuilds each in its own box (a
+    counter gets a top, a kick plate, panel seams and a foot rail, a till on shop counters; a kitchen a sink with a tap
+    and a hob; a shelf its uprights, boards and goods; a TV a bezel, a screen and a power light).
+  - *The fountain:* three tiers, about 85 parts: a step, a basin walled by twelve capped stones with water you can
+    wade in, a pedestal and column, two bowls with water spilling over in curtains, a finial with a jet, and four
+    spouts on the rim arcing water into the middle.
+  - *Streaming:* the buildings and the dressing (about 13,400 parts) stream in by distance: they sit in a District
+    folder, not on the Center platform, which keeps only its slab and the markers. Each building streams in whole
+    and shows a low-detail stand-in from afar. A literal ten times the parts (about 90,000) would not run on phones.
 - *Breakable walls:* their walls and windows break (see §3.3), as do the partitions, the block walls, the graveyard's
   wall and stones, the hedges and the building site's fence.
 - *Things that move* (`Arena.mover`): glass lifts up the twin towers' north faces (street to roof), the building site's

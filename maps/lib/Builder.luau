@@ -143,6 +143,13 @@ function Builder.folder(name: string, fill: () -> ()): any
 	return folder
 end
 
+-- Runs `fill` with `parent` (an existing instance) as the current parent: for a pass over a model already built.
+function Builder.into(parent: any, fill: () -> ())
+	table.insert(parentStack, parent)
+	fill()
+	table.remove(parentStack)
+end
+
 -- Runs `fill` with every horizontal position (X / Z, from the current origin) multiplied by `factor`; sizes stay.
 function Builder.spread(factor: number, fill: () -> ())
 	table.insert(spreadStack, spread() * factor)
