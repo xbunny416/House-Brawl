@@ -17,7 +17,9 @@ notes).
   Shinjuku (a Tokyo street block on the ground in the style of Jujutsu Shenanigans' map, open edges you can fall off,
   every block built up with furnished walk-in buildings sized to the avatar and breakable walls, street furniture and
   building detail, moving lifts, a crane and a rooftop Ferris wheel, 72 prop spots with props that fit each place) is
-  now the only arena; the old three are kept, switched off.
+  now the only arena; the old three are kept, switched off. Its furniture and fountain are built from many parts
+  (`maps/lib/Decor`, which also rebuilds plain counters, shelves, TVs and the like), and its buildings stream in by
+  distance from a `District` folder (about 13,900 instances).
 - **Playtested:** Phase 1 ("all clear" 2026-10-16), the animations, 3.1 (from Studio logs). Everything else is built
   but not playtested yet; 3.11 (low-end mobile) not tried on a phone.
 - **Owner-side** ([docs/LAUNCH.md](docs/LAUNCH.md), `lune run tools/launch-check`): create the VIP pass and the
@@ -111,8 +113,9 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
   fields are filled in automatically; renames/removals need a migration (`src/server/Data/Migrations.luau`, bump
   `VERSION` in `src/shared/Data/Template.luau`). Clients read their copy via `Controllers/DataController`.
 - **Maps:** blockouts are generated from `maps/layouts/*.luau` by `lune run maps/build`; never hand-edit
-  `maps/generated/`. Shaped pieces come from `maps/lib/Pieces` (lobby furniture from `maps/lib/Furniture`); moving
-  parts are `Arena.mover` models (`Shared/MoverRules`) that clients move and `MoverService` reads for hazards.
+  `maps/generated/`. Shaped pieces come from `maps/lib/Pieces` (lobby furniture from `maps/lib/Furniture`, arena
+  furniture from `maps/lib/Decor`); moving parts are `Arena.mover` models (`Shared/MoverRules`) that clients move and
+  `MoverService` reads for hazards.
   Gameplay markers are tagged parts (`SpawnPoint`, `PropSpot`, `ExplosiveSpot`, `StructureSpot` with a
   `StructureType` attribute, `LobbySpawn`), visible in Edit mode and hidden by `Services/MapService` at runtime. The
   lobby's join pad is a visible `QueueZone`-tagged part (not a marker). Each arena platform is a `Platform`-tagged

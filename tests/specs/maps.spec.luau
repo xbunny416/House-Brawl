@@ -438,9 +438,29 @@ return {
 				`{name} has stairs`
 			)
 		end
+		-- "Make structure 10 times more detail" (owner, 2026-10-29): the detail streams in by distance. The Center
+		-- platform (Persistent) keeps only its slab and the gameplay markers; the buildings and dressing are in the
+		-- District folder, each building streamed whole (Atomic).
+		local platform = model:FindFirstChild("Center", true)
+		for _, child in platform:GetChildren() do
+			expect.truthy(child.Name == "Base" or child:HasTag("Marker"), `{child.Name} is on the persistent platform`)
+		end
+		local district = model:FindFirstChild("District")
+		expect.truthy(district and district.Parent == model, "a District folder at the arena's root")
+		for _, name in { "TowerWest", "Hotel", "Ramen" } do
+			local building = district:FindFirstChild(name)
+			expect.equal(building.ModelStreamingMode, roblox.Enum.ModelStreamingMode.Atomic, `{name} streams whole`)
+		end
+		-- The plain blocks are rebuilt as detailed furniture (maps/lib/Decor): none is left as one block.
+		for _, name in { "Counter", "Shelf", "WallTV", "CoffeeTable", "Toilet", "Bunk", "Stool" } do
+			for _, part in district:GetDescendants() do
+				expect.truthy(not (part:IsA("BasePart") and part.Name == name), `{part:GetFullName()} is a plain block`)
+			end
+		end
+		local fountain = district:FindFirstChild("Fountain", true)
+		expect.truthy(fountain and #fountain:GetChildren() >= 40, "a fountain in many pieces")
 		-- "Literally include inside structure too": every building you can walk into has something solid inside it
 		-- that isn't its own shell (furniture, counters, partitions, cars), upstairs too when it has floors.
-		local district = model:FindFirstChild("Center", true)
 		local furnishings = {}
 		for _, part in district:GetDescendants() do
 			if

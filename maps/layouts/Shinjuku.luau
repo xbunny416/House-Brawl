@@ -40,6 +40,7 @@
 local Arena = require("../lib/Arena")
 local B = require("../lib/Builder")
 local Pieces = require("../lib/Pieces")
+local Decor = require("../lib/Decor")
 local Rooms = require("../lib/Rooms")
 
 type Platform = Arena.Platform
@@ -462,7 +463,56 @@ local function car(name: string, at: { number }, yaw: number, color: string, y: 
 					CanCollide = false,
 				})
 			end
+			-- Bumpers, number plates.
+			B.part({
+				Name = "Bumper",
+				Size = size(4.5, 0.45, 0.3),
+				Position = place(0, 0.75, lz * 1.02),
+				Rotation = turn,
+				Color = "MetalDark",
+				Material = "Metal",
+				CanCollide = false,
+			})
+			B.part({
+				Name = "Plate",
+				Size = size(1.1, 0.35, 0.05),
+				Position = place(0, 1.05, lz * 1.06),
+				Rotation = turn,
+				Color = "OffWhite",
+				CanCollide = false,
+			})
 		end
+		-- Hubcaps, a grille, wing mirrors.
+		for _, lx in { -2.15, 2.15 } do
+			for _, lz in { -2.8, 2.8 } do
+				B.part({
+					Name = "Hubcap",
+					Size = size(0.85, 0.9, 0.9),
+					Position = place(lx, 0.8, lz),
+					Rotation = turn,
+					Shape = "Cylinder",
+					Color = "Metal",
+					Material = "Metal",
+					CanCollide = false,
+				})
+			end
+			B.part({
+				Name = "Mirror",
+				Size = size(0.5, 0.3, 0.3),
+				Position = place(lx * 1.1, 2.3, 1.2),
+				Rotation = turn,
+				Color = color,
+				CanCollide = false,
+			})
+		end
+		B.part({
+			Name = "Grille",
+			Size = size(2.4, 0.5, 0.05),
+			Position = place(0, 1.3, 4.22),
+			Rotation = turn,
+			Color = "Black",
+			CanCollide = false,
+		})
 	end)
 end
 
@@ -511,30 +561,9 @@ local function bike(at: { number }, yaw: number, color: string)
 	end)
 end
 
--- A tree on `y`, about 18 tall: a trunk (solid) and two balls of leaves (`leaf`: green, or pink for a cherry tree).
+-- A tree on `y`, about 18 tall (maps/lib/Decor: a trunk, branches, five clusters of leaves; `leaf` green or pink).
 local function tree(name: string, at: { number }, leaf: string, y: number?)
-	local base = y or 0
-	B.model(name, function()
-		upright("Trunk", at, base, 8.5, 1.4, "WoodDark", "Wood")
-		B.part({
-			Name = "Leaves",
-			Size = { 11, 9.4, 11 },
-			Position = { at[1], base + 11, at[2] },
-			Shape = "Ball",
-			Color = leaf,
-			Material = "LeafyGrass",
-			CanCollide = false,
-		})
-		B.part({
-			Name = "LeavesTop",
-			Size = { 7.5, 6.8, 7.5 },
-			Position = { at[1] + 1, base + 14.6, at[2] - 0.7 },
-			Shape = "Ball",
-			Color = leaf,
-			Material = "LeafyGrass",
-			CanCollide = false,
-		})
-	end)
+	Decor.tree(name, at, leaf, y)
 end
 
 -- A street tree in an iron-edged pit.
@@ -562,74 +591,19 @@ local function deadTree(at: { number })
 	end)
 end
 
--- A bench turned `yaw` (unturned, you sit facing +Z) on `y`: a wood seat and back on iron legs.
+-- A park bench turned `yaw` (unturned, you sit facing +Z) on `y`: slats on iron side frames (maps/lib/Decor).
 local function bench(at: { number }, yaw: number, y: number?)
-	local place = placer(at, yaw, y)
-	local turn = { 0, yaw, 0 }
-	B.model("Bench", function()
-		B.part({
-			Name = "Seat",
-			Size = { 5, 0.3, 1.4 },
-			Position = place(0, 1.4, 0),
-			Rotation = turn,
-			Color = "Wood",
-			Material = "WoodPlanks",
-		})
-		B.part({
-			Name = "Back",
-			Size = { 5, 1.2, 0.25 },
-			Position = place(0, 2.3, -0.65),
-			Rotation = turn,
-			Color = "Wood",
-			Material = "WoodPlanks",
-		})
-		for _, lx in { -2, 2 } do
-			B.part({
-				Name = "Leg",
-				Size = { 0.3, 1.3, 1.2 },
-				Position = place(lx, 0.65, 0),
-				Rotation = turn,
-				Color = "MetalDark",
-				Material = "Metal",
-			})
-		end
-	end)
+	Decor.bench(at, y or 0, yaw)
 end
 
--- A small round table on a post (decor, solid), on `y`.
+-- A café table on a pedestal with a marble top (maps/lib/Decor), on `y`.
 local function smallTable(at: { number }, y: number?)
-	local base = y or 0
-	B.model("Table", function()
-		upright("Post", at, base, 2.6, 0.4, "MetalDark", "Metal")
-		upright("Top", at, base + 2.6, 0.2, 2.6, "OffWhite", "SmoothPlastic")
-	end)
+	Decor.roundTable(at, y)
 end
 
--- A vending machine (decor, solid), its front toward `yaw`: a coloured body, a lit drinks window, a slot.
+-- A vending machine, its front toward `yaw`: shelves of drinks behind glass, a keypad, a lit header (maps/lib/Decor).
 local function vending(at: { number }, yaw: number, color: string)
-	local place = placer(at, yaw)
-	local turn = { 0, yaw, 0 }
-	B.model("Vending", function()
-		B.part({ Name = "Body", Size = { 3, 6, 2.4 }, Position = place(0, 3, 0), Rotation = turn, Color = color })
-		B.part({
-			Name = "Drinks",
-			Size = { 2.4, 2.6, 0.1 },
-			Position = place(0, 4.2, 1.22),
-			Rotation = turn,
-			Color = "WarmLight",
-			Material = "Neon",
-			Transparency = 0.3,
-			CanCollide = false,
-		})
-		B.part({
-			Name = "Slot",
-			Size = { 2, 0.6, 0.1 },
-			Position = place(0, 1, 1.22),
-			Rotation = turn,
-			Color = "Black",
-			CanCollide = false,
-		})
-	end)
+	Decor.vending(at, yaw, color)
 end
 
 -- A row of `count` vending machines from `start` along +X (3.2 apart), facing `yaw`.
@@ -760,57 +734,24 @@ local function partition(
 	run(length)
 end
 
--- An office desk (solid) with a screen on it, its long side along X (yaw 0) or Z (yaw 90), on `y`.
+-- An office desk with drawers, a monitor, a keyboard and a mug (maps/lib/Decor), its long side along X (yaw 0) or Z.
 local function desk(at: { number }, y: number, yaw: number)
-	Pieces.block("Desk", at, { 5, 2.6, 2.4 }, "WoodMid", "Wood", y, yaw)
-	B.part({
-		Name = "Screen",
-		Size = { 1.8, 1.2, 0.15 },
-		Position = { at[1], y + 3.2, at[2] },
-		Rotation = { 0, yaw, 0 },
-		Color = "Black",
-		CanCollide = false,
-	})
+	Decor.desk(at, y, yaw)
 end
 
--- A bed (a frame you can stand on, a blanket over it) on `y`, its length along Z (yaw 0) or X (yaw 90).
+-- A bed on legs with a headboard, pillows and a blanket (maps/lib/Decor); its head toward −Z turned `yaw`.
 local function bed(at: { number }, y: number, yaw: number, blanket: string)
-	Pieces.block("Bed", at, { 4.4, 1.6, 7 }, "OffWhite", "Fabric", y, yaw)
-	Pieces.block("Blanket", at, { 4.5, 0.2, 4.8 }, blanket, "Fabric", y + 1.6, yaw).CanCollide = false
+	Decor.bed(at, y, yaw, blanket)
 end
 
--- A sofa (a seat and a back, both solid) on `y`, turned `yaw` (unturned, you sit facing +Z).
+-- A two-seat sofa with cushions and rolled arms (maps/lib/Decor) on `y`, turned `yaw` (unturned, you sit facing +Z).
 local function sofa(at: { number }, y: number, yaw: number, color: string)
-	local place = placer(at, yaw, y)
-	B.part({
-		Name = "Sofa",
-		Size = { 6, 1.4, 2.2 },
-		Position = place(0, 0.7, 0),
-		Rotation = { 0, yaw, 0 },
-		Color = color,
-	})
-	B.part({
-		Name = "SofaBack",
-		Size = { 6, 1.6, 0.6 },
-		Position = place(0, 2.2, -0.8),
-		Rotation = { 0, yaw, 0 },
-		Color = color,
-		Material = "Fabric",
-	})
+	Decor.sofa(at, y, yaw, color)
 end
 
--- A potted plant (a pot and a ball of leaves) on `y`.
+-- A potted plant: a tapered pot, a stem, three balls of leaves (maps/lib/Decor), on `y`.
 local function pottedPlant(at: { number }, y: number)
-	upright("Pot", at, y, 1.6, 1.6, "ConcreteDark", "Concrete")
-	B.part({
-		Name = "Plant",
-		Size = { 2.6, 2.6, 2.6 },
-		Position = { at[1], y + 2.8, at[2] },
-		Shape = "Ball",
-		Color = "Leaf",
-		Material = "LeafyGrass",
-		CanCollide = false,
-	})
+	Decor.plant(at, y)
 end
 
 ---------------------------------------------------------------------------------------------------------------------
@@ -1370,10 +1311,7 @@ local function plaza()
 	for x = -160, -14, 12 do
 		paint("PaverStripe", { x, -38 }, { 0.6, 84 }, "ConcreteDark", "Pavement", 0.12)
 	end
-	upright("FountainBasin", { -100, -35 }, 0, 1.6, 16, "Concrete", "Concrete")
-	upright("FountainWater", { -100, -35 }, 1.45, 0.1, 14.6, "Glass", "Glass", false)
-	upright("FountainColumn", { -100, -35 }, 1.6, 3.6, 2, "Concrete", "Concrete")
-	upright("FountainBowl", { -100, -35 }, 5.2, 0.6, 6, "Concrete", "Concrete")
+	Decor.fountain({ -100, -35 })
 	for _, at in { { -150, -70 }, { -150, -6 }, { -80, -6 } } do
 		planterTree(at)
 	end
@@ -2274,8 +2212,13 @@ local function apartments(name: string, at: { number }, floors: number, color: s
 	for floor = 1, floors do
 		local y = (floor - 1) * STOREY
 		partition({ at[1], at[2] - inner }, { at[1], at[2] + inner }, y, STOREY - 0.5, { 6, 2 * inner - 6 }, "Cream")
-		bed({ at[1] - 32, at[2] + away * 13 }, y, 0, if floor % 2 == 0 then "CityBlue" else "ShopPink")
-		bed({ at[1] + 14, at[2] + away * 13 }, y, 0, "Lawn")
+		bed(
+			{ at[1] - 32, at[2] + away * 13 },
+			y,
+			if away > 0 then 180 else 0,
+			if floor % 2 == 0 then "CityBlue" else "ShopPink"
+		)
+		bed({ at[1] + 14, at[2] + away * 13 }, y, if away > 0 then 180 else 0, "Lawn")
 		sofa({ at[1] - 14, at[2] + away * 17 }, y, if away > 0 then 180 else 0, "WoodMid")
 		smallTable({ at[1] - 14, at[2] + away * 9 }, y)
 		if floor > 1 then
@@ -2825,7 +2768,7 @@ local function hotel()
 		end
 		for _, roomX in { x0 + 5, x0 + 15, x0 + 25, x0 + 35 } do
 			bed({ roomX, at[2] - 11 }, y, 0, "OffWhite")
-			bed({ roomX, at[2] + 11 }, y, 0, "OffWhite")
+			bed({ roomX, at[2] + 11 }, y, 180, "OffWhite")
 		end
 	end
 	-- The entrance canopy on two posts.
@@ -3566,9 +3509,7 @@ local function buildingDetail()
 		dish({ 206, block[1] }, roof)
 		dish({ 226, block[1] }, roof)
 	end
-	-- The fountain's jet and the water in its bowl, four flower beds round it.
-	upright("FountainJet", { -100, -35 }, 5.8, 3.2, 0.5, "Glass", "Glass", false).Transparency = 0.35
-	upright("BowlWater", { -100, -35 }, 5.75, 0.06, 5.4, "Glass", "Glass", false).Transparency = 0.3
+	-- Four flower beds round the fountain.
 	for _, bed in { { -86, -35, true }, { -114, -35, true }, { -100, -21, false }, { -100, -49, false } } do
 		local alongZ = bed[3] :: boolean
 		local spot = { bed[1] :: number, bed[2] :: number }
@@ -3947,6 +3888,53 @@ local function van(name: string, at: { number }, yaw: number, color: string)
 			Material = "Neon",
 			CanCollide = false,
 		})
+		-- Bumpers, a grille, wing mirrors, a side stripe, a roof rack.
+		for _, lz in { -6.3, 6.3 } do
+			B.part({
+				Name = "Bumper",
+				Size = { 6.1, 0.6, 0.3 },
+				Position = place(0, 1.1, lz),
+				Rotation = turn,
+				Color = "MetalDark",
+				Material = "Metal",
+				CanCollide = false,
+			})
+		end
+		B.part({
+			Name = "Grille",
+			Size = { 3, 0.8, 0.05 },
+			Position = place(0, 2.8, 6.23),
+			Rotation = turn,
+			Color = "Black",
+			CanCollide = false,
+		})
+		for _, lx in { -3.2, 3.2 } do
+			B.part({
+				Name = "Mirror",
+				Size = { 0.4, 0.6, 0.3 },
+				Position = place(lx, 4.2, 5.6),
+				Rotation = turn,
+				Color = "Black",
+				CanCollide = false,
+			})
+			B.part({
+				Name = "Stripe",
+				Size = { 0.05, 0.5, 12 },
+				Position = place(lx * 0.94, 3, 0),
+				Rotation = turn,
+				Color = "ShopRed",
+				CanCollide = false,
+			})
+		end
+		B.part({
+			Name = "RoofRack",
+			Size = { 5, 0.3, 8 },
+			Position = place(0, 6.4, -1),
+			Rotation = turn,
+			Color = "MetalDark",
+			Material = "Metal",
+			CanCollide = false,
+		})
 	end)
 end
 
@@ -4257,7 +4245,7 @@ end
 	  yokocho's upstairs windows; vents and posters on the walls that face the drop.
 	- *Streets:* strings of festival lanterns across the main street from the utility poles to new posts on the far
 	  pavement; four more parked cars; wires from the poles to the buildings; goods racks outside the shops.
-	- *The plaza:* hedges along its west side, four more fountain jets.
+	- *The plaza:* hedges along its west side.
 ]]
 local function cityDressing()
 	local function fin(at: { number }, face: string, y0: number, y1: number, color: string)
@@ -4402,7 +4390,7 @@ local function cityDressing()
 		).CanCollide =
 			false
 	end
-	-- The plaza: hedges along its west side, more jets round the fountain.
+	-- The plaza: hedges along its west side.
 	for _, run in { { -74, -46 }, { -34, -14 } } do
 		local length = run[2] - run[1]
 		for piece = 1, 2 do
@@ -4415,19 +4403,6 @@ local function cityDressing()
 				Tags = BREAKABLE,
 			})
 		end
-	end
-	for angle = 45, 315, 90 do
-		local c, s = math.cos(math.rad(angle)), math.sin(math.rad(angle))
-		B.part({
-			Name = "FountainJet",
-			Size = { 0.25, 3, 0.25 },
-			Position = { -100 + c * 4.5, 2.6, -35 + s * 4.5 },
-			Rotation = { s * 25, 0, -c * 25 }, -- leaning out from the middle
-			Color = "Glass",
-			Material = "Glass",
-			Transparency = 0.35,
-			CanCollide = false,
-		})
 	end
 end
 
@@ -4521,9 +4496,35 @@ local function scenery(killY: number)
 	end
 end
 
--- Builds the arena model at `origin` (world position of the district floor's centre).
+--[[
+	Builds the arena model at `origin` (world position of the district floor's centre).
+
+	Streaming (owner, 2026-10-29: "make structure 10 times more detail"): the buildings and the dressing leave the
+	Center platform (Persistent: every client gets all of it at once) for a "District" folder at the arena's root, which
+	clients stream in by distance (Workspace.StreamingMinRadius / TargetRadius). Only the slab (Base) and the gameplay
+	markers stay on the platform, where RoundService and MapService look for them. Each building streams in whole
+	(Atomic) and shows a low-detail stand-in from afar (LevelOfDetail). Then Decor.dressAll rebuilds the plain blocks
+	(counters, shelves, tables, TVs, ...) as detailed furniture.
+]]
 function Layout.build(origin: { number }): any
-	return Arena.build(Layout :: any, origin, decorate, scenery, movers)
+	local model = Arena.build(Layout :: any, origin, decorate, scenery, movers)
+	local center = model:FindFirstChild("Platforms"):FindFirstChild("Center")
+	local district = B.roblox.Instance.new("Folder")
+	district.Name = "District"
+	for _, child in center:GetChildren() do
+		if child.Name ~= "Base" and not child:HasTag("Marker") then
+			child.Parent = district
+		end
+	end
+	district.Parent = model
+	Decor.dressAll(district)
+	for _, child in district:GetChildren() do
+		if child:IsA("Model") and child:FindFirstChild("GroundFloor") then
+			child.ModelStreamingMode = B.Enum.ModelStreamingMode.Atomic
+			child.LevelOfDetail = B.Enum.ModelLevelOfDetail.StreamingMesh
+		end
+	end
+	return model
 end
 
 return Layout
