@@ -236,11 +236,40 @@ function Builder.text(key: string): string
 	return assert(strings[key], `GameStrings.csv has no key "{key}"`)
 end
 
--- A sign: a board part with a SurfaceGui label on its Front face. Text comes from a localization key.
+-- An image filling a SurfaceGui: `crop` is { x, y, width, height } in the image's pixels (maps/lib/Art).
+local function image(gui: any, id: number, crop: { number })
+	local picture = Instance.new("ImageLabel")
+	picture.Name = "Picture"
+	picture.BackgroundTransparency = 1
+	picture.Size = roblox.UDim2.fromScale(1, 1)
+	picture.Image = `rbxassetid://{id}`
+	picture.ImageRectOffset = roblox.Vector2.new(crop[1], crop[2])
+	picture.ImageRectSize = roblox.Vector2.new(crop[3], crop[4])
+	picture.Parent = gui
+end
+
+-- A picture on a part's face `face` (a NormalId name, default Front): `crop` of image `id` (maps/lib/Art).
+function Builder.picture(board: any, id: number, crop: { number }, face: string?): any
+	local gui = Instance.new("SurfaceGui")
+	gui.Name = "Picture"
+	gui.Face = (Enum.NormalId :: any)[face or "Front"]
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = 20
+	gui.Parent = board
+	image(gui, id, crop)
+	return gui
+end
+
+--[[
+	A sign: a board part with a SurfaceGui label on its Front face. Text comes from a localization key. With an
+	`Image` (an id and its crop, maps/lib/Art), the picture fills the board and the text is a headline in a band
+	`Headline` high across its top.
+]]
 function Builder.sign(spec: PartSpec & {
 	Key: string,
 	TextColor: string,
 	Glow: boolean?,
+	Image: { Id: number, Crop: { number }, Headline: number }?,
 }): any
 	local board = Builder.part(spec)
 	local gui = Instance.new("SurfaceGui")
@@ -259,6 +288,15 @@ function Builder.sign(spec: PartSpec & {
 	label.TextColor3 = color(spec.TextColor)
 	label.Text = Builder.text(spec.Key)
 	label:SetAttribute("LocKey", spec.Key)
+	if spec.Image then
+		gui.PixelsPerStud = 20
+		image(gui, spec.Image.Id, spec.Image.Crop)
+		label.ZIndex = 2
+		label.Position = roblox.UDim2.fromScale(0.05, 0.02)
+		label.Size = roblox.UDim2.fromScale(0.9, spec.Image.Headline - 0.03)
+		label.TextStrokeColor3 = color("Black")
+		label.TextStrokeTransparency = 0
+	end
 	label.Parent = gui
 	return board
 end

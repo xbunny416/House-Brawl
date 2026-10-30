@@ -257,3 +257,10 @@ Settings → Promo code, styles come from the style roll).
     get closer. Nothing should be missing near you, and spawning on a roof should never drop you through it.
   - *Phones:* play a round on a phone (or Studio's device emulator with Low graphics) and watch the frame rate; the
     arena is now about 13,900 parts. If it stutters, tell Claude which place: the dress pass can skip upstairs rooms.
+- **Shinjuku art (2026-10-30):**
+  - *Look at:* the CURSED COLA and TOKYO NIGHTS billboards on the towers' south faces, the three roof billboards (the
+    cola one, TOKYO NIGHTS, DEMON RAMEN), the three murals on the bowling alley's street wall (a wave with koi, a
+    tiger and an oni, a neon city), and the posters on the blank walls (the yokocho's back, the shops' backs, the
+    jail's yard side, the walls facing the south drop).
+  - *Check:* each picture fills its board, the right way up, with nothing important cut off; each headline is easy to
+    read across the top of its billboard. A blank board means Roblox hasn't served the image: say which one.

@@ -1249,3 +1249,22 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     `LevelOfDetail = StreamingMesh` (a low-detail stand-in when it is out of range). Movers stay Persistent.
   - *Beds:* now that a bed has a headboard, the flats' and the hotel's north-side beds turn their heads to the outer
     wall.
+- **Art on the billboards, murals and posters (owner, 2026-10-30: "still looks plain/blocky";
+  ForgeGUI credits allowed):** the arena's surfaces already use Roblox's textured materials, but its billboards,
+  murals and posters were flat coloured boards. They now show pictures.
+  - *Made with ForgeGUI:* six images, 1,600 credits each, until the account ran out (227 left; the free refill is
+    2026-11-30). Five are used: CURSED COLA, TOKYO NIGHTS, DEMON RAMEN, a wave with koi, a tiger and an oni. All
+    are made-up art with no words in them (the tiger mural's graffiti tags are scribbles). The sixth, a bowling
+    mural, failed for lack of credits. More (posters of their own, 3D props) need more credits.
+  - *On Roblox:* resized to 1024 × 572 (so the crops are in known pixels) and uploaded as Images to the owner's
+    account through ForgeGUI's publishing connection. All five passed moderation. The first cola upload
+    (80268578907281, full size) is unused.
+  - *Where:* `maps/lib/Art` holds the ids and the views (which part of an image a board shows). `Builder.picture`
+    puts one on a face; `Builder.sign` with an `Image` puts the picture under the headline, which stays a GameStrings
+    key in a band across the top with a black outline.
+  - *Billboards:* the towers' are 32 × 18 (32 × 14 before) and the roof ones 20 × 11 (20 × 7), about the art's shape,
+    so little is cropped. The third roof billboard is a new ad, DEMON RAMEN (`Map.Shinjuku.Sign.AdRamen`), instead
+    of a second CURSED COLA.
+  - *Murals and posters:* the murals show the wave, the tiger and oni, and the neon city. The 14 posters show
+    portrait crops of the same five pictures (the can, a koi, the oni, the moon, the ramen bowl, the tiger) in turn.
+  - *Size:* 13,967 instances (13,928 before): one SurfaceGui and one ImageLabel per board.

@@ -19,7 +19,8 @@ notes).
   building detail, moving lifts, a crane and a rooftop Ferris wheel, 72 prop spots with props that fit each place) is
   now the only arena; the old three are kept, switched off. Its furniture and fountain are built from many parts
   (`maps/lib/Decor`, which also rebuilds plain counters, shelves, TVs and the like), and its buildings stream in by
-  distance from a `District` folder (about 13,900 instances).
+  distance from a `District` folder (about 13,900 instances). Its billboards, murals and posters show ForgeGUI art
+  uploaded to the owner's Roblox account (`maps/lib/Art`).
 - **Playtested:** Phase 1 ("all clear" 2026-10-16), the animations, 3.1 (from Studio logs). Everything else is built
   but not playtested yet; 3.11 (low-end mobile) not tried on a phone.
 - **Owner-side** ([docs/LAUNCH.md](docs/LAUNCH.md), `lune run tools/launch-check`): create the VIP pass and the
