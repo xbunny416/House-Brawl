@@ -12,10 +12,11 @@ and every call made where the bible is silent — read the matching entry before
   and chess, the walk-up spin wheel, the store art (`docs/store`), a smaller, more detailed iron-and-wood lobby with a
   style-roll coach NPC, and the three old arenas rebuilt. **Shinjuku** (a Tokyo street block on the ground in the
   style of Jujutsu Shenanigans' map, open edges you can fall off) is now the only arena: furnished walk-in buildings
-  sized to the avatar with breakable walls, framed windows and two-tone faces (`maps/lib/Rooms`), many-part furniture
-  and a fountain (`maps/lib/Decor`), ForgeGUI art on its billboards, murals and posters (`maps/lib/Art`), lifts, a
-  crane and a rooftop Ferris wheel, 72 prop spots with props that fit each place. Its buildings stream in by distance
-  from a `District` folder (about 16,100 instances). Menus use the slate palette (`Ui/Kit`).
+  sized to the avatar with breakable walls, framed windows and two-tone faces (`maps/lib/Rooms`), rooftop gear
+  (`maps/lib/Roofs`), many-part furniture and a fountain (`maps/lib/Decor`), ForgeGUI art on its billboards, murals
+  and posters (`maps/lib/Art`), lifts, a crane and a rooftop Ferris wheel, 72 prop spots with props that fit each
+  place. Its buildings stream in by distance from a `District` folder (about 16,900 instances). Menus use the slate
+  palette (`Ui/Kit`).
 - **Playtested:** Phase 1 ("all clear" 2026-10-16), the animations, 3.1 (from Studio logs). Everything else is built
   but not playtested; 3.11 (low-end mobile) not tried on a phone.
 - **Owner-side** ([docs/LAUNCH.md](docs/LAUNCH.md), `lune run tools/launch-check`): the VIP pass and the developer
@@ -111,8 +112,8 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
   fields are filled in automatically; renames/removals need a migration (`src/server/Data/Migrations.luau`, bump
   `VERSION` in `src/shared/Data/Template.luau`). Clients read their copy via `Controllers/DataController`.
 - **Maps:** generated from `maps/layouts/*.luau` by `lune run maps/build`; never hand-edit `maps/generated/`. Shaped
-  pieces come from `maps/lib/Pieces` (lobby furniture `Furniture`, arena furniture `Decor`, walk-in buildings
-  `Rooms`); moving parts are `Arena.mover` models (`Shared/MoverRules`) that clients move and `MoverService` reads for
+  pieces come from `maps/lib/Pieces` (lobby furniture `Furniture`, arena furniture `Decor`, walk-in buildings `Rooms`,
+  rooftop gear `Roofs`); moving parts are `Arena.mover` models (`Shared/MoverRules`) that clients move and `MoverService` reads for
   hazards. Gameplay markers are tagged parts (`SpawnPoint`, `PropSpot`, `ExplosiveSpot`, `StructureSpot` with a
   `StructureType` attribute, `LobbySpawn`), visible in Edit mode and hidden by `Services/MapService` at runtime; the
   lobby's join pad is a visible `QueueZone` part. Each arena platform is a `Platform`-tagged Model (Persistent

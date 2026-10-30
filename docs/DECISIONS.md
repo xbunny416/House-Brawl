@@ -1363,3 +1363,19 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     passes the weapon's template and `CosmeticService` the equipped hat's and back item's.
   - *Same look:* the parts, sizes, colours and offsets are the ones the runtime code built before.
   - *Size:* the folder is 949 instances; only clones go into the Workspace.
+- **Rooftop gear (owner, 2026-10-30: "add detail to the roofs"; free only):** from above, most roofs were bare grey
+  slabs with one AC box or a water tank. `maps/lib/Roofs` dresses every walk-in building's roof after the district is
+  built (`Roofs.dress`, called at the end of `Layout.build`):
+  - *Gear along the edges, facing in:* AC condensers (with a fan grille and a pipe), vent stacks, mushroom vents,
+    skylights, solar panels, ducts with an elbow, exhaust fans: a seeded random mix per building (the same every
+    build), in slots every 7 studs along each edge, 3–14 per roof by its size. The middle of each roof stays open to
+    fight on and for props to land. The bigger pieces are solid, like the old AC units (condensers, mushroom vents,
+    skylight curbs, ducts, exhaust housings); pipes, caps, grilles, glass, panels and frames are walk-through.
+  - *Clear of everything:* the pass works from the built geometry, not the layouts. A piece only goes where its whole
+    footprint stands on a "Roof" piece (so never over a stair hatch) and clears every part already there by 0.6
+    studs, stairs and ladders by 3 (room to step off), gameplay spots by 3.5 and the movers' whole paths (a lift's
+    run, the Ferris wheel's and the crane's turn).
+  - *Also:* brass lightning rods on the parapet corners of roofs 35+ studs up (8 buildings); flat membrane seams every
+    8 studs along big roofs (20+ studs across), a shade darker than the roof, walk-through.
+  - *Size:* 16,855 instances (16,092 before): 274 pieces of gear, 32 rods, 120 seams. The gear goes into each
+    building's model, so it streams in with it.

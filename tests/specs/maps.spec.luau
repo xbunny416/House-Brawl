@@ -629,6 +629,44 @@ return {
 		end
 		expect.truthy(kinds >= 2, `the west tower's walls have {kinds} colour(s)`)
 	end,
+	["Shinjuku: rooftop gear along the roofs' edges, inside each building's footprint, the middles left open"] = function()
+		-- The owner, 2026-10-30: "add detail to the roofs" (maps/lib/Roofs).
+		local model = Shinjuku.build(ORIGIN)
+		local kinds: { [string]: boolean } = {}
+		for _, name in
+			{ "Condenser", "VentPipe", "MushroomVent", "SkylightCurb", "SolarPanel", "Duct", "ExhaustHousing" }
+		do
+			kinds[name] = true
+		end
+		local gear = 0
+		for _, building in model:FindFirstChild("District"):GetChildren() do
+			local floor = building:FindFirstChild("GroundFloor")
+			if not (building:IsA("Model") and floor) then
+				continue
+			end
+			local base = boxOf(floor)
+			for _, part in building:GetChildren() do
+				if part:IsA("BasePart") and kinds[part.Name] then
+					gear += 1
+					local box = boxOf(part)
+					local inside = box.min[1] >= base.min[1] - 1
+						and box.max[1] <= base.max[1] + 1
+						and box.min[3] >= base.min[3] - 1
+						and box.max[3] <= base.max[3] + 1
+					expect.truthy(inside, `{part:GetFullName()} stands on its own roof`)
+					-- Near an edge: within 9 studs of the footprint's side (the middle stays open).
+					local fromEdge = math.min(
+						box.min[1] - base.min[1],
+						base.max[1] - box.max[1],
+						box.min[3] - base.min[3],
+						base.max[3] - box.max[3]
+					)
+					expect.truthy(fromEdge <= 9, `{part:GetFullName()} is {fromEdge} in from the edge`)
+				end
+			end
+		end
+		expect.truthy(gear >= 150, `{gear} pieces of rooftop gear`)
+	end,
 	["floating arenas: one explosive spot per side and low platform"] = function()
 		eachFloating(function(layout)
 			for _, platform in layout.Platforms do

@@ -276,6 +276,11 @@ Settings → Promo code, styles come from the style roll).
     hard, the POW / K.O.! starburst, an explosive barrel's fireball, ring and smoke, a structure breaking (chunks and
     dust), the PERFECT! text on a Perfect Dodge, the dash streak, and a dash-trail cosmetic's colours.
   - *Check:* no errors in Output mentioning `Assets` or `VFX`.
+- **Rooftop gear (2026-10-30):**
+  - *Look at:* from a tower roof (ladder or lift), the roofs below: condensers, vents, skylights, solar panels, ducts
+    and exhaust fans along the edges, seams across the big roofs, lightning rods on the tall ones.
+  - *Check:* climb up every ladder and ramp onto a roof: nothing blocks the top. Props on roofs land in the open
+    middle. Ride a tower lift to the roof: it never passes through anything.
 - **Models from ReplicatedStorage.Assets (2026-10-30):**
   - *Look at* (they should look as before): props in the arena and lobby (chairs, trash cans, TVs, barrels …) sitting
     whole on their spots, their detail parts on the box, not left at the map's centre; pick one up, throw it, watch

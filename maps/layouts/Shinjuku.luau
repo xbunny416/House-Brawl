@@ -42,6 +42,7 @@ local Art = require("../lib/Art")
 local B = require("../lib/Builder")
 local Pieces = require("../lib/Pieces")
 local Decor = require("../lib/Decor")
+local Roofs = require("../lib/Roofs")
 local Rooms = require("../lib/Rooms")
 
 type Platform = Arena.Platform
@@ -4565,6 +4566,8 @@ function Layout.build(origin: { number }): any
 	end
 	district.Parent = model
 	Decor.dressAll(district)
+	-- Rooftop gear along every roof's edge (owner, 2026-10-30: "add detail to the roofs"), clear of what's there.
+	Roofs.dress(district, model)
 	for _, child in district:GetChildren() do
 		if child:IsA("Model") and child:FindFirstChild("GroundFloor") then
 			child.ModelStreamingMode = B.Enum.ModelStreamingMode.Atomic
