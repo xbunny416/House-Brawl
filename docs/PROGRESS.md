@@ -115,6 +115,7 @@ One row per merged PR, newest last. Add a row with every PR (see [CLAUDE.md](../
 | 2026-10-30 | Shinjuku buildings less blocky (owner: "more detail on buildings, still look blocky", free only): every walk-in building's windows get a head and glazing bars and sit back in the wall; the wall above and below openings is a darker shade (the towers' much darker); a stone base course along the foot; copings on the parapets (`maps/lib/Rooms` Frame / Spandrel / Plinth); 16,092 instances | #112 |
 | 2026-10-30 | The owner's Roblox Studio project rules (code, UI, VFX and audio) added to CLAUDE.md, with notes where the code differs (ProfileStore, the UI Kit's colours and anchors, VFX and sounds built in code) | #113 |
 | 2026-10-30 | Menus in the slate palette (owner: "restyle the menus to the new palette"): `Ui/Kit` slate panels `#1E1E24`, slate buttons, a vibrant `#FF7A1A` accent with dark text on it (`OnAccent`), vibrant HUD bars; the loading screen and touch buttons match | #114 |
+| 2026-10-30 | The owner's Assets, VFX & Animations rules added to CLAUDE.md (replacing the overlapping VFX & Audio rules, with a note on where the code differs); CLAUDE.md tightened | #115 |
 
 ## Build order (approved 2026-10-15)
 
