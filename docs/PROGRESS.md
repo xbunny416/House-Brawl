@@ -117,7 +117,7 @@ One row per merged PR, newest last. Add a row with every PR (see [CLAUDE.md](../
 | 2026-10-30 | Menus in the slate palette (owner: "restyle the menus to the new palette"): `Ui/Kit` slate panels `#1E1E24`, slate buttons, a vibrant `#FF7A1A` accent with dark text on it (`OnAccent`), vibrant HUD bars; the loading screen and touch buttons match | #114 |
 | 2026-10-30 | The owner's Assets, VFX & Animations rules added to CLAUDE.md (replacing the overlapping VFX & Audio rules, with a note on where the code differs); CLAUDE.md tightened | #115 |
 | 2026-10-30 | ReplicatedStorage.Assets, step 1 (owner: "build the ReplicatedStorage.Assets folder"): `assets/build` generates it from Config (`assets/generated/Assets.rbxmx`, synced by Rojo; a spec checks it); VFX templates (bursts, smoke trail, flash parts, dash and cosmetic trails, KO starburst) cloned by VfxController, CrumbleController and CosmeticService | #116 |
-| 2026-10-30 | ReplicatedStorage.Assets, step 2: a Sound template per Config.Audio slot with an id (SoundController clones it; every effect at a random speed of 0.9–1.1, `Config.Audio.Pitch`) and an Animation template per uploaded clip (AnimationController loads it); none yet, so the game stays silent and scripted | — |
+| 2026-10-30 | ReplicatedStorage.Assets, step 2: a Sound template per Config.Audio slot with an id (SoundController clones it; every effect at a random speed of 0.9–1.1, `Config.Audio.Pitch`) and an Animation template per uploaded clip (AnimationController loads it); none yet, so the game stays silent and scripted | #117 |
 
 ## Build order (approved 2026-10-15)
 
