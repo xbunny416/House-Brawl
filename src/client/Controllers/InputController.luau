@@ -28,11 +28,12 @@ local SettingsController = require(script.Parent:WaitForChild("SettingsControlle
 
 export type Device = ActionMap.Device
 
-local BUTTON_COLOR = Color3.fromHex("#2A2420")
-local BUTTON_PRESSED_COLOR = Color3.fromHex("#D9822B")
+-- The touch buttons in Ui/Kit's slate palette (Button, Accent, Text).
+local BUTTON_COLOR = Color3.fromHex("#2D2E3B")
+local BUTTON_PRESSED_COLOR = Color3.fromHex("#FF7A1A")
 local BUTTON_TRANSPARENCY = 0.25
-local OUTLINE_COLOR = Color3.fromHex("#F2E6D0")
-local TEXT_COLOR = Color3.fromHex("#F2E6D0")
+local OUTLINE_COLOR = Color3.fromHex("#F2F3F8")
+local TEXT_COLOR = Color3.fromHex("#F2F3F8")
 local MAX_TEXT_SIZE = 22
 local PRESSED_SCALE = 0.9
 

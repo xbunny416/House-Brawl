@@ -11,10 +11,11 @@ local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
-local BACKGROUND = Color3.fromHex("#1E1A17")
-local TEXT = Color3.fromHex("#F2E6D0")
-local ACCENT = Color3.fromHex("#D9822B")
-local MUTED = Color3.fromHex("#A89A85")
+-- Ui/Kit's slate palette (it runs before the client scripts, so it keeps its own copy).
+local BACKGROUND = Color3.fromHex("#1E1E24")
+local TEXT = Color3.fromHex("#F2F3F8")
+local ACCENT = Color3.fromHex("#FF7A1A")
+local MUTED = Color3.fromHex("#9EA2BA")
 local DOTS_INTERVAL = 0.4
 
 local player = Players.LocalPlayer

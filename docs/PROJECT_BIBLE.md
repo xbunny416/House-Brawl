@@ -539,6 +539,10 @@ cartoon explosion with ring shockwave; dash streak and blue Perfect Dodge flash.
 
 AnchorPoint (0.5, 0.5), Scale coordinates (no fixed offsets), UIAspectRatioConstraint.
 
+Colours (owner's project rules, 2026-10-30): dark-mode slate panels (`#1E1E24`) and buttons (`#2D2E3B`), cool
+off-white text, a vibrant orange accent (`#FF7A1A`; dark text on it) for chosen buttons, outlines and progress bars,
+vibrant HP (green), stamina (gold) and low (red) bars. One palette in `Ui/Kit`.
+
 - **Mobile:** bottom-right arc — Attack (Punch/Throw; hold to charge), Ability (Wrecker only), Grab, Dash around Roblox's Jump button (≥ 64 px
   targets: 17% of the screen's shorter side, 64–104 px, Attack 1.15× larger; Settings > Button Layout picks the
   arrangement). Shown only while touch is the player's input. Bottom-center — own

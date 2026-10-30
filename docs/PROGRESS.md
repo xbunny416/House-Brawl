@@ -114,6 +114,7 @@ One row per merged PR, newest last. Add a row with every PR (see [CLAUDE.md](../
 | 2026-10-30 | Spawns bring the fight together (owner: "how it plays"): on a one-platform arena (Shinjuku, 560 × 340) a round starts the fighters at a random spawn point and the ones nearest it, not 400 studs apart; a respawn or a Casual late joiner comes back 40–130 studs from the nearest fighter (`Config.Round.Respawn`, `SpawnPlan.respawn`) | #111 |
 | 2026-10-30 | Shinjuku buildings less blocky (owner: "more detail on buildings, still look blocky", free only): every walk-in building's windows get a head and glazing bars and sit back in the wall; the wall above and below openings is a darker shade (the towers' much darker); a stone base course along the foot; copings on the parapets (`maps/lib/Rooms` Frame / Spandrel / Plinth); 16,092 instances | #112 |
 | 2026-10-30 | The owner's Roblox Studio project rules (code, UI, VFX and audio) added to CLAUDE.md, with notes where the code differs (ProfileStore, the UI Kit's colours and anchors, VFX and sounds built in code) | #113 |
+| 2026-10-30 | Menus in the slate palette (owner: "restyle the menus to the new palette"): `Ui/Kit` slate panels `#1E1E24`, slate buttons, a vibrant `#FF7A1A` accent with dark text on it (`OnAccent`), vibrant HUD bars; the loading screen and touch buttons match | — |
 
 ## Build order (approved 2026-10-15)
 

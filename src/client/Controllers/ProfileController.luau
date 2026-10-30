@@ -105,6 +105,9 @@ local function build()
 	xpFill.Parent = bar
 	xpLabel = Kit.label(bar, "", UDim2.fromScale(1, 1), 14)
 	xpLabel.ZIndex = 2
+	-- A dark outline keeps it readable where it lies over the bright fill.
+	xpLabel.TextStrokeColor3 = Kit.Colors.Panel
+	xpLabel.TextStrokeTransparency = 0.2
 end
 
 local function refreshVisible()

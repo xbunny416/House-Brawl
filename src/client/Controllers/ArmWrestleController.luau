@@ -171,6 +171,7 @@ local function buildPanel()
 	pushButton.AnchorPoint = Vector2.new(1, 1)
 	pushButton.Position = UDim2.fromScale(0.97, 0.84)
 	pushButton.BackgroundColor3 = Kit.Colors.Accent
+	pushButton.TextColor3 = Kit.Colors.OnAccent
 	local square = Instance.new("UIAspectRatioConstraint")
 	square.Parent = pushButton
 	local limit = Instance.new("UISizeConstraint")

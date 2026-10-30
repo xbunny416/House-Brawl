@@ -8,22 +8,25 @@ local Players = game:GetService("Players")
 
 local Kit = {}
 
+-- Dark-mode slate with vibrant accents (owner's project rules, 2026-10-30; a warm brown and muted orange before). The
+-- loading screen (ReplicatedFirst), the touch buttons (InputController) and the HUD's bars repeat these.
 Kit.Colors = {
-	Panel = Color3.fromHex("#1E1A17"),
-	Text = Color3.fromHex("#F2E6D0"),
-	Muted = Color3.fromHex("#A89A85"),
-	Accent = Color3.fromHex("#D9822B"),
-	Button = Color3.fromHex("#3A302A"),
-	Coin = Color3.fromHex("#F2C14E"),
-	Live = Color3.fromHex("#E5484D"), -- the "game in progress" dot
-	Hint = Color3.fromHex("#D0D0D0"), -- the small key hints along the bottom edge
+	Panel = Color3.fromHex("#1E1E24"),
+	Text = Color3.fromHex("#F2F3F8"),
+	Muted = Color3.fromHex("#9EA2BA"),
+	Accent = Color3.fromHex("#FF7A1A"),
+	OnAccent = Color3.fromHex("#1E1E24"), -- text on an Accent background (white on the bright orange is too faint)
+	Button = Color3.fromHex("#2D2E3B"),
+	Coin = Color3.fromHex("#FFC83D"),
+	Live = Color3.fromHex("#FF4D5A"), -- the "game in progress" dot
+	Hint = Color3.fromHex("#C9CCDC"), -- the small key hints along the bottom edge
 	-- Leaderboard boards (reference: docs/reference/leaderboard-boards.png).
 	Gold = Color3.fromHex("#E8C04A"),
 	Silver = Color3.fromHex("#C9CED6"),
 	Bronze = Color3.fromHex("#D08A4E"),
 	Cream = Color3.fromHex("#F0E2C0"),
 	BoardRow = Color3.fromHex("#26262B"),
-	Rival = Color3.fromHex("#3FA7B5"), -- the other side at the arm-wrestling table (your side is Accent)
+	Rival = Color3.fromHex("#2EC4E6"), -- the other side at the arm-wrestling table (your side is Accent)
 	-- The chess board screen (ChessController): squares like the lobby board's, the pieces as cream / dark tokens.
 	ChessLight = Color3.fromHex("#E8D3AE"),
 	ChessDark = Color3.fromHex("#8E5A3A"),
@@ -137,6 +140,7 @@ function Kit.setChosen(button: TextButton, chosen: boolean)
 		outline.Thickness = if chosen then 3 else 0
 	end
 	button.BackgroundColor3 = if chosen then Kit.Colors.Accent else Kit.Colors.Button
+	button.TextColor3 = if chosen then Kit.Colors.OnAccent else Kit.Colors.Text
 end
 
 -- Lays children out in a row or column, centered, in LayoutOrder.
