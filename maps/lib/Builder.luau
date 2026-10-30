@@ -58,6 +58,15 @@ local function color(value: string): any
 	return Color3.fromHex(hex)
 end
 
+-- A colour (a Palette name or a hex) with each channel scaled by `factor` (below 1: darker), as a hex string.
+function Builder.shade(value: string, factor: number): string
+	local c = color(value)
+	local function channel(x: number): number
+		return math.clamp(math.floor(x * factor * 255 + 0.5), 0, 255)
+	end
+	return string.format("#%02X%02X%02X", channel(c.R), channel(c.G), channel(c.B))
+end
+
 local function spread(): number
 	return spreadStack[#spreadStack]
 end

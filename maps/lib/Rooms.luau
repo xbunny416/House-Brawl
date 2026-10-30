@@ -52,6 +52,11 @@ export type Spec = {
 	Breakable: boolean?, -- false: plain walls (true by default)
 	MaxPiece: number?, -- the widest wall piece (16, Config.Structures.Walls.MaxPiece)
 	Sill: string?, -- the colour of a sill under every window (nil: none); it goes when the wall under it breaks
+	-- The colour of the window frames (nil: none): a head over every window (it goes with the wall above it), and
+	-- glazing bars in the glass, upright every 4.5 studs or so and across tall panes (they go with the glass).
+	Frame: string?,
+	Spandrel: string?, -- the colour of the wall above and below the openings (nil: the wall's), so a face reads in bands
+	Plinth: string?, -- the colour of a base course along the foot of the ground storey's outside (nil: none)
 }
 
 -- The widest wall piece and glass pane (Config.Structures.Walls.MaxPiece / MaxGlass; the maps spec checks them).
@@ -146,9 +151,36 @@ local function face(spec: Spec, faceName: string, storey: number, maxPiece: numb
 	local breakable = spec.Breakable ~= false
 	local material = spec.Material or "Concrete"
 	local openings = openingsOf(spec, faceName, storey, length)
+	-- The glass sits toward the inside of the wall, so a window has a reveal round it from the street.
+	local glassPlane = plane - sign * math.max(0, math.min(0.2, wall / 2 - 0.15))
 
-	-- Builds the pieces from `a` to `b` along the face between heights `y0` and `y1`; returns the first one.
-	local function piece(a: number, b: number, y0: number, y1: number, glass: boolean): any
+	-- A walk-through bar of the window frame: `along` × `tall` on the face, centred at `at` along it and `y` up,
+	-- `deep` through the wall at `depth` (a plane), carried by `carrier` (it goes when that piece breaks).
+	local function bar(
+		name: string,
+		at: number,
+		y: number,
+		along: number,
+		tall: number,
+		deep: number,
+		depth: number,
+		carrier: any
+	)
+		local part = B.part({
+			Name = name,
+			Size = if alongX then { along, tall, deep } else { deep, tall, along },
+			Position = if alongX then { at, y, depth } else { depth, y, at },
+			Color = spec.Frame :: string,
+			Material = "Metal",
+			CanCollide = false,
+			CastShadow = false,
+		})
+		part.Parent = carrier
+	end
+
+	-- Builds the pieces from `a` to `b` along the face between heights `y0` and `y1`; returns the first one. A
+	-- `spandrel` piece (above or below an opening) takes the spandrel colour.
+	local function piece(a: number, b: number, y0: number, y1: number, glass: boolean, spandrel: boolean?): any
 		if b - a <= 0.01 or y1 - y0 <= 0.01 then
 			return nil
 		end
@@ -159,13 +191,14 @@ local function face(spec: Spec, faceName: string, storey: number, maxPiece: numb
 			local p0 = a + (index - 1) * step
 			local middle = p0 + step / 2
 			local thickness = if glass then 0.3 else wall
+			local depth = if glass then glassPlane else plane
 			local part = B.part({
 				Name = if glass then "Glass" else "Wall",
 				Size = if alongX then { step, y1 - y0, thickness } else { thickness, y1 - y0, step },
 				Position = if alongX
-					then { middle, floorY + (y0 + y1) / 2, plane }
-					else { plane, floorY + (y0 + y1) / 2, middle },
-				Color = if glass then "Glass" else spec.Color,
+					then { middle, floorY + (y0 + y1) / 2, depth }
+					else { depth, floorY + (y0 + y1) / 2, middle },
+				Color = if glass then "Glass" elseif spandrel and spec.Spandrel then spec.Spandrel else spec.Color,
 				Material = if glass then "Glass" else material,
 				Transparency = if glass then 0.45 else nil,
 				CastShadow = not glass,
@@ -173,6 +206,39 @@ local function face(spec: Spec, faceName: string, storey: number, maxPiece: numb
 			})
 			if glass then
 				part.Reflectance = 0.15
+				if spec.Frame then
+					-- Glazing bars: upright ones splitting the pane every 4.5 studs or so, one across a tall pane.
+					local uprights = math.floor(step / 4.5)
+					for n = 1, uprights do
+						bar(
+							"Mullion",
+							p0 + n * step / (uprights + 1),
+							floorY + (y0 + y1) / 2,
+							0.25,
+							y1 - y0,
+							0.5,
+							glassPlane,
+							part
+						)
+					end
+					if y1 - y0 >= 5 and step >= 3 then
+						bar("Transom", middle, floorY + y0 + (y1 - y0) * 0.7, step, 0.25, 0.5, glassPlane, part)
+					end
+				end
+			elseif storey == 1 and y0 == 0 and spec.Plinth then
+				-- A base course along the foot of the ground storey, standing out on the street side.
+				local tall = math.min(1, y1)
+				local out = plane + sign * (wall / 2 + 0.1)
+				local base = B.part({
+					Name = "Plinth",
+					Size = if alongX then { step, tall, 0.2 } else { 0.2, tall, step },
+					Position = if alongX then { middle, tall / 2, out } else { out, tall / 2, middle },
+					Color = spec.Plinth,
+					Material = "Slate",
+					CanCollide = false,
+					CastShadow = false,
+				})
+				base.Parent = part
 			end
 			first = first or part
 		end
@@ -208,10 +274,15 @@ local function face(spec: Spec, faceName: string, storey: number, maxPiece: numb
 				flush(a)
 				local bottom = cover.Bottom or 0
 				local top = math.min(bottom + cover.Height, height)
-				local below = piece(a, b, 0, bottom, false)
-				piece(a, b, top, height, false)
+				local below = piece(a, b, 0, bottom, false, cover.Glass)
+				local above = piece(a, b, top, height, false, true)
 				if cover.Glass then
 					piece(a, b, bottom, top, true)
+					-- A head over the window, standing out like the sill, carried by the wall above it.
+					if spec.Frame and above then
+						local out = plane + sign * (wall / 2 + 0.1)
+						bar("WindowHead", (a + b) / 2, floorY + top + 0.175, b - a + 0.5, 0.35, 0.5, out, above)
+					end
 					-- A sill standing out under the window (walk-through), carried by the wall below it.
 					local sillColor = spec.Sill
 					if sillColor and below then
@@ -302,6 +373,18 @@ function Rooms.building(spec: Spec): any
 							roof.Material or "Concrete",
 							top + ROOF
 						)
+						-- A cap along its top, a little wider, in the sills' colour: a crisp roof line.
+						if spec.Sill then
+							local long = math.max(edge[2][1], edge[2][2])
+							Pieces.block(
+								"Coping",
+								edge[1],
+								if edge[2][1] > edge[2][2] then { long + 0.3, 0.25, 0.8 } else { 0.8, 0.25, long + 0.3 },
+								spec.Sill,
+								"Concrete",
+								top + ROOF + 1.2
+							)
+						end
 					end
 				end
 			end

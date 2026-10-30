@@ -269,3 +269,11 @@ Settings → Promo code, styles come from the style roll).
     not at opposite ends of the district. Run a few rounds: the meeting place should change each time.
   - *Respawn:* get knocked out while the other player stands still. You should come back about 40–130 studs from
     them (a short run, not on top of them). With `StudioMinPlayers = 1` (alone) you respawn anywhere.
+- **Shinjuku buildings less blocky (2026-10-30):**
+  - *Look at:* any building's windows from the street: a frame head on top, a sill below, glazing bars dividing the
+    glass, the glass set back in the wall. The towers' faces should read as bands (dark strips between the window
+    rows); other buildings have a slightly darker strip above and below their windows, a dark stone band along the
+    foot, and a light cap along the roof edge.
+  - *Check:* break a window and the wall above one: the glazing bars and the head go with them (nothing left
+    floating). Walk through a doorway: no base course across it. Watch the frame rate on a phone (about 16,100
+    parts now).
