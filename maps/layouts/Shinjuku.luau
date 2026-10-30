@@ -38,6 +38,7 @@
 	from the arena origin (the main street's crossing with the avenue is at z 90); the district's centre is at z −60.
 ]]
 local Arena = require("../lib/Arena")
+local Art = require("../lib/Art")
 local B = require("../lib/Builder")
 local Pieces = require("../lib/Pieces")
 local Decor = require("../lib/Decor")
@@ -259,6 +260,19 @@ end
 ---------------------------------------------------------------------------------------------------------------------
 -- Pieces (positions from the district's centre)
 ---------------------------------------------------------------------------------------------------------------------
+
+-- A billboard's picture (owner, 2026-10-30: "still looks plain/blocky"): view `name` of maps/lib/Art cropped to a
+-- board `aspect` wide (width / height), and the share of its height the headline takes.
+local function art(name: string, aspect: number): { Id: number, Crop: { number }, Headline: number }
+	local id, crop = Art.crop(name, aspect)
+	return { Id = id, Crop = crop, Headline = Art.Views[name].Headline or 0.24 }
+end
+
+-- A picture (view `name` of maps/lib/Art) over the whole front (−Z) face of a flat wall panel.
+local function picture(panel: any, name: string)
+	local id, crop = Art.crop(name, panel.Size.X / panel.Size.Y)
+	B.picture(panel, id, crop, "Front")
+end
 
 -- Paint on the ground: a flat, walk-through strip `size` (X, Z) at `y` (surfaces 0.05, lines 0.12).
 local function paint(name: string, at: { number }, size: { number }, color: string, material: string?, y: number?)
@@ -1208,13 +1222,14 @@ local function twinTowers()
 		ladder({ x + side * (half + 1), z + half - 3 }, 0, 112) -- past the roof's parapet (+111.8)
 		B.sign({
 			Name = "Billboard",
-			Size = { 32, 14, 0.5 },
-			Position = { x, 92, z - half - 0.5 },
+			Size = { 32, 18, 0.5 }, -- the art's shape (maps/lib/Art), above the south face's fins (to +84)
+			Position = { x, 93.5, z - half - 0.5 },
 			Color = if index == 1 then "Red" else "CityBlue",
 			Material = "SmoothPlastic",
 			Key = if index == 1 then "Map.Shinjuku.Sign.AdCola" else "Map.Shinjuku.Sign.AdNight",
 			TextColor = "OffWhite",
 			CanCollide = false,
+			Image = art(if index == 1 then "Cola" else "Night", 32 / 18),
 		})
 		acUnit({ x - side * 12, z - 12 }, TOWER_ROOF)
 		acUnit({ x - side * 12, z + 12 }, TOWER_ROOF)
@@ -3543,8 +3558,8 @@ local function buildingDetail()
 end
 
 -- A flat panel on a wall (a whiteboard, a painting, a menu, a screen): `size` (X, Y, Z) at `at` (x, y, z).
-local function wallPanel(name: string, at: { number }, size: { number }, color: string, material: string?)
-	B.part({
+local function wallPanel(name: string, at: { number }, size: { number }, color: string, material: string?): any
+	return B.part({
 		Name = name,
 		Size = size,
 		Position = at,
@@ -4073,22 +4088,28 @@ local function facades()
 		})
 	end
 	-- Posters and murals on the blank walls: the bowling alley's street side, the yokocho's back onto the plaza, the
-	-- jail's yard side, the shops' backs.
+	-- jail's yard side, the shops' backs. Each shows a picture (maps/lib/Art) on its outer (−Z) face.
 	local posterColors = { "ShopPink", "ShopTeal", "ShopYellow", "CityBlue", "ShopOrange", "Purple" }
+	local posters = 0
+	local function poster(panel: any) -- the posters take Art.Posters' views in turn
+		posters += 1
+		picture(panel, Art.Posters[(posters - 1) % #Art.Posters + 1])
+	end
 	for index, x in { -258, -232, -206 } do
-		wallPanel("Mural", { x, 5.5, -76.1 }, { 14, 7, 0.1 }, posterColors[index])
+		local mural = wallPanel("Mural", { x, 5.5, -76.1 }, { 14, 7, 0.1 }, posterColors[index])
+		picture(mural, ({ "Wave", "TigerOni", "NightCity" })[index])
 	end
 	for index, x in { -150, -126, -98, -74 } do
-		wallPanel("Poster", { x, 4.5, 5.9 }, { 3, 4, 0.1 }, posterColors[index + 1])
+		poster(wallPanel("Poster", { x, 4.5, 5.9 }, { 3, 4, 0.1 }, posterColors[index + 1]))
 	end
 	for index, x in { -255, -220 } do
-		wallPanel("Poster", { x, 5, -163.1 }, { 5, 6, 0.1 }, posterColors[index + 3])
+		poster(wallPanel("Poster", { x, 5, -163.1 }, { 5, 6, 0.1 }, posterColors[index + 3]))
 	end
 	for index, x in { -147, -117, -87, -57, -27 } do
-		wallPanel("Poster", { x + 4, 4.5, SHOP_Z - 13.1 }, { 3, 4, 0.1 }, posterColors[index])
+		poster(wallPanel("Poster", { x + 4, 4.5, SHOP_Z - 13.1 }, { 3, 4, 0.1 }, posterColors[index]))
 	end
-	-- Billboards on frames on three roofs.
-	local function billboard(at: { number }, y: number, facing: string, key: string, color: string)
+	-- Billboards on frames on three roofs, each with its ad's picture (maps/lib/Art).
+	local function billboard(at: { number }, y: number, facing: string, key: string, color: string, view: string)
 		local alongX = facing == "North" or facing == "South"
 		for _, d in { -8, 8 } do
 			upright(
@@ -4103,19 +4124,20 @@ local function facades()
 		end
 		B.sign({
 			Name = "RoofBillboard",
-			Size = { 20, 7, 0.5 },
-			Position = { at[1], y + 8.5, at[2] },
+			Size = { 20, 11, 0.5 }, -- about the art's shape
+			Position = { at[1], y + 10.5, at[2] },
 			Rotation = B.yaw(facing),
 			Color = color,
 			Material = "SmoothPlastic",
 			Key = key,
-			TextColor = "OffWhite",
+			TextColor = if view == "Ramen" then "Red" else "OffWhite",
 			CanCollide = false,
+			Image = art(view, 20 / 11),
 		})
 	end
-	billboard({ -117, -122 }, 3 * STOREY + 0.6, "North", "Map.Shinjuku.Sign.AdCola", "Red")
-	billboard({ 125, 62 }, 12.6, "South", "Map.Shinjuku.Sign.AdNight", "CityBlue")
-	billboard({ 110, -60 }, 2 * STOREY + 0.6, "South", "Map.Shinjuku.Sign.AdCola", "Red")
+	billboard({ -117, -122 }, 3 * STOREY + 0.6, "North", "Map.Shinjuku.Sign.AdCola", "Red", "Cola")
+	billboard({ 125, 62 }, 12.6, "South", "Map.Shinjuku.Sign.AdNight", "CityBlue", "Night")
+	billboard({ 110, -60 }, 2 * STOREY + 0.6, "South", "Map.Shinjuku.Sign.AdRamen", "ShopOrange", "Ramen")
 	-- Curtains half across the hotel's and the flats' windows (just inside the glass).
 	local curtainColors = { "Cream", "ShopPink", "CityBlue", "OffWhite", "ShopYellow" }
 	for floor = 2, HOTEL.Floors do
@@ -4325,7 +4347,13 @@ local function cityDressing()
 		wallPanel("Vent", { -272.1, 6, z }, { 0.1, 3, 5 }, "MetalDark", "DiamondPlate")
 	end
 	for index, x in { -140, -108, -76 } do
-		wallPanel("Poster", { x, 6, -222.1 }, { 6, 8, 0.1 }, ({ "ShopPink", "ShopTeal", "ShopYellow" })[index])
+		local poster = wallPanel(
+			"Poster",
+			{ x, 6, -222.1 },
+			{ 6, 8, 0.1 },
+			({ "ShopPink", "ShopTeal", "ShopYellow" })[index]
+		)
+		picture(poster, ({ "Tiger", "KoiLeft", "ColaCan" })[index])
 	end
 	for _, z in { 45, -45 } do
 		wallPanel("Vent", { 272.1, 6, z }, { 0.1, 3, 5 }, "MetalDark", "DiamondPlate")
