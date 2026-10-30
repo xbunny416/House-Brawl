@@ -1268,3 +1268,15 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   - *Murals and posters:* the murals show the wave, the tiger and oni, and the neon city. The 14 posters show
     portrait crops of the same five pictures (the can, a koi, the oni, the moon, the ramen bowl, the tiger) in turn.
   - *Size:* 13,967 instances (13,928 before): one SurfaceGui and one ImageLabel per board.
+- **Spawns bring the fight together (owner, 2026-10-30: "how it plays"):** no playtest note said what plays badly,
+  so this is the clearest problem in the numbers. Shinjuku is 560 × 340 studs for at most 12 players, and every start
+  and respawn took a random one of 16 spawn points spread over all of it. Two players could start 400+ studs apart,
+  about 25 s of running (walk speed 16) before the first punch, and a KO could send you back across the map.
+  - *Round start:* on an arena of one platform, `SpawnPlan.assign` (given the points' positions) starts the fighters
+    at a random point and the points nearest it. Two players start one street apart; twelve still fill most of the
+    district. Floating arenas keep the spread over the platforms.
+  - *Respawns and Casual late joiners:* `SpawnPlan.respawn` picks a random point whose nearest other fighter is
+    `Config.Round.Respawn` 40–130 studs away (3D, so a fighter on a roof isn't "next to" the street below). If none,
+    the nearest point at least 40 away; if every point is closer, the farthest. Alone in the arena: any point.
+  - *Not changed:* the spawn points themselves, the 2 s spawn shield, the map's size. If rounds still feel empty
+    after a playtest, the next step is fewer, more central spawn points or a smaller district.

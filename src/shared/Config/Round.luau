@@ -7,6 +7,13 @@ return {
 	ResultsTime = 8, -- results / MVP screen before returning to the Lobby
 	RespawnDelay = 3,
 	SpawnShieldTime = 2, -- breaks early if the player attacks
+	-- Where a respawn (or a late joiner) comes back (Round/SpawnPlan.respawn; owner, 2026-10-30: "how it plays"): a
+	-- spawn point whose nearest other fighter is this far away (studs), so you're back in the fight in a few seconds
+	-- without landing on top of anyone. Round starts on a one-platform arena take the points nearest a random one.
+	Respawn = {
+		MinEnemyDistance = 40,
+		MaxEnemyDistance = 130,
+	},
 	TensionTime = 30, -- the last N seconds use the tension music layer
 	PlacementsRewarded = 3, -- top N finishers get placement rewards
 	-- Private servers (bible §7): the owner picks the round length from these (seconds; RoundTime is the default).
