@@ -804,6 +804,19 @@ local FINISH: { [string]: { Wall: string?, Floor: string? } } = {
 	Arcade = { Floor = "Carpet" },
 }
 
+-- Window frame colours other than aluminium: white on the homes and the hotel, dark wood on the old timber buildings.
+local FRAME: { [string]: string } = {
+	ApartmentsNorth = "OffWhite",
+	ApartmentsSouth = "OffWhite",
+	Hotel = "OffWhite",
+	Mansion = "OffWhite",
+	Koban = "OffWhite",
+	YokochoNorth = "WoodDark",
+	YokochoSouth = "WoodDark",
+	Ramen = "WoodDark",
+	Temple = "WoodDark",
+}
+
 --[[
 	A Rooms building with the finish every building here gets: a sill under every window, a column standing out at
 	each corner, a ledge round it at every floor line and a cornice at the roof line (all walk-through, so they never
@@ -818,6 +831,12 @@ local function building(spec: Rooms.Spec): any
 		spec.FloorMaterial = finish.Floor or spec.FloorMaterial
 	end
 	spec.Sill = spec.Sill or (if trim == "ConcreteDark" then "ConcreteLight" else trim)
+	-- Window frames and two-tone faces (owner, 2026-10-30: "more detail on buildings, still look blocky"): heads and
+	-- glazing bars round every window, the wall above and below the openings a shade darker (the towers' much darker,
+	-- like an office block's spandrels), a dark stone base course along the foot.
+	spec.Frame = spec.Frame or FRAME[spec.Name] or "Metal"
+	spec.Spandrel = spec.Spandrel or B.shade(spec.Color, if string.sub(spec.Name, 1, 5) == "Tower" then 0.62 else 0.84)
+	spec.Plinth = spec.Plinth or B.shade(spec.Color, 0.55)
 	local model = Rooms.building(spec)
 	local sx, sz = spec.Size[1], spec.Size[2]
 	local cx, cz = spec.At[1], spec.At[2]

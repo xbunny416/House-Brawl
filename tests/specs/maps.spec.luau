@@ -585,6 +585,50 @@ return {
 			end
 		end
 	end,
+	["Shinjuku: framed windows, two-tone faces, base courses and roof caps; the trim breaks with its wall"] = function()
+		-- The owner, 2026-10-30: "more detail on buildings, still look blocky".
+		local model = Shinjuku.build(ORIGIN)
+		local counts: { [string]: number } = {}
+		for _, part in model:GetDescendants() do
+			if not part:IsA("BasePart") then
+				continue
+			end
+			counts[part.Name] = (counts[part.Name] or 0) + 1
+			local carrier = part.Parent
+			if part.Name == "Mullion" or part.Name == "Transom" then
+				expect.truthy(
+					carrier.Name == "Glass" and carrier:HasTag("BreakableWall"),
+					`{part:GetFullName()} on glass`
+				)
+				expect.equal(part.CanCollide, false, `{part:GetFullName()} walk-through`)
+			elseif part.Name == "WindowHead" or part.Name == "Plinth" then
+				expect.truthy(
+					carrier.Name == "Wall" and carrier:HasTag("BreakableWall"),
+					`{part:GetFullName()} on a wall`
+				)
+				expect.equal(part.CanCollide, false, `{part:GetFullName()} walk-through`)
+			elseif
+				part.Name == "Glass"
+				and carrier:FindFirstChild("GroundFloor") -- a walk-in building's window (maps/lib/Rooms)
+				and math.max(part.Size.X, part.Size.Z) >= 4.5
+			then
+				expect.truthy(part:FindFirstChild("Mullion") ~= nil, `{part:GetFullName()} has glazing bars`)
+			end
+		end
+		for name, least in { Mullion = 500, WindowHead = 400, Plinth = 400, Coping = 80 } do
+			expect.truthy((counts[name] or 0) >= least, `{counts[name] or 0} {name} parts (at least {least})`)
+		end
+		-- Two-tone faces: a tower's walls come in its colour and its darker spandrels.
+		local colors: { [string]: boolean } = {}
+		local kinds = 0
+		for _, part in model:FindFirstChild("TowerWest", true):GetChildren() do
+			if part.Name == "Wall" and not colors[part.Color:ToHex()] then
+				colors[part.Color:ToHex()] = true
+				kinds += 1
+			end
+		end
+		expect.truthy(kinds >= 2, `the west tower's walls have {kinds} colour(s)`)
+	end,
 	["floating arenas: one explosive spot per side and low platform"] = function()
 		eachFloating(function(layout)
 			for _, platform in layout.Platforms do

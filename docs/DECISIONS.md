@@ -1280,3 +1280,21 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     the nearest point at least 40 away; if every point is closer, the farthest. Alone in the arena: any point.
   - *Not changed:* the spawn points themselves, the 2 s spawn shield, the map's size. If rounds still feel empty
     after a playtest, the next step is fewer, more central spawn points or a smaller district.
+- **Framed windows, two-tone faces, base courses, roof caps (owner, 2026-10-30: "more detail on buildings, still
+  look blocky"; then "forgegui just run out, change to free"):** built from parts, no paid art. Looked at first with
+  a local perspective render of the layout (flat-shaded parts, not Studio): the blocky look came from 535 windows
+  that were one flat pane set in the middle of a flat wall, faces one colour from foot to roof, and bare roof edges.
+  The finish goes in `maps/lib/Rooms` (spec fields `Frame`, `Spandrel`, `Plinth`), so every walk-in building gets it;
+  the `building` wrapper picks the colours.
+  - *Windows:* a head over every window (like the sill, standing out; it goes when the wall above breaks) and glazing
+    bars in the glass, upright about every 4.5 studs and one across a pane 5+ high (they go with the glass). The glass
+    sits 0.2 toward the inside of the wall, so each window has a reveal. Frames are aluminium (`Metal`), white on the
+    flats, the hotel, the mansion and the koban, dark wood on the yokocho, the ramen shop and the temple (`FRAME`).
+  - *Two-tone faces:* the wall above and below every opening is a shade darker (0.84), so a face reads in bands; the
+    towers' are much darker (0.62), like an office block's spandrels. Same parts, new colours.
+  - *Base course:* a dark stone (`Slate`) band along the foot of every ground-storey wall piece, outside, 1 high (less
+    under a low shop window); it goes with its wall.
+  - *Roof caps:* a coping along the top of every parapet, a little wider, in the sills' colour.
+  - *Size:* 16,092 instances (13,967 before): 830 glazing bars, 206 cross bars, 442 heads, 543 base courses, 104
+    copings. All walk-through and shadowless except the copings. Check the frame rate on a phone; the district
+    streams in by distance.
