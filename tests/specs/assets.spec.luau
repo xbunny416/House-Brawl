@@ -116,7 +116,7 @@ return {
 				Sfx = { Punch = { Id = 123, Volume = 0.7 }, Click = silent },
 				Music = {
 					Lobby = { Id = 456, Volume = 0.5 },
-					Arenas = { Shinjuku = silent },
+					Arenas = { Town = silent },
 					Tension = silent,
 					VictorySting = { Id = 789, Volume = 0.7 },
 				},
@@ -134,7 +134,7 @@ return {
 		expect.truthy(lobby and lobby.Looped, "music loops")
 		local sting = sounds.Music:FindFirstChild("VictorySting")
 		expect.truthy(sting and not sting.Looped, "the sting plays once")
-		expect.equal(sounds.Music:FindFirstChild("Shinjuku"), nil, "an unpicked track has no template")
+		expect.equal(sounds.Music:FindFirstChild("Town"), nil, "an unpicked track has no template")
 		local animations = Sounds.animations(config)
 		local jab = animations:FindFirstChild("Jab")
 		expect.truthy(jab and jab.AnimationId == "rbxassetid://321", "Jab")

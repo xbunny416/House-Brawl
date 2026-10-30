@@ -35,7 +35,7 @@ local Props: PropsConfig = {
 	-- A throw bends toward a fighter within Angle degrees of the thrower's facing and Range studs (Angle 0 = off).
 	ThrowAimAssist = { Angle = 15, Range = 80 },
 	DespawnAfterLanding = 8,
-	MaxActive = 80, -- per arena (Shinjuku has 72 spots: owner, 2026-10-28, "add more throwable item")
+	MaxActive = 80, -- per arena (Town has 72 spots: owner, 2026-10-28, "add more throwable item")
 	SpotRespawnTime = 20,
 	ExplosiveSpotRespawnTime = 30,
 
@@ -73,7 +73,7 @@ local Props: PropsConfig = {
 		Barrel = { Class = "Medium", Size = { X = 2.2, Y = 3, Z = 2.2 }, Material = "Metal", Color = "#3E6E8C" },
 		-- A street trash can (owner, 2026-10-28: "add trash can throwables").
 		TrashCan = { Class = "Medium", Size = { X = 2, Y = 2.8, Z = 2 }, Material = "Metal", Color = "#4E7A5A" },
-		-- Things that belong where they are found in Shinjuku (owner, 2026-10-28: "add more throwable item also match
+		-- Things that belong where they are found in Town (owner, 2026-10-28: "add more throwable item also match
 		-- that found area"): arena prop spots name them (PropType).
 		Stool = { Class = "Light", Size = { X = 1.4, Y = 2.2, Z = 1.4 }, Material = "SmoothPlastic", Color = "#C8463C" },
 		PaperLantern = { Class = "Light", Size = { X = 1.4, Y = 2, Z = 1.4 }, Material = "Fabric", Color = "#D93A2B" },

@@ -9,7 +9,7 @@ local BrokenHighway = require("../../maps/layouts/BrokenHighway")
 local Hideout = require("../../maps/layouts/Hideout")
 local JunkyardIsles = require("../../maps/layouts/JunkyardIsles")
 local NeonMotel = require("../../maps/layouts/NeonMotel")
-local Shinjuku = require("../../maps/layouts/Shinjuku")
+local Town = require("../../maps/layouts/Town")
 local Arena = require("../../maps/lib/Arena")
 
 local Config = Roblox.require(Roblox.game.ReplicatedStorage.Shared.Config)
@@ -39,7 +39,7 @@ local arenas = {
 	{ Layout = BrokenHighway, Model = BrokenHighway.build(ORIGIN) },
 	{ Layout = JunkyardIsles, Model = JunkyardIsles.build(ORIGIN) },
 	{ Layout = NeonMotel, Model = NeonMotel.build(ORIGIN) },
-	{ Layout = Shinjuku, Model = Shinjuku.build(ORIGIN) },
+	{ Layout = Town, Model = Town.build(ORIGIN) },
 }
 local lobby = Hideout.build(Config.Maps.LobbyOrigin)
 
@@ -49,7 +49,7 @@ local function eachArena(check: (layout: any, model: any) -> ())
 	end
 end
 
--- Only the floating arenas (platforms over a void), not a ground arena like Shinjuku (one district on the ground).
+-- Only the floating arenas (platforms over a void), not a ground arena like Town (one district on the ground).
 local function eachFloating(check: (layout: any, model: any) -> ())
 	for _, arena in arenas do
 		if not arena.Layout.Ground then
@@ -157,7 +157,7 @@ return {
 			expect.equal(fs.readFile(path) == roblox.serializeModel({ model }, true), true, path)
 		end
 	end,
-	["Shinjuku is the only arena in the vote; the old three stay built and in the place, switched off"] = function()
+	["Town is the only arena in the vote; the old three stay built and in the place, switched off"] = function()
 		-- The owner, 2026-10-28: "only one arena instead of the 3 old arenas, just store them somewhere, don't delete it".
 		local enabled = {}
 		for _, mapId in Config.Maps.Rotation do
@@ -166,7 +166,7 @@ return {
 			end
 		end
 		expect.equal(#enabled, 1, "enabled arenas")
-		expect.equal(enabled[1], "Shinjuku")
+		expect.equal(enabled[1], "Town")
 		local project = fs.readFile("default.project.json")
 		for _, mapId in { "BrokenHighway", "JunkyardIsles", "NeonMotel" } do
 			expect.truthy(table.find(Config.Maps.Rotation, mapId), `{mapId} stays in the rotation list`)
@@ -320,14 +320,14 @@ return {
 			expect.equal(#tagged(model, "Platform"), if layout.Ground then 1 else 13, `{layout.Id} platforms`)
 		end)
 	end,
-	["Shinjuku: one district on the ground, open edges to fall off, no school strip"] = function()
+	["Town: one district on the ground, open edges to fall off, no school strip"] = function()
 		-- The owner, 2026-10-28: "no floating island", then "want arena to look like jjk shenanigans", then "shrink the
 		-- arena by delete entire school area. remove tower boundary so player can fall dead".
-		expect.equal(Shinjuku.Ground, true, "a ground arena")
-		expect.equal(#Shinjuku.Platforms, 1, "one platform")
-		local district = Shinjuku.Platforms[1]
+		expect.equal(Town.Ground, true, "a ground arena")
+		expect.equal(#Town.Platforms, 1, "one platform")
+		local district = Town.Platforms[1]
 		expect.equal(district.Kind, "Center", "the district never falls")
-		local model = Shinjuku.build(ORIGIN)
+		local model = Town.build(ORIGIN)
 		local halfX, halfZ = district.Size[1] / 2, district.Size[2] / 2
 		local centerX, centerZ = district.Center[1], district.Center[2]
 		-- The district ends at the main street's far pavement: the school, its gym and yard and the shrine are gone.
@@ -585,9 +585,9 @@ return {
 			end
 		end
 	end,
-	["Shinjuku: framed windows, two-tone faces, base courses and roof caps; the trim breaks with its wall"] = function()
+	["Town: framed windows, two-tone faces, base courses and roof caps; the trim breaks with its wall"] = function()
 		-- The owner, 2026-10-30: "more detail on buildings, still look blocky".
-		local model = Shinjuku.build(ORIGIN)
+		local model = Town.build(ORIGIN)
 		local counts: { [string]: number } = {}
 		for _, part in model:GetDescendants() do
 			if not part:IsA("BasePart") then
@@ -629,9 +629,9 @@ return {
 		end
 		expect.truthy(kinds >= 2, `the west tower's walls have {kinds} colour(s)`)
 	end,
-	["Shinjuku: rooftop gear along the roofs' edges, inside each building's footprint, the middles left open"] = function()
+	["Town: rooftop gear along the roofs' edges, inside each building's footprint, the middles left open"] = function()
 		-- The owner, 2026-10-30: "add detail to the roofs" (maps/lib/Roofs).
-		local model = Shinjuku.build(ORIGIN)
+		local model = Town.build(ORIGIN)
 		local kinds: { [string]: boolean } = {}
 		for _, name in
 			{ "Condenser", "VentPipe", "MushroomVent", "SkylightCurb", "SolarPanel", "Duct", "ExhaustHousing" }

@@ -1,6 +1,6 @@
 --!strict
 --[[
-	Art — the pictures on Shinjuku's billboards, murals and posters (owner, 2026-10-30: "still looks plain/blocky").
+	Art — the pictures on Town's billboards, murals and posters (owner, 2026-10-30: "still looks plain/blocky").
 	Made with ForgeGUI as made-up art with no words in it (the billboards' headlines stay GameStrings keys over them)
 	and uploaded as Images to the owner's Roblox account, each 1024 × 572.
 

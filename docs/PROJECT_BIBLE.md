@@ -74,7 +74,7 @@ this file in the same PR as the Config change.
 - Every KO you take is a fall (also resetting your character in the arena; the last attacker still gets the KO).
 - Round 4:00 (owner, 2026-10-17; was 3:00). Intermission/vote 15 s (up to 3 enabled maps; ties random). Respawn delay 3 s. Spawn
   shield 2 s (breaks if you attack). Results 8 s. A round needs 2 active players; AFK players sit out the next round.
-- Spawns (2026-10-30): on an arena of one platform (Shinjuku) fighters start at a random spawn point and the ones
+- Spawns (2026-10-30): on an arena of one platform (Town) fighters start at a random spawn point and the ones
   nearest it. A respawn (or a Casual late joiner) comes back at a point whose nearest other fighter is 40–130 studs
   away (else the nearest point at least 40 away, else the farthest). Floating arenas spread the start over the
   platforms as before.
@@ -132,10 +132,10 @@ Not used. No pets, eggs, or paid random items.
 
 ### 3.1 Streaming & zones
 
-- One Lobby hub + one arena in the vote: Shinjuku (owner, 2026-10-28: "only one arena instead of the 3 old arenas,
-  just store them somewhere, don't delete them"). Broken Highway, Junkyard Isles and Neon Motel stay built in
+- One Lobby hub + one arena in the vote: Town (Shinjuku until 2026-10-30; owner, 2026-10-28: "only one arena instead
+  of the 3 old arenas, just store them somewhere, don't delete them"). Broken Highway, Junkyard Isles and Neon Motel stay built in
   ServerStorage, switched off in `Config.Maps.List` (`Enabled = true` brings one back into the vote). The old three
-  are floating platforms over a void (KillY) with a dark abyss or toxic sludge far below; Shinjuku is a ground arena,
+  are floating platforms over a void (KillY) with a dark abyss or toxic sludge far below; Town is a ground arena,
   one city district with open edges you can fall off (owner, 2026-10-28: "no floating island", then "look like jjk
   shenanigans", then "remove tower boundary so player can fall dead").
 - Lobby → (vote) → arena via server-side teleport of characters within the same place. After the round, everyone
@@ -150,7 +150,7 @@ Not used. No pets, eggs, or paid random items.
 | Map 1 — Broken Highway | Shattered overpass chunks, abandoned cars, road signs |
 | Map 2 — Junkyard Isles | Stacked car and container islands over toxic sludge |
 | Map 3 — Neon Motel | Sinking motel rooftops, flickering retro neon, pool on one roof |
-| Map 4 — Shinjuku (the only arena in the vote) | A Tokyo street block on the ground with open edges over a cliff, built up and furnished inside: twin towers with a skybridge and glass lifts, a yokocho, pachinko, karaoke, a car park, a department store with a rooftop Ferris wheel, a hotel, a building site with a turning crane, shops, a graveyard, a jail, a mall with a bowling alley (in the spirit of Jujutsu Shenanigans' Shinjuku) |
+| Map 4 — Town (the only arena in the vote; Shinjuku until 2026-10-30) | A Tokyo street block on the ground with open edges over a cliff, built up and furnished inside: twin towers with a skybridge and glass lifts, a yokocho, pachinko, karaoke, a car park, a department store with a rooftop Ferris wheel, a hotel, a building site with a turning crane, shops, a graveyard, a jail, a mall with a bowling alley (in the spirit of Jujutsu Shenanigans' Shinjuku) |
 
 Maps 1–3 are switched off (kept built) since 2026-10-28.
 
@@ -261,7 +261,7 @@ the pool roof. Gangways: short from the centre to West and South, East to its lo
 antenna roof; longer from West to the NW roof and South to the SE roof; the rest are jumps. Ice machines and lawn
 chair stacks are detailed models.
 
-**Every floating arena** (all but Shinjuku) follows the same rules as Broken Highway: four layers — 2 low platforms (4–9 below the centre), the
+**Every floating arena** (all but Town) follows the same rules as Broken Highway: four layers — 2 low platforms (4–9 below the centre), the
 base level (one centre platform that never falls, with a raised deck ≤ 6 high and ramps, and 4 side platforms within
 3 studs of it), 4 corner ledges (4–6 above) and 2 peaks (10–12 above) — every outer platform 8–14 studs from its
 nearest neighbour, every platform reachable from the centre with climbs of at most 6 studs, 16 spawn points, 24 loose
@@ -282,9 +282,10 @@ two 18×18 antenna roofs (+12) and two 28×28 low roofs. Motel buildings sink in
 surrounded by dark towers with neon signs. Neon flickers now and then. Structures: vending machine (HP 80) ×2, ice
 machine (HP 80) ×3, lawn chair stack (HP 60) ×3.
 
-**Shinjuku arena** (day; owner, 2026-10-28: "make another only one arena …", "no floating island", then "want arena
-to look like jjk shenanigans" — the Shinjuku battleground of the Roblox game Jujutsu Shenanigans; this is our own
-Shinjuku-style district in that spirit, with generic shop names): a ground arena, one Tokyo street block (560×340, it
+**Town arena** (called Shinjuku until 2026-10-30, owner: "change arena name … like town"; day; owner, 2026-10-28:
+"make another only one arena …", "no floating island", then "want arena to look like jjk shenanigans" — the
+Shinjuku battleground of the Roblox game Jujutsu Shenanigans; this is our own Shinjuku-style district in that spirit,
+with generic shop names): a ground arena, one Tokyo street block (560×340, it
 never falls; grown twice: "town structure more bigger and can enter", then "bit bigger structures like shop, tower";
 then shrunk: "shrink the arena by delete entire school area"; then built up: "more dimension and dynamic, literally
 include inside structure too, also bigger building, I don't want too much flat area except that fountain area or
@@ -467,7 +468,7 @@ explosive barrels (one by the gas pumps, one at the building site).
 - Grab range 6 studs (server-checked). Hold 1 prop. Holding replaces Punch with Throw and blocks charging.
 - Throw speed 90 studs/s the way the character faces (owner's choice), with a slight arc under 25% gravity so long
   throws stay level, and a gentle aim assist toward a fighter within 15° (80 studs). Thrown and dropped props despawn
-  8 s after landing. Max 80 props per arena (40 until 2026-10-28, when Shinjuku got 72 spots: "add more throwable item").
+  8 s after landing. Max 80 props per arena (40 until 2026-10-28, when Town got 72 spots: "add more throwable item").
 
 | Class | Examples | Damage / Percent | KB scale | Carrier slow |
 | --- | --- | --- | --- | --- |
@@ -498,7 +499,7 @@ explosive barrels (one by the gas pumps, one at the building site).
   animations, sounds). Weapons are welded accessory models, not Tools (mobile buttons stay consistent).
 - Weapons: baseball bat, shovel, wrench, hubcap shield (each < 1,500 triangles).
 - Props: folding chair, wooden crate, tire, bucket, CRT TV, oil barrel, explosive barrel, fridge, car door, traffic
-  cone, trash can (a medium prop, also a loose-spot type; owner, 2026-10-28), and for Shinjuku's places (owner,
+  cone, trash can (a medium prop, also a loose-spot type; owner, 2026-10-28), and for Town's places (owner,
   2026-10-28: "add more throwable item also match that found area"): bar stool, paper lantern, potted plant, office
   chair, computer screen, shopping basket, bowling pin and ball, fire extinguisher, stack of books, toolbox,
   loudspeaker, suitcase, cinderblock, gas can, mannequin.

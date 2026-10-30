@@ -56,7 +56,7 @@ return {
 	DuskGlow = "#B97A55",
 	ConcreteLight = "#A59F94",
 	BrickRed = "#8A4634",
-	-- The Shinjuku arena (owner, 2026-10-28: "look like jjk shenanigans"): a bright Tokyo street block.
+	-- The Town arena (owner, 2026-10-28: "look like jjk shenanigans"): a bright Tokyo street block.
 	Lawn = "#5E9C48",
 	CityTan = "#C9B595",
 	CityBlue = "#7D94AB",
