@@ -1,8 +1,8 @@
 <roblox version="4">
   <Item class="Model" referent="0">
     <Properties>
-      <string name="Name">Shinjuku</string>
-      <BinaryString name="AttributesSerialize">AwAAAAUAAABLaWxsWQUAAAhCCAAAAExpZ2h0aW5nAgMAAABEYXkFAAAATWFwSWQCCAAAAFNoaW5qdWt1</BinaryString>
+      <string name="Name">Town</string>
+      <BinaryString name="AttributesSerialize">AwAAAAUAAABLaWxsWQUAAAhCCAAAAExpZ2h0aW5nAgMAAABEYXkFAAAATWFwSWQCBAAAAFRvd24=</BinaryString>
     </Properties>
     <Item class="Folder" referent="1">
       <Properties>
@@ -5004,7 +5004,7 @@
             <Item class="TextLabel" referent="156">
               <Properties>
                 <string name="Name">Text</string>
-                <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGgAAAE1hcC5TaGluanVrdS5TaWduLlBhY2hpbmtv</BinaryString>
+                <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFgAAAE1hcC5Ub3duLlNpZ24uUGFjaGlua28=</BinaryString>
                 <float name="BackgroundTransparency">1</float>
                 <Font name="FontFace">
                   <Family>
@@ -5072,7 +5072,7 @@
             <Item class="TextLabel" referent="159">
               <Properties>
                 <string name="Name">Text</string>
-                <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGgAAAE1hcC5TaGluanVrdS5TaWduLlBhY2hpbmtv</BinaryString>
+                <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFgAAAE1hcC5Ub3duLlNpZ24uUGFjaGlua28=</BinaryString>
                 <float name="BackgroundTransparency">1</float>
                 <Font name="FontFace">
                   <Family>
@@ -61792,7 +61792,7 @@
           <Item class="TextLabel" referent="1976">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGAAAAE1hcC5TaGluanVrdS5TaWduLkFkQ29sYQ==</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFAAAAE1hcC5Ub3duLlNpZ24uQWRDb2xh</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -111462,7 +111462,7 @@
           <Item class="TextLabel" referent="3571">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGQAAAE1hcC5TaGluanVrdS5TaWduLkFkTmlnaHQ=</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFQAAAE1hcC5Ub3duLlNpZ24uQWROaWdodA==</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -144611,7 +144611,7 @@
           <Item class="TextLabel" referent="4662">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFgAAAE1hcC5TaGluanVrdS5TaWduLkNhZmU=</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCEgAAAE1hcC5Ub3duLlNpZ24uQ2FmZQ==</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -151477,7 +151477,7 @@
           <Item class="TextLabel" referent="4880">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFwAAAE1hcC5TaGluanVrdS5TaWduLlJhbWVu</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCEwAAAE1hcC5Ub3duLlNpZ24uUmFtZW4=</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -151863,7 +151863,7 @@
           <Item class="TextLabel" referent="4893">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFwAAAE1hcC5TaGluanVrdS5TaWduLlJhbWVu</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCEwAAAE1hcC5Ub3duLlNpZ24uUmFtZW4=</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -162714,7 +162714,7 @@
           <Item class="TextLabel" referent="5236">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGQAAAE1hcC5TaGluanVrdS5TaWduLllva29jaG8=</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFQAAAE1hcC5Ub3duLlNpZ24uWW9rb2Nobw==</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -167150,7 +167150,7 @@
           <Item class="TextLabel" referent="5377">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGgAAAE1hcC5TaGluanVrdS5TaWduLlBhY2hpbmtv</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFgAAAE1hcC5Ub3duLlNpZ24uUGFjaGlua28=</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -188115,7 +188115,7 @@
           <Item class="TextLabel" referent="6054">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGQAAAE1hcC5TaGluanVrdS5TaWduLkthcmFva2U=</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFQAAAE1hcC5Ub3duLlNpZ24uS2FyYW9rZQ==</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -191282,7 +191282,7 @@
           <Item class="TextLabel" referent="6155">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFgAAAE1hcC5TaGluanVrdS5TaWduLk1hcnQ=</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCEgAAAE1hcC5Ub3duLlNpZ24uTWFydA==</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -209961,7 +209961,7 @@
           <Item class="TextLabel" referent="6753">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGQAAAE1hcC5TaGluanVrdS5TaWduLlBhcmtpbmc=</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFQAAAE1hcC5Ub3duLlNpZ24uUGFya2luZw==</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -212162,7 +212162,7 @@
           <Item class="TextLabel" referent="6824">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFQAAAE1hcC5TaGluanVrdS5TaWduLkdhcw==</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCEQAAAE1hcC5Ub3duLlNpZ24uR2Fz</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -213456,7 +213456,7 @@
           <Item class="TextLabel" referent="6866">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFwAAAE1hcC5TaGluanVrdS5TaWduLktvYmFu</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCEwAAAE1hcC5Ub3duLlNpZ24uS29iYW4=</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -227121,7 +227121,7 @@
           <Item class="TextLabel" referent="7322">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGAAAAE1hcC5TaGluanVrdS5TaWduLkFyY2FkZQ==</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFAAAAE1hcC5Ub3duLlNpZ24uQXJjYWRl</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -243110,7 +243110,7 @@
           <Item class="TextLabel" referent="7831">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFgAAAE1hcC5TaGluanVrdS5TaWduLk1hbGw=</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCEgAAAE1hcC5Ub3duLlNpZ24uTWFsbA==</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -243303,7 +243303,7 @@
           <Item class="TextLabel" referent="7838">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFgAAAE1hcC5TaGluanVrdS5TaWduLk1hbGw=</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCEgAAAE1hcC5Ub3duLlNpZ24uTWFsbA==</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -248986,7 +248986,7 @@
           <Item class="TextLabel" referent="8021">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGQAAAE1hcC5TaGluanVrdS5TaWduLkJvd2xpbmc=</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFQAAAE1hcC5Ub3duLlNpZ24uQm93bGluZw==</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -294814,7 +294814,7 @@
           <Item class="TextLabel" referent="9504">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFwAAAE1hcC5TaGluanVrdS5TaWduLkJvb2tz</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCEwAAAE1hcC5Ub3duLlNpZ24uQm9va3M=</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -301959,7 +301959,7 @@
           <Item class="TextLabel" referent="9733">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCHQAAAE1hcC5TaGluanVrdS5TaWduLkVsZWN0cm9uaWNz</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGQAAAE1hcC5Ub3duLlNpZ24uRWxlY3Ryb25pY3M=</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -308781,7 +308781,7 @@
           <Item class="TextLabel" referent="9951">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGwAAAE1hcC5TaGluanVrdS5TaWduLkRydWdzdG9yZQ==</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFwAAAE1hcC5Ub3duLlNpZ24uRHJ1Z3N0b3Jl</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -315769,7 +315769,7 @@
           <Item class="TextLabel" referent="10175">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFgAAAE1hcC5TaGluanVrdS5TaWduLlN1YnM=</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCEgAAAE1hcC5Ub3duLlNpZ24uU3Vicw==</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -322562,7 +322562,7 @@
           <Item class="TextLabel" referent="10392">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGAAAAE1hcC5TaGluanVrdS5TaWduLlN3ZWV0cw==</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFAAAAE1hcC5Ub3duLlNpZ24uU3dlZXRz</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -344288,7 +344288,7 @@
           <Item class="TextLabel" referent="11081">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGwAAAE1hcC5TaGluanVrdS5TaWduLkRlcHRTdG9yZQ==</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFwAAAE1hcC5Ub3duLlNpZ24uRGVwdFN0b3Jl</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -356426,7 +356426,7 @@
           <Item class="TextLabel" referent="11467">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFgAAAE1hcC5TaGluanVrdS5TaWduLkphaWw=</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCEgAAAE1hcC5Ub3duLlNpZ24uSmFpbA==</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -364162,7 +364162,7 @@
           <Item class="TextLabel" referent="11716">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGAAAAE1hcC5TaGluanVrdS5TaWduLkNvbWVkeQ==</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFAAAAE1hcC5Ub3duLlNpZ24uQ29tZWR5</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -370635,7 +370635,7 @@
           <Item class="TextLabel" referent="11921">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFwAAAE1hcC5TaGluanVrdS5TaWduLkNvdXJ0</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCEwAAAE1hcC5Ub3duLlNpZ24uQ291cnQ=</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -390095,7 +390095,7 @@
           <Item class="TextLabel" referent="12537">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFgAAAE1hcC5TaGluanVrdS5TaWduLkZpcmU=</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCEgAAAE1hcC5Ub3duLlNpZ24uRmlyZQ==</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -426699,7 +426699,7 @@
           <Item class="TextLabel" referent="13730">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFwAAAE1hcC5TaGluanVrdS5TaWduLkhvdGVs</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCEwAAAE1hcC5Ub3duLlNpZ24uSG90ZWw=</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -427599,7 +427599,7 @@
           <Item class="TextLabel" referent="13760">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCHgAAAE1hcC5TaGluanVrdS5TaWduLkNvbnN0cnVjdGlvbg==</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGgAAAE1hcC5Ub3duLlNpZ24uQ29uc3RydWN0aW9u</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -456929,7 +456929,7 @@
           <Item class="TextLabel" referent="14731">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGAAAAE1hcC5TaGluanVrdS5TaWduLkFkQ29sYQ==</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFAAAAE1hcC5Ub3duLlNpZ24uQWRDb2xh</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -457096,7 +457096,7 @@
           <Item class="TextLabel" referent="14737">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGQAAAE1hcC5TaGluanVrdS5TaWduLkFkTmlnaHQ=</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFQAAAE1hcC5Ub3duLlNpZ24uQWROaWdodA==</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>
@@ -457263,7 +457263,7 @@
           <Item class="TextLabel" referent="14743">
             <Properties>
               <string name="Name">Text</string>
-              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCGQAAAE1hcC5TaGluanVrdS5TaWduLkFkUmFtZW4=</BinaryString>
+              <BinaryString name="AttributesSerialize">AQAAAAYAAABMb2NLZXkCFQAAAE1hcC5Ub3duLlNpZ24uQWRSYW1lbg==</BinaryString>
               <float name="BackgroundTransparency">1</float>
               <Font name="FontFace">
                 <Family>

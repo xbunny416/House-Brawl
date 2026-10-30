@@ -1379,3 +1379,15 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     8 studs along big roofs (20+ studs across), a shade darker than the roof, walk-through.
   - *Size:* 16,855 instances (16,092 before): 274 pieces of gear, 32 rods, 120 seams. The gear goes into each
     building's model, so it streams in with it.
+- **Shinjuku renamed Town (owner, 2026-10-30: "change arena name from shinjuku to other name like town"):** the
+  arena's name everywhere it means our arena: the vote and the map TVs show **Town** (`Map.Town.Name`), and the map id,
+  `maps/layouts/Town.luau`, `maps/generated/Town.rbxmx` (`ServerStorage.Arenas.Town`), `Config.Maps`, the music slot
+  (`Config.Audio.Music.Arenas.Town`), every sign's string key (`Map.Town.Sign.*`; the signs read the same), the specs
+  and the docs. The look is unchanged.
+  - *Kept:* mentions of the real Shinjuku and of Jujutsu Shenanigans' Shinjuku map (the reference), and the history
+    in this file and PROGRESS.md. STUDIO_TESTING's older entries still say Shinjuku (a note says it's the same arena).
+  - *Saved data:* only a private server's saved map choice can hold a map id. A saved "Shinjuku" is no longer an
+    enabled map, so `PrivateServerRules.sanitize` turns it into "Vote" on load, and the vote has only Town in it:
+    the same arena, so no migration.
+  - *Studio:* restart `rojo serve` (the file is new); delete a leftover `ServerStorage.Arenas.Shinjuku` if the saved
+    place still has one. Upload GameStrings.csv again (the keys changed).

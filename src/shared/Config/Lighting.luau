@@ -89,7 +89,7 @@ local Lighting: { [string]: Preset } = {
 		-- Heavy night clouds over the motel (owner, 2026-10-20: a sky that matches the arena, not clear).
 		Clouds = { Cover = 0.8, Density = 0.7, Color = "#2E2648" },
 	},
-	-- Shinjuku (owner, 2026-10-28: first "like the default small city in Roblox", then "like jjk shenanigans"): a clear
+	-- Town (owner, 2026-10-28: first "like the default small city in Roblox", then "like jjk shenanigans"): a clear
 	-- early afternoon like a fresh Roblox place — a blue sky with white clouds, a soft blue-white haze, neutral colours.
 	Day = {
 		ClockTime = 14.5,

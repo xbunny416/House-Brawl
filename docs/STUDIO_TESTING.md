@@ -137,11 +137,13 @@ Settings → Promo code, styles come from the style roll).
   - *Gloomier (same day):* the room should feel dim, with warm pools of light under the lamps and the neon standing
     out. If it is too dark to see players or the floor, raise `Ambient` in the `Dusk` preset (`Config.Lighting`) a
     little first; if only one area is too dark, raise its lamps instead.
-- **Shinjuku, the only arena (2026-10-28; Small City until the owner asked for the Jujutsu Shenanigans look):**
-  - *If no round starts* and Output says `[Maps] Shinjuku is enabled but ServerStorage.Arenas has no Shinjuku model`:
-    stop `rojo serve` (Ctrl+C), start it again and click Connect in the Rojo plugin (the map's file is new: SmallCity
-    became Shinjuku). `ServerStorage.Arenas` should hold Shinjuku plus the three old arenas.
-  - *Starting a round:* stand on the join pad. The vote shows one map, Shinjuku, and the round loads it on a sunny day.
+- **Town, the only arena (2026-10-28; Small City until the owner asked for the Jujutsu Shenanigans look, then Shinjuku
+  until 2026-10-30):** the older entries below say Shinjuku; it is the same arena.
+  - *If no round starts* and Output says `[Maps] Town is enabled but ServerStorage.Arenas has no Town model`: stop
+    `rojo serve` (Ctrl+C), start it again and click Connect in the Rojo plugin (the map's file is new: Shinjuku became
+    Town). `ServerStorage.Arenas` should hold Town plus the three old arenas, and no Shinjuku model (delete a leftover
+    one if the place still has it).
+  - *Starting a round:* stand on the join pad. The vote shows one map, Town, and the round loads it on a sunny day.
   - *Where you are:* a Tokyo street block. The main street runs along the north edge; south of it stand the twin
     towers either side of the avenue, the skybridge between them.
   - *Fighting:* props respawn on their spots (some on the roofs, the skybridge and the cafe) and you can throw them,

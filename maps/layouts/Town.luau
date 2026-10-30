@@ -1,6 +1,7 @@
 --!strict
 --[[
-	Map 4: Shinjuku — the only arena in the vote since 2026-10-28. The owner asked for one new arena instead of the 3 old
+	Map 4: Town (called Shinjuku until 2026-10-30, owner: "change arena name from shinjuku to other name like town") —
+	the only arena in the vote since 2026-10-28. The owner asked for one new arena instead of the 3 old
 	ones ("just store them somewhere, don't delete them"; Broken Highway, Junkyard Isles and Neon Motel stay built,
 	switched off in Config.Maps.List), then "no floating island", then "want arena to look like jjk shenanigans" (the
 	Shinjuku battleground of the Roblox game Jujutsu Shenanigans), then "add breakable walls and trash can throwables,
@@ -49,7 +50,7 @@ type Platform = Arena.Platform
 
 local Layout = {}
 
-Layout.Id = "Shinjuku"
+Layout.Id = "Town"
 Layout.Lighting = "Day"
 Layout.Ground = true -- one ground platform instead of floating ones (the maps spec checks it differently)
 
@@ -1246,7 +1247,7 @@ local function twinTowers()
 			Position = { x, 93.5, z - half - 0.5 },
 			Color = if index == 1 then "Red" else "CityBlue",
 			Material = "SmoothPlastic",
-			Key = if index == 1 then "Map.Shinjuku.Sign.AdCola" else "Map.Shinjuku.Sign.AdNight",
+			Key = if index == 1 then "Map.Town.Sign.AdCola" else "Map.Town.Sign.AdNight",
 			TextColor = "OffWhite",
 			CanCollide = false,
 			Image = art(if index == 1 then "Cola" else "Night", 32 / 18),
@@ -1325,7 +1326,7 @@ local function cafe()
 	sofa({ -40, -65.4 }, STOREY, 0, "WoodMid")
 	Pieces.block("Bookshelf", { -20.6, -52 }, { 1.2, 5, 8 }, "WoodDark", "Wood", STOREY)
 	smallTable({ -40, -60 }, STOREY)
-	faceSign(at, size, "+Z", 0, DOOR + 1, 12, 1.4, "Map.Shinjuku.Sign.Cafe", "WoodDark", "Cream")
+	faceSign(at, size, "+Z", 0, DOOR + 1, 12, 1.4, "Map.Town.Sign.Cafe", "WoodDark", "Cream")
 	B.part({
 		Name = "Awning",
 		Size = { 16, 0.3, 3 },
@@ -1402,7 +1403,7 @@ local function ramen()
 		"OffWhite",
 		"Fabric"
 	)
-	faceSign(at, size, "+Z", 0, DOOR + 1, 14, 1.4, "Map.Shinjuku.Sign.Ramen", "Black", "Cream")
+	faceSign(at, size, "+Z", 0, DOOR + 1, 14, 1.4, "Map.Town.Sign.Ramen", "Black", "Cream")
 	for index = 0, 3 do
 		B.part({
 			Name = "Curtain",
@@ -1443,7 +1444,7 @@ local function ramen()
 		Rotation = B.yaw("North"),
 		Color = "Red",
 		Material = "SmoothPlastic",
-		Key = "Map.Shinjuku.Sign.Ramen",
+		Key = "Map.Town.Sign.Ramen",
 		TextColor = "OffWhite",
 		CanCollide = false,
 	})
@@ -1546,7 +1547,7 @@ local function yokocho()
 		Rotation = B.yaw("East"),
 		Color = "Red",
 		Material = "SmoothPlastic",
-		Key = "Map.Shinjuku.Sign.Yokocho",
+		Key = "Map.Town.Sign.Yokocho",
 		TextColor = "OffWhite",
 		Glow = true,
 		CanCollide = false,
@@ -1598,7 +1599,7 @@ local function pachinko()
 	end
 	Pieces.block("PrizeCounter", { at[1] - 14, front - 4 }, { 6, 3.4, 2 }, "WoodDark", "Wood")
 	panel("NeonBand", at, size, "+Z", 0, DOOR + 1, size[1], 0.5, "NeonPink", "Neon")
-	faceSign(at, size, "+Z", 0, 18.4, 18, 2.2, "Map.Shinjuku.Sign.Pachinko", "Black", "NeonPink", true)
+	faceSign(at, size, "+Z", 0, 18.4, 18, 2.2, "Map.Town.Sign.Pachinko", "Black", "NeonPink", true)
 	B.part({
 		Name = "VerticalSign",
 		Size = { 1.6, 14, 0.4 },
@@ -1668,7 +1669,7 @@ local function karaoke()
 		Rotation = B.yaw("North"),
 		Color = "ShopTeal",
 		Material = "SmoothPlastic",
-		Key = "Map.Shinjuku.Sign.Karaoke",
+		Key = "Map.Town.Sign.Karaoke",
 		TextColor = "OffWhite",
 		Glow = true,
 		CanCollide = false,
@@ -1755,7 +1756,7 @@ local function carPark()
 	for _, dx in { -40, 22 } do
 		Pieces.lamp("RoofLamp", { at[1] + dx, at[2] }, 12, 90, CARPARK_ROOF)
 	end
-	faceSign(at, size, "+X", 0, 22, 16, 3, "Map.Shinjuku.Sign.Parking", "CityBlue", "OffWhite")
+	faceSign(at, size, "+X", 0, 22, 16, 3, "Map.Town.Sign.Parking", "CityBlue", "OffWhite")
 	-- The gangway up to the karaoke tower's roof (over both parapets).
 	local karaokeRoof = KARAOKE.Floors * STOREY + 0.6
 	Pieces.span(
@@ -1811,7 +1812,7 @@ local function gasStation()
 		Rotation = B.yaw("West"),
 		Color = "Red",
 		Material = "SmoothPlastic",
-		Key = "Map.Shinjuku.Sign.Gas",
+		Key = "Map.Town.Sign.Gas",
 		TextColor = "OffWhite",
 		CanCollide = false,
 	})
@@ -1831,7 +1832,7 @@ local function koban()
 		Windows = { Faces = { "+Z", "-Z" }, Width = 3, Height = 3, Sill = 3, Spacing = 5 },
 		Roof = { Color = "AsphaltDark" },
 	})
-	faceSign(at, size, "-X", 0, 9, 6, 1, "Map.Shinjuku.Sign.Koban", "OffWhite", "Black")
+	faceSign(at, size, "-X", 0, 9, 6, 1, "Map.Town.Sign.Koban", "OffWhite", "Black")
 	B.part({
 		Name = "RedLamp",
 		Size = { 1.1, 1.1, 1.1 },
@@ -1892,7 +1893,7 @@ local function mart()
 	Pieces.block("Counter", { at[1] - 17, at[2] - 7 }, { 2, 3.4, 6 }, "WoodDark", "Wood")
 	panel("SignBand", at, size, "-Z", 0, 10.4, size[1], 2.6, "OffWhite")
 	panel("Stripe", at, size, "-Z", 0, 8.7, size[1], 0.6, "Teal")
-	faceSign(at, size, "-Z", 0, 10.4, 16, 1.8, "Map.Shinjuku.Sign.Mart", "OffWhite", "TealDark")
+	faceSign(at, size, "-Z", 0, 10.4, 16, 1.8, "Map.Town.Sign.Mart", "OffWhite", "TealDark")
 	vending({ at[1] + size[1] / 2 + 1.3, at[2] - 2 }, 90, "Red")
 	vending({ at[1] + size[1] / 2 + 1.3, at[2] + 1.4 }, 90, "CityBlue")
 	roofKit(at, size, 12.6, true)
@@ -2087,7 +2088,7 @@ local function arcade()
 			CastShadow = false,
 		})
 	end
-	faceSign(at, size, "-Z", 0, 13, 20, 3, "Map.Shinjuku.Sign.Arcade", "Black", "NeonPink", true)
+	faceSign(at, size, "-Z", 0, 13, 20, 3, "Map.Town.Sign.Arcade", "Black", "NeonPink", true)
 	roofKit(at, size, roof, false)
 	ladder({ at[1] + size[1] / 2 + 1, at[2] + 15 }, 0, 22) -- onto the roof from the east side
 end
@@ -2137,7 +2138,7 @@ local function mall()
 	for index, color in { "NeonPink", "ShopYellow", "NeonTeal", "ShopOrange" } do
 		panel(`Graffiti{index}`, at, size, "+Z", -27 + (index - 1) * 18, 5.5 + (index % 2), 11, 5, color)
 	end
-	faceSign(at, size, "+X", 0, 10, 18, 1.8, "Map.Shinjuku.Sign.Mall", "CityBlue", "OffWhite")
+	faceSign(at, size, "+X", 0, 10, 18, 1.8, "Map.Town.Sign.Mall", "CityBlue", "OffWhite")
 	-- A big sign on the roof facing the street.
 	for _, dz in { -10, 10 } do
 		Pieces.column("SignPost", { at[1] + 30, at[2] + dz }, roof, roof + 3.4, 0.5, "MetalDark", "Metal")
@@ -2149,7 +2150,7 @@ local function mall()
 		Rotation = B.yaw("East"),
 		Color = "CityBlue",
 		Material = "SmoothPlastic",
-		Key = "Map.Shinjuku.Sign.Mall",
+		Key = "Map.Town.Sign.Mall",
 		TextColor = "OffWhite",
 		CanCollide = false,
 	})
@@ -2200,7 +2201,7 @@ local function bowling()
 	bench({ -205, -64 }, -90, 1)
 	bench({ -205, -56 }, -90, 1)
 	Pieces.block("ShoeCounter", { -197, -70 }, { 2, 3.4, 8 }, "WoodDark", "Wood")
-	faceSign(at, size, "+X", 0, 10.8, 16, 2.4, "Map.Shinjuku.Sign.Bowling", "OffWhite", "Red")
+	faceSign(at, size, "+X", 0, 10.8, 16, 2.4, "Map.Town.Sign.Bowling", "OffWhite", "Red")
 	upright("GiantPin", { -205, -52 }, 13.6, 8, 3.4, "OffWhite", "SmoothPlastic", false) -- on the roof (+13.6)
 	upright("PinStripe", { -205, -52 }, 18.8, 0.8, 3.5, "Red", "SmoothPlastic", false)
 	B.part({
@@ -2343,11 +2344,11 @@ local SHOP_Z = -117
 local function shopRow()
 	for index, entry in
 		{
-			{ -147, "ShopRed", "Map.Shinjuku.Sign.Books" },
-			{ -117, "ShopYellow", "Map.Shinjuku.Sign.Electronics" },
-			{ -87, "ShopTeal", "Map.Shinjuku.Sign.Drugstore" },
-			{ -57, "ShopPink", "Map.Shinjuku.Sign.Subs" },
-			{ -27, "ShopOrange", "Map.Shinjuku.Sign.Sweets" },
+			{ -147, "ShopRed", "Map.Town.Sign.Books" },
+			{ -117, "ShopYellow", "Map.Town.Sign.Electronics" },
+			{ -87, "ShopTeal", "Map.Town.Sign.Drugstore" },
+			{ -57, "ShopPink", "Map.Town.Sign.Subs" },
+			{ -27, "ShopOrange", "Map.Town.Sign.Sweets" },
 		}
 	do
 		local at, size = { entry[1], SHOP_Z }, { 30, 26 }
@@ -2452,7 +2453,7 @@ local function jailAndClub()
 		Stair = { At = { -28, 0 }, Along = "Z", Width = 4 },
 		Roof = { Color = "Purple", Parapet = true },
 	})
-	faceSign(jail, jailSize, "+Z", 0, 28, 8, 1.2, "Map.Shinjuku.Sign.Jail", "OffWhite", "Black")
+	faceSign(jail, jailSize, "+Z", 0, 28, 8, 1.2, "Map.Town.Sign.Jail", "OffWhite", "Black")
 	-- Downstairs: two holding cells along the back wall (an open door in each), a bunk in each, the front desk.
 	local barsZ = jail[2] - 10
 	for x = jail[1] - 27, jail[1] + 3, 2 do
@@ -2563,7 +2564,7 @@ local function jailAndClub()
 		end
 	end
 	Pieces.block("Bar", { club[1] + 30.5, club[2] + 8 }, { 2, 3.4, 12 }, "WoodDark", "Wood")
-	faceSign(club, clubSize, "+Z", 0, DOOR + 1.6, 16, 1.8, "Map.Shinjuku.Sign.Comedy", "Black", "LaneYellow", true)
+	faceSign(club, clubSize, "+Z", 0, DOOR + 1.6, 16, 1.8, "Map.Town.Sign.Comedy", "Black", "LaneYellow", true)
 	for index = 0, 8 do
 		B.part({
 			Name = "MarqueeLight",
@@ -2631,7 +2632,7 @@ local function courtAndMansion()
 		Rotation = B.yaw("North"),
 		Color = "OffWhite",
 		Material = "Marble",
-		Key = "Map.Shinjuku.Sign.Court",
+		Key = "Map.Town.Sign.Court",
 		TextColor = "Black",
 		CanCollide = false,
 	})
@@ -2731,7 +2732,7 @@ local function fireStation()
 		end)
 	end
 	panel("BayStripe", at, size, "-X", 0, 11, size[2] - 2, 0.8, "Red")
-	faceSign(at, size, "-X", 0, 21, 16, 1.6, "Map.Shinjuku.Sign.Fire", "Red", "OffWhite")
+	faceSign(at, size, "-X", 0, 21, 16, 1.6, "Map.Town.Sign.Fire", "Red", "OffWhite")
 	Pieces.block("Lockers", { 80.4, at[2] - 11 }, { 1, 5, 10 }, "CityGrey", "Metal")
 	for _, x in { 40, 50, 60 } do
 		bed({ x, at[2] - 14 }, storey, 0, "Red")
@@ -2828,7 +2829,7 @@ local function hotel()
 		Rotation = B.yaw("North"),
 		Color = "Red",
 		Material = "SmoothPlastic",
-		Key = "Map.Shinjuku.Sign.Hotel",
+		Key = "Map.Town.Sign.Hotel",
 		TextColor = "OffWhite",
 		Glow = true,
 		CanCollide = false,
@@ -2893,7 +2894,7 @@ local function deptStore()
 		sofa({ x, south }, 2 * STOREY, 0, "WoodMid")
 		Pieces.block("Display", { x, north }, { 6, 2.4, 3 }, "WoodDark", "Wood", 2 * STOREY)
 	end
-	faceSign(at, size, "+Z", 0, 11.5, 28, 1.6, "Map.Shinjuku.Sign.DeptStore", "OffWhite", "Black")
+	faceSign(at, size, "+Z", 0, 11.5, 28, 1.6, "Map.Town.Sign.DeptStore", "OffWhite", "Black")
 	-- The roof: the Ferris wheel's A-frame legs and axle, a ticket booth, AC units.
 	local hub = { -80, DEPT_ROOF + 15.4, at[2] }
 	for _, dz in { -3.2, 3.2 } do
@@ -2991,7 +2992,7 @@ local function buildingSite()
 		Rotation = B.yaw("North"),
 		Color = "CityBlue",
 		Material = "SmoothPlastic",
-		Key = "Map.Shinjuku.Sign.Construction",
+		Key = "Map.Town.Sign.Construction",
 		TextColor = "OffWhite",
 		CanCollide = false,
 	})
@@ -3272,7 +3273,7 @@ local function movers()
 				Rotation = B.yaw(facing),
 				Color = "Black",
 				Material = "SmoothPlastic",
-				Key = "Map.Shinjuku.Sign.Pachinko",
+				Key = "Map.Town.Sign.Pachinko",
 				TextColor = "NeonPink",
 				Glow = true,
 				CanCollide = false,
@@ -4155,9 +4156,9 @@ local function facades()
 			Image = art(view, 20 / 11),
 		})
 	end
-	billboard({ -117, -122 }, 3 * STOREY + 0.6, "North", "Map.Shinjuku.Sign.AdCola", "Red", "Cola")
-	billboard({ 125, 62 }, 12.6, "South", "Map.Shinjuku.Sign.AdNight", "CityBlue", "Night")
-	billboard({ 110, -60 }, 2 * STOREY + 0.6, "South", "Map.Shinjuku.Sign.AdRamen", "ShopOrange", "Ramen")
+	billboard({ -117, -122 }, 3 * STOREY + 0.6, "North", "Map.Town.Sign.AdCola", "Red", "Cola")
+	billboard({ 125, 62 }, 12.6, "South", "Map.Town.Sign.AdNight", "CityBlue", "Night")
+	billboard({ 110, -60 }, 2 * STOREY + 0.6, "South", "Map.Town.Sign.AdRamen", "ShopOrange", "Ramen")
 	-- Curtains half across the hotel's and the flats' windows (just inside the glass).
 	local curtainColors = { "Cream", "ShopPink", "CityBlue", "OffWhite", "ShopYellow" }
 	for floor = 2, HOTEL.Floors do
@@ -4497,7 +4498,7 @@ end
 
 -- The pieces are written from the arena origin; the platform's own frame is at its centre (z CENTER_Z).
 local function decorate(plat: Platform)
-	assert(plat.Id == "Center", "Shinjuku has one platform")
+	assert(plat.Id == "Center", "Town has one platform")
 	B.within({ 0, 0, -CENTER_Z }, district)
 end
 

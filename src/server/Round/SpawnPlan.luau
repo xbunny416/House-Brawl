@@ -6,7 +6,7 @@
 	that don't fit fall back to the solo rule). Solo fighters spread out: each takes a free point on the platform with
 	the most free points left. When there are more fighters than points, points are reused.
 
-	Close starts (owner, 2026-10-30: "how it plays"): on an arena of one platform (Shinjuku, 560 × 340) random points
+	Close starts (owner, 2026-10-30: "how it plays"): on an arena of one platform (Town, 560 × 340) random points
 	put fighters up to 400 studs apart, half a minute's run before the first punch. Given the points' positions, the
 	fighters there start at a random point and the points nearest to it. Respawns (`respawn`) come back a little way
 	from the nearest fighter.

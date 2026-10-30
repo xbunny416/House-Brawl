@@ -10,13 +10,13 @@ and every call made where the bible is silent — read the matching entry before
 - **Built:** every build-order item (Phases 1–3) except 2.9 Tutorial and 3.5 Badges (skipped by the owner), the
   owner's fix list (`docs/reference/README.md`, 2026-10-19), and since then: the bartender NPC, lobby arm wrestling
   and chess, the walk-up spin wheel, the store art (`docs/store`), a smaller, more detailed iron-and-wood lobby with a
-  style-roll coach NPC, and the three old arenas rebuilt. **Shinjuku** (a Tokyo street block on the ground in the
-  style of Jujutsu Shenanigans' map, open edges you can fall off) is now the only arena: furnished walk-in buildings
-  sized to the avatar with breakable walls, framed windows and two-tone faces (`maps/lib/Rooms`), rooftop gear
-  (`maps/lib/Roofs`), many-part furniture and a fountain (`maps/lib/Decor`), ForgeGUI art on its billboards, murals
-  and posters (`maps/lib/Art`), lifts, a crane and a rooftop Ferris wheel, 72 prop spots with props that fit each
-  place. Its buildings stream in by distance from a `District` folder (about 16,900 instances). Menus use the slate
-  palette (`Ui/Kit`).
+  style-roll coach NPC, and the three old arenas rebuilt. **Town** (called Shinjuku until 2026-10-30; a Tokyo street
+  block in the style of Jujutsu Shenanigans' map, open edges you can fall off) is now the only arena: furnished
+  walk-in buildings sized to the avatar with breakable walls, framed windows and two-tone faces (`maps/lib/Rooms`),
+  rooftop gear (`maps/lib/Roofs`), many-part furniture and a fountain (`maps/lib/Decor`), ForgeGUI art on its
+  billboards, murals and posters (`maps/lib/Art`), lifts, a crane and a rooftop Ferris wheel, 72 prop spots with props
+  that fit each place. Its buildings stream in by distance from a `District` folder (about 16,900 instances). Menus
+  use the slate palette (`Ui/Kit`).
 - **Playtested:** Phase 1 ("all clear" 2026-10-16), the animations, 3.1 (from Studio logs). Everything else is built
   but not playtested; 3.11 (low-end mobile) not tried on a phone.
 - **Owner-side** ([docs/LAUNCH.md](docs/LAUNCH.md), `lune run tools/launch-check`): the VIP pass and the developer
@@ -32,7 +32,7 @@ Easy to break by accident; the reasons and dates are in DECISIONS.md.
 
 - **Classic is the only mode** (`Config.Modes.Order`); Casual stays defined but out of the rotation, so the vote is
   map-only.
-- **Shinjuku is the only arena:** Broken Highway, Junkyard Isles and Neon Motel stay built (layouts, generated
+- **Town is the only arena:** Broken Highway, Junkyard Isles and Neon Motel stay built (layouts, generated
   models, specs, `ServerStorage.Arenas`) but `Enabled = false` in `Config.Maps.List`. Don't delete them or switch them
   back on unasked.
 - **The lobby is run-only:** punch, charge, ability, dash and grab work only while `RoundStatus` is `Playing`.
@@ -114,14 +114,14 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
 - **Maps:** generated from `maps/layouts/*.luau` by `lune run maps/build`; never hand-edit `maps/generated/`. Shaped
   pieces come from `maps/lib/Pieces` (lobby furniture `Furniture`, arena furniture `Decor`, walk-in buildings `Rooms`,
   rooftop gear `Roofs`); moving parts are `Arena.mover` models (`Shared/MoverRules`) that clients move and
-  `MoverService` reads for hazards. Gameplay markers are tagged parts (`SpawnPoint`, `PropSpot`, `ExplosiveSpot`, `StructureSpot` with a
-  `StructureType` attribute, `LobbySpawn`), visible in Edit mode and hidden by `Services/MapService` at runtime; the
-  lobby's join pad is a visible `QueueZone` part. Each arena platform is a `Platform`-tagged Model (Persistent
-  streaming, `CanFall` attribute). Sign text comes from GameStrings keys (`LocKey` attribute on the label). For a
-  final art pass a map can switch to a hand-built model (export it to `maps/<Name>.rbxmx`, point
-  `default.project.json` at it, remove it from `maps/build.luau`). **Directions:** the Builder's North = +Z, East = +X
-  are a mirror image of a compass (facing +Z, +X is on your *left*): tell the owner left / right as you face the
-  lobby's bar (+Z), never "east / west" (`LeftWall` = +X, `RightWall` = −X).
+  `MoverService` reads for hazards. Gameplay markers are tagged parts (`SpawnPoint`, `PropSpot`, `ExplosiveSpot`,
+  `StructureSpot` with a `StructureType` attribute, `LobbySpawn`), visible in Edit mode and hidden by
+  `Services/MapService` at runtime; the lobby's join pad is a visible `QueueZone` part. Each arena platform is a
+  `Platform`-tagged Model (Persistent streaming, `CanFall` attribute). Sign text comes from GameStrings keys (`LocKey`
+  attribute on the label). For a final art pass a map can switch to a hand-built model (export it to
+  `maps/<Name>.rbxmx`, point `default.project.json` at it, remove it from `maps/build.luau`). **Directions:** the
+  Builder's North = +Z, East = +X are a mirror image of a compass (facing +Z, +X is on your *left*): tell the owner
+  left / right as you face the lobby's bar (+Z), never "east / west" (`LeftWall` = +X, `RightWall` = −X).
 - **Input:** gameplay code never reads raw keys. It listens to `Controllers/InputController` (`ActionBegan` /
   `ActionEnded` with an action from `Config.Controls.Actions`; `getDevice()` / `DeviceChanged` for key hints). A new
   action needs a keyboard and a gamepad binding, a `Controls.<Action>` string, and a touch button in
