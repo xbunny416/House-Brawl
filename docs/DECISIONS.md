@@ -1316,3 +1316,10 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   - *Copies:* the loading screen (it runs before the client scripts) and the touch buttons keep their own constants
     in the same colours. In-world screens (the lobby's news TVs, the dummy's label) and effects keep theirs.
   - *Not changed:* anchors, sizes and layout (the other UI rules).
+- **Assets, VFX & Animations rules; CLAUDE.md compacted (owner, 2026-10-30: "add this to claude.md too … then
+  slightly compact claude.md"):** the owner's rules for emitters, sounds, rigs, VFX, audio, animations and models are
+  in CLAUDE.md's "Roblox Studio Project Rules" as "Assets, VFX & Animations". They cover everything in the earlier
+  "VFX & Audio Standards", which they replace (its "no default white textures" kept in the first rule; its pitch range
+  is the same 0.9–1.1). One *Now:* note says where the code differs: no `ReplicatedStorage.Assets` yet, emitters and
+  props built in code, sounds from `Config.Audio` ids (id 0 skipped), scripted animations. The rest of CLAUDE.md was
+  tightened (Status, Maps, Robux, Rounds and the setup notes said in fewer words) without dropping a rule.
