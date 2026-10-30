@@ -91,6 +91,7 @@ local function render()
 		card.Text = `{Localization.format("Daily.Day", { index })}\n{rewardText(index, data.Cosmetics.Owned)}\n{state}`
 		card.TextTransparency = if claimed and not current then 0.45 else 0
 		card.BackgroundColor3 = if current then Kit.Colors.Accent else Kit.Colors.Button
+		card.TextColor3 = if current then Kit.Colors.OnAccent else Kit.Colors.Text
 	end
 	local seconds =
 		Formulas.secondsUntilNextDay(Workspace:GetServerTimeNow(), Config.Retention.LoginStreak.ResetHourUTC)

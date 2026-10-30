@@ -32,11 +32,12 @@ local InputController = require(script.Parent:WaitForChild("InputController"))
 local REFRESH_INTERVAL = 0.1
 local FEED_LIFETIME = 6
 local FEED_MAX = 5
-local HP_COLOR = Color3.fromHex("#6CCB5F")
-local HP_LOW_COLOR = Color3.fromHex("#E2463A")
-local EMPTY_COLOR = Color3.fromHex("#2A2420")
-local STAMINA_COLOR = Color3.fromHex("#F2C14E")
-local STAMINA_LOW_COLOR = Color3.fromHex("#E8742A") -- not enough left for a dash
+-- Vibrant bars on the slate of Ui/Kit (owner's project rules, 2026-10-30).
+local HP_COLOR = Color3.fromHex("#3DDC84")
+local HP_LOW_COLOR = Color3.fromHex("#FF4D5A")
+local EMPTY_COLOR = Color3.fromHex("#2D2E3B") -- Kit.Colors.Button
+local STAMINA_COLOR = Color3.fromHex("#FFC83D")
+local STAMINA_LOW_COLOR = Color3.fromHex("#FF7A1A") -- not enough left for a dash
 
 local HudController = {}
 
@@ -100,6 +101,7 @@ local function buildTop()
 	local mode = Kit.label(row, "", UDim2.fromScale(0.34, 1), 20)
 	mode.Font = Kit.TitleFont
 	mode.BackgroundColor3 = Kit.Colors.Accent
+	mode.TextColor3 = Kit.Colors.OnAccent
 	mode.BackgroundTransparency = 0
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0.3, 0)

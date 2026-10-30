@@ -201,7 +201,8 @@ The owner's rules (2026-10-30). The *Now:* notes say where the code stood when t
 - Use `UDim2.fromScale()` for positioning and size. Never hardcode large Offset pixel values.
 - Always add `UICorner` (Radius 8-12px) and `UIPadding` (12-16px) to frames.
 - Color palette standard: Dark mode slate backgrounds (`#1E1E24`), vibrant accent colors for buttons/bars.
-  - *Now:* `Ui/Kit` panels are `#1E1A17` (`Kit.Colors.Panel`).
+  - *Done 2026-10-30:* `Ui/Kit` (`Kit.Colors`): `#1E1E24` panels, `#2D2E3B` buttons, a `#FF7A1A` accent with dark
+    `OnAccent` text on it. The loading screen and the touch buttons keep their own copies of these.
 - Animate UI using `TweenService` with `Enum.EasingStyle.Quad` or `Back` for responsive feel.
 
 ### VFX & Audio Standards

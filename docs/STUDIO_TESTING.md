@@ -269,6 +269,12 @@ Settings → Promo code, styles come from the style roll).
     not at opposite ends of the district. Run a few rounds: the meeting place should change each time.
   - *Respawn:* get knocked out while the other player stands still. You should come back about 40–130 studs from
     them (a short run, not on top of them). With `StudioMinPlayers = 1` (alone) you respawn anywhere.
+- **Menus in the slate palette (2026-10-30):**
+  - *Look at:* the loading screen, then each lobby menu (Shop, Inventory, Styles, Settings, Quests, the Daily
+    reward): dark slate panels with an orange outline, slate buttons, the open tab and chosen items orange with dark
+    text. The coins / XP block on the left: the XP number readable over the orange fill. In a round: the HP and
+    stamina bars, the mode badge (dark text on orange), and on a phone (or the device emulator) the touch buttons.
+  - *Check:* no menu keeps the old warm brown; no white text sits on orange.
 - **Shinjuku buildings less blocky (2026-10-30):**
   - *Look at:* any building's windows from the street: a frame head on top, a sill below, glazing bars dividing the
     glass, the glass set back in the wall. The towers' faces should read as bands (dark strips between the window

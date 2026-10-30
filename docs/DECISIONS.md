@@ -1302,3 +1302,17 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   VFX and audio are in CLAUDE.md under "Roblox Studio Project Rules", as given. Four didn't match the code then, and
   each has a *Now:* note there: the vendored ProfileStore, the client's non-centred anchors, the UI Kit's `#1E1A17`
   panels, and VFX and sounds built in code (no `ReplicatedStorage.Assets` folder). The code wasn't changed to match.
+- **Menus in the slate palette (owner, 2026-10-30: "restyle the menus to the new palette", the project rule "dark
+  mode slate backgrounds (#1E1E24), vibrant accent colors for buttons/bars"):** one palette in `Ui/Kit`
+  (`Kit.Colors`), which every menu, the HUD and the prompts use:
+  - *Slate:* panels `#1E1E24` (warm `#1E1A17` before), buttons `#2D2E3B` (`#3A302A`), text a cool off-white
+    `#F2F3F8` (`#F2E6D0`), muted text `#9EA2BA` (`#A89A85`), the key hints `#C9CCDC` (pure grey `#D0D0D0`).
+  - *Vibrant:* the accent `#FF7A1A` (muted `#D9822B`) for chosen buttons, outlines and the XP and quest bars;
+    coins `#FFC83D`, the live dot `#FF4D5A`, the arm-wrestling rival `#2EC4E6`; the HUD's HP `#3DDC84`, low HP
+    `#FF4D5A`, stamina `#FFC83D`, low stamina the accent, empty bars the button slate.
+  - *Text on the accent is dark* (`Kit.Colors.OnAccent` = the panel slate): white on the bright orange was about
+    2.4:1, dark is about 6:1. `Kit.setChosen` switches it, and so do the PUSH button, today's Daily card, the round's
+    mode badge and a locked style slot. The XP number over its bar has a dark outline.
+  - *Copies:* the loading screen (it runs before the client scripts) and the touch buttons keep their own constants
+    in the same colours. In-world screens (the lobby's news TVs, the dummy's label) and effects keep theirs.
+  - *Not changed:* anchors, sizes and layout (the other UI rules).

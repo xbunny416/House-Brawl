@@ -211,6 +211,7 @@ function StyleRollView.new(parent: Instance, position: UDim2, size: UDim2): View
 		lock.Position = UDim2.fromScale(1, 0.5)
 		lock.Font = Kit.BodyFont
 		lock.BackgroundColor3 = if locked then Kit.Colors.Accent else Kit.Colors.Panel
+		lock.TextColor3 = if locked then Kit.Colors.OnAccent else Kit.Colors.Text
 		lock.Activated:Connect(function()
 			Net.fire("LockStyleSlot", index, not locked)
 		end)
