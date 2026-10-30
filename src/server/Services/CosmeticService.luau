@@ -111,10 +111,16 @@ local function applyAll(player: Player)
 		return
 	end
 	applySkin(character, CosmeticService.equippedIn(player, "Skin"))
-	local hat = CosmeticService.equippedIn(player, "Hat")
-	Attached.build(character, "CosmeticHat", if hat then hat.Parts else nil)
-	local back = CosmeticService.equippedIn(player, "BackItem")
-	Attached.build(character, "CosmeticBack", if back then back.Parts else nil)
+	-- Hats and back items: clones of their templates (ReplicatedStorage.Assets.Models.Cosmetics), welded on.
+	local data = DataService.get(player)
+	local equipped = if data then data.Cosmetics.Equipped else {}
+	local templates = ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Models"):WaitForChild("Cosmetics")
+	local function template(slot: string): Instance?
+		local itemId = equipped[slot]
+		return if type(itemId) == "string" then templates:FindFirstChild(itemId) else nil
+	end
+	Attached.build(character, "CosmeticHat", template("Hat"))
+	Attached.build(character, "CosmeticBack", template("BackItem"))
 	applyTrail(character, CosmeticService.equippedIn(player, "DashTrail"))
 end
 

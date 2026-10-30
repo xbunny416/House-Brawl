@@ -2,8 +2,8 @@
 --[[
 	ItemShapes — what the props and breakable structures look like (owner, 2026-10-20: "more detail in every item").
 	Pure data, so a spec checks every shape stays inside its item's box. Each item keeps its Config size as an
-	invisible box that does the colliding, the hit checks and the physics (Server/Visuals/ItemDetail makes it
-	transparent); these parts are welded onto it and only show.
+	invisible box that does the colliding, the hit checks and the physics; these parts are welded onto it and only
+	show. assets/Models.luau builds each item's template (ReplicatedStorage.Assets.Models) from them.
 
 	A shape: Shape ("Block", "Cylinder", "Ball", "Wedge"), Size (the part's own X, Y, Z; a cylinder lies along X, so
 	Upright turns it to stand along Y and Facing turns it to point along Z), At (from the item's centre: X right, Y up,

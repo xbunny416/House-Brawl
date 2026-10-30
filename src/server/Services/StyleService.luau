@@ -10,8 +10,9 @@
 	  * EquipStyleSlot / LockStyleSlot: pick the equipped slot, lock or unlock a slot. Styles never change while the
 	    player is fighting in a round.
 	  * More slots come from the StyleSlot Robux product (MonetizationService → addSlot), up to Roll.Slots.Max.
-	The weapon is a welded blockout model on the character (Config.Styles.Weapons): visual only — no collisions,
-	not hit by attack boxes. Weapons are accessories, not Tools, so the mobile buttons never change.
+	The weapon is a welded model on the character (its template in ReplicatedStorage.Assets.Models.Weapons, from
+	Config.Styles.Weapons): visual only — no collisions, not hit by attack boxes. Weapons are accessories, not Tools,
+	so the mobile buttons never change.
 ]]
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -50,9 +51,11 @@ function StyleService.equippedOf(player: Player): string
 	return if style and Config.Styles.List[style] then style else Config.Styles.Default
 end
 
--- Replaces the weapon model on `character` with the one for `weaponId` (none for fists).
+-- Replaces the weapon model on `character` with a clone of the one for `weaponId` (ReplicatedStorage.Assets.Models.
+-- Weapons; none for fists).
 local function buildWeapon(character: Model, weaponId: string)
-	Attached.build(character, WEAPON_NAME, Config.Styles.Weapons[weaponId])
+	local weapons = ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Models"):WaitForChild("Weapons")
+	Attached.build(character, WEAPON_NAME, weapons:FindFirstChild(weaponId))
 end
 
 local function refreshWeapon(player: Player)
