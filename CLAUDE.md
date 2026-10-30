@@ -113,8 +113,8 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
   `VERSION` in `src/shared/Data/Template.luau`). Clients read their copy via `Controllers/DataController`.
 - **Maps:** generated from `maps/layouts/*.luau` by `lune run maps/build`; never hand-edit `maps/generated/`. Shaped
   pieces come from `maps/lib/Pieces` (lobby furniture `Furniture`, arena furniture `Decor`, walk-in buildings `Rooms`,
-  rooftop gear `Roofs`); moving parts are `Arena.mover` models (`Shared/MoverRules`) that clients move and `MoverService` reads for
-  hazards. Gameplay markers are tagged parts (`SpawnPoint`, `PropSpot`, `ExplosiveSpot`, `StructureSpot` with a
+  rooftop gear `Roofs`); moving parts are `Arena.mover` models (`Shared/MoverRules`) that clients move and
+  `MoverService` reads for hazards. Gameplay markers are tagged parts (`SpawnPoint`, `PropSpot`, `ExplosiveSpot`, `StructureSpot` with a
   `StructureType` attribute, `LobbySpawn`), visible in Edit mode and hidden by `Services/MapService` at runtime; the
   lobby's join pad is a visible `QueueZone` part. Each arena platform is a `Platform`-tagged Model (Persistent
   streaming, `CanFall` attribute). Sign text comes from GameStrings keys (`LocKey` attribute on the label). For a
