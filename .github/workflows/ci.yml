@@ -27,7 +27,7 @@ jobs:
           cache: true
 
       - name: Format (StyLua)
-        run: stylua --check src tests maps tools
+        run: stylua --check src tests maps tools assets
 
       - name: Lint (Selene)
         run: selene src

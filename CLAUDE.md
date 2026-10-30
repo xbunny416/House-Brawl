@@ -68,6 +68,8 @@ in the Creator Dashboard. Without Rojo: open the `.rbxlx` from the latest CI run
 | `src/server/Vendor/` | `ServerScriptService.Server.Vendor` | Third-party modules kept as published (see `licenses/`) |
 | `maps/layouts/` | — | Map layouts as code (platform sizes, spots, decor) — the source of truth for blockouts |
 | `maps/generated/` | `Workspace.Lobby`, `ServerStorage.Arenas.*` | `.rbxmx` models generated from the layouts (committed) |
+| `assets/` | — | The templates game code clones (VFX …), built from Config by `assets/build.luau` |
+| `assets/generated/` | `ReplicatedStorage.Assets` | `Assets.rbxmx` generated from `assets/` (committed) |
 | `tools/` | — | Lune helpers shared by tests and the map generator |
 | `tests/` | — (not synced) | Lune runner `tests/run.luau`, specs in `tests/specs/*.spec.luau` |
 | `docs/` | — | Design bible, progress log, decisions, Studio testing notes, launch checklist |
@@ -76,11 +78,12 @@ in the Creator Dashboard. Without Rojo: open the `.rbxlx` from the latest CI run
 first in `Priority` order, then each `Start()` runs in its own thread.
 
 ```sh
-stylua src tests            # format (CI runs stylua --check)
+stylua src tests maps tools assets  # format (CI runs stylua --check)
 selene src                  # lint
 scripts/typecheck.sh        # strict type-check with luau-lsp + Roblox API types
 lune run tests/run          # syntax-compile every src/*.luau + run specs
 lune run maps/build         # regenerate maps/generated/*.rbxmx after editing maps/layouts (a spec checks this)
+lune run assets/build       # regenerate ReplicatedStorage.Assets after editing assets/ or the Config it reads
 lune run tools/launch-check  # list the ids / placeholders still unset before release (report only)
 rojo build default.project.json -o build/JunkyardBrawl.rbxlx
 ```
@@ -199,11 +202,12 @@ The owner's rules (2026-10-30). *Now:* notes say where the code differed when th
 - Audio: Clone from `ReplicatedStorage.Assets.Sounds`, randomize `PlaybackSpeed` (0.9–1.1), and play.
 - Animations: Load `Animation` objects from `ReplicatedStorage.Assets.Animations` onto `Humanoid.Animator`.
 - Models: Clone props/weapons from `ReplicatedStorage.Assets.Models` and position/weld via script.
-- *Now:* there is no `ReplicatedStorage.Assets` yet. `Controllers/VfxController` builds its emitters in code (Roblox's
-  spark and smoke textures); `Controllers/SoundController` makes sounds from `Config.Audio` ids (it skips id 0, so the
-  game is silent) with a pitch range per sound; animations are the scripted poses above (`Config.Animations.AssetIds`
-  can swap in uploaded ones); props and structures are built from parts (`Shared/ItemShapes`,
-  `Server/Visuals/ItemDetail`).
+- *Done:* `ReplicatedStorage.Assets` is generated from `assets/` (`lune run assets/build`; a spec checks it). `VFX`:
+  bursts, the launch smoke, flash parts, the dash and cosmetic trails, the KO starburst; `VfxController`,
+  `CrumbleController` and `CosmeticService` clone them. *Now:* `Controllers/SoundController` still makes sounds from
+  `Config.Audio` ids (it skips id 0, so the game is silent) with a pitch range per sound; animations are the scripted
+  poses above (`Config.Animations.AssetIds` can swap in uploaded ones); props and structures are built from parts
+  (`Shared/ItemShapes`, `Server/Visuals/ItemDetail`).
 
 ## GitHub workflow (automated)
 

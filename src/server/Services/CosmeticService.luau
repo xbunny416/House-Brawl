@@ -93,24 +93,16 @@ local function applyTrail(character: Model, item: Types.CosmeticItem?)
 	if item == nil or item.Colors == nil then
 		return
 	end
-	local top = Instance.new("Attachment")
-	top.Name = `{TRAIL_NAME}Top`
-	top.Position = Vector3.new(0, 1, 0)
-	top.Parent = root
-	local bottom = Instance.new("Attachment")
-	bottom.Name = `{TRAIL_NAME}Bottom`
-	bottom.Position = Vector3.new(0, -1, 0)
-	bottom.Parent = root
-	local trail = Instance.new("Trail")
-	trail.Name = TRAIL_NAME
-	trail.Attachment0 = top
-	trail.Attachment1 = bottom
-	trail.Color = ColorSequence.new(Color3.fromHex(item.Colors[1]), Color3.fromHex(item.Colors[#item.Colors]))
-	trail.Transparency = NumberSequence.new(0.2, 1)
-	trail.Lifetime = Config.Cosmetics.TrailLifetime
-	trail.LightEmission = 0.5
-	trail.Enabled = false
-	trail.Parent = root
+	-- The template's attachments and trail (ReplicatedStorage.Assets.VFX) move onto the root, in the item's colours.
+	local streak = ReplicatedStorage:WaitForChild("Assets"):WaitForChild("VFX"):WaitForChild(TRAIL_NAME):Clone()
+	for _, child in streak:GetChildren() do
+		child.Name = if child:IsA("Trail") then TRAIL_NAME else `{TRAIL_NAME}{child.Name}`
+		if child:IsA("Trail") then
+			child.Color = ColorSequence.new(Color3.fromHex(item.Colors[1]), Color3.fromHex(item.Colors[#item.Colors]))
+		end
+		child.Parent = root
+	end
+	streak:Destroy()
 end
 
 local function applyAll(player: Player)
