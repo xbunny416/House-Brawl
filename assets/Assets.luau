@@ -7,6 +7,7 @@
 local Shim = require("../tests/roblox")
 local roblox = require("@lune/roblox")
 
+local Sounds = require("./Sounds")
 local Vfx = require("./Vfx")
 
 local Assets = {}
@@ -17,6 +18,8 @@ function Assets.build(): any
 	local folder = roblox.Instance.new("Folder")
 	folder.Name = "Assets"
 	Vfx.build(Config).Parent = folder
+	Sounds.build(Config).Parent = folder
+	Sounds.animations(Config).Parent = folder
 	return folder
 end
 

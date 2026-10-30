@@ -19,6 +19,9 @@ end
 
 return {
 	["every sound slot has a whole, non-negative id (0 = silent), a volume and a sane pitch range"] = function()
+		-- Sound effects play at a random speed of 0.9–1.1 (owner's project rules, 2026-10-30).
+		expect.equal(Audio.Pitch[1], 0.9, "slowest")
+		expect.equal(Audio.Pitch[2], 1.1, "fastest")
 		checkSound("Lobby", Audio.Music.Lobby)
 		checkSound("Tension", Audio.Music.Tension)
 		checkSound("VictorySting", Audio.Music.VictorySting)

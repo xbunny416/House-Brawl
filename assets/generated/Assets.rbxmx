@@ -524,5 +524,25 @@
         </Item>
       </Item>
     </Item>
+    <Item class="Folder" referent="38">
+      <Properties>
+        <string name="Name">Sounds</string>
+      </Properties>
+      <Item class="Folder" referent="39">
+        <Properties>
+          <string name="Name">Sfx</string>
+        </Properties>
+      </Item>
+      <Item class="Folder" referent="40">
+        <Properties>
+          <string name="Name">Music</string>
+        </Properties>
+      </Item>
+    </Item>
+    <Item class="Folder" referent="41">
+      <Properties>
+        <string name="Name">Animations</string>
+      </Properties>
+    </Item>
   </Item>
 </roblox>

@@ -529,6 +529,8 @@ cartoon explosion with ring shockwave; dash streak and blue Perfect Dodge flash.
 ### 4.4 Sound (Creator Store audio)
 
 - Built in step 2.8 as slots in Config.Audio (asset ids picked from free Creator Store audio; silent until filled).
+  Each slot with an id becomes a Sound template in ReplicatedStorage.Assets.Sounds (`lune run assets/build`); sound
+  effects play at a random speed of 0.9–1.1 (`Config.Audio.Pitch`, owner's project rules 2026-10-30).
 - Music: Lobby retro synthwave; one gritty chiptune-rock track per arena; last-30 s tension layer; victory sting.
 - SFX: punch / bat thwack / shovel clang / wrench bonk; grab, throw whoosh, smash (wood/metal/glass); KO boom + short
   crowd cheer; platform rumble/collapse; dash whoosh, Perfect Dodge chime; UI clicks, coin pickup, level-up fanfare.

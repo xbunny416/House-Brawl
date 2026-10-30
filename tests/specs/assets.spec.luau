@@ -6,6 +6,7 @@ local roblox = require("@lune/roblox")
 local expect = require("../expect")
 
 local Assets = require("../../assets/Assets")
+local Sounds = require("../../assets/Sounds")
 
 local folder = Assets.build()
 
@@ -48,6 +49,42 @@ return {
 		for _, path in { "VFX/KOStarburst/Holder/Text", "VFX/KOStarburst/Holder/Scale", "VFX/FloatingText/Text" } do
 			expect.truthy(find(path) ~= nil, path)
 		end
+	end,
+	["the folders the game waits for exist (VFX, Sounds/Sfx, Sounds/Music, Animations)"] = function()
+		for _, path in { "VFX", "Sounds/Sfx", "Sounds/Music", "Animations" } do
+			expect.truthy(find(path) ~= nil and find(path):IsA("Folder"), path)
+		end
+	end,
+	["a sound or animation slot with an id becomes a template; one at 0 stays silent"] = function()
+		local silent = { Id = 0, Volume = 0.5 }
+		local config = {
+			Audio = {
+				Sfx = { Punch = { Id = 123, Volume = 0.7 }, Click = silent },
+				Music = {
+					Lobby = { Id = 456, Volume = 0.5 },
+					Arenas = { Shinjuku = silent },
+					Tension = silent,
+					VictorySting = { Id = 789, Volume = 0.7 },
+				},
+			},
+			Animations = { AssetIds = { Jab = 321, Kick = 0 } },
+		}
+		local sounds = Sounds.build(config)
+		local punch = sounds.Sfx:FindFirstChild("Punch")
+		expect.truthy(
+			punch and punch.SoundId == "rbxassetid://123" and math.abs(punch.Volume - 0.7) < 1e-4,
+			"Punch at its volume"
+		)
+		expect.equal(sounds.Sfx:FindFirstChild("Click"), nil, "an unpicked sound has no template")
+		local lobby = sounds.Music:FindFirstChild("Lobby")
+		expect.truthy(lobby and lobby.Looped, "music loops")
+		local sting = sounds.Music:FindFirstChild("VictorySting")
+		expect.truthy(sting and not sting.Looped, "the sting plays once")
+		expect.equal(sounds.Music:FindFirstChild("Shinjuku"), nil, "an unpicked track has no template")
+		local animations = Sounds.animations(config)
+		local jab = animations:FindFirstChild("Jab")
+		expect.truthy(jab and jab.AnimationId == "rbxassetid://321", "Jab")
+		expect.equal(animations:FindFirstChild("Kick"), nil, "no Animation with an empty id")
 	end,
 	["no raw emitter without a texture, sound without an id or animation without an id"] = function()
 		for _, instance in folder:GetDescendants() do

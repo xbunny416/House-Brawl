@@ -276,6 +276,11 @@ Settings → Promo code, styles come from the style roll).
     hard, the POW / K.O.! starburst, an explosive barrel's fireball, ring and smoke, a structure breaking (chunks and
     dust), the PERFECT! text on a Perfect Dodge, the dash streak, and a dash-trail cosmetic's colours.
   - *Check:* no errors in Output mentioning `Assets` or `VFX`.
+- **Sounds and animations from ReplicatedStorage.Assets (2026-10-30):**
+  - *Now:* every audio slot and uploaded clip is empty, so `Assets.Sounds.Sfx`, `Assets.Sounds.Music` and
+    `Assets.Animations` are empty folders and the game stays silent, with scripted poses. No errors in Output.
+  - *Once ids are in:* put an id in `Config/Audio.luau` (e.g. `Click`), run `lune run assets/build`, and the
+    template appears; menu buttons click, a little higher or lower each time. Music fades between lobby and arena.
 - **Menus in the slate palette (2026-10-30):**
   - *Look at:* the loading screen, then each lobby menu (Shop, Inventory, Styles, Settings, Quests, the Daily
     reward): dark slate panels with an orange outline, slate buttons, the open tab and chosen items orange with dark
