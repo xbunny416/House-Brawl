@@ -278,6 +278,13 @@ Settings → Promo code, styles come from the style roll).
     hard, the POW / K.O.! starburst, an explosive barrel's fireball, ring and smoke, a structure breaking (chunks and
     dust), the PERFECT! text on a Perfect Dodge, the dash streak, and a dash-trail cosmetic's colours.
   - *Check:* no errors in Output mentioning `Assets` or `VFX`.
+- **More on the streets (2026-10-30):**
+  - *Look at:* walk the main street, the second street and the avenue: yellow tactile paving along the pavements
+    (pads at the crosswalks), a diamond and an arrow in each lane before a crossing, patches and puddles near the
+    kerbs, white guardrails at the corners, cabinets, planters, ashtrays and hydrant signs by the kerb, and a blue
+    sign gantry over each of the three streets.
+  - *Check:* every crosswalk is open at both ends (no guardrail across it); you can still get from the road onto the
+    pavement between the corners; nothing blocks a shop door; props and spawns on the streets are clear.
 - **Rooftop gear (2026-10-30):**
   - *Look at:* from a tower roof (ladder or lift), the roofs below: condensers, vents, skylights, solar panels, ducts
     and exhaust fans along the edges, seams across the big roofs, lightning rods on the tall ones.

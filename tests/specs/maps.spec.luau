@@ -667,6 +667,65 @@ return {
 		end
 		expect.truthy(gear >= 150, `{gear} pieces of rooftop gear`)
 	end,
+	["Town: street markings, guardrails, kerb-side furniture and sign gantries, off the roads and crosswalks"] = function()
+		-- The owner, 2026-10-30: "more detail on the streets".
+		local model = Town.build(ORIGIN)
+		local district = model:FindFirstChild("District")
+		local counts: { [string]: number } = {}
+		for _, item in district:GetDescendants() do
+			counts[item.Name] = (counts[item.Name] or 0) + 1
+		end
+		for name, least in
+			{
+				TactilePaving = 20,
+				CrossingDiamond = 60,
+				LaneArrow = 45,
+				Guardrail = 20,
+				UtilityCabinet = 15,
+				SignGantry = 3,
+			}
+		do
+			expect.truthy((counts[name] or 0) >= least, `{counts[name] or 0} {name} (at least {least})`)
+		end
+		-- No solid street furniture in a road (the streets are 20 wide) or across a crosswalk's stripes.
+		local roads = {}
+		for _, z in { 90, -90 } do
+			table.insert(roads, { min = { -280, -1, z - 10 }, max = { 280, 1, z + 10 } })
+		end
+		for _, x in { -175, 0, 175 } do
+			table.insert(roads, { min = { x - 10, -1, -230 }, max = { x + 10, 1, 80 } })
+		end
+		local crosswalks = {}
+		for _, part in district:GetChildren() do
+			if part:IsA("BasePart") and part.Name == "Crosswalk" then
+				table.insert(crosswalks, boxOf(part))
+			end
+		end
+		for _, item in district:GetChildren() do
+			local name = item.Name
+			if name == "Guardrail" or name == "UtilityCabinet" or name == "Planter" or name == "SignGantry" then
+				for _, part in (if item:IsA("Model") then item:GetChildren() else { item }) :: { any } do
+					if part:IsA("BasePart") and part.CanCollide then
+						local box = boxOf(part)
+						for _, area in roads do
+							local inside = box.max[1] > area.min[1] + 0.01
+								and box.min[1] < area.max[1] - 0.01
+								and box.max[3] > area.min[3] + 0.01
+								and box.min[3] < area.max[3] - 0.01
+							expect.truthy(not inside, `{part:GetFullName()} stands in a road`)
+						end
+						for _, stripe in crosswalks do
+							local across = box.max[1] > stripe.min[1]
+								and box.min[1] < stripe.max[1]
+								and box.max[3] > stripe.min[3]
+								and box.min[3] < stripe.max[3]
+							expect.truthy(not across, `{part:GetFullName()} stands on a crosswalk`)
+						end
+					end
+				end
+			end
+		end
+	end,
 	["floating arenas: one explosive spot per side and low platform"] = function()
 		eachFloating(function(layout)
 			for _, platform in layout.Platforms do

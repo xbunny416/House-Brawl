@@ -43,6 +43,7 @@ local Art = require("../lib/Art")
 local B = require("../lib/Builder")
 local Pieces = require("../lib/Pieces")
 local Decor = require("../lib/Decor")
+local Clearance = require("../lib/Clearance")
 local Roofs = require("../lib/Roofs")
 local Rooms = require("../lib/Rooms")
 
@@ -4455,8 +4456,180 @@ local function cityDressing()
 	end
 end
 
+---------------------------------------------------------------------------------------------------------------------
+-- More on the streets (owner, 2026-10-30: "more detail on the streets")
+---------------------------------------------------------------------------------------------------------------------
+
+-- A painted line on the road from `a` to `b` (x, z), `width` wide, at `y` (walk-through).
+local function strip(name: string, a: { number }, b: { number }, width: number, color: string, y: number?)
+	local dx, dz = b[1] - a[1], b[2] - a[2]
+	B.part({
+		Name = name,
+		Size = { width, 0.02, math.sqrt(dx * dx + dz * dz) },
+		Position = { (a[1] + b[1]) / 2, y or 0.12, (a[2] + b[2]) / 2 },
+		Yaw = math.deg(math.atan2(dx, dz)),
+		Color = color,
+		CanCollide = false,
+		CastShadow = false,
+	})
+end
+
+-- The lanes into each crossing, from the stop lines (streetLife): where a car stops and which way it is heading.
+local function approaches(): { { Stop: { number }, Dir: { number } } }
+	local list = {}
+	for _, cx in STREETS_X do
+		for _, cz in STREETS_Z do
+			local inward = if cz > 0 then -1 else 1
+			table.insert(list, { Stop = { cx - ROAD / 2 - 2, cz + ROAD / 4 }, Dir = { 1, 0 } })
+			table.insert(list, { Stop = { cx + ROAD / 2 + 7, cz - ROAD / 4 }, Dir = { -1, 0 } })
+			table.insert(list, { Stop = { cx + ROAD / 4, cz + inward * (ROAD / 2 + 7) }, Dir = { 0, -inward } })
+		end
+	end
+	return list
+end
+
+-- The pavements' runs between the crossings: { from, to } along X at each street across's pavement line, and along Z
+-- at each street along Z's (offset `out` from the road's centre line, both sides).
+local function pavementRuns(out: number): { { a: { number }, b: { number }, side: { number } } }
+	local runs = {}
+	local half = DISTRICT[1] / 2 - 2
+	for _, z in STREETS_Z do
+		for _, side in { -1, 1 } do
+			local line = z + side * out
+			if z > 0 and side > 0 then
+				table.insert(runs, { a = { -half, line }, b = { half, line }, side = { 0, side } })
+			else
+				for _, run in { { -half, -192 }, { -158, -17 }, { 17, 158 }, { 192, half } } do
+					table.insert(runs, { a = { run[1], line }, b = { run[2], line }, side = { 0, side } })
+				end
+			end
+		end
+	end
+	for _, x in STREETS_X do
+		for _, side in { -1, 1 } do
+			for _, gap in GAPS_Z do
+				local from = if gap[1] <= -229 then gap[1] + 2 else gap[1] + 7
+				table.insert(
+					runs,
+					{ a = { x + side * out, from }, b = { x + side * out, gap[2] - 7 }, side = { side, 0 } }
+				)
+			end
+		end
+	end
+	return runs
+end
+
+--[[
+	Paint and paving: yellow tactile paving along every pavement with warning pads at the crosswalks, a diamond (a
+	crossing ahead) and a straight-on arrow in every lane into a crossing, patched asphalt and puddles. All flat and
+	walk-through.
+]]
+local function streetMarkings()
+	for _, run in pavementRuns(ROAD / 2 + 4.5) do
+		paint(
+			"TactilePaving",
+			{ (run.a[1] + run.b[1]) / 2, (run.a[2] + run.b[2]) / 2 },
+			{ math.max(math.abs(run.b[1] - run.a[1]), 0.9), math.max(math.abs(run.b[2] - run.a[2]), 0.9) },
+			"LaneYellow",
+			"Pebble",
+			0.11
+		)
+	end
+	for _, cx in STREETS_X do
+		for _, cz in STREETS_Z do
+			local inward = if cz > 0 then -1 else 1
+			for _, pad in
+				{
+					{ cx + ROAD / 2 + 2.5, cz - ROAD / 2 - 1.5 },
+					{ cx + ROAD / 2 + 2.5, cz + ROAD / 2 + 1.5 },
+					{ cx - ROAD / 2 - 1.5, cz + inward * (ROAD / 2 + 2.5) },
+					{ cx + ROAD / 2 + 1.5, cz + inward * (ROAD / 2 + 2.5) },
+				}
+			do
+				paint("TactilePad", pad, { 2, 2 }, "LaneYellow", "Pebble", 0.11)
+			end
+		end
+	end
+	for _, lane in approaches() do
+		local d, stop = lane.Dir, lane.Stop
+		local px, pz = -d[2], d[1] -- across the lane
+		local function at(back: number, over: number): { number }
+			return { stop[1] - d[1] * back + px * over, stop[2] - d[2] * back + pz * over }
+		end
+		-- The diamond: long along the lane, 25 before the stop line.
+		local tip1, tip2, left, right = at(28, 0), at(22, 0), at(25, 1.5), at(25, -1.5)
+		strip("CrossingDiamond", tip1, left, 0.35, "LaneWhite")
+		strip("CrossingDiamond", left, tip2, 0.35, "LaneWhite")
+		strip("CrossingDiamond", tip2, right, 0.35, "LaneWhite")
+		strip("CrossingDiamond", right, tip1, 0.35, "LaneWhite")
+		-- A straight-on arrow 6–11 before it.
+		strip("LaneArrow", at(11, 0), at(6.6, 0), 0.5, "LaneWhite")
+		strip("LaneArrow", at(6, 0), at(7.8, 1), 0.45, "LaneWhite")
+		strip("LaneArrow", at(6, 0), at(7.8, -1), 0.45, "LaneWhite")
+	end
+	-- Patched asphalt (a darker rectangle) and puddles by the kerbs, along the streets away from the crossings.
+	local roll = Clearance.random("TownRoads")
+	local function nearCrossing(value: number, centres: { number }): boolean
+		for _, c in centres do
+			if math.abs(value - c) < 45 then
+				return true
+			end
+		end
+		return false
+	end
+	local spots = {}
+	for _, z in STREETS_Z do
+		for x = -250, 250, 23 do
+			if not nearCrossing(x, STREETS_X) then
+				table.insert(spots, { x, z, 1 })
+			end
+		end
+	end
+	for _, x in STREETS_X do
+		for z = -215, 65, 23 do
+			if not nearCrossing(z, STREETS_Z) then
+				table.insert(spots, { x, z, 2 })
+			end
+		end
+	end
+	for index, spot in spots do
+		local along = spot[3] == 1
+		local over = (if roll() < 0.5 then -1 else 1) * (ROAD / 2 - 2.2) -- by a kerb
+		local jitter = (roll() - 0.5) * 8
+		local x = if along then spot[1] + jitter else spot[1] + over
+		local z = if along then spot[2] + over else spot[2] + jitter
+		if index % 2 == 0 then
+			local w, l = 2 + roll() * 2, 1.5 + roll() * 1.5
+			local puddle = B.part({
+				Name = "Puddle",
+				Size = if along then { w, 0.02, l } else { l, 0.02, w },
+				Position = { x, 0.115, z },
+				Color = "#3A4652",
+				Material = "Glass",
+				Transparency = 0.25,
+				CanCollide = false,
+				CastShadow = false,
+			})
+			puddle.Reflectance = 0.35
+		elseif roll() < 0.7 then
+			local w, l = 3 + roll() * 4, 2 + roll() * 2.5
+			local inner = over * 0.55 -- a patch reaches further into the lane
+			B.part({
+				Name = "AsphaltPatch",
+				Size = if along then { w, 0.02, l } else { l, 0.02, w },
+				Position = if along then { x, 0.1, spot[2] + inner } else { spot[1] + inner, 0.1, z },
+				Color = "AsphaltDark",
+				Material = "Asphalt",
+				CanCollide = false,
+				CastShadow = false,
+			})
+		end
+	end
+end
+
 local function district()
 	streets()
+	streetMarkings()
 	streetDetail()
 	twinTowers()
 	plaza()
@@ -4555,6 +4728,229 @@ end
 	(Atomic) and shows a low-detail stand-in from afar (LevelOfDetail). Then Decor.dressAll rebuilds the plain blocks
 	(counters, shelves, tables, TVs, ...) as detailed furniture.
 ]]
+--[[
+	Street furniture placed after everything else is built, only where it clears what's there (maps/lib/Clearance:
+	every part, the gameplay spots, the lifts' paths): white pedestrian guardrails along the kerbs at every crossing
+	(the crosswalks stay open), utility cabinets, planters, ashtray stands and hydrant signs along the kerb side of
+	the pavements (the building side stays clear for the doors), and blue direction-sign gantries over the main street,
+	the second street and the avenue. Positions are from the arena origin, like the pieces; parts go into `district`.
+]]
+local function streetFurniture(model: any, district: any, origin: { number })
+	local grid = Clearance.new(model, function(part: any): boolean
+		-- The ground and what is painted on it (not the gameplay spots, low as they are).
+		return not part:HasTag("Marker") and Clearance.boxOf(part)[5] < origin[2] + 0.45
+	end)
+	-- A box from the arena origin, in world space, checked and (when clear) taken.
+	local function take(x0: number, y0: number, z0: number, x1: number, y1: number, z1: number): boolean
+		local box = {
+			math.min(x0, x1) + origin[1],
+			y0 + origin[2],
+			math.min(z0, z1) + origin[3],
+			math.max(x0, x1) + origin[1],
+			y1 + origin[2],
+			math.max(z0, z1) + origin[3],
+		}
+		if grid:blocked(box) then
+			return false
+		end
+		grid:add(Clearance.grow(box, Clearance.PartMargin))
+		return true
+	end
+	B.into(district, function()
+		B.within(origin, function()
+			-- Guardrails: 12 long, posts at the ends and the middle, a top and a middle rail.
+			local function guardrail(a: { number }, b: { number })
+				if not take(a[1] - 0.2, 0.05, a[2] - 0.2, b[1] + 0.2, 2.5, b[2] + 0.2) then
+					return
+				end
+				local alongX = a[2] == b[2]
+				local length = if alongX then math.abs(b[1] - a[1]) else math.abs(b[2] - a[2])
+				local mid = { (a[1] + b[1]) / 2, (a[2] + b[2]) / 2 }
+				B.model("Guardrail", function()
+					for _, y in { 2.2, 1.2 } do
+						B.part({
+							Name = "Rail",
+							Size = if alongX then { length, 0.22, 0.22 } else { 0.22, 0.22, length },
+							Position = { mid[1], y, mid[2] },
+							Color = "OffWhite",
+							Material = "Metal",
+						})
+					end
+					for _, t in { 0, 0.5, 1 } do
+						B.part({
+							Name = "RailPost",
+							Size = { 0.3, 2.35, 0.3 },
+							Position = { a[1] + (b[1] - a[1]) * t, 1.175, a[2] + (b[2] - a[2]) * t },
+							Color = "OffWhite",
+							Material = "Metal",
+						})
+					end
+				end)
+			end
+			local line = ROAD / 2 + 0.9
+			for _, cx in STREETS_X do
+				for _, cz in STREETS_Z do
+					local inward = if cz > 0 then -1 else 1
+					for _, sx in { -1, 1 } do
+						for _, sz in { -1, 1 } do
+							-- Along the street across (its kerb on side sz), out from the crossing on side sx; past
+							-- the crosswalk on the east.
+							local start = if sx > 0 then ROAD / 2 + 7.5 else ROAD / 2 + 1
+							guardrail({ cx + sx * start, cz + sz * line }, { cx + sx * (start + 12), cz + sz * line })
+							-- Along the street along Z (it runs south of the main street, both ways from the second).
+							if cz < 0 or sz < 0 then
+								local startZ = if sz == inward then ROAD / 2 + 7.5 else ROAD / 2 + 1
+								guardrail(
+									{ cx + sx * line, cz + sz * startZ },
+									{ cx + sx * line, cz + sz * (startZ + 12) }
+								)
+							end
+						end
+					end
+				end
+			end
+
+			-- Kerb-side furniture every 9 studs along the pavements (about a third of the slots).
+			local roll = Clearance.random("TownPavements")
+			local kinds = {
+				{ "Cabinet", 3, { 2.2, 1.4 }, 3.1 },
+				{ "Planter", 3, { 3, 1.4 }, 2.2 },
+				{ "Ashtray", 2, { 0.9, 0.9 }, 2.6 },
+				{ "HydrantSign", 2, { 0.6, 0.6 }, 6.2 },
+			}
+			local total = 0
+			for _, kind in kinds do
+				total += kind[2]
+			end
+			for _, run in pavementRuns(ROAD / 2 + 2.2) do
+				local dx, dz = run.b[1] - run.a[1], run.b[2] - run.a[2]
+				local length = math.max(math.abs(dx), math.abs(dz))
+				local ux, uz = dx / length, dz / length
+				for d = 4, length - 4, 9 do
+					if roll() < 0.62 then
+						continue
+					end
+					local pick = roll() * total
+					local kind = kinds[1]
+					for _, entry in kinds do
+						pick -= entry[2]
+						if pick < 0 then
+							kind = entry
+							break
+						end
+					end
+					local name, size, height = kind[1], kind[3], kind[4]
+					local cx, cz = run.a[1] + ux * d, run.a[2] + uz * d
+					local hx = if math.abs(ux) > 0.5 then size[1] / 2 else size[2] / 2
+					local hz = if math.abs(ux) > 0.5 then size[2] / 2 else size[1] / 2
+					if not take(cx - hx, 0.05, cz - hz, cx + hx, height, cz + hz) then
+						continue
+					end
+					local yaw = if math.abs(ux) > 0.5 then 0 else 90
+					if name == "Cabinet" then
+						Pieces.block("UtilityCabinet", { cx, cz }, { 2.2, 2.8, 1.4 }, "#8A9A8C", "Metal", 0, yaw)
+						Pieces.block("CabinetCap", { cx, cz }, { 2.4, 0.25, 1.6 }, "#6E7C70", "Metal", 2.8, yaw).CanCollide =
+							false
+					elseif name == "Planter" then
+						Pieces.block("Planter", { cx, cz }, { 3, 1.4, 1.4 }, "ConcreteLight", "Concrete", 0, yaw)
+						Pieces.block("PlanterShrubs", { cx, cz }, { 2.7, 0.8, 1.1 }, "Leaf", "Grass", 1.4, yaw).CanCollide =
+							false
+					elseif name == "Ashtray" then
+						upright("AshtrayStand", { cx, cz }, 0, 2.2, 0.7, "MetalDark", "Metal", false)
+						upright("AshtrayTop", { cx, cz }, 2.2, 0.35, 0.9, "Metal", "Metal", false)
+					else
+						upright("HydrantSignPole", { cx, cz }, 0, 5.4, 0.18, "Red", "Metal", false)
+						B.part({
+							Name = "HydrantSign",
+							Size = { 0.1, 1.4, 1.4 },
+							Position = { cx, 5.8, cz },
+							Rotation = { 0, yaw + 90, 0 },
+							Shape = "Cylinder",
+							Color = "Red",
+							Material = "SmoothPlastic",
+							CanCollide = false,
+						})
+					end
+				end
+			end
+
+			-- Direction-sign gantries: posts on both pavements, a beam, a blue board with white arrows, over the road.
+			local function gantry(at: number, street: number, alongX: boolean)
+				local half = ROAD / 2 + 1.6
+				local function p(across: number, y: number, along: number): { number }
+					return if alongX then { at + along, y, street + across } else { street + across, y, at + along }
+				end
+				local lo, hi = p(-half - 0.5, 0.05, -1), p(half + 0.5, 17.5, 1)
+				if not take(lo[1], lo[2], lo[3], hi[1], hi[2], hi[3]) then
+					return false
+				end
+				B.model("SignGantry", function()
+					for _, side in { -1, 1 } do
+						B.part({
+							Name = "GantryPost",
+							Size = { 0.8, 17, 0.8 },
+							Position = p(side * half, 8.5, 0),
+							Color = "Metal",
+							Material = "Metal",
+						})
+					end
+					B.part({
+						Name = "GantryBeam",
+						Size = if alongX then { 0.6, 0.6, 2 * half } else { 2 * half, 0.6, 0.6 },
+						Position = p(0, 17, 0),
+						Color = "Metal",
+						Material = "Metal",
+						CanCollide = false,
+					})
+					B.part({
+						Name = "SignBoard",
+						Size = if alongX then { 0.3, 4.6, ROAD - 2 } else { ROAD - 2, 4.6, 0.3 },
+						Position = p(0, 14.2, 0),
+						Color = "#1F4E9C",
+						Material = "SmoothPlastic",
+						CanCollide = false,
+					})
+					-- An arrow up (straight on) over each lane, on both faces.
+					for _, lane in { -ROAD / 4, ROAD / 4 } do
+						for _, part in
+							{
+								{ { 0.36, 2.2, 0.4 }, 0, 0, 13.8 },
+								{ { 0.36, 1.3, 0.35 }, 0.42, 45, 14.9 },
+								{ { 0.36, 1.3, 0.35 }, -0.42, -45, 14.9 },
+							}
+						do
+							local s = part[1]
+							B.part({
+								Name = "SignArrow",
+								Size = if alongX then s else { s[3], s[2], s[1] },
+								Position = p(lane + part[2], part[4], 0),
+								Rotation = if alongX then { part[3], 0, 0 } else { 0, 0, -part[3] },
+								Color = "OffWhite",
+								Material = "SmoothPlastic",
+								CanCollide = false,
+							})
+						end
+					end
+				end)
+				return true
+			end
+			for _, choice in
+				{
+					{ 90, true, { 120, 110, 130, -110, -120 } }, -- the main street
+					{ -90, true, { -100, -110, 90, 100 } }, -- the second street
+					{ 0, false, { -35, -50, 25, 35 } }, -- the avenue
+				}
+			do
+				for _, at in choice[3] do
+					if gantry(at, choice[1], choice[2]) then
+						break
+					end
+				end
+			end
+		end)
+	end)
+end
+
 function Layout.build(origin: { number }): any
 	local model = Arena.build(Layout :: any, origin, decorate, scenery, movers)
 	local center = model:FindFirstChild("Platforms"):FindFirstChild("Center")
@@ -4569,6 +4965,8 @@ function Layout.build(origin: { number }): any
 	Decor.dressAll(district)
 	-- Rooftop gear along every roof's edge (owner, 2026-10-30: "add detail to the roofs"), clear of what's there.
 	Roofs.dress(district, model)
+	-- Guardrails, kerb-side furniture and sign gantries (owner, 2026-10-30: "more detail on the streets"), clear of it all.
+	streetFurniture(model, district, origin)
 	for _, child in district:GetChildren() do
 		if child:IsA("Model") and child:FindFirstChild("GroundFloor") then
 			child.ModelStreamingMode = B.Enum.ModelStreamingMode.Atomic

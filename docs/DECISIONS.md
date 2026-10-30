@@ -1391,3 +1391,22 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     the same arena, so no migration.
   - *Studio:* restart `rojo serve` (the file is new); delete a leftover `ServerStorage.Arenas.Shinjuku` if the saved
     place still has one. Upload GameStrings.csv again (the keys changed).
+- **More on the streets (owner, 2026-10-30: "more detail on the streets"; free only):** from street level the roads
+  were plain asphalt with centre dashes and the pavements long empty grey strips. Japanese street details, in two
+  passes in `maps/layouts/Town.luau`:
+  - *Paint and paving* (`streetMarkings`, flat and walk-through): yellow tactile paving along every pavement (25
+    runs) with pads at each crosswalk's ends; a crossing-ahead diamond and a straight-on arrow in every lane into a
+    crossing (18 lanes, taken from the stop lines); asphalt patches and puddles by the kerbs, away from the crossings,
+    from a seeded random (the same every build).
+  - *Street furniture* (`streetFurniture`, after the district is built): placed only where it clears everything
+    already there. The roofs' clearance grid moved into `maps/lib/Clearance` for this, shared with `maps/lib/Roofs`
+    (same output). It covers every part, the gameplay spots, stairs and ladders and the lifts' paths; ground-level
+    paint is ignored, but the spots never are.
+    - White pedestrian guardrails (solid, 2.4 high) along the kerbs at the corners of every crossing. They leave the
+      crosswalks open, so crossing at a corner means the crosswalk or a jump.
+    - Utility cabinets and planters (solid), ashtray stands and red hydrant signs (walk-through) on the kerb side of
+      the pavements, about one slot in three every 9 studs. The building side stays clear for the doors.
+    - Blue direction-sign gantries (posts solid, the board with white arrows walk-through) over the main street, the
+      second street and the avenue, each at the first of a few spots that is clear.
+  - *Size:* 17,519 instances (16,855 before): 30 guardrail sections, 34 cabinets, 36 planters, 20 ashtrays, 28
+    hydrant signs, 3 gantries, plus the paint.

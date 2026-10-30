@@ -121,6 +121,7 @@ One row per merged PR, newest last. Add a row with every PR (see [CLAUDE.md](../
 | 2026-10-30 | ReplicatedStorage.Assets, step 3: model templates for every prop and structure (box + welded look), style weapon and hat / back item; PropService, StructureService, StyleService and CosmeticService clone them and Attached positions and welds the worn ones | #118 |
 | 2026-10-30 | Rooftop gear (owner: "add detail to the roofs"): `maps/lib/Roofs` puts condensers, vent stacks, mushroom vents, skylights, solar panels, ducts and exhaust fans along every roof's edge (clear of hatches, ladders, spots and movers; middles open), lightning rods on tall roofs, membrane seams on big ones; 16,855 instances | #119 |
 | 2026-10-30 | Shinjuku renamed Town (owner: "change arena name from shinjuku to other name like town"): the vote shows Town; map id, layout and generated file, project mapping, Config.Maps, the music slot, `Map.Town.*` strings, specs and docs (the look is unchanged; a private server's saved "Shinjuku" falls back to the vote) | #120 |
+| 2026-10-30 | More on the streets (owner: "more detail on the streets"): tactile paving, crossing diamonds, lane arrows, patches and puddles; guardrails at the crossings, kerb-side cabinets, planters, ashtrays and hydrant signs, three sign gantries, placed clear of everything (`maps/lib/Clearance`, now shared with Roofs); 17,519 instances | #121 |
 
 ## Build order (approved 2026-10-15)
 
