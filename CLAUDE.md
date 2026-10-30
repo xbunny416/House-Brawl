@@ -183,6 +183,35 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
 - Never delete or replace large parts of the place without asking the owner.
 - Only free Creator Store assets / Studio AI generation; ask before using anything paid.
 
+## Roblox Studio Project Rules
+
+The owner's rules (2026-10-30). The *Now:* notes say where the code stood when they were added.
+
+### Architecture & Code Standards
+- Use pure native Luau. No Wally, no external packages.
+  - *Now:* `src/server/Vendor/ProfileStore.luau` (player data) was vendored before this rule.
+- Never use legacy globals: use `task.wait()`, `task.delay()`, `task.defer()`, never `wait()`, `spawn()`, or `delay()`.
+- Use `Debris:AddItem()` or `task.defer()` for object cleanup to prevent memory leaks.
+- Always separate Server (ServerScriptService) and Client (StarterPlayerScripts). Never trust client input.
+
+### UI Design Rules
+- When writing UI via script, never use pure gray/default styling.
+- Always use `AnchorPoint = Vector2.new(0.5, 0.5)`.
+  - *Now:* 44 of the client's 58 `AnchorPoint` uses are other anchors.
+- Use `UDim2.fromScale()` for positioning and size. Never hardcode large Offset pixel values.
+- Always add `UICorner` (Radius 8-12px) and `UIPadding` (12-16px) to frames.
+- Color palette standard: Dark mode slate backgrounds (`#1E1E24`), vibrant accent colors for buttons/bars.
+  - *Now:* `Ui/Kit` panels are `#1E1A17` (`Kit.Colors.Panel`).
+- Animate UI using `TweenService` with `Enum.EasingStyle.Quad` or `Back` for responsive feel.
+
+### VFX & Audio Standards
+- Never generate raw emitters with default white textures.
+- Always clone templates from `ReplicatedStorage.Assets.VFX` and call `:Emit(count)`.
+  - *Now:* there is no `ReplicatedStorage.Assets` folder; `Controllers/VfxController` builds its effects in code.
+- Play sounds by cloning from `ReplicatedStorage.Assets.Sounds` with randomized pitch variation
+  (`math.random(90, 110) / 100`).
+  - *Now:* `Controllers/SoundController` creates its sounds from `Config.Audio` ids (all 0 = silent).
+
 ## GitHub workflow (automated)
 
 - Develop on the session's `claude/...` branch. One feature per PR.

@@ -1298,3 +1298,7 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   - *Size:* 16,092 instances (13,967 before): 830 glazing bars, 206 cross bars, 442 heads, 543 base courses, 104
     copings. All walk-through and shadowless except the copings. Check the frame rate on a phone; the district
     streams in by distance.
+- **Roblox Studio project rules (owner, 2026-10-30: "add these into claude.md"):** the owner's rules for code, UI,
+  VFX and audio are in CLAUDE.md under "Roblox Studio Project Rules", as given. Four didn't match the code then, and
+  each has a *Now:* note there: the vendored ProfileStore, the client's non-centred anchors, the UI Kit's `#1E1A17`
+  panels, and VFX and sounds built in code (no `ReplicatedStorage.Assets` folder). The code wasn't changed to match.
