@@ -15,8 +15,8 @@
 	     recoil away from the attacker, or a tumble looping through a long hitstun).
 	Hit-stop: a landed hit freezes the attacker's and the victim's clips for Config.Animations.HitStop seconds.
 	When a layer lets go of a joint, the joint goes back to its rest offset. A clip with an uploaded animation in
-	Config.Animations.AssetIds plays that animation instead. Studio: Config.Dev.LogAnimations prints each rig found and
-	every clip started.
+	Config.Animations.AssetIds plays that animation instead (its Animation template in ReplicatedStorage.Assets.
+	Animations, loaded onto the Animator). Studio: Config.Dev.LogAnimations prints each rig found and every clip started.
 	Performance (step 3.11): other characters far from the camera or off screen are posed only every few frames, and
 	not at all past Config.Performance.AnimationLod.Cull (Lib/AnimationLod; closer under Low Graphics).
 ]]
@@ -28,6 +28,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
+local animationTemplates = ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Animations")
 local Net = require(Shared:WaitForChild("Net"))
 local ArmWrestle = require(Shared:WaitForChild("Animation"):WaitForChild("ArmWrestle"))
 local Clips = require(Shared:WaitForChild("Animation"):WaitForChild("Clips"))
@@ -191,8 +192,10 @@ end
 
 -- Plays an uploaded animation for `clipName` if one is configured. True when it did.
 local function playAsset(character: Model, rig: Rig, clipName: string): boolean
-	local assetId = Config.Animations.AssetIds[clipName]
-	if assetId == nil or assetId == 0 then
+	-- Uploaded clips are Animation templates in ReplicatedStorage.Assets.Animations (assets/Sounds.luau builds them
+	-- from Config.Animations.AssetIds), loaded onto the Animator.
+	local template = animationTemplates:FindFirstChild(clipName)
+	if template == nil or not template:IsA("Animation") then
 		return false
 	end
 	local track: AnimationTrack? = rig.Tracks[clipName]
@@ -202,9 +205,7 @@ local function playAsset(character: Model, rig: Rig, clipName: string): boolean
 		if animator == nil then
 			return false
 		end
-		local animation = Instance.new("Animation")
-		animation.AnimationId = `rbxassetid://{assetId}`
-		local loaded = animator:LoadAnimation(animation)
+		local loaded = animator:LoadAnimation(template)
 		rig.Tracks[clipName] = loaded
 		track = loaded
 	end

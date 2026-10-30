@@ -8,7 +8,9 @@
 	    their own), parries, dashes, grabs, throws, KOs (boom + a short cheer), explosions, structures smashing (wood,
 	    metal or glass), the Perfect Dodge chime. CrumbleController plays the rumble and collapse (playAt).
 	  * UI: a click on every menu button, a coin sound for round Scrap, a fanfare on level-up.
-	Volumes are the sound's own times the player's Music / SFX volume setting (changes apply at once).
+	Volumes are the sound's own times the player's Music / SFX volume setting (changes apply at once). Every sound is
+	a clone of its template in ReplicatedStorage.Assets.Sounds (assets/Sounds.luau: one per slot with an id; no
+	template = silent); sound effects play at a random speed in Config.Audio.Pitch.
 ]]
 local Debris = game:GetService("Debris")
 local Players = game:GetService("Players")
@@ -32,43 +34,42 @@ local MUSIC_CHECK = 0.5 -- seconds between music checks
 local CHEER_DELAY = 0.35 -- seconds after the KO boom
 local TOUCH_BUTTONS = "ActionButtons" -- the touch controls' ScreenGui: no clicks there
 
-type SoundEntry = { Id: number, Volume: number, Pitch: { number }? }
-
 local SoundController = {}
 
 local player = Players.LocalPlayer
+local templates = ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Sounds")
+local sfxTemplates = templates:WaitForChild("Sfx")
+local musicTemplates = templates:WaitForChild("Music")
 local folder: Folder
-local music: Sound
-local tension: Sound
+local music: Sound? = nil -- the track playing (a clone of its template)
+local musicVolume = 0 -- its own volume, before the player's setting
+local tension: Sound? = nil
 local currentTrack: string? = nil
-local trackEntry: SoundEntry? = nil
 
 local function volumeSetting(key: string): number
 	local value = SettingsController.get(key)
 	return if type(value) == "number" then value else 1
 end
 
-local function newSound(entry: SoundEntry, volume: number): Sound
-	local sound = Instance.new("Sound")
-	sound.SoundId = `rbxassetid://{entry.Id}`
-	sound.Volume = entry.Volume * volume
-	local pitch = entry.Pitch
-	if pitch then
-		sound.PlaybackSpeed = pitch[1] + math.random() * (pitch[2] - pitch[1])
-	end
-	return sound
+-- A copy of the Sound template `name` in `from`, or nil when that slot has no id yet (silent).
+local function clone(from: Instance, name: string): Sound?
+	local template = from:FindFirstChild(name)
+	return if template and template:IsA("Sound") then template:Clone() else nil
 end
 
 --[[
 	Plays a sound effect (Config.Audio.Sfx[key]) at a world position or on an instance (it follows it), or as a flat
-	UI sound when `where` is nil. Does nothing for an unpicked (0) sound.
+	UI sound when `where` is nil, at a random speed in its pitch range. Does nothing for an unpicked (0) sound.
 ]]
 function SoundController.playAt(key: string, where: (Vector3 | Instance)?)
-	local entry = Config.Audio.Sfx[key]
-	if entry == nil or entry.Id == 0 then
+	local sound = clone(sfxTemplates, key)
+	if sound == nil then
 		return
 	end
-	local sound = newSound(entry, volumeSetting("SfxVolume"))
+	local entry = Config.Audio.Sfx[key]
+	local pitch = if entry and entry.Pitch then entry.Pitch else Config.Audio.Pitch
+	sound.Volume *= volumeSetting("SfxVolume")
+	sound.PlaybackSpeed = pitch[1] + math.random() * (pitch[2] - pitch[1])
 	if where == nil then
 		sound.Parent = SoundService
 	else
@@ -103,36 +104,34 @@ end
 -- Music
 ---------------------------------------------------------------------------------------------------------------------
 
-local function musicEntry(track: string): SoundEntry?
-	if track == "Lobby" then
-		return Config.Audio.Music.Lobby
-	end
-	return Config.Audio.Music.Arenas[track]
-end
-
--- Fades the music to `track` (a map id or "Lobby").
+-- Fades the music to `track` (a map id or "Lobby"): the old track fades out, a clone of the new one's template in.
 local function setTrack(track: string)
 	if track == currentTrack then
 		return
 	end
 	currentTrack = track
-	local entry = musicEntry(track)
-	trackEntry = entry
 	local half = Config.Audio.FadeTime / 2
-	local fadeOut = TweenService:Create(music, TweenInfo.new(half), { Volume = 0 })
-	fadeOut:Play()
-	fadeOut.Completed:Wait()
+	local old = music
+	music = nil
+	if old then
+		local fadeOut = TweenService:Create(old, TweenInfo.new(half), { Volume = 0 })
+		fadeOut:Play()
+		fadeOut.Completed:Wait()
+		old:Destroy()
+	end
 	if currentTrack ~= track then
 		return -- changed again meanwhile
 	end
-	music:Stop()
-	if entry == nil or entry.Id == 0 then
-		return
+	local nextTrack = clone(musicTemplates, track)
+	if nextTrack == nil then
+		return -- no track picked for it yet
 	end
-	music.SoundId = `rbxassetid://{entry.Id}`
-	music.Volume = 0
-	music:Play()
-	TweenService:Create(music, TweenInfo.new(half), { Volume = entry.Volume * volumeSetting("MusicVolume") }):Play()
+	musicVolume = nextTrack.Volume
+	nextTrack.Volume = 0
+	nextTrack.Parent = SoundService
+	nextTrack:Play()
+	music = nextTrack
+	TweenService:Create(nextTrack, TweenInfo.new(half), { Volume = musicVolume * volumeSetting("MusicVolume") }):Play()
 end
 
 local function refreshMusic()
@@ -155,23 +154,23 @@ local function refreshMusic()
 		left,
 		Config.Round.TensionTime
 	)
-	local entry = Config.Audio.Music.Tension
-	if on and entry.Id ~= 0 and not tension.IsPlaying then
-		tension.SoundId = `rbxassetid://{entry.Id}`
-		tension.Volume = entry.Volume * volumeSetting("MusicVolume")
-		tension:Play()
-	elseif not on and tension.IsPlaying then
-		tension:Stop()
+	local layer = tension
+	if layer and on and not layer.IsPlaying then
+		layer.Volume = Config.Audio.Music.Tension.Volume * volumeSetting("MusicVolume")
+		layer:Play()
+	elseif layer and not on and layer.IsPlaying then
+		layer:Stop()
 	end
 end
 
 local function applyMusicVolume()
 	local volume = volumeSetting("MusicVolume")
-	local entry = trackEntry
-	if entry then
-		music.Volume = entry.Volume * volume
+	if music then
+		music.Volume = musicVolume * volume
 	end
-	tension.Volume = Config.Audio.Music.Tension.Volume * volume
+	if tension then
+		tension.Volume = Config.Audio.Music.Tension.Volume * volume
+	end
 end
 
 ---------------------------------------------------------------------------------------------------------------------
@@ -234,14 +233,11 @@ function SoundController.Start(_self: any)
 	folder = Instance.new("Folder")
 	folder.Name = "Sounds"
 	folder.Parent = Workspace
-	music = Instance.new("Sound")
-	music.Name = "Music"
-	music.Looped = true
-	music.Parent = SoundService
-	tension = Instance.new("Sound")
-	tension.Name = "TensionLayer"
-	tension.Looped = true
-	tension.Parent = SoundService
+	tension = clone(musicTemplates, "Tension")
+	if tension then
+		tension.Name = "TensionLayer"
+		tension.Parent = SoundService
+	end
 
 	Net.on("CombatHit", onCombatHit)
 	Net.on("Effect", onEffect)
@@ -253,9 +249,9 @@ function SoundController.Start(_self: any)
 		end
 	end)
 	Net.on("RoundResults", function()
-		local entry = Config.Audio.Music.VictorySting
-		if entry.Id ~= 0 then
-			local sting = newSound(entry, volumeSetting("MusicVolume"))
+		local sting = clone(musicTemplates, "VictorySting")
+		if sting then
+			sting.Volume *= volumeSetting("MusicVolume")
 			sting.Parent = SoundService
 			sting:Play()
 			Debris:AddItem(sting, 15)

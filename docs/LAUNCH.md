@@ -34,9 +34,10 @@ Create these, then send the IDs to Claude (or paste them into the files named).
 ## 3. Music and sounds (Studio → Toolbox → Audio, free Creator Store audio only)
 
 - [ ] Pick tracks and sounds, right-click → Copy Asset ID, and paste into `src/shared/Config/Audio.luau` (or send
-      them to Claude). The bible asks for: lobby retro synthwave, a gritty chiptune-rock track per arena, a tension
-      layer for the last 30 s, a victory sting, plus hits, dash, KO, explosion, smash, UI click and coin sounds.
-      `lune run tools/launch-check` lists the empty slots.
+      them to Claude), then run `lune run assets/build` so each becomes a template in `ReplicatedStorage.Assets.Sounds`
+      (CI fails until it is rebuilt). The bible asks for: lobby retro synthwave, a gritty chiptune-rock track per
+      arena, a tension layer for the last 30 s, a victory sting, plus hits, dash, KO, explosion, smash, UI click and
+      coin sounds. `lune run tools/launch-check` lists the empty slots.
 
 ## 4. Store page (Creator Dashboard → Places / Experience details)
 

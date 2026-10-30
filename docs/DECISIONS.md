@@ -1338,3 +1338,15 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
     cracks through `VfxController.template`; `CosmeticService` clones the cosmetic trail and colours it. The effects
     look as before (same textures, numbers and colours).
   - *Order:* sounds and animations, then the models, follow as their own PRs.
+- **ReplicatedStorage.Assets, step 2: sounds and animations (owner's project rules, 2026-10-30: "clone from
+  ReplicatedStorage.Assets.Sounds, randomize PlaybackSpeed (0.9–1.1), and play"; "load Animation objects from
+  ReplicatedStorage.Assets.Animations onto Humanoid.Animator"; "never generate raw Sounds … with empty IDs"):**
+  - *Sounds:* `assets/Sounds.luau` makes a Sound template for each `Config.Audio` slot that has an id, at its volume:
+    `Sounds/Sfx/<key>`, `Sounds/Music/Lobby`, `/<map id>` and `/Tension` (looped), `/VictorySting`. A slot at 0
+    gets none, so it stays silent, as before; today every slot is 0. `SoundController` clones the template, scales
+    the volume by the player's setting and, for effects, picks a speed in `Config.Audio.Pitch` = 0.9–1.1 for every
+    sound effect (some had 0.92–1.08 and the chime, cheer, rumble, collapse and UI sounds none; the rule covers all).
+    Music crossfades by fading the old track's clone out and a clone of the new one in.
+  - *Animations:* `Assets/Animations` holds an Animation per uploaded clip in `Config.Animations.AssetIds` (none yet;
+    every clip is still a scripted pose); `AnimationController` loads that template onto the Animator.
+  - *After picking ids:* run `lune run assets/build` (the assets spec fails in CI until it's rebuilt). LAUNCH.md says so.

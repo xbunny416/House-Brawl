@@ -19,9 +19,10 @@ and every call made where the bible is silent — read the matching entry before
 - **Playtested:** Phase 1 ("all clear" 2026-10-16), the animations, 3.1 (from Studio logs). Everything else is built
   but not playtested; 3.11 (low-end mobile) not tried on a phone.
 - **Owner-side** ([docs/LAUNCH.md](docs/LAUNCH.md), `lune run tools/launch-check`): the VIP pass and the developer
-  products (StyleSlot included), their ids in `Config.Monetization`; audio ids (`Config/Audio.luau`, all 0 = silent);
-  the maturity form (paid random items: the style roll and the wheel); upload GameStrings.csv; the owner's UserId in
-  `Config.Dev.AllowedUserIds`. DataStores only work in Studio once the place is published (File → Publish to Roblox).
+  products (StyleSlot included), their ids in `Config.Monetization`; audio ids (`Config/Audio.luau`, all 0 = silent,
+  then `lune run assets/build`); the maturity form (paid random items: the style roll and the wheel); upload
+  GameStrings.csv; the owner's UserId in `Config.Dev.AllowedUserIds`. DataStores only work in Studio once the place is
+  published (File → Publish to Roblox).
 - **Next:** playtest fixes and whatever the owner asks for.
 
 ## Standing owner decisions
@@ -203,10 +204,11 @@ The owner's rules (2026-10-30). *Now:* notes say where the code differed when th
 - Animations: Load `Animation` objects from `ReplicatedStorage.Assets.Animations` onto `Humanoid.Animator`.
 - Models: Clone props/weapons from `ReplicatedStorage.Assets.Models` and position/weld via script.
 - *Done:* `ReplicatedStorage.Assets` is generated from `assets/` (`lune run assets/build`; a spec checks it). `VFX`:
-  bursts, the launch smoke, flash parts, the dash and cosmetic trails, the KO starburst; `VfxController`,
-  `CrumbleController` and `CosmeticService` clone them. *Now:* `Controllers/SoundController` still makes sounds from
-  `Config.Audio` ids (it skips id 0, so the game is silent) with a pitch range per sound; animations are the scripted
-  poses above (`Config.Animations.AssetIds` can swap in uploaded ones); props and structures are built from parts
+  bursts, the launch smoke, flash parts, the dash and cosmetic trails, the KO starburst (cloned by `VfxController`,
+  `CrumbleController`, `CosmeticService`). `Sounds`: one per `Config.Audio` slot with an id (none yet: the game is
+  silent), cloned by `SoundController` at a random speed in `Config.Audio.Pitch`. `Animations`: one per uploaded clip
+  in `Config.Animations.AssetIds` (none yet: clips are the scripted poses above), loaded onto the Animator. After
+  changing those ids, run `lune run assets/build`. *Now:* props and structures are still built from parts
   (`Shared/ItemShapes`, `Server/Visuals/ItemDetail`).
 
 ## GitHub workflow (automated)
