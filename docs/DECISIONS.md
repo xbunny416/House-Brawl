@@ -1350,3 +1350,16 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   - *Animations:* `Assets/Animations` holds an Animation per uploaded clip in `Config.Animations.AssetIds` (none yet;
     every clip is still a scripted pose); `AnimationController` loads that template onto the Animator.
   - *After picking ids:* run `lune run assets/build` (the assets spec fails in CI until it's rebuilt). LAUNCH.md says so.
+- **ReplicatedStorage.Assets, step 3: models (owner's project rules, 2026-10-30: "clone props/weapons from
+  ReplicatedStorage.Assets.Models and position/weld via script"):** `assets/Models.luau` builds:
+  - `Models/Props/<type>` and `Models/Structures/<type>`: the item's Config box (size, colour, material) with its
+    `Shared/ItemShapes` look on it, the same parts `ItemDetail.dress` used to make at runtime. Each detail part is held
+    by a **Weld** with `C0` = where it sits on the box (not a WeldConstraint): a clone is moved before it is parented,
+    and a Weld snaps its parts to the box when it enters the Workspace, wherever the box was put. Structures' boxes are
+    anchored. `PropService` and `StructureService` clone them; `ItemDetail` keeps only the lit barrel's glow.
+  - `Models/Weapons/<weapon>` and `Models/Cosmetics/<item>` (hats and back items): Models from the Config part lists,
+    each part with an `Attach` attribute (its R15 body part) and placed where it goes on it. `Server/Visuals/Attached`
+    clones one, moves each part onto its body part and welds it (a Weld, `C0` = that placement); `StyleService`
+    passes the weapon's template and `CosmeticService` the equipped hat's and back item's.
+  - *Same look:* the parts, sizes, colours and offsets are the ones the runtime code built before.
+  - *Size:* the folder is 949 instances; only clones go into the Workspace.

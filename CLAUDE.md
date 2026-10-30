@@ -69,7 +69,7 @@ in the Creator Dashboard. Without Rojo: open the `.rbxlx` from the latest CI run
 | `src/server/Vendor/` | `ServerScriptService.Server.Vendor` | Third-party modules kept as published (see `licenses/`) |
 | `maps/layouts/` | — | Map layouts as code (platform sizes, spots, decor) — the source of truth for blockouts |
 | `maps/generated/` | `Workspace.Lobby`, `ServerStorage.Arenas.*` | `.rbxmx` models generated from the layouts (committed) |
-| `assets/` | — | The templates game code clones (VFX …), built from Config by `assets/build.luau` |
+| `assets/` | — | The templates game code clones (VFX, sounds, animations, models), built from Config by `assets/build.luau` |
 | `assets/generated/` | `ReplicatedStorage.Assets` | `Assets.rbxmx` generated from `assets/` (committed) |
 | `tools/` | — | Lune helpers shared by tests and the map generator |
 | `tests/` | — (not synced) | Lune runner `tests/run.luau`, specs in `tests/specs/*.spec.luau` |
@@ -208,8 +208,9 @@ The owner's rules (2026-10-30). *Now:* notes say where the code differed when th
   `CrumbleController`, `CosmeticService`). `Sounds`: one per `Config.Audio` slot with an id (none yet: the game is
   silent), cloned by `SoundController` at a random speed in `Config.Audio.Pitch`. `Animations`: one per uploaded clip
   in `Config.Animations.AssetIds` (none yet: clips are the scripted poses above), loaded onto the Animator. After
-  changing those ids, run `lune run assets/build`. *Now:* props and structures are still built from parts
-  (`Shared/ItemShapes`, `Server/Visuals/ItemDetail`).
+  changing those ids, run `lune run assets/build`. `Models`: props and structures (their Config box with the
+  `Shared/ItemShapes` look welded on; `PropService`, `StructureService`), weapons and hats / back items (from Config
+  part lists; `Server/Visuals/Attached` positions and welds them on the character).
 
 ## GitHub workflow (automated)
 

@@ -14,19 +14,19 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
-local ItemShapes = require(Shared:WaitForChild("ItemShapes"))
 local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
 
 local Server = script.Parent.Parent
 local StructureRules = require(Server:WaitForChild("Structures"):WaitForChild("StructureRules"))
 local Effects = require(Server:WaitForChild("Visuals"):WaitForChild("Effects"))
-local ItemDetail = require(Server:WaitForChild("Visuals"):WaitForChild("ItemDetail"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local PrivateServerService = require(script.Parent:WaitForChild("PrivateServerService"))
 local CrumbleService = require(script.Parent:WaitForChild("CrumbleService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
 local PropService = require(script.Parent:WaitForChild("PropService"))
+
+local structureTemplates = ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Models"):WaitForChild("Structures")
 
 type Structure = {
 	Model: Model,
@@ -60,25 +60,34 @@ end
 
 local function build(typeId: string, marker: BasePart)
 	local typeConfig = Config.Structures.Types[typeId]
+	local template = structureTemplates:FindFirstChild(typeId)
 	local parent = folder
-	if typeConfig == nil or parent == nil or not marker:IsDescendantOf(Workspace) then
+	if
+		typeConfig == nil
+		or template == nil
+		or not template:IsA("BasePart")
+		or parent == nil
+		or not marker:IsDescendantOf(Workspace)
+	then
 		return
 	end
 	local model = Instance.new("Model")
 	model.Name = typeId
-	local part = Instance.new("Part")
+	-- A clone of its template (ReplicatedStorage.Assets.Models.Structures): the anchored box takes the hits; its
+	-- detailed look is welded on and follows it.
+	local part = template:Clone()
 	part.Name = "Body"
-	part.Anchored = true
-	part.Size = Vector3.new(typeConfig.Size.X, typeConfig.Size.Y, typeConfig.Size.Z)
-	part.Material = (Enum.Material :: any)[typeConfig.Material]
-	part.Color = Color3.fromHex(typeConfig.Color)
 	-- The marker lies on the floor; stand the structure on it, turned the marker's way.
 	part.CFrame = marker.CFrame * CFrame.new(0, (part.Size.Y - marker.Size.Y) / 2, 0)
 	part.Parent = model
 	model.PrimaryPart = part
-	-- Its detailed look (Shared/ItemShapes), welded on; the box itself still takes the hits and turns invisible.
 	local paint: { [BasePart]: Color3 } = {}
-	local details = ItemDetail.dress(part, ItemShapes.Structures[typeId], part.Color, part.Material)
+	local details: { BasePart } = {}
+	for _, child in part:GetChildren() do
+		if child:IsA("BasePart") then
+			table.insert(details, child)
+		end
+	end
 	local painted: { BasePart } = if #details > 0 then details else { part }
 	for _, detail in painted do
 		paint[detail] = detail.Color

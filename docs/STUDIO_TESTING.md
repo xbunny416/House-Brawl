@@ -276,6 +276,14 @@ Settings → Promo code, styles come from the style roll).
     hard, the POW / K.O.! starburst, an explosive barrel's fireball, ring and smoke, a structure breaking (chunks and
     dust), the PERFECT! text on a Perfect Dodge, the dash streak, and a dash-trail cosmetic's colours.
   - *Check:* no errors in Output mentioning `Assets` or `VFX`.
+- **Models from ReplicatedStorage.Assets (2026-10-30):**
+  - *Look at* (they should look as before): props in the arena and lobby (chairs, trash cans, TVs, barrels …) sitting
+    whole on their spots, their detail parts on the box, not left at the map's centre; pick one up, throw it, watch
+    the details stay on. Breakable structures (vending machines, wrecked cars …): whole, they darken as they are hit,
+    they break. A lit explosive barrel glows.
+  - *Worn:* equip a style with a weapon (bat, shovel …) and a hat and back item from the Inventory: each sits on the
+    hand / head / back and moves with the character; switching or unequipping replaces or removes it.
+  - *Check:* `ReplicatedStorage.Assets.Models` has Props, Structures, Weapons and Cosmetics; no Output errors.
 - **Sounds and animations from ReplicatedStorage.Assets (2026-10-30):**
   - *Now:* every audio slot and uploaded clip is empty, so `Assets.Sounds.Sfx`, `Assets.Sounds.Music` and
     `Assets.Animations` are empty folders and the game stays silent, with scripted poses. No errors in Output.

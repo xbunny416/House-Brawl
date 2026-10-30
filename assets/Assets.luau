@@ -7,6 +7,7 @@
 local Shim = require("../tests/roblox")
 local roblox = require("@lune/roblox")
 
+local Models = require("./Models")
 local Sounds = require("./Sounds")
 local Vfx = require("./Vfx")
 
@@ -14,12 +15,15 @@ local Assets = {}
 
 -- Builds the Assets folder.
 function Assets.build(): any
+	Shim.setGlobals({ CFrame = roblox.CFrame, Vector3 = roblox.Vector3 }) -- Shared/ItemShapes places its shapes
 	local Config = Shim.require(Shim.game.ReplicatedStorage.Shared.Config)
+	local ItemShapes = Shim.require(Shim.game.ReplicatedStorage.Shared.ItemShapes)
 	local folder = roblox.Instance.new("Folder")
 	folder.Name = "Assets"
 	Vfx.build(Config).Parent = folder
 	Sounds.build(Config).Parent = folder
 	Sounds.animations(Config).Parent = folder
+	Models.build(Config, ItemShapes).Parent = folder
 	return folder
 end
 

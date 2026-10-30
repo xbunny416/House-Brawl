@@ -26,7 +26,6 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local Formulas = require(Shared:WaitForChild("Formulas"))
-local ItemShapes = require(Shared:WaitForChild("ItemShapes"))
 local Net = require(Shared:WaitForChild("Net"))
 local Signal = require(Shared:WaitForChild("Util"):WaitForChild("Signal"))
 
@@ -37,6 +36,8 @@ local Effects = require(Server:WaitForChild("Visuals"):WaitForChild("Effects"))
 local ItemDetail = require(Server:WaitForChild("Visuals"):WaitForChild("ItemDetail"))
 local CombatService = require(script.Parent:WaitForChild("CombatService"))
 local MapService = require(script.Parent:WaitForChild("MapService"))
+
+local propTemplates = ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Models"):WaitForChild("Props")
 
 type Zone = MapService.FallZone
 
@@ -247,19 +248,16 @@ end
 local function makeProp(typeId: string, center: CFrame, zone: Zone, spot: Spot?): Prop?
 	local folder = if zone == "Lobby" then lobbyFolder else arenaFolder
 	local typeConfig = Config.Props.Types[typeId]
-	if folder == nil or typeConfig == nil then
+	local template = propTemplates:FindFirstChild(typeId)
+	if folder == nil or typeConfig == nil or template == nil or not template:IsA("BasePart") then
 		return nil
 	end
-	local part = Instance.new("Part")
-	part.Name = typeId
-	part.Size = Vector3.new(typeConfig.Size.X, typeConfig.Size.Y, typeConfig.Size.Z)
-	part.Material = (Enum.Material :: any)[typeConfig.Material]
-	part.Color = Color3.fromHex(typeConfig.Color)
+	-- A clone of its template (ReplicatedStorage.Assets.Models.Props): the box does the colliding; its detailed look
+	-- is welded on and follows it.
+	local part = template:Clone()
 	part.CFrame = center
 	part:SetAttribute("PropType", typeId)
 	part:AddTag(PROP_TAG)
-	-- Its detailed look (Shared/ItemShapes), welded on; the box itself still does the colliding and turns invisible.
-	ItemDetail.dress(part, ItemShapes.Props[typeId], part.Color, part.Material)
 	local prop: Prop = {
 		Part = part,
 		TypeId = typeId,

@@ -5,8 +5,11 @@ local fs = require("@lune/fs")
 local roblox = require("@lune/roblox")
 local expect = require("../expect")
 
+local Roblox = require("../roblox")
 local Assets = require("../../assets/Assets")
 local Sounds = require("../../assets/Sounds")
+
+local Config = Roblox.require(Roblox.game.ReplicatedStorage.Shared.Config)
 
 local folder = Assets.build()
 
@@ -50,9 +53,60 @@ return {
 			expect.truthy(find(path) ~= nil, path)
 		end
 	end,
-	["the folders the game waits for exist (VFX, Sounds/Sfx, Sounds/Music, Animations)"] = function()
-		for _, path in { "VFX", "Sounds/Sfx", "Sounds/Music", "Animations" } do
+	["the folders the game waits for exist (VFX, Sounds, Animations, Models)"] = function()
+		local folders = {
+			"VFX",
+			"Sounds/Sfx",
+			"Sounds/Music",
+			"Animations",
+			"Models/Props",
+			"Models/Structures",
+			"Models/Weapons",
+			"Models/Cosmetics",
+		}
+		for _, path in folders do
 			expect.truthy(find(path) ~= nil and find(path):IsA("Folder"), path)
+		end
+	end,
+	["every prop and structure has a template: its box, and its look welded on so it follows the box"] = function()
+		for folderName, types in { Props = Config.Props.Types, Structures = Config.Structures.Types } do
+			for typeId, typeConfig in types do
+				local box = find(`Models/{folderName}/{typeId}`)
+				expect.truthy(box and box:IsA("BasePart"), `{folderName}/{typeId}`)
+				local size = box.Size
+				expect.truthy(
+					math.abs(size.X - typeConfig.Size.X) < 1e-3
+						and math.abs(size.Y - typeConfig.Size.Y) < 1e-3
+						and math.abs(size.Z - typeConfig.Size.Z) < 1e-3,
+					`{typeId} is its Config size`
+				)
+				expect.equal(box.Anchored, folderName == "Structures", `{typeId}: only structures are anchored`)
+				for _, detail in box:GetChildren() do
+					if detail:IsA("BasePart") then
+						local weld = detail:FindFirstChildOfClass("Weld")
+						expect.truthy(weld and weld.Part0 == box and weld.Part1 == detail, `{typeId} detail welded`)
+						expect.truthy(
+							detail.Massless and not detail.CanCollide and not detail.CanQuery,
+							`{typeId} look`
+						)
+					end
+				end
+			end
+		end
+	end,
+	["every weapon and worn cosmetic has a template whose parts name the body part they go on"] = function()
+		for weaponId in Config.Styles.Weapons do
+			local model = find(`Models/Weapons/{weaponId}`)
+			expect.truthy(model and model:IsA("Model"), `Weapons/{weaponId}`)
+		end
+		for itemId, item in Config.Cosmetics.Items do
+			if item.Parts and #item.Parts > 0 then
+				local model = find(`Models/Cosmetics/{itemId}`)
+				expect.truthy(model and #model:GetChildren() == #item.Parts, `Cosmetics/{itemId}`)
+				for _, part in model:GetChildren() do
+					expect.truthy(type(part:GetAttribute("Attach")) == "string", `{itemId}/{part.Name} Attach`)
+				end
+			end
 		end
 	end,
 	["a sound or animation slot with an id becomes a template; one at 0 stays silent"] = function()
