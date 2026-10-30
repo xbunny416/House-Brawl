@@ -5,6 +5,9 @@
 		"ReplicatedStorage": {
 			"Shared": {
 				"$path": "src/shared"
+			},
+			"Assets": {
+				"$path": "assets/generated/Assets.rbxmx"
 			}
 		},
 		"ReplicatedFirst": {

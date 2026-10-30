@@ -10,6 +10,8 @@
 	  * A dash streak behind every dash (unless a dash-trail cosmetic already draws one).
 	Low Graphics (Settings): no particles, flying debris, post-effects (Bloom, color grading) or shadows (the sun's and
 	the lobby lamps', ShadowLight-tagged); the flashes, the starburst and the edge flash stay. Crumbling-platform effects live in CrumbleController.
+	Every effect is a clone of a template in ReplicatedStorage.Assets.VFX (assets/Vfx.luau): bursts are emitted with
+	:Emit(count), flashes and rings tweened.
 ]]
 local CollectionService = game:GetService("CollectionService")
 local Debris = game:GetService("Debris")
@@ -30,16 +32,14 @@ local VfxRules = require(Client:WaitForChild("Lib"):WaitForChild("VfxRules"))
 local DashController = require(script.Parent:WaitForChild("DashController"))
 local SettingsController = require(script.Parent:WaitForChild("SettingsController"))
 
-local SPARK_TEXTURE = "rbxasset://textures/particles/sparkles_main.dds"
-local SMOKE_TEXTURE = "rbxasset://textures/particles/smoke_main.dds"
 local STREAK_NAME = "VfxDashStreak"
 local SMOKE_NAME = "VfxLaunchSmoke"
 local COSMETIC_TRAIL = "CosmeticTrail"
-local TEXT_FONT = Enum.Font.Bangers
 
 local VfxController = {}
 
 local player = Players.LocalPlayer
+local templates = ReplicatedStorage:WaitForChild("Assets"):WaitForChild("VFX")
 local folder: Folder
 local edgeGui: ScreenGui
 local edges: { Frame } = {}
@@ -57,17 +57,14 @@ local function rootOf(model: Instance?): BasePart?
 	return if root and root:IsA("BasePart") then root else nil
 end
 
+-- A copy of the template `name` in ReplicatedStorage.Assets.VFX.
+local function clone(name: string): any
+	return templates:WaitForChild(name):Clone()
+end
+
 -- An invisible anchored part to hang effects on, removed after `lifetime`.
 local function anchorAt(cframe: CFrame, lifetime: number): Part
-	local part = Instance.new("Part")
-	part.Name = "Vfx"
-	part.Anchored = true
-	part.CanCollide = false
-	part.CanQuery = false
-	part.CanTouch = false
-	part.CastShadow = false
-	part.Transparency = 1
-	part.Size = Vector3.new(0.2, 0.2, 0.2)
+	local part = clone("Anchor") :: Part
 	part.CFrame = cframe
 	part.Parent = folder
 	Debris:AddItem(part, lifetime)
@@ -76,65 +73,39 @@ end
 
 -- A glowing ball that grows from `fromSize` to `toSize` and fades out over `time`.
 local function flashBall(position: Vector3, color: Color3, fromSize: number, toSize: number, time: number)
-	local ball = anchorAt(CFrame.new(position), time + 0.1)
-	ball.Shape = Enum.PartType.Ball
-	ball.Material = Enum.Material.Neon
+	local ball = clone("FlashBall") :: Part
 	ball.Color = color
 	ball.Size = Vector3.one * fromSize
-	ball.Transparency = 0.1
+	ball.CFrame = CFrame.new(position)
+	ball.Parent = folder
+	Debris:AddItem(ball, time + 0.1)
 	local info = TweenInfo.new(time, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 	TweenService:Create(ball, info, { Size = Vector3.one * toSize, Transparency = 1 }):Play()
 end
 
--- A one-off burst of particles from `cframe` (emitted along its front, −Z), unless Low Graphics.
-local function particles(
-	cframe: CFrame,
-	count: number,
-	color: ColorSequence,
-	texture: string,
-	speed: NumberRange,
-	lifetime: NumberRange,
-	size: NumberSequence,
-	spread: number
-)
+-- A one-off burst of the template `name`'s particles from `cframe` (along its front, −Z), in `color` if given;
+-- nothing with Low Graphics.
+local function burst(name: string, cframe: CFrame, count: number, color: ColorSequence?)
 	if count <= 0 or lowGraphics() then
 		return
 	end
-	local anchor = anchorAt(cframe, lifetime.Max + 0.2)
-	local emitter = Instance.new("ParticleEmitter")
-	emitter.Texture = texture
-	emitter.Color = color
-	emitter.Speed = speed
-	emitter.Lifetime = lifetime
-	emitter.Size = size
-	emitter.SpreadAngle = Vector2.new(spread, spread)
-	emitter.EmissionDirection = Enum.NormalId.Front
-	emitter.Drag = 4
-	emitter.LightEmission = if texture == SPARK_TEXTURE then 1 else 0
-	emitter.Transparency = NumberSequence.new(0, 1)
-	emitter.Rate = 0
-	emitter.Parent = anchor
+	local attachment = clone(name) :: Attachment
+	local emitter = attachment:FindFirstChildOfClass("ParticleEmitter") :: ParticleEmitter
+	if color then
+		emitter.Color = color
+	end
+	attachment.Parent = anchorAt(cframe, emitter.Lifetime.Max + 0.2)
 	emitter:Emit(count)
 end
 
 -- Text that pops up at `position` and floats up while it fades (BillboardGui, readable through walls).
 local function floatingText(position: Vector3, text: string, color: Color3, size: number, time: number)
-	local anchor = anchorAt(CFrame.new(position), time + 0.1)
-	local gui = Instance.new("BillboardGui")
+	local gui = clone("FloatingText") :: BillboardGui
 	gui.Size = UDim2.fromScale(size, size * 0.4)
-	gui.AlwaysOnTop = true
-	gui.LightInfluence = 0
-	gui.Parent = anchor
-	local label = Instance.new("TextLabel")
-	label.BackgroundTransparency = 1
-	label.Size = UDim2.fromScale(1, 1)
-	label.Font = TEXT_FONT
+	local label = gui:WaitForChild("Text") :: TextLabel
 	label.Text = text
-	label.TextScaled = true
 	label.TextColor3 = color
-	label.TextStrokeColor3 = Color3.new(0, 0, 0)
-	label.TextStrokeTransparency = 0
-	label.Parent = gui
+	gui.Parent = anchorAt(CFrame.new(position), time + 0.1)
 	local info = TweenInfo.new(time, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
 	TweenService:Create(gui, info, { StudsOffsetWorldSpace = Vector3.new(0, 3, 0) }):Play()
 	TweenService:Create(label, info, { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
@@ -210,17 +181,13 @@ local function onCombatHit(
 	local flash = Config.Vfx.ImpactFlash
 	flashBall(impact, color, 0.6, if heavy then flash.HeavySize else flash.Size, flash.Time)
 
-	local sparks = Config.Vfx.Sparks
-	local count = VfxRules.sparkCount(if type(percent) == "number" then percent else 0, sparks, lowGraphics())
-	particles(
+	local count =
+		VfxRules.sparkCount(if type(percent) == "number" then percent else 0, Config.Vfx.Sparks, lowGraphics())
+	burst(
+		"Sparks",
 		CFrame.lookAt(impact, impact + direction + Vector3.new(0, 0.3, 0)),
 		if heavy then count * 2 else count,
-		ColorSequence.new(color),
-		SPARK_TEXTURE,
-		NumberRange.new(sparks.Speed[1], sparks.Speed[2]),
-		NumberRange.new(sparks.Lifetime * 0.5, sparks.Lifetime),
-		NumberSequence.new(0.7, 0),
-		60
+		ColorSequence.new(color)
 	)
 
 	-- Launched hard: a smoke trail for the length of the hitstun.
@@ -229,24 +196,15 @@ local function onCombatHit(
 		if old then
 			old:Destroy()
 		end
-		local smoke = Config.Vfx.LaunchSmoke
-		local attachment = Instance.new("Attachment")
+		local attachment = clone("LaunchSmoke") :: Attachment
 		attachment.Name = SMOKE_NAME
 		attachment.Parent = victimRoot
-		local emitter = Instance.new("ParticleEmitter")
-		emitter.Texture = SMOKE_TEXTURE
-		emitter.Color = ColorSequence.new(hex(smoke.Color))
-		emitter.Rate = smoke.Rate
-		emitter.Lifetime = NumberRange.new(smoke.Lifetime * 0.6, smoke.Lifetime)
-		emitter.Speed = NumberRange.new(0.5, 2)
-		emitter.Size = NumberSequence.new(1.2, 3.5)
-		emitter.Transparency = NumberSequence.new(0.3, 1)
-		emitter.Parent = attachment
+		local emitter = attachment:FindFirstChildOfClass("ParticleEmitter") :: ParticleEmitter
 		local stun = if type(hitstun) == "number" then hitstun else 0.5
 		task.delay(stun, function()
 			emitter.Enabled = false
 		end)
-		Debris:AddItem(attachment, stun + smoke.Lifetime + 0.2)
+		Debris:AddItem(attachment, stun + Config.Vfx.LaunchSmoke.Lifetime + 0.2)
 	end
 end
 
@@ -257,49 +215,14 @@ end
 -- The comic starburst: two square bursts turned 45° apart behind big outlined text, popping in and fading out.
 local function starburst(position: Vector3, text: string)
 	local ko = Config.Vfx.KO
-	local anchor = anchorAt(CFrame.new(position + Vector3.new(0, 3, 0)), ko.BurstTime + 0.1)
-	local gui = Instance.new("BillboardGui")
-	gui.Size = UDim2.fromScale(ko.BurstSize, ko.BurstSize)
-	gui.AlwaysOnTop = true
-	gui.LightInfluence = 0
-	gui.Parent = anchor
-	local holder = Instance.new("Frame")
-	holder.BackgroundTransparency = 1
-	holder.AnchorPoint = Vector2.new(0.5, 0.5)
-	holder.Position = UDim2.fromScale(0.5, 0.5)
-	holder.Size = UDim2.fromScale(1, 1)
+	local gui = clone("KOStarburst") :: BillboardGui
+	local holder = gui:WaitForChild("Holder") :: Frame
 	holder.Rotation = math.random(-15, 15)
-	holder.Parent = gui
-	local scale = Instance.new("UIScale")
-	scale.Scale = 0.2
-	scale.Parent = holder
-	local fading: { GuiObject } = {}
-	for _, rotation in { 0, 45 } do
-		local star = Instance.new("Frame")
-		star.AnchorPoint = Vector2.new(0.5, 0.5)
-		star.Position = UDim2.fromScale(0.5, 0.5)
-		star.Size = UDim2.fromScale(0.62, 0.62)
-		star.Rotation = rotation
-		star.BackgroundColor3 = hex(ko.StarColor)
-		star.Parent = holder
-		local outline = Instance.new("UIStroke")
-		outline.Thickness = 3
-		outline.Color = Color3.new(0, 0, 0)
-		outline.Parent = star
-		table.insert(fading, star)
-	end
-	local label = Instance.new("TextLabel")
-	label.BackgroundTransparency = 1
-	label.AnchorPoint = Vector2.new(0.5, 0.5)
-	label.Position = UDim2.fromScale(0.5, 0.5)
-	label.Size = UDim2.fromScale(0.8, 0.45)
-	label.Font = TEXT_FONT
+	local scale = holder:WaitForChild("Scale") :: UIScale
+	local fading: { GuiObject } = { holder:WaitForChild("Star1") :: Frame, holder:WaitForChild("Star2") :: Frame }
+	local label = holder:WaitForChild("Text") :: TextLabel
 	label.Text = text
-	label.TextScaled = true
-	label.TextColor3 = hex(ko.TextColor)
-	label.TextStrokeTransparency = 0
-	label.ZIndex = 2
-	label.Parent = holder
+	gui.Parent = anchorAt(CFrame.new(position + Vector3.new(0, 3, 0)), ko.BurstTime + 0.1)
 	local pop = TweenInfo.new(0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 	TweenService:Create(scale, pop, { Scale = 1 }):Play()
 	task.delay(ko.BurstTime * 0.55, function()
@@ -339,15 +262,11 @@ local function onKOBurst(position: Vector3, data: { [string]: any })
 	if #keypoints == 1 then
 		table.insert(keypoints, ColorSequenceKeypoint.new(1, hex(colors[1])))
 	end
-	particles(
+	burst(
+		"KOBurst",
 		CFrame.lookAt(position, position + Vector3.yAxis),
 		Config.Cosmetics.KOEffectParticles,
-		ColorSequence.new(keypoints),
-		SPARK_TEXTURE,
-		NumberRange.new(15, 30),
-		NumberRange.new(0.5, 1),
-		NumberSequence.new(0.6, 0),
-		180
+		ColorSequence.new(keypoints)
 	)
 end
 
@@ -361,12 +280,7 @@ local function chunks(
 	time: number
 )
 	for _ = 1, count do
-		local chunk = Instance.new("Part")
-		chunk.Name = "VfxChunk"
-		chunk.CanCollide = false
-		chunk.CanQuery = false
-		chunk.CanTouch = false
-		chunk.CastShadow = false
+		local chunk = clone("Chunk") :: Part
 		chunk.Color = color
 		chunk.Material = material
 		local s = size * (0.5 + math.random())
@@ -386,30 +300,18 @@ local function onExplosion(position: Vector3, data: { [string]: any })
 	flashBall(position, hex("#FFE45C"), 1, radius, explosion.Time * 0.6)
 	flashBall(position, hex("#FF8A3D"), 2, radius * 1.9, explosion.Time)
 	-- The ring shockwave: a flat disc racing outward along the ground.
-	local ring = anchorAt(CFrame.new(position) * CFrame.Angles(0, 0, math.pi / 2), explosion.RingTime + 0.1)
-	ring.Shape = Enum.PartType.Cylinder
-	ring.Material = Enum.Material.Neon
-	ring.Color = hex("#FFF1D6")
-	ring.Size = Vector3.new(0.25, 2, 2)
-	ring.Transparency = 0.2
+	local ring = clone("Shockwave") :: Part
+	ring.CFrame = CFrame.new(position) * CFrame.Angles(0, 0, math.pi / 2)
+	ring.Parent = folder
+	Debris:AddItem(ring, explosion.RingTime + 0.1)
 	local info = TweenInfo.new(explosion.RingTime, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 	TweenService:Create(ring, info, { Size = Vector3.new(0.25, radius * 2.6, radius * 2.6), Transparency = 1 }):Play()
-	local light = Instance.new("PointLight")
-	light.Color = hex("#FF8A3D")
-	light.Range = radius * 2
-	light.Brightness = 4
-	light.Parent = ring
-	TweenService:Create(light, info, { Brightness = 0 }):Play()
-	particles(
-		CFrame.lookAt(position, position + Vector3.yAxis),
-		explosion.Smoke,
-		ColorSequence.new(hex("#6E6A64"), hex("#3A3632")),
-		SMOKE_TEXTURE,
-		NumberRange.new(8, 20),
-		NumberRange.new(1, 1.6),
-		NumberSequence.new(3, 8),
-		180
-	)
+	local light = ring:FindFirstChildOfClass("PointLight")
+	if light then
+		light.Range = radius * 2
+		TweenService:Create(light, info, { Brightness = 0 }):Play()
+	end
+	burst("ExplosionSmoke", CFrame.lookAt(position, position + Vector3.yAxis), explosion.Smoke)
 	if not lowGraphics() then
 		chunks(position, explosion.Debris, hex("#3A3632"), Enum.Material.Metal, 0.8, 2)
 	end
@@ -432,15 +334,11 @@ local function onBreak(position: Vector3, data: { [string]: any })
 		chunkSize,
 		brk.ChunkTime
 	)
-	particles(
+	burst(
+		"BreakDust",
 		CFrame.lookAt(position, position + Vector3.yAxis),
 		brk.Dust,
-		ColorSequence.new(color:Lerp(Color3.new(0.8, 0.78, 0.72), 0.6)),
-		SMOKE_TEXTURE,
-		NumberRange.new(4, 12),
-		NumberRange.new(0.6, 1.2),
-		NumberSequence.new(2, 5),
-		180
+		ColorSequence.new(color:Lerp(Color3.new(0.8, 0.78, 0.72), 0.6))
 	)
 end
 
@@ -462,16 +360,12 @@ function VfxController.burstChunks(position: Vector3, count: number, color: Colo
 end
 
 function VfxController.burstDust(position: Vector3, count: number, color: Color3)
-	particles(
-		CFrame.lookAt(position, position + Vector3.yAxis),
-		count,
-		ColorSequence.new(color),
-		SMOKE_TEXTURE,
-		NumberRange.new(4, 12),
-		NumberRange.new(0.8, 1.5),
-		NumberSequence.new(3, 7),
-		180
-	)
+	burst("CrumbleDust", CFrame.lookAt(position, position + Vector3.yAxis), count, ColorSequence.new(color))
+end
+
+-- A copy of the template `name` in ReplicatedStorage.Assets.VFX (CrumbleController's cracks).
+function VfxController.template(name: string): Instance
+	return clone(name)
 end
 
 local handlers: { [string]: (Vector3, { [string]: any }) -> () } = {
@@ -493,25 +387,14 @@ local function dashStreak(character: Model?)
 	end
 	local trail = root:FindFirstChild(STREAK_NAME)
 	if trail == nil then
-		local top = Instance.new("Attachment")
-		top.Name = `{STREAK_NAME}Top`
-		top.Position = Vector3.new(0, 1.2, 0)
-		top.Parent = root
-		local bottom = Instance.new("Attachment")
-		bottom.Name = `{STREAK_NAME}Bottom`
-		bottom.Position = Vector3.new(0, -1.2, 0)
-		bottom.Parent = root
-		local streak = Instance.new("Trail")
-		streak.Name = STREAK_NAME
-		streak.Attachment0 = top
-		streak.Attachment1 = bottom
-		streak.Color = ColorSequence.new(hex(Config.Vfx.Dash.Color))
-		streak.Transparency = NumberSequence.new(0.4, 1)
-		streak.Lifetime = Config.Vfx.Dash.StreakLifetime
-		streak.LightEmission = 0.4
-		streak.Enabled = false
-		streak.Parent = root
-		trail = streak
+		-- The template's attachments and trail move onto the root (the trail keeps its links to them).
+		local streak = clone("DashStreak")
+		for _, child in streak:GetChildren() do
+			child.Name = if child:IsA("Trail") then STREAK_NAME else `{STREAK_NAME}{child.Name}`
+			child.Parent = root
+		end
+		streak:Destroy()
+		trail = root:FindFirstChild(STREAK_NAME)
 	end
 	if trail and trail:IsA("Trail") then
 		trail.Enabled = true

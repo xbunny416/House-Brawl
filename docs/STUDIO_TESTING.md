@@ -269,6 +269,13 @@ Settings → Promo code, styles come from the style roll).
     not at opposite ends of the district. Run a few rounds: the meeting place should change each time.
   - *Respawn:* get knocked out while the other player stands still. You should come back about 40–130 studs from
     them (a short run, not on top of them). With `StudioMinPlayers = 1` (alone) you respawn anywhere.
+- **VFX from ReplicatedStorage.Assets (2026-10-30):**
+  - *Setup:* restart `rojo serve` (a new file in `default.project.json`), then check the Explorer shows
+    `ReplicatedStorage.Assets.VFX` with its templates.
+  - *Look at* (they should look as before): hit sparks and the impact flash, the smoke trail behind a fighter launched
+    hard, the POW / K.O.! starburst, an explosive barrel's fireball, ring and smoke, a structure breaking (chunks and
+    dust), the PERFECT! text on a Perfect Dodge, the dash streak, and a dash-trail cosmetic's colours.
+  - *Check:* no errors in Output mentioning `Assets` or `VFX`.
 - **Menus in the slate palette (2026-10-30):**
   - *Look at:* the loading screen, then each lobby menu (Shop, Inventory, Styles, Settings, Quests, the Daily
     reward): dark slate panels with an orange outline, slate buttons, the open tab and chosen items orange with dark

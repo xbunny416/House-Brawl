@@ -1323,3 +1323,18 @@ Where the bible is silent or ambiguous, these choices were made (all are Config 
   is the same 0.9–1.1). One *Now:* note says where the code differs: no `ReplicatedStorage.Assets` yet, emitters and
   props built in code, sounds from `Config.Audio` ids (id 0 skipped), scripted animations. The rest of CLAUDE.md was
   tightened (Status, Maps, Robux, Rounds and the setup notes said in fewer words) without dropping a rule.
+- **ReplicatedStorage.Assets, step 1: the generator and the VFX templates (owner, 2026-10-30: "build the
+  ReplicatedStorage.Assets folder", for the project rules "clone templates from ReplicatedStorage.Assets.VFX, call
+  :Emit(count), and tween scale/transparency"):**
+  - *Made like the maps:* `assets/build.luau` builds the folder from `assets/` and Config into
+    `assets/generated/Assets.rbxmx` (committed), which Rojo syncs to `ReplicatedStorage.Assets`. Templates read the
+    Config tunables (spark speeds, the launch smoke, the dash and trail lifetimes, the KO starburst's size and colours),
+    so they can't drift from them; a spec fails when the committed file is stale. A folder hand-made in Studio was
+    the other option, but the repo is code-first and cloud sessions can't see Studio.
+  - *VFX:* bursts (Sparks, KOBurst, ExplosionSmoke, BreakDust, CrumbleDust: an Attachment with a ParticleEmitter,
+    Rate 0), the LaunchSmoke trail, parts to tween (Anchor, FlashBall, Shockwave with its light, Chunk, Crack), the
+    DashStreak and CosmeticTrail (attachments and a Trail moved onto the root part), the KOStarburst and FloatingText
+    billboards. `VfxController` clones them and calls `:Emit(count)` or tweens them; `CrumbleController` takes its
+    cracks through `VfxController.template`; `CosmeticService` clones the cosmetic trail and colours it. The effects
+    look as before (same textures, numbers and colours).
+  - *Order:* sounds and animations, then the models, follow as their own PRs.

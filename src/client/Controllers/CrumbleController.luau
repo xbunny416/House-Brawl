@@ -21,7 +21,6 @@ local FLASH_INTERVAL = 0.25 -- seconds per red flash
 local SHAKE_OFFSET = 0.25 -- studs
 local SHAKE_SPEED = 14 -- how fast the shake wanders
 local SINK_DEPTH = 45 -- studs the platform sinks while it falls
-local CRACK_COLOR = Color3.fromHex("#2A2420")
 local DUST_COLOR = Color3.fromHex("#B8AE9C")
 
 type Watch = {
@@ -60,16 +59,9 @@ local function addCracks(model: Model)
 	SoundController.playAt("Rumble", base)
 	local half = base.Size / 2
 	for _ = 1, Config.Vfx.Crumble.Cracks do
-		local crack = Instance.new("Part")
+		local crack = VfxController.template("Crack") :: Part -- ReplicatedStorage.Assets.VFX
 		crack.Name = "VfxCrack"
-		crack.Anchored = true
-		crack.CanCollide = false
-		crack.CanQuery = false
-		crack.CanTouch = false
-		crack.CastShadow = false
-		crack.Color = CRACK_COLOR
-		crack.Material = Enum.Material.SmoothPlastic
-		crack.Size = Vector3.new(0.18, 0.06, 2 + math.random() * 5)
+		crack.Size = Vector3.new(crack.Size.X, crack.Size.Y, 2 + math.random() * 5)
 		local x = (math.random() * 2 - 1) * (half.X - 2)
 		local z = (math.random() * 2 - 1) * (half.Z - 2)
 		crack.CFrame = base.CFrame * CFrame.new(x, half.Y + 0.03, z) * CFrame.Angles(0, math.random() * math.pi, 0)
