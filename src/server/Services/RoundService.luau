@@ -228,16 +228,39 @@ local function platformOf(marker: Instance): string
 	return if node then node.Name else ""
 end
 
--- Puts a participant's (living) character into the arena: fresh fighter, spawn point, spawn shield.
+local function toPoint(position: Vector3): { number }
+	return { position.X, position.Y, position.Z }
+end
+
+-- Where a fighter comes back into a running round: a spawn point a little way from the nearest other fighter.
+local function comebackPoint(player: Player): BasePart?
+	local spawns = MapService.getArenaMarkers("SpawnPoint")
+	local points, enemies = {}, {}
+	for index, spawn in spawns do
+		points[index] = toPoint(spawn.Position)
+	end
+	for other, status in statuses do
+		local character = if other ~= player and status == "Playing" then aliveCharacter(other) else nil
+		local root = if character then character:FindFirstChild("HumanoidRootPart") else nil
+		if root and root:IsA("BasePart") then
+			table.insert(enemies, toPoint(root.Position))
+		end
+	end
+	return spawns[SpawnPlan.respawn(points, enemies, Config.Round.Respawn, pick)]
+end
+
+-- Puts a participant's (living) character into the arena: fresh fighter, spawn point (round start: the plan's;
+-- otherwise near the fight), spawn shield.
 local function enterArena(player: Player, spawnPoint: BasePart?)
 	local character = aliveCharacter(player)
 	if character == nil then
 		return
 	end
+	local point = spawnPoint or comebackPoint(player)
 	setStatus(player, "Playing")
 	syncScore(player)
 	CombatService.resetFighter(character)
-	MapService.sendToArena(player, spawnPoint)
+	MapService.sendToArena(player, point)
 	CombatService.shield(character, Config.Round.SpawnShieldTime)
 end
 
@@ -481,17 +504,19 @@ local function startRound(mapId: string, modeId: string): boolean
 	RoundService.RoundStarted:Fire(modeId, mapId)
 
 	-- Everyone not on the pad stays in the lobby (status "Lobby").
-	-- Fighters start spread over the platforms (Round/SpawnPlan).
+	-- Fighters start spread over the platforms, or close together on a one-platform arena (Round/SpawnPlan).
 	local spawns = MapService.getArenaMarkers("SpawnPoint")
 	local platforms: { string } = {}
+	local positions: { { number } } = {}
 	for index, spawn in spawns do
 		platforms[index] = platformOf(spawn)
+		positions[index] = toPoint(spawn.Position)
 	end
 	local groups: { { number } } = {}
 	for _, player in participants do
 		table.insert(groups, { player.UserId })
 	end
-	local plan = SpawnPlan.assign(groups, platforms, pick)
+	local plan = SpawnPlan.assign(groups, platforms, pick, positions)
 	for _, player in participants do
 		Scoreboard.add(r.Board, player.UserId, player.Name, startedAt)
 		local data = DataService.get(player)

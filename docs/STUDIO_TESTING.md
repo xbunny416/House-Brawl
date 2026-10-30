@@ -264,3 +264,8 @@ Settings → Promo code, styles come from the style roll).
     jail's yard side, the walls facing the south drop).
   - *Check:* each picture fills its board, the right way up, with nothing important cut off; each headline is easy to
     read across the top of its billboard. A blank board means Roblox hasn't served the image: say which one.
+- **Spawns bring the fight together (2026-10-30):**
+  - *Start:* run a round with 2 players (Test → Clients and Servers → 2). Both should start a street or so apart,
+    not at opposite ends of the district. Run a few rounds: the meeting place should change each time.
+  - *Respawn:* get knocked out while the other player stands still. You should come back about 40–130 studs from
+    them (a short run, not on top of them). With `StudioMinPlayers = 1` (alone) you respawn anywhere.

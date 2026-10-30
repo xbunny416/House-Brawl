@@ -74,6 +74,10 @@ this file in the same PR as the Config change.
 - Every KO you take is a fall (also resetting your character in the arena; the last attacker still gets the KO).
 - Round 4:00 (owner, 2026-10-17; was 3:00). Intermission/vote 15 s (up to 3 enabled maps; ties random). Respawn delay 3 s. Spawn
   shield 2 s (breaks if you attack). Results 8 s. A round needs 2 active players; AFK players sit out the next round.
+- Spawns (2026-10-30): on an arena of one platform (Shinjuku) fighters start at a random spawn point and the ones
+  nearest it. A respawn (or a Casual late joiner) comes back at a point whose nearest other fighter is 40–130 studs
+  away (else the nearest point at least 40 away, else the farthest). Floating arenas spread the start over the
+  platforms as before.
 - **The lobby is run-only** (owner, 2026-10-19): punch, charged punch, ability, dash and grab only work while fighting
   in a round.
 
