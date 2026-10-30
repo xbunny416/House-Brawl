@@ -15,7 +15,7 @@ and every call made where the bible is silent — read the matching entry before
   walk-in buildings sized to the avatar with breakable walls, framed windows and two-tone faces (`maps/lib/Rooms`),
   rooftop gear (`maps/lib/Roofs`), many-part furniture and a fountain (`maps/lib/Decor`), ForgeGUI art on its
   billboards, murals and posters (`maps/lib/Art`), lifts, a crane and a rooftop Ferris wheel, 72 prop spots with props
-  that fit each place. Its buildings stream in by distance from a `District` folder (about 16,900 instances). Menus
+  that fit each place. Its buildings stream in by distance from a `District` folder (about 17,500 instances). Menus
   use the slate palette (`Ui/Kit`).
 - **Playtested:** Phase 1 ("all clear" 2026-10-16), the animations, 3.1 (from Studio logs). Everything else is built
   but not playtested; 3.11 (low-end mobile) not tried on a phone.
@@ -113,15 +113,16 @@ Files are LF on every OS (`.gitattributes`); StyLua's check and the maps spec fa
   `VERSION` in `src/shared/Data/Template.luau`). Clients read their copy via `Controllers/DataController`.
 - **Maps:** generated from `maps/layouts/*.luau` by `lune run maps/build`; never hand-edit `maps/generated/`. Shaped
   pieces come from `maps/lib/Pieces` (lobby furniture `Furniture`, arena furniture `Decor`, walk-in buildings `Rooms`,
-  rooftop gear `Roofs`); moving parts are `Arena.mover` models (`Shared/MoverRules`) that clients move and
-  `MoverService` reads for hazards. Gameplay markers are tagged parts (`SpawnPoint`, `PropSpot`, `ExplosiveSpot`,
-  `StructureSpot` with a `StructureType` attribute, `LobbySpawn`), visible in Edit mode and hidden by
-  `Services/MapService` at runtime; the lobby's join pad is a visible `QueueZone` part. Each arena platform is a
-  `Platform`-tagged Model (Persistent streaming, `CanFall` attribute). Sign text comes from GameStrings keys (`LocKey`
-  attribute on the label). For a final art pass a map can switch to a hand-built model (export it to
-  `maps/<Name>.rbxmx`, point `default.project.json` at it, remove it from `maps/build.luau`). **Directions:** the
-  Builder's North = +Z, East = +X are a mirror image of a compass (facing +Z, +X is on your *left*): tell the owner
-  left / right as you face the lobby's bar (+Z), never "east / west" (`LeftWall` = +X, `RightWall` = −X).
+  rooftop gear `Roofs`; passes that add to a built map clear what is there with `Clearance`); moving parts are
+  `Arena.mover` models (`Shared/MoverRules`) that clients move and `MoverService` reads for hazards. Gameplay
+  markers are tagged parts (`SpawnPoint`, `PropSpot`, `ExplosiveSpot`, `StructureSpot` with a `StructureType`
+  attribute, `LobbySpawn`), visible in Edit mode and hidden by `Services/MapService` at runtime; the lobby's join pad
+  is a visible `QueueZone` part. Each arena platform is a `Platform`-tagged Model (Persistent streaming, `CanFall`
+  attribute). Sign text comes from GameStrings keys (`LocKey` attribute on the label). For a final art pass a map can
+  switch to a hand-built model (export it to `maps/<Name>.rbxmx`, point `default.project.json` at it, remove it from
+  `maps/build.luau`). **Directions:** the Builder's North = +Z, East = +X are a mirror image of a compass (facing +Z,
+  +X is on your *left*): tell the owner left / right as you face the lobby's bar (+Z), never "east / west"
+  (`LeftWall` = +X, `RightWall` = −X).
 - **Input:** gameplay code never reads raw keys. It listens to `Controllers/InputController` (`ActionBegan` /
   `ActionEnded` with an action from `Config.Controls.Actions`; `getDevice()` / `DeviceChanged` for key hints). A new
   action needs a keyboard and a gamepad binding, a `Controls.<Action>` string, and a touch button in

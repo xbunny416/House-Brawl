@@ -7,162 +7,20 @@
 
 	It works from what was built, not from the layouts: a roof is a building model's "Roof" pieces (Rooms leaves the
 	stair hatch out of them), and a thing only goes where it stands wholly on a roof piece and clears everything
-	already there — every part (a little margin), the stairs and ladders (3 studs, to step off them), the gameplay
-	spots (3.5) and the movers' paths (a lift's run, a wheel's whole turn). The bigger items are solid like the other
+	already there (maps/lib/Clearance) — every part (a little margin), the stairs and ladders (3 studs, to step off
+	them), the gameplay spots (3.5) and the movers' paths (a lift's run, a wheel's whole turn). The bigger items are solid like the other
 	roof units; the small ones walk-through. Each building's gear goes into its model, so it streams in with it.
 ]]
 local B = require("./Builder")
+local Clearance = require("./Clearance")
 
 local Roofs = {}
 
-type Box = { number } -- x0, y0, z0, x1, y1, z1
+type Box = Clearance.Box
 
-local CELL = 16 -- the obstacle grid's cell (studs)
 local INSET = 1.4 -- from a roof's outer edge to where gear may start (the parapet is 0.5)
 local SPACING = 7 -- between slots along an edge
-local PART_MARGIN = 0.6
-local CLIMB_MARGIN = 3 -- round stairs and ladders
-local SPOT_MARGIN = 3.5 -- round gameplay spots
 local TALL = 35 -- studs from its ground floor up to its roof from which a building gets lightning rods
-
--- A part's world-axis box.
-local function boxOf(part: any): Box
-	local cf, size = part.CFrame, part.Size
-	local p = cf.Position
-	local r, u, l = cf.RightVector, cf.UpVector, cf.LookVector
-	local hx, hy, hz = size.X / 2, size.Y / 2, size.Z / 2
-	local ex = math.abs(r.X) * hx + math.abs(u.X) * hy + math.abs(l.X) * hz
-	local ey = math.abs(r.Y) * hx + math.abs(u.Y) * hy + math.abs(l.Y) * hz
-	local ez = math.abs(r.Z) * hx + math.abs(u.Z) * hy + math.abs(l.Z) * hz
-	return { p.X - ex, p.Y - ey, p.Z - ez, p.X + ex, p.Y + ey, p.Z + ez }
-end
-
-local function grow(box: Box, by: number): Box
-	return { box[1] - by, box[2] - by, box[3] - by, box[4] + by, box[5] + by, box[6] + by }
-end
-
-local function union(a: Box, b: Box): Box
-	return {
-		math.min(a[1], b[1]),
-		math.min(a[2], b[2]),
-		math.min(a[3], b[3]),
-		math.max(a[4], b[4]),
-		math.max(a[5], b[5]),
-		math.max(a[6], b[6]),
-	}
-end
-
-local function overlaps(a: Box, b: Box): boolean
-	return a[1] < b[4] and b[1] < a[4] and a[2] < b[5] and b[2] < a[5] and a[3] < b[6] and b[3] < a[6]
-end
-
--- A grid of boxes by their horizontal cells, to find the ones near a spot quickly.
-type Grid = { [string]: { Box } }
-
-local function insert(grid: Grid, box: Box)
-	for gx = math.floor(box[1] / CELL), math.floor(box[4] / CELL) do
-		for gz = math.floor(box[3] / CELL), math.floor(box[6] / CELL) do
-			local key = `{gx},{gz}`
-			local list = grid[key]
-			if list == nil then
-				list = {}
-				grid[key] = list
-			end
-			table.insert(list, box)
-		end
-	end
-end
-
-local function blocked(grid: Grid, box: Box): boolean
-	for gx = math.floor(box[1] / CELL), math.floor(box[4] / CELL) do
-		for gz = math.floor(box[3] / CELL), math.floor(box[6] / CELL) do
-			for _, other in grid[`{gx},{gz}`] or {} do
-				if overlaps(box, other) then
-					return true
-				end
-			end
-		end
-	end
-	return false
-end
-
--- Everything already in `model` as boxes, with the margins above; movers swept along their paths.
-local function obstacles(model: any): Grid
-	local grid: Grid = {}
-	local inMover: { [any]: boolean } = {}
-	for _, mover in model:GetDescendants() do
-		if mover:IsA("Model") and mover:HasTag("Mover") then
-			local pivot = mover.PrimaryPart
-			local swept: Box? = nil
-			local reach = 0
-			for _, part in mover:GetDescendants() do
-				if part:IsA("BasePart") then
-					inMover[part] = true
-					local box = boxOf(part)
-					swept = if swept then union(swept, box) else box
-					if pivot then
-						local p = pivot.CFrame.Position
-						for _, corner in { { box[1], box[2], box[3] }, { box[4], box[5], box[6] } } do
-							local dx, dy, dz = corner[1] - p.X, corner[2] - p.Y, corner[3] - p.Z
-							reach = math.max(reach, math.sqrt(dx * dx + dy * dy + dz * dz))
-						end
-					end
-				end
-			end
-			if swept and pivot then
-				local kind = mover:GetAttribute("Kind")
-				local offset = mover:GetAttribute("Offset")
-				if (kind == "Lift" or kind == "Slide") and offset then
-					local moved = {
-						swept[1] + offset.X,
-						swept[2] + offset.Y,
-						swept[3] + offset.Z,
-						swept[4] + offset.X,
-						swept[5] + offset.Y,
-						swept[6] + offset.Z,
-					}
-					insert(grid, grow(union(swept, moved), PART_MARGIN))
-				else
-					local p = pivot.CFrame.Position
-					insert(
-						grid,
-						grow(
-							union(
-								swept,
-								{ p.X - reach, p.Y - reach, p.Z - reach, p.X + reach, p.Y + reach, p.Z + reach }
-							),
-							PART_MARGIN
-						)
-					)
-				end
-			end
-		end
-	end
-	for _, part in model:GetDescendants() do
-		if part:IsA("BasePart") and not inMover[part] and part.Name ~= "Roof" then
-			local margin = PART_MARGIN
-			if part:HasTag("Marker") then
-				margin = SPOT_MARGIN
-			elseif part:IsA("TrussPart") or part.Name == "Stair" then
-				margin = CLIMB_MARGIN
-			end
-			insert(grid, grow(boxOf(part), margin))
-		end
-	end
-	return grid
-end
-
--- A small seeded random (the same gear every build).
-local function random(seedText: string): () -> number
-	local state = 0
-	for index = 1, #seedText do
-		state = (state * 31 + string.byte(seedText, index)) % 2147483647
-	end
-	return function(): number
-		state = (state * 48271) % 2147483647
-		return state / 2147483647
-	end
-end
 
 --[[
 	The gear, built facing in from the edge: `at` is its centre on the roof (x, z), `yaw` turns its local −Z (its
@@ -426,12 +284,12 @@ local function onRoof(pieces: { Box }, cx: number, cz: number, hx: number, hz: n
 end
 
 -- Dresses one building's roof; returns how many things it added.
-local function dressRoof(building: any, grid: Grid): number
+local function dressRoof(building: any, grid: Clearance.Grid): number
 	local pieces: { Box } = {}
 	local roofColor = nil
 	for _, part in building:GetChildren() do
 		if part:IsA("BasePart") and part.Name == "Roof" then
-			table.insert(pieces, boxOf(part))
+			table.insert(pieces, Clearance.boxOf(part))
 			roofColor = roofColor or part.Color
 		end
 	end
@@ -440,13 +298,13 @@ local function dressRoof(building: any, grid: Grid): number
 	end
 	local bounds = pieces[1]
 	for _, roof in pieces do
-		bounds = union(bounds, roof)
+		bounds = Clearance.union(bounds, roof)
 	end
 	local top = bounds[5]
 	local x0, z0, x1, z1 = bounds[1], bounds[3], bounds[4], bounds[6]
-	local roll = random(building.Name)
+	local roll = Clearance.random(building.Name)
 	local added = 0
-	local ground = boxOf(building:FindFirstChild("GroundFloor"))[2]
+	local ground = Clearance.boxOf(building:FindFirstChild("GroundFloor"))[2]
 	local height = top - ground
 	local maxItems = math.clamp(math.floor(((x1 - x0) + (z1 - z0)) * 2 / 13), 3, 14)
 	local items = 0
@@ -460,13 +318,13 @@ local function dressRoof(building: any, grid: Grid): number
 			return false
 		end
 		local box = { cx - hx, top + 0.05, cz - hz, cx + hx, top + kind.Height, cz + hz }
-		if blocked(grid, box) then
+		if grid:blocked(box) then
 			return false
 		end
 		B.into(building, function()
 			kind.Build({ cx, cz }, yaw, top)
 		end)
-		insert(grid, grow(box, PART_MARGIN))
+		grid:add(Clearance.grow(box, Clearance.PartMargin))
 		return true
 	end
 
@@ -559,7 +417,9 @@ end
 -- Dresses the roof of every walk-in building (a Model with a GroundFloor) in `district`, clearing everything in `model`.
 -- Returns how many parts were added.
 function Roofs.dress(district: any, model: any): number
-	local grid = obstacles(model)
+	local grid = Clearance.new(model, function(part: any): boolean
+		return part.Name == "Roof" -- what the gear stands on
+	end)
 	local added = 0
 	for _, building in district:GetChildren() do
 		if building:IsA("Model") and building:FindFirstChild("GroundFloor") then
